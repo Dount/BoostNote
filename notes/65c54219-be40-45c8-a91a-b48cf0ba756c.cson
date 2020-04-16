@@ -1,0 +1,44 @@
+createdAt: "2019-08-28T03:12:43.007Z"
+updatedAt: "2019-09-09T05:55:45.431Z"
+type: "MARKDOWN_NOTE"
+folder: "a829d630b1a42b272c49"
+title: "Android 设计模式"
+tags: []
+content: '''
+  # Android 设计模式
+  
+  [Android 设计模式对比 - 简书](https://www.jianshu.com/p/4830912f5162)
+  
+  ## MVC模式
+  
+  [Android架构设计模式（一） - 简书](https://www.jianshu.com/p/908122923919)
+  
+  ## MVP模式
+  
+  [Android架构设计模式（二） - 简书](https://www.jianshu.com/p/80594c7bac15)
+  
+  [Android中MVP模式实战版（一） - 简书](https://www.jianshu.com/p/19283a3f61de)
+  
+  ## MVVM模式
+  
+  [Android架构设计模式（三） - 简书](https://www.jianshu.com/p/b2e9e72aa547)
+  
+  [DataBinding的使用](https://blog.csdn.net/huangliniqng/article/details/85804875)
+  
+  [DataBinding系列（一）：DataBinding初认识 - 简书](https://www.jianshu.com/p/53925ccb900e)
+  
+  [DataBinding系列（二）：DataBinding的基本用法 - 简书](https://www.jianshu.com/p/70316eb4e0f8)
+  
+  [DataBinding系列（三）：RecyclerView中使用DataBinding - 简书](https://www.jianshu.com/p/4d30efa6b500)
+  
+  [DataBinding系列（四）：DataBinding进阶之路 - 简书](https://www.jianshu.com/p/d429174b8d07)
+  
+  [Android dataBinding 的绑定数据、列表、点击事件等使用 - 简书](https://www.jianshu.com/p/17e79095d691)
+  
+  [Android MVVM 入门教程 - 简书](https://www.jianshu.com/p/153ba1adf4cc)
+  
+  [Android MVVM实战Demo完全解析 - 简书](https://www.jianshu.com/p/996d76b2317f)
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

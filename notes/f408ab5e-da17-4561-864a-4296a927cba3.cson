@@ -1,0 +1,42 @@
+createdAt: "2019-03-26T01:40:33.322Z"
+updatedAt: "2019-03-30T08:06:30.406Z"
+type: "MARKDOWN_NOTE"
+folder: "85a62ba3b0bb150cea92"
+title: "Pyhon == 与 is 的本质区别"
+tags: []
+content: '''
+  # Pyhon == 与 is 的本质区别
+  
+  ## ==是python标准操作符中的比较操作符，用来比较判断两个对象的value(值)是否相等
+  
+  ```
+  >>> a = 'cheesezh'
+  >>> b = 'cheesezh'
+  >>> a == b
+  True
+  ```
+  
+  ## is也被叫做同一性运算符，这个运算符比较判断的是对象间的唯一身份标识，也就是id是否相同。
+  ```
+  >>> x = y = [4,5,6]
+  >>> z = [4,5,6]
+  >>> x == y
+  True
+  >>> x == z
+  True
+  >>> x is y
+  True
+  >>> x is z
+  False
+  >>>
+  >>> print id(x)
+  3075326572
+  >>> print id(y)
+  3075326572
+  >>> print id(z)
+  3075328140
+  ```
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

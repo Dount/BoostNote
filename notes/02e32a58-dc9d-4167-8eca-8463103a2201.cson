@@ -1,0 +1,57 @@
+createdAt: "2019-09-03T02:17:28.984Z"
+updatedAt: "2019-09-03T02:17:32.284Z"
+type: "MARKDOWN_NOTE"
+folder: "8cc975aec2d11a8ac69a"
+title: "Shell 字符串操作"
+tags: []
+content: '''
+  ## Shell 字符串操作
+  
+  截取字符变量的前8位
+  expr substr "$a" 1 8
+  
+  按指定的字符串截取
+  从左向右截取最后一个string后的字符串
+  ${varible##*string}
+  
+  从左向右截取第一个string后的字符串
+  ${varible#*string}
+  
+  从右向左截取最后一个string后的字符串 
+  ${varible%%string*}
+  
+  从从向右截取第一个string后的字符串
+  ${varible%string*}
+  
+  “*”只是一个通配符可以不要
+  
+  ${varible:n1:n2}截取变量varible从n1开始的n2个字符，组成一个子字符串。
+  
+  取得字符串长度
+  echo ${#string}
+  
+  字符串所在位置
+  expr index $string '123'
+  
+  匹配并且替换
+  echo ${string/23/bb} 替换一次
+  echo ${string//23/bb} 双斜杠替换所有匹配
+  echo ${string/#abc/bb} #以什么开头来匹配
+  echo ${string/%41/bb} %以什么结尾来匹配
+  
+  字符串删除
+  ${变量名# substring正则表达式}从字符串开头开始匹配substring,删除匹配上的表达式
+  echo ${test#/}
+  echo ${test#*/}删除从头到/的字符串
+  echo ${test##*/}删除从到第二个/的字符串
+  
+  ${变量名%substring正则表达式}从字符串结尾开始匹配substring,删除匹配上的表达式
+  echo ${test%/*} 删除从结尾到第一个/的内容
+  echo ${test%%/*}删除从结尾到第二个/的内容
+  
+  链接地址
+  [linux shell 字符串操作详解 （长度，读取，替换，截取，连接，对比，删除，位置 ） - gaomatlab - 博客园](http://www.cnblogs.com/gaochsh/p/6901809.html)
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

@@ -1,0 +1,45 @@
+createdAt: "2019-08-01T06:58:49.485Z"
+updatedAt: "2019-08-01T07:24:46.817Z"
+type: "MARKDOWN_NOTE"
+folder: "a829d630b1a42b272c49"
+title: "Android 文本监听接口TextWatcher详解"
+tags: []
+content: '''
+  ## Android 文本监听接口TextWatcher详解
+  
+  TextWatcher是一个用来监听文本变化的接口，使用该接口可以很方便的对可显示文本控件和可编辑文本控件中的文字进行监听和修改。
+  
+  TextWatcher接口中定义的三个方法
+  ```
+  public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+  ```
+  * CharSequence s：文本改变之前的内容
+  * int start：文本开始改变时的起点位置，从0开始计算
+  * int count：要被改变的文本字数，即将要被替代的选中文本字数
+  * int after：改变后添加的文本字数，即替代选中文本后的文本字数
+  
+  该方法调用是在文本没有被改变，但将要被改变的时候调用，把四个参数组成一句话就是：
+  在当前文本s中，从start位置开始之后的count个字符（即将）要被after个字符替换掉
+  
+  ```
+  public void onTextChanged(CharSequence s, int start, int before, int count) {}
+  ```
+  * CharSequence s：文本改变之后的内容
+  * int start：文本开始改变时的起点位置，从0开始计算
+  * int before：要被改变的文本字数，即已经被替代的选中文本字数
+  * int count：改变后添加的文本字数，即替代选中文本后的文本字数
+  
+  该方法调用是在文本被改变时，改变的结果已经可以显示时调用，把四个参数组成一句话就是：
+  在当前文本s中，从start位置开始之后的before个字符（已经）被count个字符替换掉了
+  
+  ```
+  public void afterTextChanged(Editable s) {}
+  ```
+  该方法是在文本改变结束后调用，传入了一个参数：
+  * Editable s：改变后的最终文本
+  
+  该方法是在执行完beforeTextChanged、onTextChanged两个方法后才会被调用，此时的文本s为最终显示给用户看到的文本。我们可以再对该文本进行下一步处理，比如把文本s显示在UI界面上
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

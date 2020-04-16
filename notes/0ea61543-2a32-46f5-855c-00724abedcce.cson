@@ -1,0 +1,34 @@
+createdAt: "2019-07-18T01:33:26.561Z"
+updatedAt: "2019-07-18T01:35:08.103Z"
+type: "MARKDOWN_NOTE"
+folder: "d93d185dcf894dbad7b3"
+title: "Ubuntu串口工具minicom的安装与使用"
+tags: []
+content: '''
+  ### Ubuntu串口工具minicom的安装与使用
+  
+  打开终端，输入安装命令：
+  sudo apt-get install minicom
+  
+  安装好后打开minicom
+  sudo minicom
+  
+  打开后进入欢迎界面，最下面有一行提示，表示同时按下ctrl-A，之后松开再按下Z会进入帮助页面，不区分大小写。
+  
+  进入帮助页面，会列出各种命令的快捷键
+  
+  在帮助页面可以看到配置minicom的快捷键是o，此时按下o会进入配置界面，也可以在欢迎界面或使用过程中按下ctrl-a o的方式打开。
+  
+  按上下键选择Serial-port-setup（串口配置），进入串口配置界面,此时按下左边对应的字母可以使光标跳转到对应的条目，可以对配置进行修改，修改后如果要保存，需要按下enter，如果不保存，按下esc。设置好后按下enter或esc退出界面。
+  
+  选择save setup as dfl，可以将刚刚的修改作为默认配置，以后启动都按照这个配置启动。
+  
+  按下esc退出配置界面，此时如果串口有数据便会显示出来
+  
+  按下Ctrl+a n可以显示时间戳，常用的是simple的时间戳，再按一次显示extended的时间戳，前者只显示到秒，后者精确到毫秒。
+  
+  按下ctrl-a x 或者ctrl-a q可以退出minicom
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

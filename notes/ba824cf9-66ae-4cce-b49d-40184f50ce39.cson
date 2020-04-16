@@ -1,0 +1,143 @@
+createdAt: "2019-05-21T06:23:33.697Z"
+updatedAt: "2019-05-22T03:35:37.447Z"
+type: "MARKDOWN_NOTE"
+folder: "8cc975aec2d11a8ac69a"
+title: "Shell 脚本 sed使用"
+tags: []
+content: '''
+  ## Shell 脚本 sed使用
+  
+  **sed 是如何处理文件文本：**
+  
+  sed在处理文本时是逐行读取文件内容，读到匹配的行就根据指令做操作，不匹配就跳过
+  
+  **sed 的常用选项:**
+  
+  -e:它告诉sed将下一个参数解释为一个sed指令，只有当命令行上给出多个sed指令时才需要使用-e选项
+  
+  -f:后跟保存了sed指令的文件
+  
+  -i:直接对内容进行修改，不加-i时默认只是预览，不会对文件做实际修改
+  
+  -n:取消默认输出，sed默认会输出所有文本内容，使用-n参数后显示处理过得行
+  
+  **sed中的编辑命令:**
+  
+  a:追加 向匹配行后面插入内容
+  
+  c:更改 更改匹配行的内容
+  
+  i:插入 向匹配行前插入内容
+  
+  d:删除 删除匹配的内容
+  
+  s:替换 替换掉匹配的内容
+  
+  p:打印 打印出匹配的内容，通常与-n选项一起用
+  
+  =:用来打印被匹配的行的行号
+  
+  n:读取下一行，遇到n时会自动跳入下一行
+  
+  r,w:读和写编辑命令，r用于将内容读入文件，w用于将匹配内容写入到文件
+  
+  **sed命令示例:** 注file=文件名
+  1. 向文件中添加或插入行
+  
+  sed '3ahello' file  向第三行后面添加hello,3表示行号
+  
+  sed '3ihello' file  向三行前面添加hello
+  
+  sed '/123/ahello' file  向内容123后面添加hello,如果文件中有多行包括123,则每一行后面都会添加
+  
+  sed '/123/ihello' file 在包含123的行之前插入hello,如果有多行包含123,则包含123的每一行之前都会插入hello
+  
+  sed '$ahello' file 在最后一行添加hello
+  
+  sed '$ihello' file 在最后一行之前插入hello
+  
+  2. 更改文件中指定的行
+  
+  sed '1chello' file 将文件的第一行替换为hello
+  
+  sed '/123/chello' file 将包含123的行替换为hello
+  
+  sed '$chello' file 将最后一行替换为hello
+  
+  sed 's/cc.*/aaaa&bbbbb/g' file  将文件中有cd行的前后替换
+  
+  3. 删除文件中的行
+  
+  sed '4d' file 删除第四行
+  
+  sed '1,2' file 删除1-2行
+  
+  sed '$d' file 珊瑚最后一行
+  
+  sed '/123/d' file 删除匹配123的行
+  
+  4. 替换文件中的内容
+  
+  sed 's/123/hello' file 将文件中的123替换为hello,默认只替换每行第一个
+  
+  sed 's/123/hello/2' file 将每行中第二个匹配的123替换为hello
+  
+  sed 's/123/hello/g' file 将文本中所有的123都替换为hello
+  
+  sed 's/^#.*//g' file  将文件中以#开头的行替换为空行, (^#)表示匹配以#开头,
+  (.*)代表所有内容
+  
+  sed 's/$/&'haha'/' file  在file 文件的每一行后面加上haha字段
+  
+  5. 打印文件的行号
+  
+  sed -n "$=" file 打印文件最后一行的行号
+  
+  sed -n '/error/=' file 打印匹配error的行号
+  
+  sed -n '/error/{=;p}' file  打印匹配error的行的行号和内容
+  
+  sed -n '/ab/=' file |sed -n "1"p 显示找到ab的行号， sed -n "1"p 显示第一个
+  
+  6. 替换文件中的内容
+  ```
+  #!/bin/bash
+  if [ $# -ne 3 ];then
+    echo "Usage: $0 old-part new-part filename" 
+    exit
+  fi
+  sed -i "s$1#$2#" $3
+  将旧内容进行替换，当$1和$2中包含"/"时，替换指令中的定界符需要更换为其他符号
+  ```
+  7. 删除文件中的空白行
+  ```
+  #!/bin/bash
+  if [ ! -f $1 ];then
+    echo "$0 is not a file"
+    exit
+  fi
+  sed -i "/^$/d" $1 将空白行删除
+  ```
+  8. 批量更改当前目录中的文件后缀名
+  ```
+  #!/bin/bash
+  if [ $# -ne 2 ];then   判断用户的输入，如果参数个数不为2则打印脚本用法
+    echo "Usage:$0 +old-file new-file"  
+    exit
+  fi
+  for i in *$1*      对包含用户给定参数的文件进行遍历
+  do 
+    if [ -f $i ];then
+      iname='basename $i$' 获取文件名
+      newname='echo $iname | sed -e "s/$1/$2/g"' 对文件名进行替换并赋值给新的变量
+    fi
+  done 
+  ```
+  参考链接
+  https://blog.csdn.net/wdz306ling/article/details/80087889
+  
+  
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

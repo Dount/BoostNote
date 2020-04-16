@@ -1,0 +1,24 @@
+createdAt: "2019-09-03T09:54:15.323Z"
+updatedAt: "2019-09-03T09:55:23.613Z"
+type: "MARKDOWN_NOTE"
+folder: "d93d185dcf894dbad7b3"
+title: "MFG串口升级"
+tags: []
+content: '''
+  ### MFG串口升级
+  
+  \\\\ibigfox\\release\\Platform\\mfgtools\\renesas\\rcar3\\m3muifa
+  
+  setenv bootargs 'setenv bootargs console=ttySC0,115200 coherent_pool=64MiB'
+  
+  setenv bootkernel 'usb reset;fatload usb 0:auto 0x48080000 /mfg-muifa/bootfiles/Image;fatload usb 0:auto 0x48000000 /mfg-muifa/bootfiles/r8a7796-m3muifa.dtb'
+  
+  setenv bootinit 'fatload usb 0:auto 0x51000000 /mfg-muifa/bootfiles/initramfs.img;booti 0x48080000 0x51000000 0x48000000'
+  
+  setenv bootcmd_mfg 'run bootargs;run bootkernel;run bootinit'
+  
+  
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

@@ -1,0 +1,21 @@
+createdAt: "2019-05-22T03:24:59.760Z"
+updatedAt: "2019-05-22T03:29:37.326Z"
+type: "MARKDOWN_NOTE"
+folder: "8cc975aec2d11a8ac69a"
+title: "Shell数组元素个数"
+tags: []
+content: '''
+  ## Shell数组元素个数
+  1. 获取数组元素的个数
+    ${#array[@]}
+  
+  2. 获取数组的所有元素
+    ${array[*]}
+    
+  3. 获取字符串的长度
+    ${#str}
+  
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

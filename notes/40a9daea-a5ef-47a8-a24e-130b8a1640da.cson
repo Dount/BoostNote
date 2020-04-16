@@ -1,0 +1,353 @@
+createdAt: "2019-09-26T02:02:22.087Z"
+updatedAt: "2019-10-18T08:29:39.740Z"
+type: "MARKDOWN_NOTE"
+folder: "537068cf3ce988a4b28a"
+title: "Android 面试题"
+tags: []
+content: '''
+  # Android 面试题
+  [toc]
+  ## 1、 Android类加载器
+  在Android开发中，不管是插件化还是组件化，都是基于Android系统的类加载器ClassLoader来设计的。只不过Android平台上虚拟机运行的是Dex字节码，一种对class文件优化的产物，传统Class文件是一个Java源码文件会生成一个.class文件，而Android是把所有Class文件进行合并、优化，然后再生成一个最终的class.dex，目的是把不同class文件重复的东西只需保留一份，在早期的Android应用开发中，如果不对Android应用进行分dex处理，那么最后一个应用的apk只会有一个dex文件。
+  
+  Android中常用的类加载器有两种，DexClassLoader和PathClassLoader，它们都继承于BaseDexClassLoader,而BaseDexClassLoader继承自ClassLoader。
+  区别在于
+  PathClassLoader用来加载系统类及已安装的应用程序的类；
+  DexClassLoader用来加载jar、apk、dex文件中的类。
+  
+  ## 2、Service
+  - Service是在main Thread中执行，Service中不能执行耗时操作（网络请求，拷贝数据库，大文件）。
+  - 可以在xml中设置Service所在的进程，让Service在另外的进程中执行。
+  - Service执行的操作最多是20s，BroadcastReceiver是10s，Activity是5s。
+  - Activity通过bindService（Intent，ServiceConnection，flag）与Service绑定。
+  - Activity可以通过startService和bindService启动Service。
+  
+  ### IntentService
+  IntentService是一个抽象类，继承自Service，内部存在一个ServiceHandler（Handler）和HandlerThread（Thread）。
+  IntentService是处理异步请求的一个类，在IntentService中有一个工作线程（HandlerThread）来处理耗时操作，启动IntentService的方式和普通的一样，不过当执行完任务之后，IntentService会自动停止。
+  另外可以多次启动IntentService，每一个耗时操作都会以工作队列的形式在IntentService的onHandleIntent回调中执行，并且每次执行一个工作线程。
+  **IntentService的本质是：封装了一个HandlerThread和Handler的异步框架**。
+  
+  ### 生命周期示意图
+  ![714198ff.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\714198ff.png)
+  
+  启动Service有两种方式，startService和bindService方式。
+  
+  ### startService生命周期
+  当我们通过调用了Context的startService方法后，我们便启动了Service，通过startService方法启动的Service会一直无限期地运行下去，只有在外部调用Context的stopService或Service内部调用Service的stopSelf方法时，该Service才会停止运行并销毁。
+  
+  #### OnCreate
+  onCreate: 执行startService方法时，如果Service没有运行的时候会创建该Service并执行Service的onCreate回调方法；如果Service已经处于运行中，那么执行startService方法不会执行Service的onCreate方法。也就是说如果多次执行了Context的startService方法启动Service，Service方法的onCreate方法只会在第一次创建Service的时候调用一次，以后均不会再次调用。我们可以在onCreate方法中完成一些Service初始化相关的操作。
+  
+  #### onStartCommand
+  onStartCommand: 在执行了startService方法之后，有可能会调用Service的onCreate方法，在这之后一定会执行Service的onStartCommand回调方法。也就是说，如果多次执行了Context的startService方法，那么Service的onStartCommand方法也会相应的多次调用。onStartCommand方法很重要，我们在该方法中根据传入的Intent参数进行实际的操作，比如会在此处创建一个线程用于下载数据或播放音乐等。
+  ```
+  public @StartResult int onStartCommand(Intent intent, @StartArgFlags int flags, int startId) {
+  }
+  ```
+  当Android面临内存匮乏的时候，可能会销毁掉你当前运行的Service，然后待内存充足的时候可以重新创建Service，Service被Android系统强制销毁并再次重建的行为依赖于Service中onStartCommand方法的返回值。我们常用的返回值有三种值，**START_NOT_STICKY、START_STICKY和START_REDELIVER_INTENT**，这三个值都是Service中的静态常量。
+  
+  #### START_NOT_STICKY
+  如果返回START_NOT_STICKY，表示当Service运行的进程被Android系统强制杀掉之后，不会重新创建该Service，当然如果在其被杀掉之后一段时间又调用了startService，那么该Service又将被实例化。那什么情境下返回该值比较恰当呢？如果我们某个Service执行的工作被中断几次无关紧要或者对Android内存紧张的情况下需要被杀掉且不会立即重新创建这种行为也可接受，那么我们便可将 onStartCommand的返回值设置为START_NOT_STICKY。举个例子，某个Service需要定时从服务器获取最新数据：通过一个定时器每隔指定的N分钟让定时器启动Service去获取服务端的最新数据。当执行到Service的onStartCommand时，在该方法内再规划一个N分钟后的定时器用于再次启动该Service并开辟一个新的线程去执行网络操作。假设Service在从服务器获取最新数据的过程中被Android系统强制杀掉，Service不会再重新创建，这也没关系，因为再过N分钟定时器就会再次启动该Service并重新获取数据。
+  
+  #### START_STICKY
+  如果返回START_STICKY，表示Service运行的进程被Android系统强制杀掉之后，Android系统会将该Service依然设置为started状态（即运行状态），但是不再保存onStartCommand方法传入的intent对象，然后Android系统会尝试再次重新创建该Service，并执行onStartCommand回调方法，但是onStartCommand回调方法的Intent参数为null，也就是onStartCommand方法虽然会执行但是获取不到intent信息。如果你的Service可以在任意时刻运行或结束都没什么问题，而且不需要intent信息，那么就可以在onStartCommand方法中返回START_STICKY，比如一个用来播放背景音乐功能的Service就适合返回该值。
+  
+  #### START_REDELIVER_INTENT
+  如果返回START_REDELIVER_INTENT，表示Service运行的进程被Android系统强制杀掉之后，与返回START_STICKY的情况类似，Android系统会将再次重新创建该Service，并执行onStartCommand回调方法，但是不同的是，Android系统会再次将Service在被杀掉之前最后一次传入onStartCommand方法中的Intent再次保留下来并再次传入到重新创建后的Service的onStartCommand方法中，这样我们就能读取到intent参数。只要返回START_REDELIVER_INTENT，那么onStartCommand重的intent一定不是null。如果我们的Service需要依赖具体的Intent才能运行（需要从Intent中读取相关数据信息等），并且在强制销毁后有必要重新创建运行，那么这样的Service就适合返回START_REDELIVER_INTENT。
+  
+  #### onBind
+  Service中的onBind方法是抽象方法，所以Service类本身就是抽象类，也就是onBind方法是必须重写的，即使我们用不到。在通过startService使用Service时，我们在重写onBind方法时，只需要将其返回null即可。onBind方法主要是用于给bindService方法调用Service时才会使用到。
+  
+  #### onDestroy
+  onDestroy: 通过startService方法启动的Service会无限期运行，只有当调用了Context的stopService或在Service内部调用stopSelf方法时，Service才会停止运行并销毁，在销毁的时候会执行Service回调函数。
+  
+  ### bindService生命周期
+  
+  ![91895fe2.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\91895fe2.png)
+  
+  #### onCreate()
+  首次创建服务时，系统将调用此方法。如果服务已在运行，则不会调用此方法，该方法只调用一次。
+  
+  #### onStartCommand()
+  当另一个组件通过调用startService()请求启动服务时，系统将调用此方法。
+  
+  #### onDestroy()
+  当服务不再使用且将被销毁时，系统将调用此方法。
+  
+  #### onBind()
+  当另一个组件通过调用bindService()与服务绑定时，系统将调用此方法。
+  
+  #### onUnbind()：
+  当另一个组件通过调用unbindService()与服务解绑时，系统将调用此方法。
+  
+  #### onRebind()：
+  当旧的组件与服务解绑后，另一个新的组件与服务绑定，onUnbind()返回true时，系统将调用此方法。
+  
+  ## 3、fragment
+  
+  ### 3.1 创建方式
+  
+  ####  静态创建
+  首先我们需要创建一个xml文件，然后创建与之对应的java文件，通过onCreatView()的返回方法进行关联，最后我们需要在Activity中进行配置相关参数即在Activity的xml文件中放上fragment的位置。
+  ```
+   <fragment
+          android:name="xxx.BlankFragment"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent">
+      </fragment>
+  ```
+  #### 动态创建
+  动态创建Fragment 主要有以下几个步骤：
+  1. 创建待添加的fragment示例。
+  2. 获取FragmentManager,在Activity中可以直接通过调用getSupportFramentManager()方法得到。
+  3. 开启一个实务，通过调用beginTransaction()方法开启。
+  4. 向内容内添加或替换fragment,一般使用replace()方法实现，需要传入容器的id和待添加的fragment实例。
+  5. 提交事务，调用commit()方法来完成。
+  
+  ### 3.2 Adapter对比 (ViewPage与Adapter使用)
+  FragmentPageAdapter
+  在每次切换页面时，只是将Fragment进行分离，适合页面较少的Fragment使用以保存一些内存，对系统内存不会多大影响。
+  FragmentPageStateAdapter
+  继承子 pager。该 PagerAdapter 的实现将只保留当前页面，当页面不在当前显示的时候，页面会清理，释放其资源。而在页面需要显示时，生成新的页面，重新生成数据。这么实现的好处就是当拥有大量的页面时，不必在内存中占用大量的内存。
+  
+  ### 3.3 Activity与Fragment生命周期
+  
+  ![16bff4353c643fce.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\aecf795e.png)
+  
+  #### 动态加载:
+  动态加载时，Activity的onCreate()调用完，才开始加载Fragment并调用其生命周期方法，所以第一个生命周期方法onAttach()中便能获取Activity以及Activity的布局的组件。
+  
+  #### 静态加载:
+  1. 静态加载时，Activiy的onCreate()调用过程中，fragment也在加载，所以fragment无法获取到Activity的布局中的组件，但为什么能获取到Activity呢？
+  
+  2. 原来在fragment调用onAttach()之前其实还调用了一个方法onInflate(),该方法被调用时fragment已经是和Activity相互结合了，所以可以获取到对方，但是Activity的OnCreate()调用还未完成，故无法获取Activity的组件。
+  
+  3. Activity的OnCreate()调用完成时，fragment会调用onActivityCreated()生命周期方法，因此在这开始便能获取到Activity的布局组件。
+  
+  ### 3.4 Fragment与Activity通信
+  为什么不能用构造函数进行通信？
+  因为fragmen不通过构造函数进行传值的原因是因为横屏切换的时候获取不到值。
+  
+  #### Activity向Fragment传值
+  Activity向Fragment传值，要传的值放到bundle对象里，在Activity中创建该Fragment的对象fragment,通过调用setArguments()传递到fragment中，在该Fragment中通过调用getArguments()得到bundle 对象，就能得到里面的值。
+  
+  #### Fragment向Activity传值
+  1. 第一种
+  在Activity中调用getFragmentManager()得到fragmentManager,调用findFragmentByTag(tag)或者通过findFragmentByld(id)
+  ```
+  FragmentManager fragmentManager = getFragmentManager()；
+  Fragment fragment = fragmentManager.findFragmentByTag(tag)；
+  ```
+  3. 第二种
+  通过回调的方式，定义一个接口（可以再Fragment类中定义），接口中有一个空的方法，在fragment中需要的时候调用接口的方法，值可以作为参数放在这个方法中，
+  然后让Activity实现这个接口，必然会重写这个方法，这样值就传到了Activity中。
+  
+  #### Fragment与Fragment 之间是如何传值的
+  1. 第一种
+  通过findFragmentByTag得到另一个的Fragment的对象，这样就可以调用另一个的方法了。
+  2. 第二种
+  通过接口回调的方式。
+  3. 第三种
+  通过setArguments,getArguments的方式。
+  
+  ### 3.5 API的区别
+  1. add
+  一种是add方式来进行show和add,这种方式你切换fragment不会让frament重新刷新，只会调用onHiddenChange(boolean isHidden)
+  2. replace
+  而用replace方式会使fragment重新刷新，因为add方式是将fragment隐藏了而不是销毁再创建，replace方式每次都是重新重建。
+  3. commit/commitAllowingStateLoss 
+  [Android commit 和 commitAllowingStateLoss 的区别 - 简书](https://www.jianshu.com/p/83e673c453f9)
+  两者都可以提交fragment的操作，唯一的不同是第二种方法，在Activity和FragmentActivity内的onSaveInstanceState方法保存了fragment的状态。在onSaveInstanceState方法后调用commit和commitAllowingStateLoss会引起一种问题：因内存不足而把不显示在前台的activity(带有 fragment)销毁，之后用户再回到此 activity 页面时，是会丢失在onSaveInstanceState后调用commit方法提交的页面状态信息!不同的只是调用commit会报错，调用commitAllowingStateLoss不报错
+  
+  ### 3.6 懒加载(解决预加载问题)
+  经常在使用fragment时，常常会结合着viewpager使用，那么就会遇到一个问题，就是初始化fragment的时候，会连同网络请求一起执行，这样非常消耗性能，最理想的方式是，只有用户点开或滑动到当前fragment时，才进行请求网络的操作。因此，我们就产生了懒加载这样一个说法。
+  
+  在Viewpager与fragment使用时，默认加载前两个fragment。这样很容易造成网络丢包，阻塞等问题。
+  
+  最好的解决的问题的方法，重写Fragment的setUserVisibleHint()方法，实现Fragment内部的懒加载机制。
+  
+  由于setUserVisibleHint这个方法优于onCreate()，onCreateView()方法，它会通过isVisiBleToUser告诉我们当前Fragment我们是否可见，当可见时候再进行网络加载。但是如果在setUserVisibleHint()要实现懒加载的话，就必须要确保View 以及其他变量都已经初始化结束，避免空指针。
+  
+  [Fragment的懒加载](https://blog.csdn.net/u011315960/article/details/71404177)
+  
+  ## 4、Activity
+  ### 4.1 点击Launcher图标来启动Activity
+  用户从Launcher程序点击应用图标可启动应用的入口Activity，Activity启动时需要多个进程之间的交互，Android系统中有一个zygote进程专用于孵化Android框架层和应用层程序的进程。还有一个system_server进程，该进程里运行了很多binder service。例如ActivityManagerService，PackageManagerService，WindowManagerService，这些binder service分别运行在不同的线程中，其中ActivityManagerService负责管理Activity栈，应用进程，task。
+  
+  用户在Launcher程序里点击应用图标时，会通知ActivityManagerService启动应用的入口Activity，ActivityManagerService发现这个应用还未启动，则会通知Zygote进程孵化出应用进程，然后在这个dalvik应用进程里执行ActivityThread的main方法。应用进程接下来通知ActivityManagerService应用进程已启动，ActivityManagerService保存应用进程的一个代理对象，这样ActivityManagerService可以通过这个代理对象控制应用进程，然后ActivityManagerService通知应用进程创建入口Activity的实例，并执行它的生命周期方法。
+  
+  ### 4.2 Activity生命周期
+  ![16bff4353c5b177c.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\51da952a.png)
+  
+  #### Activity的形态
+  **Active/Running:** 
+  Activity处于活动状态，此时Activity处于栈顶，是可见状态，可与用户进行交互
+  
+  **Paused:**
+  当Activity失去焦点时，或被一个新的非全屏的Activity，或被一个透明的Activity放置在栈顶时，Activity就转化为Paused状态。但我们需要明白，此时Activity只是失去了与用户交互的能力，其所有的状态信息及其成员变量都还存在，只有在系统内存紧张的情况下，才有可能被系统回收掉。
+  
+  **Stopped:**
+  当一个Activity被另一个Activity完全覆盖时，被覆盖的Activity就会进入Stopped状态，此时它不再可见，但是跟Paused状态一样保持着其所有状态信息及其成员变量。
+  
+  **Killed:**
+  当Activity被系统回收掉时，Activity就处于Killed状态。
+  
+  #### Activity的生命周期
+  所谓的典型的生命周期就是在有用户参与的情况下，Activity经历从创建，运行，停止，销毁等正常的生命周期过程。
+  
+  **onCreate**
+  该方法是在Activity被创建时回调，它是生命周期第一个调用的方法，我们在创建Activity时一般都需要重写该方法，然后在该方法中做一些初始化的操作，如通过setContentView设置界面布局的资源，初始化所需要的组件信息等。
+  
+  **onStart**
+  此方法被回调时表示Activity正在启动，此时Activity已处于可见状态，只是还没有在前台显示，因此无法与用户进行交互。可以简单理解为Activity已显示而我们无法看见摆了。
+  
+  **onResume**
+  当此方法回调时，则说明Activity已在前台可见，可与用户交互了（处于前面所说的Active/Running形态），onResume方法与onStart的相同点是两者都表示Activity可见，只不过onStart回调时Activity还是后台无法与用户交互，而onResume则已显示在前台，可与用户交互。从流程图可以看出当Activity停止后（onPause方法和onStop方法被调用），重新回到前台时也会调用onResume方法，因此在onResume方法中初始化一些资源，然后在onPause或者onStop方法中释放的资源。
+  
+  **onPause**
+  此方法被回调时则表示Activity正在停止（Paused形态），一般情况下onStop方法会紧接着被回调。但通过流程图看到一种情况是onPause方法执行后直接执行了onResume方法，这属于比较极端的现象，这可能是用户操作使当前Activity退居后台后又迅速地再回到到当前的Activity，此时onResume方法就会被回调。
+  当然，在onPause方法中可以做一些数据存储或者动画停止或者资源回收的操作，但是不能太耗时，因为这可能会影响到新的Activity的显示,而onPause方法执行完成后，新Activity的onResume方法才会被执行。
+  
+  **onStop**
+  一般在onPause方法执行完成直接执行，表示Activity即将停止或者完全被覆盖（Stopped形态），此时Activity不可见，仅在后台运行。同样地，在onStop方法可以做一些资源释放的操作（不能太耗时）。
+  
+  **onRestart**
+  表示Activity正在重新启动，当Activity由不可见变为可见状态时，该方法被回调。这种情况一般是用户打开了一个新的Activity时，当前的Activity就会被暂停（onPause和onStop被执行了），接着又回到当前Activity页面时，onRestart方法就会被回调。
+  
+  **onDestroy**
+  此时Activity正在被销毁，也是生命周期最后一个执行的方法，一般我们可以在此方法中做一些回收工作和最终的资源释放。
+  
+  **总结**
+  当Activity启动时，依次会调用onCreate(),onStart(),onResume()，
+  当Activity退居后台时（不可见，点击Home或者被新的Activity完全覆盖），onPause()和onStop()会依次被调用。
+  当Activity重新回到前台（从桌面回到原Activity或者被覆盖后又回到原Activity）时，onRestart()，onStart()，onResume()会依次被调用。
+  当Activity退出销毁时（点击back键），onPause()，onStop()，onDestroy()会依次被调用，到此Activity的整个生命周期方法回调完成。
+  
+  ## 5、Activity,PhoneWindow和DecorView 的关系
+  ![16bff4353cd98658.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\852c0377.png)
+  
+  ### 5.1 DecorView 浅析
+  ![16bff4356573308b.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\4aeeca66.png)
+  如图所示，DecorView为整个Window界面的最顶层View，它只有一个子元素LinearLayout。代表整个Window界面，包含通知栏、标题栏、内容显示栏三块区域。其中LinearLayout中有两个FrameLayout子元素。
+  
+  ### 5.2 DecorView 的作用
+  DecorVuew是顶级View,本质是一个FrameLayout它包含两部分，标题栏和内容栏，都是FrameLayout,内容栏id是content,也就是Activity中设置setContentView的部分,最终将布局添加到id为content的FrameLayout中。获取content:
+  ViewGroup content=findViewByld(android.id.content)获取设置的View :getChildAt(0);
+  
+  使用总结
+  
+  每个Activity都包含一个Window对象，Window对象通常是由PhoneWindow实现的。
+  PhoneWindow:将DecorView设置为整个应用窗口的根View,是Window的实现类。它是Android中的基本的窗口系统，每个Activity均会创建一个PhoneWindow对象，是Activity和整个View系统交互的接口。
+  DecorView:是顶层视图，将要呈现的具体内容呈现在PhoneWindow上，DecorView是当前Activity所有View的祖先，它并不会向用户呈现任何东西。
+  
+  ## 6、系统原理
+  
+  ### 6.1 打包原理
+  1. 通过AAPT工具进行资源文件(包括AndroidManifest.xml、布局文件、各种xml资源等)的打包，生成R.java文件。
+  AAPT:Android Asset Packaging Tool，在SDK的build-tools目录下。
+  3. 通过AIDL工具处理 AIDL文件，生成相应的java文件。
+  AIDL::Android Interface Definition Language,Android 接口定义语言（跨进程访问服务）
+  为了使其他的应用程序也可以访问本应用程序提供的服务，Android系统采用了远程过程调用（Remote Procedure Call，RPC）方式来实现。与很多其他的基于RPC的解决方案一样，Android使用一种接口定义语言（Interface Definition Language，IDL）来公开服务的接口。我们知道4个Android应用程序组件中的3个（Activity、BroadcastReceiver和ContentProvider）都可以进行跨进程访问，另外一个Android应用程序组件Service同样可以。
+  5. 通过javac工具编译项目编码，生成Class文件。
+  6. 通过DX工具将所有的Class 文件转换成DEX文件，该过程主要完成java字节码转换成Dalvik字节码，压缩常量池以及清除,冗余信息等工作。
+  DX工具:android将jar包转成dex格式二进制jar包工具,在SDK的platform-tools目录下
+  7. 通过ApkBilder工具将资源文件、DEX文件打包生成Apk文件
+  8. 利用KeyStore对生成的Apk文件进行签名
+  9. 如果是正式版的APK,还会利用ZipAlign工具进行对齐处理，对齐的过程就是将APK文件中所有的资源文件举例文件的起始举例都偏移4字节的整数倍,这样通过内存映射访问Apk文件的速度会更快。
+  ZipAlign:Android SDK中包含了一个用于优化APK的新工具zipalign。它提高了优化后的Applications与Android系统的交互效率可以使整个系统的运行速度有了较大的提升。
+  ![16bff4358a12ae4c.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\886e21c0.png)
+  
+  ### 6.2 安装流程
+  1. 复制APK到/data/app目录下，解压并扫描安装包
+  2. 资源管理器解析APK里的资源文件.
+  3. 解析AndroidManifest文件，并在/data/data/目录下创建对应的应用数据目录。
+  4. 然后对dex文件进行优化，并保存的dalvik-cache目录下。
+  5. 将AndroidManifest文件解析出的四大组件信息注册到PackageManagerService中。
+  6. 安装完成后，发送广播
+  ![252739b9.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\252739b9.png)
+  
+  ## 7、屏幕适配
+  
+  ### 6.1 基本概念
+  #### 屏幕尺寸
+  含义：手机对角线的物理尺寸单位：英寸（inch）,1英寸=2.52cm
+  Android手机常见的尺寸有5寸，5.5寸，6寸，6.5寸等等
+  
+  #### 屏幕分辨率
+  含义：手机在横向、纵向上的像素点数总和
+  一般描述成屏幕的”宽x高”=AxB 含义：屏幕在横向方向（宽度）上有A个像素点，在纵向方向（高）有B个像素点。
+  例子：1080x1920，即宽度方向上有1080个像素点，在高度方向上有1920个像素点。
+  单位：px（pixel），1px=1像素点
+  Android手机常见的分辨率：320x480、480x800、720x1280、1080x1920
+  
+  #### 屏幕像素密度
+  含义：每英寸的像素点数 单位：dpi（dots per ich）
+  
+  假设设备内每英寸有160个像素，那么该设备的屏幕像素密度=160dpi
+  
+  #### 适配方法
+  1. 支持各种屏幕尺寸:使用wrap_content,match_parent,weight 
+  2. 要确保布局的灵活性并适应各种尺寸的屏幕，应使用"wrap_content","match_parent"控制某些视图组件的宽度和高度。
+  3. 使用相对布局
+  4. 使用LinearLayout的weight的属性
+  在Match_parent情况下，**权重设置的是显示优先级**
+  当组件宽度设置为”match_parent”的时候，这里的权重值，表示的组件显示的优先级，而且值越小优先级越高，因为按钮2优先级为1，大于按钮1的优先级，所以按钮2占的是3/4,按钮1占的是1/4。 
+  在wrap_content(0dp)情况下，**权重设置的是按比例分配显示空间**
+  
+  ## 8、性能优化
+  ### 内存优化
+  #### LeakCanary工具
+  LeakCanary是Square公司基于MAT开发的一款监控Android内存泄漏的开源框架。其工作的原理是： 监测机制利用了Java的WeakReference和ReferenceQueue，通过将Activity包装到WeakReference中，被WeakReference包装过的Activity对象如果被回收，该WeakReference引用会被放到ReferenceQueue中，通过监测ReferenceQueue里面的内容就能检查到Activity是否能够被回收（在ReferenceQueue中说明可以被回收，不存在泄漏；否则，可能存在泄漏，LeakCanary是执行一遍GC，若还未在ReferenceQueue中，就会认定为泄漏）。
+  
+  如果Activity被认定为泄露了，就抓取内存dump文件(Debug.dumpHprofData)；之后通过HeapAnalyzerService.runAnalysis进行分析内存文件分析；接着通过HeapAnalyzer (checkForLeak—findLeakingReference---findLeakTrace)来进行内存泄漏分析。最后通过DisplayLeakService进行内存泄漏的展示。
+  #### Android Lint工具
+  Android Lint Tool 是Android Sutido种集成的一个Android代码提示工具，它可以给你布局、代码提供非常强大的帮助。硬编码会提示以级别警告，例如：在布局文件中写了三层冗余的LinearLayout布局、直接在TextView中写要显示的文字、字体大小使用dp而不是sp为单位，就会在编辑器右边看到提示。
+  
+  ### APK瘦身
+  #### 安装包的组成
+  assets文件夹 存放一些配置文件，资源文件，assets不会自动生成对应的ID,而是通过AssetManager类的接口获取
+  
+  res res是resource的缩写，这个目录存放资源文件，会自欧东生成对应的ID并映射到.R文件中，访问直接使用资源ID。
+  
+  META-INF. 保存应用的签名信息，签名信息可以炎症APK文件的完整性.
+  
+  AndroidManifes.xml, 这个文件用来描述Android应用的配置信息，一些组件的注册信息，可使用权限。
+  
+  classex.dex Dalvik字节码程序，让Dalvik虚拟机可执行，一般情况下，Android应用在打包时通过AndroidSDK中的dx工具将java字节码转换为Dalvik字节码
+  
+  resources.arsc 记录着资源文件和资源ID之间的映射关系，用来根据资源ID寻找资源。
+  
+  #### 减少安装包大小
+  
+  代码混淆：使用IDE 自带的 proGuard 代码混淆器工具 ，它包括压缩、优化、混淆等功能。 
+  资源优化：使用 Android Lint 删除冗余资源，资源文件最少化等。 
+  图片优化: 利用 PNG优化工具 对图片做压缩处理。推荐目前最先进的压缩工具Googlek开源库zopfli。如果应用在0版本以上，推荐使用 WebP图片格式。 
+  
+  ### 冷启动与热启动
+  
+  **冷启动** 
+  在启动应用时，系统中没有该应用的进程，这时系统会创建一个新的进程分配给该应用；
+  
+  **热启动**
+  在启动应用时，系统中已有该应用的进程（例：按back键、home键，应用虽然会退出，但是该应用的进程还是保留在后台）；
+  
+  **区别 冷启动**
+  冷启动:系统没有该应用的进程，需要创建一个新的进程分配给应用，所以会先创建和初始化Application类，再创建和初始化MainActivity类（包括一系列的测量、布局、绘制），最后显示在界面上。 
+  热启动:从已有的进程中来启动，不会创建和初始化Application类，直接创建和初始化MainActivity类（包括一系列的测量、布局、绘制），最后显示在界面上。
+  
+  **冷启动流程** 
+  Zygote进程中fork创建出一个新的进程； 创建和初始化Application类、创建MainActivity； inflate布局、当onCreate/onStart/onResume方法都走完； contentView的measure/layout/draw显示在界面上。
+  
+  **冷启动优化** 
+  减少在Application和第一个Activity的onCreate()方法的工作量； 不要让Application参与业务的操作； 不要在Application进行耗时操作； 不要以静态变量的方式在Application中保存数据； 减少布局的复杂性和深度；
+  
+  
+'''
+linesHighlighted: [
+  159
+  232
+  293
+]
+isStarred: false
+isTrashed: false

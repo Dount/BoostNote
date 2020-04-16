@@ -1,0 +1,107 @@
+createdAt: "2019-06-06T02:34:38.951Z"
+updatedAt: "2019-06-06T03:15:21.410Z"
+type: "MARKDOWN_NOTE"
+folder: "91596d517848033ae924"
+title: "Google java Style Guide"
+tags: []
+content: '''
+  ## Google java Style Guide
+  
+  ## 1. 大括号的使用
+  大括号与if、else、for、do及while语句一起使用，
+  即使只有一条语句或是空，也应该把大括号写上。
+  
+  ## 2. 非空块：K & R 风格
+  左大括号前不换行
+  左大括号后换行
+  右大括号前换行
+  右大括号后换行，只有右大括号是一个语句、函数体或类的终止，则右大括号后换行。例如，如果后面跟着else或逗号，那么右大括号后面不换行。
+  ```
+  return () -> {
+      while (condition()) {
+          method();
+      }
+  };
+  
+  return new MyClass() {
+      @Override public void method() {
+          if (condition()) {
+              try {
+                  something();
+              } catch (ProblemException e) {
+                  recover();
+              }
+          } else if (otherCondition()) {
+              somethingElse();
+          } else {
+              lastThing();
+          }
+      }
+  };
+  
+  ```
+  ## 3. 命名规则
+  在Google Style中，特殊的前缀或后缀不使用在示例中看到的如name_、mName、s_name和kName。
+  ### 包名
+  包名称都是小写，连续的单词连接在一起（无下划线）。如com.example.deepspace而非com.example.deepSpace或com.example.deep_space。
+  ### 类名
+    类名都以UpperCamelCase风格编写。
+    类名通常是名词或名词短语（如：Character或ImmutableList），接口名称通常也是名词  或名词短语（如List），但有时可能是形容词或形容词短语（如Readable）。
+    现在还没有特定的规则或行之有效的约定来命名注解类型。
+    测试类从它们正在测试的类的名称开始命名，并以Test结束。例如，HashTest或HashIntegrationTest。
+  ### 方法名
+    方法名都以lowerCamelCase风格编写。
+    方法名称通常是动词或动词短语。 例如，sendMessage或stop。
+    下划线可能出现在JUnit测试方法名称中，用以分隔名称的逻辑。一个典型的模式是test<MethodUnderTest>_<state>，例如testPop_emptyStack。尚未出现给测试方法命名的标准命名准则。
+  ### 常量名
+    常量名命名模式为CONSTANT_CASE，全部字母大写，用下划线分隔单词。那，到底什么算是一个常量？
+    常数是静态final字段，其内容是不可变的，并且其方法没有可检测的函数副作用。这包括基元，字符串，不可变类型和不可变类型的不可变集合。如果任何实例的观测状态可以改变，它就不是一个常量。静态final字段不一定都是常量。例如：
+  ```
+  // Constants
+  static final int NUMBER = 5;
+  static final ImmutableList<String> NAMES = ImmutableList.of("Ed", "Ann");
+  static final ImmutableMap<String, Integer> AGES = ImmutableMap.of("Ed", 35, "Ann", 32);
+  static final Joiner COMMA_JOINER = Joiner.on(','); // because Joiner is immutable
+  static final SomeMutableType[] EMPTY_ARRAY = {};
+  enum SomeEnum { ENUM_CONSTANT }
+  
+  // Not constants
+  static String nonFinal = "non-final";
+  final String nonStatic = "non-static";
+  static final Set<String> mutableCollection = new HashSet<String>();
+  static final ImmutableSet<SomeMutableType> mutableElements = ImmutableSet.of(mutable);
+  static final ImmutableMap<String, SomeMutableType> mutableValues =
+      ImmutableMap.of("Ed", mutableInstance, "Ann", mutableInstance2);
+  static final Logger logger = Logger.getLogger(MyClass.getName());
+  static final String[] nonEmptyArray = {"these", "can", "change"};
+  
+  ```
+  ### 非常量字段名
+  非常量字段名（静态或其他）以lowerCamelCase风格编写。
+  这些名称通常是名词或名词短语。 例如，computedValues或index。
+  
+  ### 参数名
+  参数名以lowerCamelCase风格编写。
+  应该避免公共方法中的单字符参数名称。
+  
+  ### 局部变量名
+  局部变量名以lowerCamelCase风格编写。
+  即使局部变量是final和不可改变的，也不应该把它示为常量，自然也不能用常量的规则去命名它。
+  
+  ### 类型变量名
+  类型变量可用以下两种风格之一进行命名：
+  单个的大写字母，后面可以跟一个数字（如：E、T、X、T2）。
+  以类命名方式（章节5.2.2），后面加个大写的T（如：RequestT、FooBarT）。
+  
+  
+  ## lowerCamelCase
+  第一个词的首字母小写，后面每个词的首字母大写
+  
+  ## UpperCamelCase
+  第一个词的首字母，以及后面每个词的首字母都大写
+  
+  
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

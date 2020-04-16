@@ -1,0 +1,103 @@
+createdAt: "2019-05-12T07:49:29.144Z"
+updatedAt: "2019-08-26T07:45:11.898Z"
+type: "MARKDOWN_NOTE"
+folder: "d93d185dcf894dbad7b3"
+title: "TestApp 项目总结"
+tags: []
+content: '''
+  # TestApp 项目总结
+  
+  ## 引言
+  SmartDeviceLink（SDL）是一套标准协议和消息发送框架，可将智能手机上的应用程序连接到车辆主机。通过消息传递使使用者能够使用诸如触摸屏显示器，嵌入式语音识别，方向盘控制和各种车辆旋钮和按钮之类的常见车载接口与他们的应用程序交互。 
+  **构成SDL生态系统有三个主要组成部分。**
+  **1.核心部件是汽车制造商（OEM）在他们的车辆头单元实现软件。根据一套指南和模板将该组件集成到其主机和HMI中，可以访问各种智能手机应用程序。**
+  **2.车辆OEM可以使用可选的SDL服务器来更新应用程序策略并收集已连接应用程序的使用信息。**
+  **3.应用程序开发人员将iOS和Android库实现到他们的应用程序中，以通过连接的主机单元启用命令和控制。
+  **![d10d2dc644bca04bd6712bd15f80f4e.jpg](:storage\\56854441-b7a4-422e-acf6-7a71a3470ecf\\9a02a6f8.jpg)
+  
+  ## 项目概要
+  项目主要目的是围绕SDL,HMI,应用程序来开展  项目主要通过SDL,HMI,应用程序这三者的通信，达到与车载机进行数据交互的目的。
+  ![HighLevelDiagram.png](:storage\\56854441-b7a4-422e-acf6-7a71a3470ecf\\44917e41.png)
+  目前项目涵盖的App有，RpcTestApp,MediaTestApp,NaviVideoTestApp,RemoteControl,CommonFunTestApp,VrAptApp
+  1. RpcTestApp:主要功能是测试一系列符合规范JSON-RPC参数规范的case,一系列不符合JSON-RPC参数规范的case,以及自定义JSON-RPC参数。
+  2. MediaTestApp:主要测试与车机端音乐播放画面，显示歌曲名、歌手、Artwork、进度条等一系列动作。
+  3. NaviVideoTestApp:主要测试订阅车机GPSData，主动获取车载机现在地情报以及测试手机通过投屏车机端的手势事件。
+  4. RemoteControl:测试制定车机画面，可以通过远程（投屏）的方式同步车机与手机侧画面,可以分别在车机侧和手机侧显示订阅的车辆情报。
+  5. CommonFunTestApp:测试在手机端显示车机所有的Capability(车机状态)。
+  6. AptTestApp:测试车机端录音功能。
+  
+  ## 项目担当
+  主要负责AptTestApp的开发，其次负责RpcTestApp,json-rpc数据封装脚本，以及Release版本发布脚本。
+  总代码7121行。
+  # 遇到的问题
+  1.将配置的录音参数写入文件，并读取相同参数进行播放
+  2.对输入的格式取范围
+  3.在输入数值型参数的时候，弹出数字键盘
+  4.对log 进行不同颜色的标记
+  5.发送TTSchunk的调用
+  6.apt发送请求发送成功弹出alertdialog
+  7.当点击多次录音时的处理
+  8.将log文件写入手机中，并对不同的log进行分类和处理
+  9.设置全局变量来保存初始化的 比特率，采样率，支持语言等参数
+  10.考虑在没有连接画面的基础上，如果对初始化的参数进行处理的情况
+  11.获取capability,提供的参数
+  12.对APT的response和enAudio的response，error进行逻辑分析。
+  13.通过VR唤醒Apt需要先发送endApt,然后再发送Apt。
+  14.多个Response弹出的popup窗口重叠，点击ok无法关闭。
+  15.RecordFileFragment中切换正在播放录音文件时，会出现无法停止上一个正在播放的录音文件。
+  ## 不足
+  1.对画面的布局需要重新调整，listView替换为RecyleView。
+  2.在Log文件中，仍然会出现ANR文件的提升，具体出现不确定。
+  3.如果手机过卡导致收不到Response的话会无法再次开启录音。
+  
+  ## 心得
+  
+  1.发送APT反馈的状态
+  AudioPassThru 
+  按钮弹出框: retray,Cancel,Done
+  response:  Success(ResultCode:unsupported_resource),aborted,rejected,retray
+  error:  time out
+  
+  EndAudio
+  直接结束AudioPassThru 线程
+  response: success
+  error: reject
+  
+  具体如下图所示:
+  ![绘图1.png](:storage\\56854441-b7a4-422e-acf6-7a71a3470ecf\\68227453.png)
+  
+  2.利用Android Lint 检测内存泄漏以及warming
+  Analyze —> Inspect Code 然后选择检查范围
+  
+  3.利用Android Profiler,LeakCanary与Mat动态检测内存泄漏
+  在AndroidStudio中，可以通过Profiler来监控Memory、CPU、Network、GPU等。在Monitors监控中，可以获取内存的各种信息来分析内存泄露。
+  LeakCanary是square开源的检测内存泄露的第三方库。
+  
+  4.多渠道打包apk方法
+  首先配置signingConfigs 对APK进行签名，其次通过productFlavors配置不同版本的环境，包括：包名，value等。
+  我通过Shell脚本将productFlavors的配置写在脚本中，通过脚本运行gradlew assembleRelease进行打包编译。
+  Shell脚本难点是对字符串的操作，尤其是修改特定的值，需要对Android gradle配置文件进行修改。
+  
+  5.播放录音文件
+  通过接收SdlCore发来的裸流（PCM）数据，并将其播放，需要用到AudioTrack这种方式，AudioTrack只能播放PCM数据流。
+  在使用AudioTrack需要配置声道数，采样频率，采样位数，需要另起线程来实现播放，停止的功能。
+  
+  6.Android单体测试
+  Android Unit Test 不要依赖实机，负责验证java逻辑代码。无法测试Android代码。
+  使用的第三方框架：JUnit,Mockito,PowerMock,Robolectric。
+  Android Instrument Test 需要依赖实机，负责验证真是环境下的逻辑执行。
+  使用的第三方框架：Espresso 和 Robotium。
+  
+  ## 总结
+  
+  
+'''
+linesHighlighted: [
+  2
+  7
+  16
+  39
+  51
+]
+isStarred: false
+isTrashed: false

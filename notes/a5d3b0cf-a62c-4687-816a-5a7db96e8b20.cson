@@ -1,0 +1,261 @@
+createdAt: "2019-05-28T09:22:47.099Z"
+updatedAt: "2019-05-28T10:08:15.423Z"
+type: "MARKDOWN_NOTE"
+folder: "a829d630b1a42b272c49"
+title: "Android 消息处理机制"
+tags: []
+content: '''
+  ## Android 消息处理机制
+  
+  Handler的消息处理机制
+  
+  - UI线程:
+  就是我们的主线程,系统在创建UI线程的时候会初始化一个Looper对象,同时也会创建一个与其关联的MessageQueue;
+  
+  - Handler:
+  作用就是发送与处理信息,如果希望Handler正常工作,在当前线程中要有一个Looper对象
+  
+  - Message:
+  Handler接收与处理的消息对象
+  
+  - MessageQueue:
+  消息队列,先进先出管理Message,在初始化Looper对象时会创建一个与之关联的MessageQueue;
+  
+  - Looper:
+  每个线程只能够有一个Looper,管理MessageQueue,不断地从中取出Message分发给对应的Handler处理！
+  
+  总结:
+  
+  当我们的子线程想修改Activity中的UI组件时,我们可以新建一个Handler对象,通过这个对象向主线程发送信息;而我们发送的信息会先到主线程的MessageQueue进行等待,由Looper按先入先出顺序取出,再根据message对象的what属性分发给对应的Handler进行处理！
+  
+  Handler的相关方法
+  
+  - message.sendToTarget();被动
+  当message自己绑定到目标handler后，自行进入messageQueue,等待handler接受处理
+  Message message = Message.obtain(handler, 33, 2, 3, "hello");
+  然后将设置好的消息message.sendToTarget()
+  
+  - handler.sendMessage(message);主动
+  handler主动设置要发送的消息的各个属性值：arg1，arg2，obj，what.
+  Message message = handler.obtainMessage(3, 1, 2, "java");
+  然后将设置好的消息，由handler发送出去
+  handler.sendMessage(message)
+  
+  - void handleMessage(Message msg)
+  处理消息的方法,使用handleMessage去处理消息，里面的参数Message msg既是在messageQueue里面取出的消息message~
+  
+  - sendEmptyMessage(int what)
+  发送空消息
+  
+  - sendEmptyMessageDelayed(int what,long delayMillis)
+  指定延时多少毫秒后发送空信息
+  
+  - sendMessage(Message msg)
+  立即发送信息
+  
+  - sendMessageDelayed(Message msg)
+  指定延时多少毫秒后发送信息
+  
+  - final boolean hasMessage(int what)
+  检查消息队列中是否包含what属性为指定值的消息 如果是参数为(int what,Object object):除了判断what属性,还需要判断Object属性是否为指定对象的消息
+  
+  被动方式
+  ``````
+  import android.os.Bundle;
+  import android.os.Handler;
+  import android.os.Message;
+  import android.app.Activity;
+  import android.view.View;
+  import android.widget.Button;
+  
+  
+  /**
+   * 此处重点熟悉message的属性~，将message绑定到目标handler，然后直接使用message的方法将消息发送~，被动发送。
+   * @author 
+   * 
+   */
+  
+  // 在安卓开发中是绝对不能使用UI主线程去访问网络 的，一定是要开一条新的线程去访问然后把结果返回
+  public class MainActivity extends Activity {
+      private Button button;
+  
+      // handler对象，用来接收消息~
+      private Handler handler = new Handler() {
+          @Override
+          public void handleMessage(android.os.Message msg) {  //这个是发送过来的消息
+              // 处理从子线程发送过来的消息
+              int arg1 = msg.arg1;  //获取消息携带的属性值
+              int arg2 = msg.arg2;
+              int what = msg.what;
+              Object result = msg.obj;
+              System.out.println("-arg1--->>" + arg1);
+              System.out.println("-arg2--->>" + arg2);
+              System.out.println("-what--->>" + what);
+              System.out.println("-result--->>" + result);
+              Bundle bundle = msg.getData(); // 用来获取消息里面的bundle数据
+              System.out.println("-getData--->>"
+                      + bundle.getStringArray("strs").length);
+          };
+      };
+  
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+          super.onCreate(savedInstanceState);
+          setContentView(R.layout.activity_main);
+          button = (Button) findViewById(R.id.button1);
+  
+          button.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                  // TODO Auto-generated method stub
+                  // 启动一个子线程
+                  new Thread(new MyThread()).start();  //一定要在这里面启动！
+              }
+          });
+      }
+  
+      public class MyThread implements Runnable {
+          @Override
+          public void run() {   //run方法里面写要发送的消息对象，并对消息携带的信息进行定义！！
+              // TODO Auto-generated method stub
+  
+              // 第一种方式：获取消息
+              // Message message = Message.obtain();
+              // message.what = 1;
+              // message.arg1 = 2;
+              // message.arg2 = 3;
+              // message.obj = "jack";
+              // handler.sendMessage(message);
+  
+              // 第二种方式
+              // Message message = Message.obtain(handler);
+              // message.what = 1;
+              // message.arg1 = 2;
+              // message.arg2 = 3;
+              // message.obj = "jack";
+              // //handler.sendMessage(message);
+              // //此时在构造方法里面已经将message的target绑定了handler不需要再次发送了。
+              // message.sendToTarget();
+  
+              // 第三种方式，和上面是没有区别的。。
+              // Message message = Message.obtain(handler, 33);
+              // message.arg1 = 2;
+              // message.arg2 = 3;
+              // message.obj = "jack";
+              // message.sendToTarget();
+  
+              // 第4种方式这几种方式都是大同小异，只不过是内部封装了而已，使用的时候根据实际需要就可以了。
+              Message message = Message.obtain(handler, 33, 2, 3, "hello");
+              Bundle data = new Bundle();  //message也可以携带复杂一点的数据比如：bundle对象。
+              data.putStringArray("strs", new String[] { "c", "c++", "java" });
+              message.setData(data);
+              message.sendToTarget(); // 不可忘！
+          }
+      }
+  }
+  
+  ``````
+  主动方式
+  
+  ``````
+  import android.os.Bundle;
+  import android.os.Handler;
+  import android.os.Message;
+  import android.os.SystemClock;
+  import android.app.Activity;
+  import android.view.Menu;
+  import android.view.View;
+  import android.view.View.OnClickListener;
+  import android.widget.Button;
+  
+  /**
+   * 此处主要是使用handler的主动抓取、发送message功能！在messaQequue里面
+   * 
+   * @author15  * 
+   */
+  public class MainActivity extends Activity implements OnClickListener {
+      private Button button, button2;
+  
+      // Handler可以接受发送消息，从消息队列中提取消息用于更新UI，这里都没有对UI进行操作，主要是介绍如何定义自己的message如何发送这个message，最后将会给一个demo
+      private Handler handler = new Handler() {
+          @Override
+          public void handleMessage(android.os.Message msg) {
+  
+              System.out.println("-arg1--->" + msg.arg1);
+              System.out.println("-arg2--->" + msg.arg2);
+              System.out.println("-what--->" + msg.what);
+              System.out.println("-obj--->" + msg.obj);
+          };
+      };
+  
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+          super.onCreate(savedInstanceState);
+          setContentView(R.layout.activity_main);
+          button = (Button) findViewById(R.id.button1);
+          button2 = (Button) findViewById(R.id.button2);
+  
+          button.setOnClickListener(this);
+          button2.setOnClickListener(this);
+      }
+  
+      @Override
+      public void onClick(View v) {
+          // TODO Auto-generated method stub
+          switch (v.getId()) {
+          case R.id.button1:
+              new Thread(new Runnable() {  //使用匿名内部类的方式，这个无难点吧。。。
+                  @Override
+                  public void run() {
+                      // TODO Auto-generated method stub
+                      // handler发送消息的第一种方式
+                      // handler.sendEmptyMessage(3);
+  
+                      // handler发送消息的第二种方式,第二个参数是指定在指定的时间上发送消息，这个是确定的某个时间！
+                      // 可以通过获取当前的系统时间后SystemClock.uptimeMillis()再加上某个时间，如果给出的时间小于当前时间则立即发送，亲测
+  　　　　　　　　　　　　　//而且感觉这个功能很bug的，在特定的时间，需要我们人为的去计算：SystemClock.uptimeMillis()+myTime(这个是你想在多少毫秒后启动的毫秒值)                          
+                      // handler.sendEmptyMessageAtTime(3, X+3000);
+                      // handler发送消息的第三种方式，这个效果是在3000毫秒后延迟。
+                      // handler.sendEmptyMessageDelayed(3, 3000);
+  
+                      // handler发送消息的第四种方式
+                      // Message message = Message.obtain(); //这个是使用message被动得到
+                      // Message message = handler.obtainMessage(); //
+                      // handler的主动获取消息,在源码方面一样！无区别。
+                      // message.arg1 = 1;
+                      // message.arg2 = 2;
+                      // message.obj = "java";
+                      // message.what = 4;
+                      // 使用handler发送消息的第五种方式，原理都是一样的~
+  　　　　　　　　　　　　　　//我最习惯还是message自己搞自己的事情别去干发送的活，message需要携带的属性由他自己搞，剩下的发送接收处理的体力劳动由handler搞。
+                      Message message = handler.obtainMessage(3, 1, 2, "java");
+                      handler.sendMessage(message);
+                  }
+              }).start();  //记得启动
+              break;
+          case R.id.button2:
+              // 第二个按钮使用post方式发送消息,该方法需要一个runnable的实例，使用匿名内部类的方式实现。
+              // 直接使用一个匿名内部类Runnable来执行1.获取消息对象；2.发送消息对象。换汤不换药，通过看源码也可以知道背后的实现都是一个道理。
+              handler.post(new Runnable() {
+                  @Override
+                  public void run() {
+                      // TODO Auto-generated method stub
+                      Message message = handler.obtainMessage(23, 21, 22, "postMessage");
+                      handler.sendMessage(message);
+                  }
+              });
+              break;
+          }
+      }
+  
+  }
+  ```
+  
+  
+  
+'''
+linesHighlighted: [
+  51
+]
+isStarred: false
+isTrashed: false

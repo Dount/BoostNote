@@ -1,0 +1,20 @@
+createdAt: "2019-05-22T03:22:08.801Z"
+updatedAt: "2019-05-22T03:24:51.210Z"
+type: "MARKDOWN_NOTE"
+folder: "8cc975aec2d11a8ac69a"
+title: "rm-rf的意义"
+tags: []
+content: '''
+  ## rm-rf的意义
+  
+  -r或-R:递归处理，将指定目录下的所有文件与子目录一并处理
+  
+  -f:强制删除文件或目录;
+  
+  由于rm命令只能删除空的目录，因此当我们需要删除一个非空目录时可以使用"rm-rf"命令，通过递归的方式先将该目录中的文件删除使其成为一个空的目录后再将其删除，从而达到删除一个非空目录的效果。
+  
+  
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

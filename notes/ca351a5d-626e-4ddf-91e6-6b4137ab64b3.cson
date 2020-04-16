@@ -1,0 +1,30 @@
+createdAt: "2019-05-22T03:36:00.128Z"
+updatedAt: "2019-05-22T03:40:10.350Z"
+type: "MARKDOWN_NOTE"
+folder: "8cc975aec2d11a8ac69a"
+title: "shell中 逻辑表达"
+tags: []
+content: '''
+  ## shell中 逻辑表达
+  
+  -eq 等于
+  
+  -ne 不等于
+  
+  -gt 大于
+  
+  -lt 小于
+  
+  -ge 大于等于
+  
+  -le 小于等于
+  
+  ! 非运算
+  
+  -o 或运算
+  
+  -a 与运算
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

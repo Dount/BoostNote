@@ -1,0 +1,33 @@
+createdAt: "2019-08-06T02:09:49.197Z"
+updatedAt: "2019-08-06T03:01:25.291Z"
+type: "MARKDOWN_NOTE"
+folder: "a829d630b1a42b272c49"
+title: "接口回调"
+tags: []
+content: '''
+  ## 接口回调
+  
+  ## 接口回调的目的
+  可以把使用某一接口的类创建的对象的引用赋给该接口声明的接口变量，那么该接口变量就可以调用被类实现的接口的方法。实际上，当接口变量调用被类实现的接口中的方法时，就是通知相应的对象调用接口的方法，这一过程称为对象功能的接口回调。
+  
+  回调的目的主要有两个：
+  其一是传递数据，
+  其二是保持数据的同步更新。
+  
+  常用的有两种形式:
+  其一是使用内部类的形式，得到接口的子类对象，
+  其二是直接实现定义的接口。
+  
+  ## 引言
+  
+  [Android接口回调 - 简书](https://www.jianshu.com/p/eba2c839db47)
+  
+  [Android 自定义接口回调](https://blog.csdn.net/wuqingsen1/article/details/83306015)
+  
+  [Android 使用adapter的两种回调数据方式](https://blog.csdn.net/qq_26761229/article/details/52383460)
+  
+  [详解Android中接口回调、方法回调](https://blog.csdn.net/qq_31881469/article/details/80089675)
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

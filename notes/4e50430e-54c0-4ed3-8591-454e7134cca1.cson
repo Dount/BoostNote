@@ -1,0 +1,44 @@
+createdAt: "2019-03-25T11:57:55.947Z"
+updatedAt: "2019-03-25T11:58:12.753Z"
+type: "SNIPPET_NOTE"
+folder: "d93d185dcf894dbad7b3"
+title: ""
+tags: []
+description: ""
+snippets: [
+  {
+    linesHighlighted: []
+    name: ""
+    mode: null
+    content: '''
+      productFlavors {
+              multi_sec_high {
+                  buildConfigField 'String', 'TRANSPORT', '"MULTI"'
+                  buildConfigField 'String', 'SECURITY', '"HIGH"'
+              }
+              multi_sec_med {
+                  buildConfigField 'String', 'TRANSPORT', '"MULTI"'
+                  buildConfigField 'String', 'SECURITY', '"MED"'
+              }
+              multi_sec_low {
+                  buildConfigField 'String', 'TRANSPORT', '"MULTI"'
+                  buildConfigField 'String', 'SECURITY', '"LOW"'
+              }
+              multi_sec_off {
+                  buildConfigField 'String', 'TRANSPORT', '"MULTI"'
+                  buildConfigField 'String', 'SECURITY', '"OFF"'
+              }
+              multi_high_bandwidth {
+                  buildConfigField 'String', 'TRANSPORT', '"MULTI_HB"'
+                  buildConfigField 'String', 'SECURITY', '"OFF"'
+              }
+              tcp {
+                  buildConfigField 'String', 'TRANSPORT', '"TCP"'
+                  buildConfigField 'String', 'SECURITY', '"OFF"'
+              }
+          }
+    '''
+  }
+]
+isStarred: false
+isTrashed: true

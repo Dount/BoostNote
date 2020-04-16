@@ -1,0 +1,298 @@
+createdAt: "2019-08-27T03:27:45.430Z"
+updatedAt: "2019-08-28T02:59:28.970Z"
+type: "MARKDOWN_NOTE"
+folder: "a829d630b1a42b272c49"
+title: "Android 文件读写操作"
+tags: []
+content: '''
+  # Android 文件读写操作
+  
+  [Android - 文件读写操作 总结 - __Shadow - 博客园](https://www.cnblogs.com/bastard/archive/2013/03/04/2943302.html)
+  
+  [Java的RandomAccessFile对文件内容进行读写 - 独钓寒江雪kq - 博客园](https://www.cnblogs.com/dukc/p/4776868.html)
+  ## 一、资源文件的读取：apk中资源文件
+  1) 从resource的raw中读取文件数据：
+  ```
+  try{   
+     
+      //得到资源中的Raw数据流  
+      InputStream in = getResources().openRawResource(R.raw.test);   
+    
+      //得到数据的大小  
+      int length = in.available();         
+    
+      byte [] buffer = new byte[length];          
+    
+      //读取数据  
+      in.read(buffer);           
+    
+      //依test.txt的编码类型选择合适的编码，如果不调整会乱码   
+      res = EncodingUtils.getString(buffer, "BIG5");   
+        
+      //关闭      
+      in.close();              
+    
+     }catch(Exception e){   
+        e.printStackTrace();           
+     }
+  ```
+  2) 从resource的asset中读取文件数据
+  ```
+  String fileName = "test.txt"; //文件名字   
+  String res="";   
+  try{   
+    
+     //得到资源中的asset数据流  
+     InputStream in = getResources().getAssets().open(fileName);   
+    
+     int length = in.available();           
+     byte [] buffer = new byte[length];          
+    
+     in.read(buffer);              
+     in.close();  
+     res = EncodingUtils.getString(buffer, "UTF-8");       
+    
+    }catch(Exception e){   
+    
+        e.printStackTrace();           
+    
+     }
+  ```
+  ## 二、读写/data/data/<应用程序名>目录下的文件:
+  ```
+  //写数据  
+  public void writeFile(String fileName,String writestr) throws IOException{   
+    try{   
+    
+          FileOutputStream fout =openFileOutput(fileName, MODE_PRIVATE);   
+    
+          byte [] bytes = writestr.getBytes();   
+    
+          fout.write(bytes);   
+    
+          fout.close();   
+        }   
+    
+          catch(Exception e){   
+          e.printStackTrace();   
+         }   
+  }   
+    
+  //读数据  
+  public String readFile(String fileName) throws IOException{   
+    String res="";   
+    try{   
+           FileInputStream fin = openFileInput(fileName);   
+           int length = fin.available();   
+           byte [] buffer = new byte[length];   
+           fin.read(buffer);       
+           res = EncodingUtils.getString(buffer, "UTF-8");   
+           fin.close();       
+       }   
+       catch(Exception e){   
+           e.printStackTrace();   
+       }   
+       return res;   
+    
+  }
+  ```
+  ## 三、读写SD卡中的文件。也就是/mnt/sdcard/目录下面的文件 ：
+  ```
+  //写数据到SD中的文件  
+  public void writeFileSdcardFile(String fileName,String write_str) throws IOException{   
+   try{   
+    
+         FileOutputStream fout = new FileOutputStream(fileName);   
+         byte [] bytes = write_str.getBytes();   
+    
+         fout.write(bytes);   
+         fout.close();   
+       }  
+    
+        catch(Exception e){   
+          e.printStackTrace();   
+         }   
+     }   
+    
+      
+  //读SD中的文件  
+  public String readFileSdcardFile(String fileName) throws IOException{   
+    String res="";   
+    try{   
+           FileInputStream fin = new FileInputStream(fileName);   
+    
+           int length = fin.available();   
+    
+           byte [] buffer = new byte[length];   
+           fin.read(buffer);       
+    
+           res = EncodingUtils.getString(buffer, "UTF-8");   
+    
+           fin.close();       
+          }   
+    
+          catch(Exception e){   
+           e.printStackTrace();   
+          }   
+          return res;   
+  }
+  ```
+  ## 四、使用File类进行文件的读写：
+  ```
+  //写文件  
+  public void writeSDFile(String fileName, String write_str) throws IOException{    
+    
+          File file = new File(fileName);    
+    
+          FileOutputStream fos = new FileOutputStream(file);    
+    
+          byte [] bytes = write_str.getBytes();   
+    
+          fos.write(bytes);   
+    
+          fos.close();   
+  }
+  //读文件  
+  public String readSDFile(String fileName) throws IOException {    
+    
+          File file = new File(fileName);    
+    
+          FileInputStream fis = new FileInputStream(file);    
+    
+          int length = fis.available();   
+    
+           byte [] buffer = new byte[length];   
+           fis.read(buffer);       
+    
+           res = EncodingUtils.getString(buffer, "UTF-8");   
+    
+           fis.close();       
+           return res;    
+  }    
+  ```
+  ## 五File类常用操作：
+  ```
+  String Name = File.getName();  //获得文件或文件夹的名称：  
+  String parentPath = File.getParent();  //获得文件或文件夹的父目录  
+  String path = File.getAbsoultePath();//绝对路经  
+  String path = File.getPath();//相对路经   
+  File.createNewFile();//建立文件    
+  File.mkDir(); //建立文件夹    
+  File.isDirectory(); //判断是文件或文件夹  
+  File[] files = File.listFiles();  //列出文件夹下的所有文件和文件夹名  
+  File.renameTo(dest);  //修改文件夹和文件名  
+  File.delete();  //删除文件夹或文件
+  ```
+  
+  ## 六、使用RandomAccessFile进行文件的读写：
+  RandomAccessFile是Java提供的对文件内容的访问，她既可以读文件，也可以写文件，并且RandomAccessFile支持随机访问文件，也就是说他可以指定位置进行访问。
+  
+    我们知道Java的文件模型，文件硬盘上的文件是byte byte byte的字节进行存储的，是数据的集合。下面就是用这个类的步骤。
+  
+  (1)打开指定的文件，有两种模式“rw”(读写) “r”(只读)，创建对象，并且指定file和模式，例如：
+  
+        RandomAccessFile ac=new RandomAccessFile(file,”rw”);
+        RandomAccessFile ac=new RandomAccessFile(file,”r”);
+  
+   因为它支持随机访问文件，所以他引入了指针，可以通过指针来写入写出在指定的位置。文件指针，打开文件时指针在开头pointer=0
+  
+  (2)RandomAccessFile的往文件中写的方法(还有其他的写方法)
+  
+    Ac.write(int)----->只能写一个字节(后八位)，同时文件指针也会移动，指向下一个位置。
+  
+  (3)RandomAccessFile读的方法(还有其他的读方法)
+  
+    int b=ac.read()--->读一个字节
+  
+  (4)文件读写完毕后必须要把他关闭，调用close()的方法。下面就是例子：
+  ```
+  //创建相对路径的文件，就是在这个项目中创建一个文件夹
+          File file=new File("random");
+          if(!file.exists()) {
+              file.mkdir();
+          }
+          File fileName=new File(file,"javaio.txt");
+          if(!fileName.exists()) {
+              fileName.createNewFile();//创建文件
+          }
+          //创建一个RandomAccessFile的对象,并指定模式rw，能读能写，
+          //注意：必须是文件，不能是路径
+          RandomAccessFile raf=new RandomAccessFile(fileName,"rw");
+          //获取此时的文件指针的位置，起始位置为0
+          System.out.println(raf.getFilePointer());
+          //向文件中写入字符A，字符类型有两个字节，但她写入的是后八位的字节
+          //字符A正好可以用后八位的字节表示出来
+          raf.write('A');
+          //字符的位置会自动向后移动,文件指针会向后自动移动
+          System.out.println("输入一个字符之后，文件指针的位置"+raf.getFilePointer());
+          raf.write('B');
+          
+          
+          //每次write只能写入一个字节，如果要把i写进去，就需要写四次
+          int i=0x7fffffff;
+          raf.write(i>>>24 & 0xff);//写入高八位的
+          raf.write(i>>>16 & 0xff);
+          raf.write(i>>>8   & 0xff);
+          raf.write(i);//写入低八位
+          System.out.println("写入整数的时候文件指针的位置是"+raf.getFilePointer());
+          
+          
+          /**
+           * writeInt()的内置方法
+           *  public final void writeInt(int v) throws IOException {
+          write((v >>> 24) & 0xFF);
+          write((v >>> 16) & 0xFF);
+          write((v >>>  8) & 0xFF);
+          write((v >>>  0) & 0xFF);
+          //written += 4;
+      }
+           */
+          
+          //也可以直接写入int整数
+          raf.writeInt(i);
+          
+          //写入一个汉字,汉字为两个字节
+          String str="欢迎学习java";
+          byte[] b=str.getBytes("gbk");
+          raf.write(b);
+          System.out.println("此时的长度为"+raf.length());
+          
+          
+          //读文件必须将文件指针放在开头位置
+          raf.seek(0);
+          byte[] buf=new byte[(int)raf.length()];
+          raf.read(buf);//将内容写入buf字节数组中
+          
+          String  str1=new String(buf,"gbk");
+          System.out.println("文件中的内容为"+str1);
+          raf.close();
+  ```
+  ## 总结：
+  
+  1、apk中有两种资源文件，使用两种不同的方式进行打开使用。
+  
+  　　raw使用InputStream in = getResources().openRawResource(R.raw.test);
+  
+  　　asset使用InputStream in = getResources().getAssets().open(fileName);
+  
+  这些数据只能读取，不能写入。更重要的是该目录下的文件大小不能超过1M。
+  
+  同时，需要注意的是，在使用InputStream的时候需要在函数名称后加上throws IOException。
+  
+   
+  
+  2、SD卡中的文件使用FileInputStream和FileOutputStream进行文件的操作。
+  
+   
+  
+  3、存放在数据区(/data/data/..)的文件只能使用openFileOutput和openFileInput进行操作,或者使用BufferedReader,BufferedWriter 进行读写，方便按行操作。
+  
+  4、RandomAccessFile类仅限于文件的操作，不能访问其他IO设备。它可以跳转到文件的任意位置，从当前位置开始读写。
+  
+   
+  
+  5、InputStream和FileInputStream都可以使用skip和read(buffre,offset,length)函数来实现文件的随机读取。
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

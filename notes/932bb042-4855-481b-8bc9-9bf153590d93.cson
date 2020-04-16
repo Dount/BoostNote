@@ -1,0 +1,105 @@
+createdAt: "2019-08-07T09:23:24.722Z"
+updatedAt: "2019-10-10T02:24:07.687Z"
+type: "MARKDOWN_NOTE"
+folder: "a829d630b1a42b272c49"
+title: "自定义Dialog"
+tags: []
+content: '''
+  ## 自定义Dialog
+  
+  [Android中Dialog的使用](https://blog.csdn.net/uq_jin/article/details/51381156)
+  
+  ### 系统提供
+  ```
+  private void showDeleteDialog() {
+           final AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                  .setTitle("警告")
+                  .setPositiveButton("删除", new DialogInterface.OnClickListener() {
+                      @Override
+                      public void onClick(DialogInterface dialog, int which) {
+                          //do  delete thing
+                      }
+                  })
+                  .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                      @Override
+                      public void onClick(DialogInterface dialog, int which) {
+                          
+                      }
+                  });
+           builder.create().show();
+  
+      }
+  ```
+  ### 自定义
+  第一种方式
+  ```
+  private void deleteDialog() {
+          AlertDialog.Builder deleter = new AlertDialog.Builder(this);
+          View delete_view = View.inflate(this,R.layout.delete_layout,null);
+          deleter.setView(delete_view);
+          final AlertDialog dialog = deleter.create();
+          ImageButton ibt_yes = (ImageButton) delete_view.findViewById(R.id.ibt_yes);
+          ImageButton ibt_no = (ImageButton) delete_view.findViewById(R.id.ibt_no);
+          ibt_yes.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                  Toast.makeText(this,"花钱啦",Toast.LENGTH_SHORT).show();
+                  dialog.dismiss();
+              }
+          });
+          ibt_no.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                  dialog.dismiss();
+              }
+          });
+  
+          dialog.show();
+          WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+          params.width = 1000;
+          params.height = 700 ;
+          dialog.getWindow().setAttributes(params);
+      }
+  ```
+  第二种方式
+  ```
+  
+  public class WantShopDialog extends Dialog {
+      private TextView tv_canclewantshop;
+      private Activity context;
+  
+  
+      public WantShopDialog(Activity context) {
+          super(context);
+          this.context = context;
+      }
+  
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+          super.onCreate(savedInstanceState);
+          setContentView(R.layout.layout_wantshop);
+  
+          Window dialogWindow = this.getWindow();
+          WindowManager m = context.getWindowManager();
+          Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+          WindowManager.LayoutParams p = dialogWindow.getAttributes(); // 获取对话框当前的参数值
+          // p.height = (int) (d.getHeight() * 0.6); // 高度设置为屏幕的0.6
+          p.width = (int) (d.getWidth() * 0.8); // 宽度设置为屏幕的0.8
+          dialogWindow.setAttributes(p);
+          this.setCancelable(true);
+          tv_canclewantshop = (TextView) findViewById(R.id.tv_canclewantshop);
+          tv_canclewantshop.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                  dismiss();
+              }
+          });
+      }
+  }
+  \'''
+  WantShopDialog dialog = new WantShopDialog(getActivity());
+                          dialog.show();
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

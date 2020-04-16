@@ -1,0 +1,56 @@
+createdAt: "2019-07-18T01:31:45.403Z"
+updatedAt: "2019-08-26T07:38:58.095Z"
+type: "MARKDOWN_NOTE"
+folder: "a829d630b1a42b272c49"
+title: "Android 单体测试"
+tags: []
+content: '''
+  ### Android 单体测试
+  
+  #### 引言
+  [如何在Android中进行本地单元测试 - 简书](https://www.jianshu.com/p/003e66d230dc)
+  
+  [在Android Studio中进行单元测试和UI测试 - 简书](https://www.jianshu.com/p/03118c11c199)
+  
+  [Android单元测试——辅助工具介绍 \\| You's blog](https://yoyoyoky.github.io/2016/05/08/Android%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E2%80%94%E2%80%94%E8%BE%85%E5%8A%A9%E5%B7%A5%E5%85%B7%E4%BB%8B%E7%BB%8D/)
+  
+  [在Android中同时使用unit test和instrument test作为单元测试](https://www.baidu.com/link?url=MwRfU2gELoW5Uxy_KfJnfzkJjqFmDwTtE27N-uY-qNRAXIKNTLCdEbDUZOMKAnRg&wd=&eqid=9493baf300081a6f000000045d522af9)
+  #### 使用方式
+  
+  [Android单元测试(一)：JUnit框架的使用](https://blog.csdn.net/qq_17766199/article/details/78243176)
+  
+  [Android单元测试(二)：Mockito框架的使用](https://blog.csdn.net/qq_17766199/article/details/78450007)
+  
+  [Android单元测试(三)：PowerMock框架的使用](https://blog.csdn.net/qq_17766199/article/details/78573390)
+  
+  [Android单元测试(四)：Robolectric框架的使用](https://blog.csdn.net/qq_17766199/article/details/78710177)
+  
+  #### Mockito使用
+  
+  [Mockito框架中文文档](https://github.com/hehonghui/mockito-doc-zh)
+  
+  [Android单元测试 mock Context,mock静态类的静态方法，测试方法的顺序](https://blog.csdn.net/u011109881/article/details/86157971)
+  
+  #### Robolectric使用
+  
+  [Robolectric使用教程 - slgkaifa - 博客园](https://www.cnblogs.com/slgkaifa/p/7354609.html#验证fragment)
+  
+  [Android单元测试框架Robolectric3.0介绍(一) - 简书](https://www.jianshu.com/p/9d988a2f8ff7)
+  
+  #### 依赖实机测试方法
+  
+  [android项目的JaCoCo代码覆盖率入门使用 - SolveException的博客 - CSDN博客](https://blog.csdn.net/qq_27103959/article/details/74549964)
+  
+  [关于Android studio中代码覆盖率 - 豆耳朵 - 博客园](https://www.cnblogs.com/z-bin/p/5728011.html)
+  
+  [AndroidStudio中使用Jacoco统计Android应用程序代码覆盖率 - LZN的博客 - CSDN博客](https://blog.csdn.net/LZN51/article/details/71499713)
+  
+  [Android UI测试框架Espresso以及代码覆盖率jacoco的使用](https://blog.csdn.net/wjn_yes/article/details/73235403)
+  
+  [Android单元测试/Ui测试+JaCoCo覆盖率统计](https://blog.csdn.net/cxq234843654/article/details/53203891)
+  
+  [GitHub - jitsm555/JacocoAndroidSample: Implementation of jacoco in android](https://github.com/jitsm555/JacocoAndroidSample)
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

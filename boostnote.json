@@ -1,0 +1,60 @@
+{
+  "folders": [
+    {
+      "key": "964d243d4a43b318157f",
+      "color": "#1278BD",
+      "name": "Default"
+    },
+    {
+      "key": "d93d185dcf894dbad7b3",
+      "color": "#E10051",
+      "name": "项目"
+    },
+    {
+      "key": "91596d517848033ae924",
+      "color": "#2BA5F7",
+      "name": "java基础知识"
+    },
+    {
+      "key": "85a62ba3b0bb150cea92",
+      "color": "#E10051",
+      "name": "python基础知识"
+    },
+    {
+      "key": "8cc975aec2d11a8ac69a",
+      "color": "#FF8E00",
+      "name": "Shell脚本基础知识"
+    },
+    {
+      "key": "388e3f13721664ffa193",
+      "color": "#E8D252",
+      "name": "UML画图"
+    },
+    {
+      "key": "a829d630b1a42b272c49",
+      "color": "#2BA5F7",
+      "name": "Android基础知识"
+    },
+    {
+      "key": "8b201a0d43bb3b317af3",
+      "color": "#E8D252",
+      "name": "Android自定义View基础"
+    },
+    {
+      "key": "ff734fda5bb233bfe38e",
+      "color": "#3FD941",
+      "name": "Git学习"
+    },
+    {
+      "key": "855b282e2a555b697afd",
+      "color": "#E10051",
+      "name": "Android动画"
+    },
+    {
+      "key": "537068cf3ce988a4b28a",
+      "color": "#E8D252",
+      "name": "面试题"
+    }
+  ],
+  "version": "1.0"
+}

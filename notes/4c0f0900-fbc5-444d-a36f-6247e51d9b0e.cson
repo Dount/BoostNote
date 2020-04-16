@@ -1,0 +1,90 @@
+createdAt: "2019-03-25T12:18:11.426Z"
+updatedAt: "2019-07-18T01:33:07.262Z"
+type: "MARKDOWN_NOTE"
+folder: "d93d185dcf894dbad7b3"
+title: "简述 IntentFilter（意图过滤器）"
+tags: []
+content: '''
+  # 简述 IntentFilter（意图过滤器）
+  
+  ## 什么是IntentFilter ？
+  
+  IntentFilter翻译成中文就是“意图过滤器”，主要用来过滤隐式意图。当用户进行一项操作的时候，Android系统会根据配置的 “意图过滤器” 来寻找可以响应该操作的组件，服务。
+  
+  ---
+  
+  ```<activity android:name="com.example.testmain.ShowActivity" >
+        <intent-filter>
+              <action android:name="test.update.mydata" />
+              <category android:name="my.test.show" />
+              <data android:pathPattern=".*\\\\.jpg" android:scheme="http" />
+        </intent-filter>
+   </activity>
+  ```
+   ---
+   
+  ## IntentFilter 如何过滤隐式意图
+  
+  Android系统会根据我们配置的Intent Filter（意图过滤器），来进行匹配测试。匹配的时候，只会考虑三个方面：动作、数据（URI以及数据类型）和类别。也就是说Android系统会进行“动作测试”，“数据测试”，“类别测试”，来寻找可以响应隐式意图的组件或服务。
+  
+  另外，当对其他App程序开放组件和服务的时候也需要配置Intent Filter（意图过滤器），一个Activity可以配置多个\\<intent-filter>
+  
+  ## 动作测试：
+  对应\\<intent-filter>中的\\<action/>标签;
+  - 如果\\<intent-filter>标签中有多个\\<action/>，那么Intent请求的Action，只要匹配其中的一条<action/>就可以通过了这条\\<intent-filter>的动作测试
+  
+  - 如果\\<intent-filter>中没有包含任何<action/>，那么无论什么Intent请求都无法和这条\\<intent-filter>匹配。
+  - 如果Intent请求中没有设定Action(动作)，那么这个Intent请求就将顺利地通过\\<intent-filter>的动作测试（前提是\\<intent-filter>中必须包含有\\<action/>，否则与第二条冲突）。
+  ## 类别测试：
+  对应\\<intent-filter>中的\\<category />标签；
+  
+  Intent中的类别必须全部匹配\\<intent-filter>中的\\<category />，但是\\<intent-filter>中多余的\\<category />将不会导致匹配失败。
+  
+  例如：Intent中有3个类别，而意图过滤器中定义了5个，如果Intent中的3个类别都与过滤器中的匹配，那么过滤器中的另外2个，将不会导致类别测试失败。
+  
+  
+  ## 数据测试：
+  对应\\<intent-filter>中的\\<data>标签；
+  
+  \\<data>元素指定了可以接受的Intent传过来的数据URI和数据类型，当一个意图对象中的URI被用来和一个过滤器中的URI比较时，比较的是URI的各个组成部分。
+  
+  例如：
+  
+  如果过滤器仅指定了一个scheme，所有该scheme的URIs都能够和这个过滤器相匹配；
+  
+  如果过滤器指定了一个scheme、主机名但没有路经部分，所有具有相同scheme和主机名的URIs都可以和这个过滤器相匹配，而不管它们的路经；
+  
+  如果过滤器指定了一个scheme、主机名和路经，只有具有相同scheme、主机名和路经的URIs才可以和这个过滤器相匹配。
+  
+  当然，一个过滤器中的路径规格可以包含通配符，这样只需要部分匹配即可。
+  
+  ```
+   IntentFilter intentFilter = new IntentFilter();
+          intentFilter.addAction(SdlService.CONNECTION_NOTIFICATION_ACTION);
+          registerReceiver(connectionReceiver, intentFilter);
+  ```
+  上面代码是vrtestapp中注册广播
+  
+  ```
+  Intent intent = new Intent();
+  					intent.setAction(CONNECTION_NOTIFICATION_ACTION);
+  					intent.putExtra("connectionEstablished", connectionEstablished);
+  					sendBroadcast(intent);
+  ```
+  上面代码是vrtestapp中发送广播，回传数据
+  
+  ```
+  class ConnectionReceiver extends BroadcastReceiver {
+  
+          @Override
+          public void onReceive(Context arg0, Intent arg1) {
+              connectionEstablished = arg1.getBooleanExtra("connectionEstablished", false);
+          }
+      }
+  ```
+  
+  
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: true

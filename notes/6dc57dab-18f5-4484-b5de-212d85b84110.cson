@@ -1,0 +1,156 @@
+createdAt: "2019-07-06T08:54:10.583Z"
+updatedAt: "2019-10-08T09:41:36.022Z"
+type: "MARKDOWN_NOTE"
+folder: "a829d630b1a42b272c49"
+title: "Android 内存泄漏检测方法"
+tags: []
+content: '''
+  ## Android 内存泄漏检测方法
+  
+  [值得推荐的Android应用性能检测工具列表 - 简书](https://www.jianshu.com/p/2dff3c3a1347)
+  
+  [火线 \\| FireLine | 静态代码检测](http://magic.360.cn/zh/index.html)
+  
+  [Android 内存泄漏检测之Profiler](https://blog.csdn.net/Leo_Liang_jie/article/details/93871361)
+  
+  #### 一,首先使用静态分析工具Lint代码检查工具
+  
+  AndroidStudio自动Lint代码检查工具，一些常见的代码警告Lint工具都会给我们提示
+  Analyze —> Inspect Code 然后选择检查范围：
+  ![4bfc789d.png](:storage\\6dc57dab-18f5-4484-b5de-212d85b84110\\4bfc789d.png)
+  
+  然后选择检查范围
+  ![2360e452.png](:storage\\6dc57dab-18f5-4484-b5de-212d85b84110\\2360e452.png)
+  
+  如果存在非静态内部类的Handler，可能会导致内存泄露，检查结果就会显示在AndroidStudio的控制台。
+  ![e1cd4fd2.png](:storage\\6dc57dab-18f5-4484-b5de-212d85b84110\\e1cd4fd2.png)
+  
+  另外我们在设置里面勾选了Lint代码检查（AnroidStudio默认是勾选了的），在写代码的时候就会自动提示可能发生内存泄露。
+  
+  ![cbc60548.png](:storage\\6dc57dab-18f5-4484-b5de-212d85b84110\\cbc60548.png)
+  
+  ![dfa01fda.png](:storage\\6dc57dab-18f5-4484-b5de-212d85b84110\\dfa01fda.png)
+  
+  通常在写Handler、静态字段、标记对象等可能存在的内存泄露时，Lint检查工具都会有一个警告提示信息，我们可以根据Lint检查的提示信息来避免这些有可能发生的内存泄露。
+  
+  ## 二,使用Android Profiler与Mat动态检测内存泄漏
+  
+  在AndroidStudio中，可以通过Profiler来监控Memory、CPU、Network、GPU等。在Monitors监控中，我们可以获取内存的各种信息来分析内存泄露。
+  
+  ![c60c92ab.png](:storage\\6dc57dab-18f5-4484-b5de-212d85b84110\\c60c92ab.png)
+  
+  颜色区域就是内存分配的变化过程
+  
+  ![9ca9d921.png](:storage\\6dc57dab-18f5-4484-b5de-212d85b84110\\9ca9d921.png)
+  
+  常，我们在打开一个新的页面后，使用的内存就会增加，相应的，关闭一个页面后，系统执行了GC，使用的内存应该下降。
+  
+  如果我们在退出界面并执行GC后，内存使用并未下降明显，或者使用内存没有下降初始的使用大小，那么有可能就发生了内存泄露。
+  
+  点击 initiate GC 触发GC，然后点击Dump转出堆信息，稍等片刻，生成hprof文件，生成后会在Studio中自动打开。
+  
+  ![dacfcdf1.png](:storage\\6dc57dab-18f5-4484-b5de-212d85b84110\\dacfcdf1.png)
+  
+  将Android Monitor生成的hprof文件导出为标准的hprof文件
+  
+  ![26cb3db4.png](:storage\\6dc57dab-18f5-4484-b5de-212d85b84110\\26cb3db4.png)
+  
+  如果使用Mat工具进行分析需要将 HPROF 文件从 Android 格式转换为 Java SE HPROF 格式
+  
+  使用sdk/platform-tools/ 目录中提供的 hprof-conv 工具执行此操作。 运行包括以下两个参数的 hprof-conv 命令：原始 HPROF 文件和转换后 HPROF 文件的写入位置。 例如：
+  
+  hprof-conv heap-original.hprof(原hprof文件) heap-converted.hprof（转换后hprof文件）
+  
+  首先需要到Mat官网去下载
+  
+  ![0a13f227.png](:storage\\6dc57dab-18f5-4484-b5de-212d85b84110\\0a13f227.png)
+  
+  使用Mat打开导出的hprof文件：
+  
+  ![12b9d7f1.png](:storage\\6dc57dab-18f5-4484-b5de-212d85b84110\\12b9d7f1.png)
+  
+  点击Histogram（直方图），可以看到类对应的实例数量的统计。
+  
+  ![878174ae.png](:storage\\6dc57dab-18f5-4484-b5de-212d85b84110\\878174ae.png)
+  
+  在Class Name下面输入需要匹配的类名，根据类来查看它的实例的引用，进而分析是否存在内存泄露。
+  
+  ![0e062d8e.png](:storage\\6dc57dab-18f5-4484-b5de-212d85b84110\\0e062d8e.png)
+  
+  可以看到TestActivity和MyHandler都只有一个实例被引用。
+  
+  TestActivity点击右键—>Merge Shortest Paths to GC Roots —>exclude all phantom/weak/soft etc.references。
+  
+  ![59235b99.png](:storage\\6dc57dab-18f5-4484-b5de-212d85b84110\\59235b99.png)
+  
+  可以看到TestActivity实例存在GC Roots链，TextActivity实例被mMessageQueue.mMessae.target.this$0持有，那么发生了内存泄露，我们可以根据引用链来在代码中找到内存泄露的位置。
+  
+  ## 三,使用LeakCanary进行动态检测内存泄漏
+  
+  LeakCanary是square开源的检测内存泄露的第三方库。
+  
+  它最大的有点就是开发者只需要添加简单代码，app在运行时如果发生了内存泄露，就会很直观的将内存泄露的详细信息展示在通知栏上
+  这样避免了Android Profiler或者Mat等工具的繁琐的分析过程。
+  
+  使用LeakCanary
+  首先配置build.gradle
+  
+  ```
+  dependencies {
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.6.1'
+      releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1'
+   }
+  
+  ```
+  在Application加入如下代码
+  
+  ```
+  private RefWatcher mRefWatcher;
+  @Override
+      public void onCreate() 
+  {
+          super.onCreate();
+          refWatcher= setupLeakCanary();
+      }
+  private RefWatcher setupLeakCanary()
+   {
+          if (LeakCanary.isInAnalyzerProcess(this)) {
+              return RefWatcher.DISABLED;
+          }
+          return LeakCanary.install(this);
+      }
+  
+      public static RefWatcher getRefWatcher(Context context) 
+  {
+          MyApplication leakApplication = (MyApplication) context.getApplicationContext();
+          return leakApplication.refWatcher;
+  }
+  ```
+  在Activity 加入如下代码
+  ```
+   @Override
+      protected void onDestroy() 
+  {
+          super.onDestroy();
+          RefWatcher refWatcher = LeakApplication.getRefWatcher(this);
+          refWatcher.watch(this);
+  }
+  ```
+  启动app后，如检测到内存泄漏会出现通知（或点击icon）
+  
+  ![cb41b11f.png](:storage\\6dc57dab-18f5-4484-b5de-212d85b84110\\cb41b11f.png)
+  
+  ![772af625.png](:storage\\6dc57dab-18f5-4484-b5de-212d85b84110\\772af625.png)
+  
+  如下是内存泄漏列表,点击其中一项可以查看详情
+  ![35a2ee39.png](:storage\\6dc57dab-18f5-4484-b5de-212d85b84110\\35a2ee39.png)
+  ![4910a80c.png](:storage\\6dc57dab-18f5-4484-b5de-212d85b84110\\4910a80c.png)
+  ![36b47812.png](:storage\\6dc57dab-18f5-4484-b5de-212d85b84110\\36b47812.png)
+  
+  如果需要mat 来进行分许可以直接导出hprof文件
+  
+  ![7f3962b1.png](:storage\\6dc57dab-18f5-4484-b5de-212d85b84110\\7f3962b1.png)
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

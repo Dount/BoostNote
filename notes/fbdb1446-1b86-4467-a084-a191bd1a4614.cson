@@ -1,0 +1,39 @@
+createdAt: "2019-04-22T09:27:43.862Z"
+updatedAt: "2019-08-05T08:24:38.206Z"
+type: "MARKDOWN_NOTE"
+folder: "a829d630b1a42b272c49"
+title: "音频播放Audio Track"
+tags: []
+content: '''
+  ## 音频播放Audio Track 
+  
+  音频播放声音分为MediaPlayer和AudioTrack两种方案的。MediaPlayer可以播放多种格式的声音文件，例如MP3，WAV，OGG，AAC，MIDI等。然而AudioTrack只能播放PCM数据流。当然两者之间还是有紧密的联系，MediaPlayer在播放音频时，在framework层还是会创建AudioTrack，把解码后的PCM数流传递给AudioTrack，最后由AudioFlinger进行混音，传递音频给硬件播放出来。利用AudioTrack播放只是跳过Mediaplayer的解码部分而已。
+  
+  ## 音频基础知识
+  ### 声道数
+  即声音的通道的数目。很好理解，有单声道和立体声之分，单声道的声音只能使用一个喇叭发声（有的也处理成两个喇叭输出同一个声道的声音），立体声的PCM可以使两个喇叭都发声（一般左右声道有分工） ，更能感受到空间效果。
+  ### 采样位数
+  即 采样值或取样值（就是将采样样本幅度量化）。它是用来衡量声音波动变化的一个参数，也可以说是声卡的分辨率。它的数值越大，分辨率也就越高，所发出声音的能力越强。
+  在计算机中采样位数一般有8位和16位之分，但有一点请大家注意，8位不是说把纵坐标分成8份，而是分成2的8次方即256份； 同理16位是把纵坐标分成2的16次方65536份。
+  ### 采样频率
+  即取样频率，指 每秒钟取得声音样本的次数。采样频率越高，声音的质量也就越好，声音的还原也就越真实，但同时它占的资源比较多。由于人耳的分辨率很有限，太高的频率并不能分辨出来。在16位声卡中有22KHz、44KHz等几级，其中，22KHz相当于普通FM广播的音质，44KHz已相当于CD音质了，目前的常用采样频率都不超过48KHz。
+  
+  PCM 文件所占容量
+  **存储量= (采样频率 * 采样位数 * 声道 * 时间)／8 (单位：字节数)。**
+  
+  ## PCM 介绍
+  目前我们在计算机上进行音频播放都需要依赖于音频文件，音频文件的生成过程是将声音信息采样、量化和编码产生的数字信号的过程，人耳所能听到的声音，最低的频率是从20Hz起一直到最高频率20KHZ，因此音频文件格式的最大带宽是20KHZ。根据奈奎斯特的理论，只有采样频率高于声音信号最高频率的两倍时，才能把数字信号表示的声音还原成为原来的声音，所以音频文件的采样率一般在40~50KHZ，比如最常见的CD音质采样率44.1KHZ。
+  
+  对声音进行采样、量化过程被称为脉冲编码调制（Pulse Code Modulation），简称PCM。PCM数据是最原始的音频数据完全无损，所以PCM数据虽然音质优秀但体积庞大，为了解决这个问题先后诞生了一系列的音频格式，这些音频格式运用不同的方法对音频数据进行压缩，其中有无损压缩（ALAC、APE、FLAC）和有损压缩（MP3、AAC、OGG、WMA）两种。
+  
+  ## 引言
+  [使用AudioTrack播放PCM音频数据（android）](https://blog.csdn.net/lancees/article/details/7671343)
+  [Android AudioRecord和AudioTrack实现音频PCM数据的采集和播放，并... - 简书](https://www.jianshu.com/p/475f1a85e8c6)
+  [Android录音（AudioRecord）保存本地 - 简书](https://www.jianshu.com/p/f67f2a9a28b2)
+  [Android音频处理——通过AudioRecord去保存PCM文件进行录制，播放，停止，删除功能](https://blog.csdn.net/qq_26787115/article/details/53078951)
+  [Android-音视频（3）：用AudioTrack播放音频PCM](https://blog.csdn.net/qq_38261174/article/details/82871542)
+  [音频播放AudioTrack之入门篇 - 简书](https://www.jianshu.com/p/632dce664c3d)
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

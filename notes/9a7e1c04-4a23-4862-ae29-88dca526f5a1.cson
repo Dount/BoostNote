@@ -1,0 +1,666 @@
+createdAt: "2019-08-30T01:49:06.473Z"
+updatedAt: "2019-09-26T02:46:36.859Z"
+type: "MARKDOWN_NOTE"
+folder: "a829d630b1a42b272c49"
+title: "Android 多线程"
+tags: []
+content: '''
+  ## Android 多线程
+  [Android 多线程入门 - 简书](https://www.jianshu.com/p/c1bf1cd0a7c7)
+  [谈谈new Thread的弊端及Java四种线程池的使用 - 孟凡柱的专栏 - 博客园](https://www.cnblogs.com/cnmenglang/p/6273761.html)
+  ![09f0e48d.png](:storage\\9a7e1c04-4a23-4862-ae29-88dca526f5a1\\09f0e48d.png)
+  
+  ## 1.线程
+  
+  ### 线程与进程的区别
+  
+  - 进程：进程是操作系统的基础，是系统机型资源分配和调度的基本单位。每一个进程都有其独立的代码和数据空间，一个进程里面有一个或多个线程。在Android系统当中，进程就是应用程序的本体。
+  
+  
+  - 线程：线程也被可以叫做轻量级的进程，线程拥有自己的计数器以及堆栈等属性，且可以访问共享的内存变量。如在一个应用程序当中，对于网络加载，IO操作等任务都是在不同的线程当中进行。
+  
+  - 主线程：JVM调用程序main()所产生的线程。
+  - 当前线程：这个是容易混淆的概念。一般指通过Thread.currentThread()来获取的进程。
+  - 后台线程：指为其他线程提供服务的线程，也称为守护线程。JVM的垃圾回收线程就是一个后台线程。用户线程和守护线程的区别在于，是否等待主线程依赖于主线程结束而结束
+  - 前台线程：是指接受后台线程服务的线程，其实前台后台线程是联系在一起，就像傀儡和幕后操纵者一样的关系。傀儡是前台线程、幕后操纵者是后台线程。由前台线程创建的线程默认也是前台线程。可以通过isDaemon()和setDaemon()方法来判断和设置一个线程是否为后台线程。
+  
+  ### 线程的转换状态
+  
+  ![dc3515a5.png](:storage\\9a7e1c04-4a23-4862-ae29-88dca526f5a1\\dc3515a5.png)
+  
+  线程整个生命周期当中大致可以分为5个状态
+  
+  1.新建状态：线程被创建，调用start方法之前的状态。
+  2.就绪状态：线程对象调用了start方法后会进入就绪状态，等待获取CPU的资源。
+  3.运行状态：获取到运行所需的CPU资源，开始执行代码。
+  4.阻塞状态：在运行时由于某种原因进入失去了CPU所分配的资源，暂时停止运行，知道再次获得资源。
+  - 等待阻塞：线程执行wait()方法后进入等待状态，释放锁。
+  - 同步阻塞：当线程获取同步锁时发现锁被占用，则进入同步阻塞状态。
+  - 运行阻塞：线程调用sleep(),或者join等方法进入阻塞状态。
+  5.死亡状态：线程代码执行完毕或者抛出异常，结束运行。
+  
+  ### 线程构建
+  
+  线程构建有三种方式
+  
+  #### 继承Thread类
+  第一种实现方式便是直接继承Thread 类，具体的实现步骤如下：
+  （1）定义Thread的子类，重写run方法，run方法的方法体就代表了线程要完成的任务。因此，run()方法被称为执行体。
+  （2）创建Thread子类的实例，即创建线程对象。
+  （3）调用对象的start()方法启动线程。
+  ```
+  //1. 继承Thread类
+  public class TestThread extends Thread {
+      private String mName;
+  
+      public TestThread(String name) {
+          this.mName = name;
+      }
+  
+      //2. 重写run()方法，在run()方法中执行线程任务。
+      @Override
+      public void run() {
+          super.run();
+          for (int i = 0; i < 10; i++) {
+              System.out.println("name is " + mName + i);
+          }
+      }
+  
+      public static void main(String[] args) {
+          //3.创建Thread对象，调用start方法
+          //这里需要注意，调用start方法不代表线程立即就会执行，这时候只是进入到了就绪状态，
+          //当获得CPU资源之后会进入到运行状态
+          TestThread mThread = new TestThread("testThread");
+          mThread.start();
+      }
+  }
+  ```
+  #### 实现Runnable接口
+  第二种方式就是实现Runnable接口，具体操作步骤如下：
+  （1）自定义类并实现Runnable接口。
+  （2）创建Thread子类的实例，实现Runnable接口的对象作为参数实例化该Thread对象。
+  （3）调用Thread实例的start()方法。
+  ```
+  // 1、 自定义类并实现Runnable接口。
+  public class MutliThread implements Runnable{ 
+      public void run(){
+              System.out.println(ticket--+" is saled by "+name)；
+      } 
+  }
+  
+  public class TestRunnable{
+  public static void main（String[]  args）{
+  // 2、 创建Thread子类的实例，
+  MutliThread  mTest  =  new  MutliThread();
+  Thread  mThread  =  new  Thread(mTest);
+  // 3、调用Thread实例的start()方法
+  mThread.start();
+  }
+  }
+  ```
+  相比于直接继承Thread类，更推荐实现Runnable接口的方式，其优点如下：
+  
+  1. 线程池只支持放入Runnable和Callable的实现。
+  2. 多个Thread对象共用同一段代码块的情况下，实现Runnable接口更容易实现线程之间的数据共享。
+  3. 避免单继承的机制。
+  #### 实现Callable接口
+  Callable接口属于Executor框架中的功能类，Callable接口与Runnable接口的功能类似，但提供了比Runnable接口更强大的功能：
+  
+  1. Callable可以再接收任务后提供一个返回值，Runnable无法提供这个功能。
+  
+  2. Callable中的call()方法可以抛出异常，而Runnable的run()方法不能跑出异常。
+  
+  3. Callable方法可以拿到一个Future对象，Future对象表示一步计算的结果，它提供了价差计算是否完成的方法。
+  
+  注意：使用Future的get()方法获取结果的时候，当前线程就会阻塞，直到call()方法返回结果。
+  ```
+  //1. 实现Callable<V>接口的call方法，V为返回值的类型
+  public class TestCallable implements Callable<String> {
+  
+      @Override
+      public String call() throws Exception {
+          Thread.sleep(5000);
+          return "call finish";
+      }
+  
+      public static void main(String[] args) {
+          //2. 创建线程池（后面的内容我们会详细介绍）
+          ExecutorService mService = Executors.newFixedThreadPool(1);
+          //3. 创建TestCallable对象实例
+          TestCallable callable = new TestCallable();
+          //4. 通过Future获取线程结构
+          Future<String> future = mService.submit(callable);
+          System.out.println("程序开始运行");
+          try {
+              System.out.println(future.get());
+          } catch (Exception e) {
+              e.printStackTrace();
+          }finally {
+              System.out.println("程序终止");
+          }
+      }
+  }
+  ```
+  如果有对线程的返回值加以控制的需求，推荐使用这种方式，一般情况下我们采用实现Runnable接口的方式
+  
+  ### 线程常用方法
+  - start():使线程开始执行。
+  - setName(String name):设置线程的名字为name值。
+  - setPriority(int priority):设置线程优先级。
+  - sleep(long millis):使线程睡眠，放弃CPU的使用权，但不会释放锁。
+  - yield():使当前线程回到就绪状态，将CPU使用权交给同级或者更高级线程使用。
+  注意：yield()方法在交出CPU使用权以后又会和其他线程一同竞争资源，可能会再次执行当前线程。
+  sleep(millis)方法则是在指定时间内不再竞争资源。且yield()方法不会将资源出让给更低优先级的线程，sleep(millis)方法可以。
+  
+  - join():等待线程终止。
+  [Thread类中的join()方法原理](https://blog.csdn.net/u010983881/article/details/80257703)
+  - currentThread():获取当前线程。
+  - interrupt():使线程中的中断标志位置为中断，如果需要中断线程，需要在线程当中对中断进行控制。
+  - wait():主动释放锁对象，同时使线程休眠，。
+  - notify():唤起休眠线程，并重新获取锁对象。
+  相比于sleep(long millis)方法，wait()方法会释放锁对象而sleep()方法不会，而wait()方法必须出现在synchronized(Obj){...}语句块内并与notify()方法配合使用，
+  
+  ## 2.同步
+  在线程的使用中，如果存在两个或者两个以上的线程需要共享同一段数据，如果多个线程同时对数据对象进行操作，就可能会引发竞争条件，如果进行同步处理的话就有可能会引发问题。
+  同步的实现有两种：Lock以及synchronized。
+  ### Lock 
+  Lock位于java.util.concurrent.locks包下，是Java提供的一个接口，提供了如下方法：
+  ```
+  public interface Lock {
+      //获取锁，如果锁已经被其他线程获取则等待。
+      void lock();
+      //如果线程正在等待获取锁，则这个线程能够响应中断，当两个线程同时通过lock.lockInterruptibly()想获取某个锁时，
+      //假若此时线程A获取到了锁，而线程B只有在等待，那么对线程B调用threadB.interrupt()方法能够中断线程B的等待过程。
+      void lockInterruptibly() throws InterruptedException;
+      //尝试获取锁，如果获取成功则返回true，如果失败则返回false
+      boolean tryLock();
+      //与tryLoc()类似，只不过是在time响应时间内去尝试获取锁，如果获取失败返回false
+      boolean tryLock(long time, TimeUnit unit) throws InterruptedException;
+      //释放锁，一定要在finally代码块当中调用。
+      void unlock();
+      //获取锁对应的条件对象
+      Condition newCondition();
+  }
+  ```
+  在项目当中我们常用的是重如锁ReentrantLock，ReentrantLock类对Lock接口做出了实现。
+  使用时其代码结构如下：
+  ```
+  Lock mLock  =  new  ReentrantLock();
+  //
+  mLock.lock();
+  try{
+  //同步的代码块
+  ......
+  }
+  finally{
+  //释放锁对象
+  mLock.unlock();
+  }
+  ```
+  需要注意的是在finally当中需要调用unlock()方法，保证在执行完代码块或者在发生异常的时候可以把锁释放掉。
+  
+  在实际使用时，通常我们会在线程中设置条件用于执行释放锁或者唤起其他线程，这时候就引入了条件对象Condition。对上述代码块做如下修改：
+  ```
+  Lock mLock  =  new  ReentrantLock();
+  Condition condition = mLock.newCondition();
+  mLock.lock();
+  try{
+      while(临界条件){
+          condition.await();
+      }
+      //同步代码操作  
+      //signalAll()代表唤起所有等待线程，signal()表示唤起随机线程
+      condition.signalAll();
+  }
+  finally{
+  //释放锁对象
+  mLock.unlock();
+  }
+  ```
+  需要注意的是在finally当中需要调用unlock()方法，保证在执行完代码块或者在发生异常的时候可以把锁释放掉。
+  
+  在实际使用时，通常我们会在线程中设置条件用于执行释放锁或者唤起其他线程，这时候就引入了条件对象Condition。对上述代码块做如下修改：
+  ```
+  Lock mLock  =  new  ReentrantLock();
+  Condition condition = mLock.newCondition();
+  mLock.lock();
+  try{
+      while(临界条件){
+          condition.await();
+      }
+      //同步代码操作  
+      //signalAll()代表唤起所有等待线程，signal()表示唤起随机线程
+      condition.signalAll();
+  }
+  finally{
+  //释放锁对象
+  mLock.unlock();
+  }
+  ```
+  Java还提供另一种锁的形式：读写锁ReadWriteLock。它分离的读和写的操作，使用读操作锁时可以允许多个线程同时访问，使用写操作锁时只允许一个线程进行。提高了多个线程读操作的效率。
+  ```
+  public interface ReadWriteLock {
+      Lock readLock();
+      Lock writeLock();
+  }
+  ```
+  其使用方式如下：
+  ```
+  ReadWriteLock mLock = new ReentrantReadWriteLock();
+  
+  public void write(){
+      lock.writeLock().lock();
+      try{
+          //写操作
+      }finally{
+         lock.writeLock().unlock(); 
+      }
+  }
+  
+  public void read1(){
+      lock.readLock().lock();
+      try{
+          //读操作
+      }finally{
+         lock.readLock().unlock(); 
+      }
+  }
+  
+  public void read2(){
+      lock.readLock().lock();
+      try{
+          //读操作
+      }finally{
+         lock.readLock().unlock(); 
+      }
+  }
+  ```
+  ### Synchronized
+  Lock的实现方式优点在于它可以让等待的线程去响应中断以及对读写操作的成本有所降低。但是很多情况下我们不需要这样的控制，这个时候就可以直接使用synchronized关键字进行控制。
+  可以用synchronized关键字修饰的内容有代码块、方法、静态方法和类。
+  
+  #### 修饰代码块
+  
+  修饰一个代码块，被修饰的代码块称为同步语句块，其作用的范围是大括号{}括起来的代码，作用的对象是调用这个代码块的对象.
+  
+  代码如下:
+  ```
+  public class TestSynchronize implements Runnable {
+  
+      private static int count = 0;
+      private String name;
+  
+      TestSynchronize(String name) {
+          this.name = name;
+      }
+  
+      @Override
+      public void run() {
+          synchronized (this) {
+              for (int i = 0; i < 5; i++) {
+                  try {
+                      System.out.println("线程名为：" + Thread.currentThread().getName() 
+                              + "----" + name + count++);
+                      Thread.sleep(100);
+                  } catch (InterruptedException e) {
+                      e.printStackTrace();
+                  }
+              }
+          }
+      }
+  
+      public static void main(String[] args) {
+          TestSynchronize test1 = new TestSynchronize("Runnable A");
+          Thread thread1 = new Thread(test1, "threadA");
+          Thread thread2 = new Thread(test1, "threadB");
+          thread1.start();
+          thread2.start();
+      }
+  }
+  ```
+  结果为：
+  ```
+  线程名为：threadA----Runnable A0
+  线程名为：threadA----Runnable A1
+  线程名为：threadA----Runnable A2
+  线程名为：threadA----Runnable A3
+  线程名为：threadA----Runnable A4
+  线程名为：threadB----Runnable A5
+  线程名为：threadB----Runnable A6
+  线程名为：threadB----Runnable A7
+  线程名为：threadB----Runnable A8
+  线程名为：threadB----Runnable A9
+  ```
+  从输出结果可以看到，线程B会在线程A执行结束后开始执行，这是因为线程A和线程B所使用的都是test1对象的锁，在线程A执行完毕之前，它会一直占有这个锁，直到执行完毕，线程B获得锁之后才开始执行。
+  
+  如果我们对上面代码做如下修改
+  ```
+  TestSynchronize test1 = new TestSynchronize("Runnable A");
+      TestSynchronize test2 = new TestSynchronize("Runnable B");
+      Thread thread1 = new Thread(test1, "threadA");
+      Thread thread2 = new Thread(test1, "threadB");
+  ```
+  结果为:
+  ```
+  线程名为：threadA----Runnable A0
+  线程名为：threadB----Runnable B1
+  线程名为：threadA----Runnable A2
+  线程名为：threadB----Runnable B3
+  线程名为：threadA----Runnable A4
+  线程名为：threadB----Runnable B5
+  线程名为：threadB----Runnable B6
+  线程名为：threadA----Runnable A6
+  线程名为：threadB----Runnable B7
+  线程名为：threadA----Runnable A8
+  ```
+  这时候因为线程A和线程B各自所持有的锁时不同的，两把锁互不影响，我们可以视为线程A和线程B在同时运行。
+  #### 修饰方法
+  修饰方法即是在方法名前加上synchronized关键字，同步的作用范围为整个方法，作用的对象为调用该方法所在的对象。将上面实例的同步方式修改为修饰方法的同步，其代码结构如下
+  ```
+  public synchronized void run() {
+          for (int i = 0; i < 5; i++) {
+              try {
+                  System.out.println("线程名为：" + Thread.currentThread().getName()
+                          + "----" + name + count++);
+                  Thread.sleep(100);
+              } catch (InterruptedException e) {
+                  e.printStackTrace();
+              }
+          }
+  
+      }
+  ```
+  输出结果与上述代码相同。
+  修饰方法有几点要注意：
+  1. synchronized关键字不能继承。
+  2. 在定义接口方法时不能使用synchronized关键字。
+  3. 构造方法不能使用synchronized关键字，但可以使用synchronized代码块来进行同步。
+  
+  #### 修饰静态方法
+  修饰一个静态的方法，其作用的范围与修饰方法相同，为整个方法代码，但是其作用的对象是这个类的所有对象。在上面的代码做如下修改
+  ```
+      @Override
+      public void run() {
+          method();
+      }
+  
+      public synchronized static void method(){
+          for (int i = 0; i < 5; i++) {
+              try {
+                  System.out.println("线程名为：" + Thread.currentThread().getName()
+                          + "----" + name + count++);
+                  Thread.sleep(100);
+              } catch (InterruptedException e) {
+                  e.printStackTrace();
+              }
+          }
+      }
+  
+      public static void main(String[] args) {
+          TestSynchronize test1 = new TestSynchronize("Runnable A");
+          TestSynchronize test2 = new TestSynchronize("Runnable B");
+          Thread thread1 = new Thread(test1, "threadA");
+          Thread thread2 = new Thread(test2, "threadB");
+          thread1.start();
+          thread2.start();
+      }
+  ```
+  结果为:
+  ```
+  线程名为:ThreadA------ThreadA0
+  线程名为:ThreadA------ThreadA1
+  线程名为:ThreadA------ThreadA2
+  线程名为:ThreadA------ThreadA3
+  线程名为:ThreadA------ThreadA4
+  线程名为:ThreadB------ThreadB5
+  线程名为:ThreadB------ThreadB6
+  线程名为:ThreadB------ThreadB7
+  线程名为:ThreadB------ThreadB8
+  线程名为:ThreadB------ThreadB9
+  ```
+  因为这种方式下synchronized作用的对象为类的所有对象，所以test1和test2拥有的是同一个锁，所以他们运行时也是互斥的，只有在A运行完毕之后B才会运行。
+  #### 修饰类
+  修改一个类，其作用的范围是synchronized后面括号括起来的部分，作用的对象是这个类的所有对象。其使用方式如下
+  ```
+  public void run() {
+          synchronized (TestSynchronize.class) {
+              for (int i = 0; i < 5; i++) {
+                  try {
+                      System.out.println("线程名为：" + Thread.currentThread().getName()
+                              + "----" + name + count++);
+                      Thread.sleep(100);
+                  } catch (InterruptedException e) {
+                      e.printStackTrace();
+                  }
+              }
+          }
+      }
+  ```
+  输出结果与修饰静态方法时相同。
+  
+  ### volatile
+  如果所需要同步的对象只是某一个或两个实例对象时，我们可以使用volatile关键字来代替。
+  线程读写内存变量模型如下。
+  ![c7f4c6ce.png](:storage\\9a7e1c04-4a23-4862-ae29-88dca526f5a1\\c7f4c6ce.png)
+  根据图示，线程A修改变量时需要读取本地内存中的内容，修改完后存储到本地内存在同步到主存当中。线程B需要先把主存中的变量读取到本地内存中再进行操作。当线程A和线程B同步进行时，遍会发生问题。
+  volatile关键字修饰的变量，保证了修改后的新值得可见性，使得某一线程修改的内容可以立即被其他线程获取到。同时禁止编译器和处理器对指令的重排序，从而确保多线程并发执行的正确性。即volatile关键字可以保证可见性和有序性。
+  
+  **注意：volatile关键字无法保持原子性(原子性：即操作是不可中断的，如赋值和读取操作)，所以在非原子性操作(如自增自减操作)的语句中不可以使用volatile关键字。**
+  
+  ## 3.线程池
+  
+  ### 4中线程池简介
+  newCachedThreadPool创建一个可缓存线程池，如果线程池长度超过处理需要，可灵活回收空闲线程，若无可回收，则新建线程。线程池的规模不存在限制。
+  newFixedThreadPool 创建一个固定长度线程池，可控制线程最大并发数，超出的线程会在队列中等待。
+  newScheduledThreadPool 创建一个固定长度线程池，支持定时及周期性任务执行。
+  newSingleThreadExecutor 创建一个单线程化的线程池，它只会用唯一的工作线程来执行任务，保证所有任务按照指定顺序(FIFO, LIFO, 优先级)执行。
+  
+  ### newCachedThreadPool
+  创建一个可缓存线程池，如果线程池长度超过处理需要，可灵活回收空闲线程，若无可回收，则新建线程。示例代码如下：
+  ```
+  ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
+  for (int i = 0; i < 10; i++) {
+      final int index = i;
+      try {
+          Thread.sleep(index * 1000);
+      } catch (InterruptedException e) {
+          e.printStackTrace();
+      }
+    
+      cachedThreadPool.execute(new Runnable() {
+    
+          @Override
+          public void run() {
+              System.out.println(index);
+          }
+      });
+  }
+  ```
+  
+  ### newFixedThreadPool
+  创建一个定长线程池，可控制线程最大并发数，超出的线程会在队列中等待。示例代码如下：
+  ```
+  ExecutorService fixedThreadPool = Executors.newFixedThreadPool(3);
+  for (int i = 0; i < 10; i++) {
+      final int index = i;
+      fixedThreadPool.execute(new Runnable() {
+    
+          @Override
+          public void run() {
+              try {
+                  System.out.println(index);
+                  Thread.sleep(2000);
+              } catch (InterruptedException e) {
+                  // TODO Auto-generated catch block
+                  e.printStackTrace();
+              }
+          }
+      });
+  }
+  ```
+  ### newScheduledThreadPool
+  创建一个定长线程池，支持定时及周期性任务执行。延迟执行示例代码如下：
+  ```
+  ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(5);
+  scheduledThreadPool.schedule(new Runnable() {
+    
+      @Override
+      public void run() {
+          System.out.println("delay 3 seconds");
+      }
+  }, 3, TimeUnit.SECONDS);
+  ```
+  ### newSingleThreadExecutor
+  创建一个单线程化的线程池，它只会用唯一的工作线程来执行任务，保证所有任务按照指定顺序(FIFO, LIFO, 优先级)执行。示例代码如下：
+  ```
+  scheduledThreadPool.scheduleAtFixedRate(new Runnable() {
+    
+      @Override
+      public void run() {
+          System.out.println("delay 1 seconds, and excute every 3 seconds");
+      }
+  }, 1, 3, TimeUnit.SECONDS);
+  ```
+  表示延迟1秒后每3秒执行一次。
+  ScheduledExecutorService比Timer更安全，功能更强大。
+  
+  
+  ## 4.线程管理方式
+  在Android里面依然可以使用Thread或者线程池的方式实现线程操作，但是如果涉及到对UI进行操作，还需要引入其他的线程管理方式。
+  
+  ### Handler
+  
+  **定义：** Handler主要用于接收子线程发送的数据，并用此数据配合主线程更新UI。
+  **背景：** 在我们的应用启动时便会产生一个主线程(UI线程)，主要用于界面渲染，UI控制事件分发等功能。但是在主线程当中不可以做类似于网络请求这种耗时操作，当某个操作阻塞超过5秒时便会抛出异常，所以只能把这些操作放到子线程来操作。但是因为Android主线程是线程不安全的，所有的UI操作只能放到主线程来执行，由此便产生了Handler。
+  **原理:** Android主线程存在一个消息队列，Handler通过sendMessage或者Post方法送消息，并把消息插入到消息队列当中。Looper循环检测消息队列，当发现有未处理的消息时便回调到创建Handler的线程中重写的handleMessage方法中去执行。
+  
+  #### Handler的使用
+  
+  #### Post方式
+  
+  1. 新建Thread处理耗时操作。
+  2. 创建一个 handler，通过 handler.post/postDelay，投递创建的 Runnable，在 run 方法中进行更新 UI 操作。
+  ```
+      Thread thread = new Thread(new Runnable() {
+          @Override
+          public void run() {
+              //处理线程耗时操作
+  
+              handler.post(new Runnable() {
+                  @Override
+                  public void run() {
+                      //主线程更新UI操作
+                  }
+              });
+          }
+      });
+      thread.start();
+  ```
+  #### SendMessage方式
+  1. 创建线程处理耗时操作。
+  2. 创建Message对象并进行设置。
+  3. 调用sendMessage发送消息。
+  4. 创建Hnadler并重写handleMessage方法,对消息进行处理。
+  
+  ```
+  private Handler handler = new Handler(){
+      @Override
+      public void handleMessage(Message msg) {
+          super.handleMessage(msg);
+          //根据msg.what进行消息划分
+          switch (msg.what) {      
+              case 1:
+                  //进行UI操作
+                  break;
+          }
+      }
+  };
+  
+  public class TestThread extends Thread {
+  
+      @Override
+      public void run() {
+          super.run();
+          //处理耗时操作
+    
+          //新建Message实例，
+          Message msg = Message.obtain();  
+          msg.obj = data;
+          //设置 msg.what标志位，方便进行消息类别划分。
+          msg.what=1;   
+          //发送消息
+          handler.sendMessage(msg);
+      }
+      
+  }
+     
+  TestThread thread = new TestThread();
+  thread.start();
+  ```
+  ### AsyncTask
+  **定义：**AsyncTask是android提供的轻量级的异步类,在类中实现异步操作，并提供接口反馈当前异步执行的程度(可以通过接口实现UI进度更新)，最后反馈执行的结果给UI主线程。
+  ```
+  public class TestAsyncTask extends AsyncTask<String,Float,String> {
+      /**
+       * AsyncTask的三个参数分别为Params, Progress, Result
+       * Params: 任务启动时输入的参数类型
+       * Progress: 任务进度的返回类型
+       * Result: 后台任务的返回结果列席
+       * 当某个参数不需要传递参数时，可以使用Void来代替
+       */
+  
+      /**
+       * onPreExecute()方法在后台任务进行之前执行，一般用于处理部分初始化的操作
+       * 在主线程进行。
+       */
+      @Override
+      protected void onPreExecute() {
+          super.onPreExecute();
+      }
+  
+      /**
+       * 该方法用于在后台处理耗时操作，不可以进行UI操作，可以通过publishProgress(Progress...)方法返回任务进度
+       * 在子线程进行。
+       * @param strings 参数类型，对应AsyncTask<Params, Progress, Result>的第一个参数
+       * @return
+       */
+      @Override
+      protected String doInBackground(String... strings) {
+          return null;
+      }
+  
+      /**
+       * 该方法可以对UI进行操作，可以利用传进来的进度对UI进行更新
+       * 在主线程进行
+       * @param values
+       */
+      @Override
+      protected void onProgressUpdate(Float... values) {
+          super.onProgressUpdate(values);
+      }
+  
+      /**
+       * 用来处理返回的结果，可以进行UI操作
+       * 在主线程进行
+       * @param s
+       */
+      @Override
+      protected void onPostExecute(String s) {
+          super.onPostExecute(s);
+      }
+  }
+  
+  new TestAsyncTask().execute();
+  ```
+  整个任务的执行流程为：
+  onPreExecute() --> doInBackground() --> publishProgress() --> onProgressUpdate() --> onPostExecute()
+  
+  注意：AsyncTask对象和execute()方法必须在UI线程调用,且一个任务实例只可以执行一次。
+'''
+linesHighlighted: [
+  520
+  557
+  433
+]
+isStarred: false
+isTrashed: false

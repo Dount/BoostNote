@@ -1,0 +1,40 @@
+createdAt: "2019-06-24T09:31:57.655Z"
+updatedAt: "2019-06-24T09:32:33.344Z"
+type: "MARKDOWN_NOTE"
+folder: "388e3f13721664ffa193"
+title: "类图"
+tags: []
+content: '''
+  ## 类图
+  
+  ![e95ba9e8.png](:storage\\bf2e49ad-f8aa-4687-b329-ec2de090e5d5\\e95ba9e8.png)
+  
+  1、泛化又名继承(Generalization)，带空心箭头的实线表示，箭头指向父类
+  
+  2、实现(Realization)，带空心的虚线表示
+  
+  3、关联(Association)，类与类之间的关联，它使一个类知道另一个类的属性和方法，指明事务之间的联系，如：老师和学生，妻子和丈夫。用普通箭头实线表示
+  
+  3、聚合(Aggregation)，部分可以离开整体而独立存在。用带空心菱形的实线表示
+  
+  4、组合(Composition)，同生共死，如：人和心脏。实心菱形的实线表示
+  
+  5、依赖(Dependency)，元素A的变化会影响B的变化，说明B依赖于A。普通箭头虚线表示
+  
+  各种关系的强弱顺序：
+  
+  继承=实现>组合>聚合>关联>依赖
+  
+   
+  
+  封装性：
+  
+  public表示"+"
+  
+  private表示"-"
+  
+  protected表示"#"
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

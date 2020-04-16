@@ -1,0 +1,50 @@
+createdAt: "2019-04-09T04:01:31.180Z"
+updatedAt: "2019-04-09T04:04:37.672Z"
+type: "MARKDOWN_NOTE"
+folder: "a829d630b1a42b272c49"
+title: "关于Fragment和Activity之间onCreateOptionsMenu的问题"
+tags: []
+content: '''
+  # 关于Fragment和Activity之间onCreateOptionsMenu的问题
+  
+  ## 在Activity和Fragment中onCreateOptionsMenu的实现是有细微差别的：
+  
+  在activity中：
+  ```
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+      getMenuInflater().inflate(R.menu.main, menu);
+      return super.onCreateOptionsMenu(menu);
+  }
+  ```
+  在Fragment中：
+  ```
+  @Override
+  public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+          inflater.inflate(R.menu.pictrue_list, menu);
+          super.onCreateOptionsMenu(menu,inflater);
+  }
+  ```
+  两者不同的地方在于
+  
+  （1）一个有返回值（boolean类型），一个没有返回值。
+  
+  （2）Fragment中onCreateOptionsMenu的参数多了一个MenuInflater
+  
+  ## 想让Fragment中的onCreateOptionsMenu生效必须先调用setHasOptionsMenu方法
+  
+  在nCreate中调用
+  
+  ```
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      mBucketId = getArguments().getInt(Images.Media.BUCKET_ID);
+      mCallback = new ModeCallback();
+      setHasOptionsMenu(true);
+  }
+  ```
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

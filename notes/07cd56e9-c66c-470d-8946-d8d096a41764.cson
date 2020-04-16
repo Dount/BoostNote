@@ -1,0 +1,77 @@
+createdAt: "2019-03-25T11:58:14.297Z"
+updatedAt: "2019-07-18T01:33:10.101Z"
+type: "MARKDOWN_NOTE"
+folder: "d93d185dcf894dbad7b3"
+title: "Android productFlavors"
+tags: []
+content: '''
+  # Android productFlavors
+  ## 实现打包差异化
+  ---
+  productFlavors {
+          multi_sec_high {
+              buildConfigField 'String', 'TRANSPORT', '"MULTI"'
+              buildConfigField 'String', 'SECURITY', '"HIGH"'
+          }
+          multi_sec_med {
+              buildConfigField 'String', 'TRANSPORT', '"MULTI"'
+              buildConfigField 'String', 'SECURITY', '"MED"'
+          }
+          multi_sec_low {
+              buildConfigField 'String', 'TRANSPORT', '"MULTI"'
+              buildConfigField 'String', 'SECURITY', '"LOW"'
+          }
+          multi_sec_off {
+              buildConfigField 'String', 'TRANSPORT', '"MULTI"'
+              buildConfigField 'String', 'SECURITY', '"OFF"'
+          }
+          multi_high_bandwidth {
+              buildConfigField 'String', 'TRANSPORT', '"MULTI_HB"'
+              buildConfigField 'String', 'SECURITY', '"OFF"'
+          }
+          tcp {
+              buildConfigField 'String', 'TRANSPORT', '"TCP"'
+              buildConfigField 'String', 'SECURITY', '"OFF"'
+          }
+      }
+  
+  ---
+  ## 主要内容 :books:
+  
+  上面代码主要在VRtestApp中实现多版本的调用，便捷多版本的转换
+  
+  我们可以从上面的代码中看到Gradle会在generateSources阶段为flavor生成一个BuildConfig.java文件。BuildConfig类默认提供了一些常量字段
+  
+  上面的代码会在Buildconfig类中生成TRANSPORT 字符串常量，
+  
+  ---
+  
+  if (BuildConfig.TRANSPORT.equals("MULTI")) {
+  				int securityLevel;
+  				if (BuildConfig.SECURITY.equals("HIGH")) {
+  					securityLevel = MultiplexTransportConfig.FLAG_MULTI_SECURITY_HIGH;
+  				} else if (BuildConfig.SECURITY.equals("MED")) {
+  					securityLevel = MultiplexTransportConfig.FLAG_MULTI_SECURITY_MED;
+  				} else if (BuildConfig.SECURITY.equals("LOW")) {
+  					securityLevel = MultiplexTransportConfig.FLAG_MULTI_SECURITY_LOW;
+  				} else {
+  					securityLevel = MultiplexTransportConfig.FLAG_MULTI_SECURITY_OFF;
+  				}
+  				transport = new MultiplexTransportConfig(this, APP_ID, securityLevel);
+  			} else if (BuildConfig.TRANSPORT.equals("TCP")) {
+                  transport = new TCPTransportConfig(TCP_PORT, DEV_MACHINE_IP_ADDRESS, true);
+  			} else if (BuildConfig.TRANSPORT.equals("MULTI_HB")) {
+  				MultiplexTransportConfig mtc = new MultiplexTransportConfig(this, APP_ID, MultiplexTransportConfig.FLAG_MULTI_SECURITY_OFF);
+  				mtc.setRequiresHighBandwidth(true);
+  				transport = mtc;
+  			}
+        
+  ----
+  
+  在上面的代码中可以看到 我们可以对不同的BuildConfig配置文件进行判断
+'''
+linesHighlighted: [
+  0
+]
+isStarred: false
+isTrashed: true

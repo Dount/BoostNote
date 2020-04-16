@@ -1,0 +1,28 @@
+createdAt: "2019-05-27T01:46:04.595Z"
+updatedAt: "2019-08-05T07:15:55.665Z"
+type: "MARKDOWN_NOTE"
+folder: "a829d630b1a42b272c49"
+title: "多渠道打包apk方法"
+tags: []
+content: '''
+  ## 多渠道打包apk方法
+  
+  参考链接:
+  1. [Android同一套代码打多个APP包并能够在同一个手机上安装运行](https://blog.csdn.net/qq_28261207/article/details/82783283)
+  
+  2. [AndroidStudio中修改打包生成的apk名称](https://blog.csdn.net/qq_28261207/article/details/83147347)
+  
+  3. [使用Gradle构建多个不同applicationId包](https://blog.csdn.net/tiankong1206/article/details/50436007)
+  
+  4. [多渠道打包之动态修改App名称，图标，applicationId，版本号，添加资源](https://blog.csdn.net/abc6368765/article/details/52786509)
+  
+  5. [productFlavors的全部用法 - 简书](https://www.jianshu.com/p/fe39658ca14e)
+  
+  6. [Android项目同一套代码打包多个APK，解决Installation failed with message INSTALL_FAILED_CONFLICTING_PROVIDER.](https://blog.csdn.net/qq_24834241/article/details/82455681)
+  
+  
+    
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

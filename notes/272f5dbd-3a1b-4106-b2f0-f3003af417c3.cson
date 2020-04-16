@@ -1,0 +1,273 @@
+createdAt: "2019-09-04T09:21:16.481Z"
+updatedAt: "2019-09-04T09:48:04.282Z"
+type: "MARKDOWN_NOTE"
+folder: "855b282e2a555b697afd"
+title: "Android 动画入门"
+tags: []
+content: '''
+  ## Android 动画入门
+  
+  [android---动画入门(一) - 俠客~ - 博客园](https://www.cnblogs.com/xkd-/archive/2019/02/21/10413855.html)
+  
+  android 动画分为两类,View Animation(视图动画)和property Animation(属性动画),View Animation(视图动画)包含了Tween Animation和Frame Animation, property Animation包含Value Animation和ObjectAnimation.
+  
+  View Animation(视图动画)
+  1. Tween Animation
+  2. Frame Animation
+  
+  property Animation(属性动画)
+  1. Value Animation
+  2. ObjectAnimation
+  
+  Animation类是所有动画(scale,alpha,translate,rotate)的基类,所有派生Animation的类都具有它的一些公用属性.
+  
+  1. android:duration : 一次动画的时间
+  2. android:fillBefore:动画结束是否恢复到开始前的状态,true 是
+  3. android:fillAftre:动画结束是否保持结束时的状态,true 是
+  4. android:fillEnable: 同 android:fillBefore
+  5. android:repeatCount: 动画执行次数,(在set标签下无效,要设置到具体动画中)
+  6. android:repeatMode:动画重复执行的模式:reverse 倒序回放,restart重新播放
+  7. android:interpolator: 设置插值器
+  8. android:startOffset: 延时多少毫秒开始动画
+  
+  Tween Animation(补间动画)
+  1. alpha   透明度渐变
+  2. scale   放缩
+  3. translate   移动
+  4. rotate   旋转
+  5. set   自定义组合动画
+  
+  动画的调用方式有两种,xml标签实现和代码实现
+  
+  ### (一):alpha透明度渐变
+  
+  　　alpha 动画特有的两个属性:
+  
+  android:fromAlpha="1"  动画开始时候的透明度,0~1:0表示完全透明,1表示完全不透明
+  android:toAlpha="0.1"  动画结束时候的透明度
+  
+  ```
+  <?xml version="1.0" encoding="utf-8"?>
+  <alpha xmlns:android="http://schemas.android.com/apk/res/android"
+      android:fromAlpha="1"
+      android:toAlpha="0.1"
+      android:duration="2000" 
+      android:repeatCount="5"
+      android:repeatMode="reverse"
+      >
+  </alpha>
+  ```
+  
+  ### (二):scale放缩渐变
+  
+  scale动画特有的属性:
+  1. android:fromXScale="1"  动画开始时,控件在X轴方向上的比例,1表示自身比例,0.5表示自身比例的一半,2表示自身的两倍
+  2. android:toXScale="1.4"  动画结束时,控件在X轴方向上的比例,值同上
+  3. android:fromYScale="0.4"
+  4. android:toYScale="1.4"
+  5. android:pivotX="50%"  缩放起始点X轴坐标,值有三种格式,数值,百分比,百分数p,具体含义在注里解释
+  6. android:pivotY="50%"  缩放起始点Y轴坐标
+  注:缩放起始点:默认是控件左上角的点为起始点,  数值 表示 左上角坐标点+这个数值 为起始点,百分比  表示 左上角坐标点+ 自身宽度或高度的值的百分比,百分数p 表示左上角坐标点+这个控件的父控件的宽高乘以这个百分比
+  
+  ```
+  <?xml version="1.0" encoding="utf-8"?>
+  <scale xmlns:android="http://schemas.android.com/apk/res/android"
+      android:fromXScale="0.4"
+      android:toXScale="1.4"
+      android:fromYScale="0.4"
+      android:toYScale="1.4"
+      android:pivotX="50%"
+      android:pivotY="50%"
+      android:repeatCount="3"
+      android:repeatMode="reverse"
+      android:duration="3000"
+      android:fillAfter="true"
+      >
+  </scale>
+  ```
+  ### (三):translate移动
+  translate 动画特有的属性:
+  1. android:fromXDelta="0" X轴开始坐标
+  2. android:toXDelta="80%p"  X轴结束坐标, 值可以是数值,百分比,百分比p
+  3. android:fromYDelta="0"
+  4. android;toYDelta="80%"
+  ```
+  <?xml version="1.0" encoding="utf-8"?>
+  <translate xmlns:android="http://schemas.android.com/apk/res/android"
+      android:fromXDelta="0"
+      android:toXDelta="80%p"
+      android:fromYDelta="0"
+      android:toYDelta="80%p"
+      android:duration="2000"
+      android:repeatCount="3"
+      android:repeatMode="reverse"
+      android:startOffset="1000"
+      >
+  
+  </translate>
+  ```
+  
+  ### (四):rotate 旋转渐变
+  rotate 动画特有的属性:
+  1. android:fromDegrees="0" 动画开始旋转的角度,三点钟方向为0°,6点钟方向为90°
+  2. android:toDegrees="180" 动画结束旋转的角度
+  3. android:pivotX="50%"   旋转的圆心坐标
+  4. android:pivotY="50%"  旋转的圆心坐标
+  ```
+  <?xml version="1.0" encoding="utf-8"?>
+  <rotate xmlns:android="http://schemas.android.com/apk/res/android"
+      android:fromDegrees="0"
+      android:toDegrees="180"
+      android:visible="true"
+      android:pivotX="50%"
+      android:pivotY="50%"
+      android:duration="2000"
+      android:repeatCount="3"
+      android:repeatMode="reverse"
+      >
+  </rotate>
+  ``` 
+  ### (五):set 自定义动画组合
+  
+  　　set 没有自己的特有属性,repeatCount属性不能直接再set标签下设置,设置无效,要设置在里面的具体动画中
+  ```
+  <?xml version="1.0" encoding="utf-8"?>
+  <set xmlns:android="http://schemas.android.com/apk/res/android"
+      android:duration="2000"
+      android:repeatMode="reverse"
+      android:fillAfter="true"
+  
+      >
+  
+      <alpha
+          android:fromAlpha="0.1"
+          android:toAlpha="1"
+          android:duration="5000"
+          android:repeatCount="5"
+          android:startOffset="1000"
+          />
+      <translate
+          android:fromXDelta="0"
+          android:toXDelta="10%"
+          android:fromYDelta="0"
+          android:toYDelta="0"
+          android:repeatCount="3"
+          android:repeatMode="reverse"/>
+  
+      <rotate
+          android:fromDegrees="0"
+          android:toDegrees="180"
+          android:visible="true"
+          android:pivotX="50%"
+          android:pivotY="50%"
+          android:duration="2000"
+          android:repeatCount="3"
+          android:repeatMode="reverse"/>
+      <scale
+          android:fromXScale="0.4"
+          android:toXScale="1.4"
+          android:fromYScale="0.4"
+          android:toYScale="1.4"
+          android:pivotX="50%"
+          android:pivotY="50%"
+          android:repeatCount="3"
+          android:repeatMode="reverse"
+          android:duration="3000"
+          android:fillAfter="true"/>
+  
+  </set>
+  ```
+  
+  属性介绍完了我们来实现一下:
+  
+  1.在android studio中创建 xml标签文件
+  ![1606518-20190222113254044-1361128360.png](:storage\\272f5dbd-3a1b-4106-b2f0-f3003af417c3\\9f1d89e6.png)
+  ![498fe2da.png](:storage\\272f5dbd-3a1b-4106-b2f0-f3003af417c3\\498fe2da.png)
+  结果:
+  ![d79e57a1.png](:storage\\272f5dbd-3a1b-4106-b2f0-f3003af417c3\\d79e57a1.png)
+  
+  
+  该文件也可以放在drawable目录下
+  
+  2.以set举栗子:
+  
+  准备xml标签文件set.xml
+  ```
+  <?xml version="1.0" encoding="utf-8"?>
+  <set xmlns:android="http://schemas.android.com/apk/res/android"
+      android:duration="3000"
+      android:fillAfter="true">
+   
+      <alpha android:fromAlpha="1.0"
+          android:toAlpha="0.1"/>
+      <scale android:fromXScale="0"
+          android:fromYScale="0"
+          android:toYScale="1.4"
+          android:toXScale="1.4"/>
+      <translate android:fromYDelta="0"
+          android:fromXDelta="0"
+          android:toYDelta="0"
+          android:toXDelta="50%"/>
+      <rotate android:fromDegrees="0"
+          android:toDegrees="90"
+          />
+  </set>
+  ```
+  　　
+  
+  在布局中放一个TextView
+  ```
+  <?xml version="1.0" encoding="utf-8"?>
+  <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      tools:context="com.learning.animationapplication.MainActivity">
+   
+      <TextView
+          android:id="@+id/tv"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="Hello World!"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintLeft_toLeftOf="parent"
+          app:layout_constraintRight_toRightOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          android:background="@android:color/holo_blue_bright"/>
+   
+  </android.support.constraint.ConstraintLayout>
+  ```
+  在Activity中加载动画　
+  ```
+  package com.learning.animationapplication;
+  import android.support.v7.app.AppCompatActivity;
+  import android.os.Bundle;
+  import android.view.animation.Animation;
+  import android.view.animation.AnimationUtils;
+  import android.widget.TextView;
+   
+  public class MainActivity extends AppCompatActivity {
+   
+      private TextView tv;
+      private Animation animation;
+   
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+          super.onCreate(savedInstanceState);
+          setContentView(R.layout.activity_main);
+          tv = findViewById(R.id.tv);
+          animation = AnimationUtils.loadAnimation(this, R.anim.set);//加载动画
+          tv.startAnimation(animation);//启动动画,并且是立即启动
+      }
+  }
+  ```
+'''
+linesHighlighted: [
+  13
+  124
+  160
+  174
+]
+isStarred: false
+isTrashed: false
