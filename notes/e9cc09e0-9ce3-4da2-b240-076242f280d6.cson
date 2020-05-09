@@ -1,5 +1,5 @@
 createdAt: "2019-10-16T02:39:38.018Z"
-updatedAt: "2020-04-20T09:58:03.539Z"
+updatedAt: "2020-05-09T05:43:35.577Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Java面试题"
@@ -179,6 +179,104 @@ content: '''
   ```
   如果调用 f(2)，返回值将是0，因为finally语句的返回值覆盖了try语句块的返回值。
   
+  ## 集合
+  ### 简述一下集合主要有哪些类和接口，各自有什么特点。
+  1.主要有两个接口Collection和Map.
+  2.Collection包括List,Set和Queue
+    1）List是有序的，主要包括ArrayList，LinkedList和Vector，ArrayList底层通过数组实现，线程不安全，Vector是线程安全的ArrayList，但效率较低，LinkedList底层通过双向链表实现，与ArrayList相比增删快查询慢。
+    2) Set是唯一且无序的，主要包括HashSet，LinkedHashSet和TreeSet。HashSet底层其实就是HashMap，利用了key来保证元素的唯一性。LinkedHashSet可以按照key的操作顺序排序，TreeSet支持按照默认或指定的排序规则排序。
+    3) Queue是队列结构，主要有ArrayBlockingQueue基于数组的阻塞队列、LinkedBlockingQueue基于链表的阻塞队列等
+  3.Map以key-value键值对的形式存储元素,包括：HashMap、LinkedHashMap和TreeMap。
+    1）HashMap底层通过数组+链表/红黑树实现
+    2）LinkedHashMap可以按照key的操作顺序对集合排序
+    3）TreeMap可以按照默认或指定的排序规则对集合排序
+  
+  ### HashMap是线程安全吗？
+  1.HashMap是线程不安全的，可以使用ConcurrentHashMap保证线程安全。
+  2.ConcurrentHashMap基于减小锁粒度的思想，通过使用分段锁来实现线程安全，内部细分为很多Segment数据段，默认情况下为16个，对每个Segment的数据都单独进行加锁操作，Segment的个数为锁的并发度。ConcurrentHashMap是由Segment数组和HashEntry数组组成的，Segment继承了可重入锁，HashEntry用来存储键值对数据。
+  3.Segment的结构和HashMap类似，是数组和链表结构，每个Segment里面都包含一个HashEntry数组，每个HashEntry都是一个链表结构的数据要对其进行i修改必须先获得对应的Segment锁。
+  4.多线程下只要加入的数据hashCode映射的数据段不一样就可以做到并行的线程安全。
+  
+  ### List,Set,Map有什么区别？
+  1.List是有序，可重复，有索引的集合，继承了Collection集合全部功能除了Collection的三种遍历方式外，可用索引遍历。
+  2.Set是无序，不可重复的集合，Set的实现类LinkedHashSet和TreeSet是有序的，LinkedHashSet可以按照元素插入的顺序排序，也可以按照元素操作的时间排序，TreeSet可以按照默认的比较规则或者自定义的比较规则排序。
+  [Java中的Set总结 - 简书](https://www.jianshu.com/p/d6cff3517688)
+  
+  3.Map是无序，以Key-value的键值对形式存储元素的集合。键不可重复，值无需求，重复的键对应的值会覆盖之前的值。
+  
+  ### HashSet是如何去重的？
+  1.对于基本类型的包装类，可以直接按值进行比较。
+  2.对于引用数据类型，会先比较HashCode()返回值是否相同，如果不同则代表不是同一个对象。如果相同继续比较equals（） 方法返回值是否相同，都相同说明是同一个对象。
+  3.如果希望内容相同的对象就代表对象相同，那么除了重写equals()方法还要重写hashCode()方法，因为内容相同的对象hashCode()值不一定相同，因为只有hashCode()和equals()都相同才说明是同一个对象。
+  
+  ### HashMap和HashSet的底层是怎么实现的？
+  1.JDK1.8之前，HashMap的底层是数组加链表实现。数组中的每个元素都是一个单链表，链表中的每个元素都是Entry的实现类Node的一个实例，Node包括4个属性：key,value,hash值和用于指向单链表下一个元素的next.
+  2.HashMap在查找数据时，根据hash值可以快速定位到数组的具体下标，然后对链表进行遍历查找数据的时间复杂度为O(n)
+  3.JDK1.8之后， HashMap底层改为数组+链表或红黑树，当链表中的元素超过8个之后，HashMap会将链表结构转换未红黑树以提高查询效率，时间复杂度为O(logn)。
+  4.HashSet的底层是基于HashMap实现的，HashSet中的元素只是存放在了底层HashMap的key上， 而value使用一个static final的Object对象标识。因此HashSet 的实现比较简单，相关操作基本上都是直接调用底层HashMap的相关方法来完成的。
+  
+  ### Collection和Collections有什么区别
+  1.Collection是一个集合接口，它包括List有序结合，Set无序集合，Queue队列等。
+  2.Collections则是Collection的一个工具类，为Collection类型的对象提供了很多方便的方法，例如addAll 可以直接对Collection集合批量的添加元素，shuffle可以随机打乱List集合的元素顺序，sort可以对List集合进行默认或按比较器进行排序。
+  
+  ### 迭代器是什么？
+  1.迭代器实现了iterator接口，是用于遍历Collection集合元素的一个指针。
+  2.主要有三个方法
+    1）通过iterator()获得集合的迭代器
+    2）通过hasNext()判断集合当中是否还有元素，如果有返回true,没有则返回false. 初始化迭代器位于第一个元素之前。
+    3）通过next()获取集合的下一个元素，并向后移动一个元素的单位。
+  
+  ### Queue接口中add()/offer(),remove()/poll(),element()/peek()方法有什么区别？
+  1.add()和offer()都是向队列尾部插入一个元素，区别是当超出队列界限时，add方法会抛出异常，而offer会返回false.
+  2.remove()和poll都是从队列头部移除一个元素并返回，区别是队列为空时remove()方法抛出异常，poll()方法则是返回null值。
+  3.element()和peek()都是用于查询队列头部的元素，区别是队列为空时，element抛出一个异常，而peek返回null.
+  
+  ### 有哪些线程安全的集合类？
+  1.Vector,是线程安全的ArrayList,底层用数组实现，通过synchronized修饰方法保证线程安全。
+  2.HashTable是线程安全的HashMap,继承自Dictionary,通过synchronized修饰方法保证线程安全。性能较差
+  3.ConcurentHashMap,线程安全的HashMap,通过分段锁实现线程安全，性能较好。
+  
+  ## 集合（补充）
+  Java集合类主要由两个接口派生出：Collection和Map，这两个接口是Java集合的根接口。
+  
+  Collection接口是集合类的根接口，Java中没有提供这个接口的直接的实现类。但是却让其被继承产生了两个接口，就是 Set和List。Set中不能包含重复的元素。List是一个有序的集合，可以包含重复的元素，提供了按索引访问的方式。
+  
+  Map是Java.util包中的另一个接口，它和Collection接口没有关系，是相互独立的，但是都属于集合类的一部分。Map包含了key-value对。Map不能包含重复的key，但是可以包含相同的value。
+  
+  ### List和Set比较
+  List,Set都是继承自Collection接口，Map则不是; List特点：元素有放入顺序，元素可重复; Set特点：元素无放入顺序，元素不可重复，重复元素会覆盖掉，（注意：元素虽然无放入顺序，但是元素在set中的位置是有该元素的HashCode决定的，其位置其实是固定的，加入Set 的Object必须定义equals()方法; 
+  
+  ### List和Vector比较
+  Vector是多线程安全的，线程安全就是说多线程访问同一代码，不会产生不确定的结果。而ArrayList不是，这个可以从源码中看出，Vector类中的方法很多有synchronized进行修饰，这样就导致了Vector在效率上无法与ArrayList相比；
+  两个都是采用的线性连续空间存储元素，但是当空间不足的时候，两个类的增加方式是不同，Vector可以设置增长因子，而ArrayList不可以。
+  
+  ## 多线程
+  ### 创建线程有哪几种实现方式？分别有什么优缺点？
+  1.继承Thread 类，重写run()方法
+    优点：编码简单，
+    缺点：不能继承其它类
+  2.实现Runnable接口，重写run()方法，并将该实现类作为参数传入Thread构造器。
+    优点：可以继承其它类，避免了单继承的局限性；适合多个相同程序代码的线程共享一个资源，实现解耦操作，代码和线程独立。
+    缺点：实现相对复杂
+  3.实现Callable接口，重写Call()方法，并包装成FutureTask对象，再作为参数传入Thread构造器。
+    优点:是相比方式二可以获取返回值。
+    缺点：实现复杂。
+  4.通过线程池创建。
+  
+  ### 线程有哪些状态
+  1.New:用new操作创建一个新线程，此时程序还未开始运行线程中的代码
+  2.Runnable: 调用start()方法后进入可运行状态。
+  3.Blocked:阻塞状态，内部锁获取失败时进入阻塞状态。
+  4.Waiting:等待其他线程唤醒时进入等待状态。
+  5.Timed Waiting:计时等待，带超时参数的方法，例如Sleep(Long time)
+  6.Terminated:终止状态，线程正常运行完毕或未捕获异常终止。
+  
+  ### 多线程不可见问题的原因和解决方式？
+  1.不可见的原因是每个线程有自己的工作内存，线程都是从主内存拷贝共享变量的副本值。每个线程都是在自己的工作内存操作共享变量的。
+  2.解决方式：
+    1）加锁:获得锁后线程会清空工作内存，从主内存拷贝共享变量最新的值成为副本，修改后刷新会主内存，再释放锁。
+    2）使用volatile关键字：被volatile 修饰的变量会通知其他线程之前读取到的值已失效，线程会加载最新值到自己的工作内存。
+  
   ## java的类加载过程
   [深入浅出Java类加载过程 - 神仙果 - 博客园](https://www.cnblogs.com/luohanguo/p/9469851.html)
   
@@ -324,20 +422,6 @@ content: '''
   
   新生代每次收集都有大量对象死去，只有少量存活，那就选用复制算法，复制的对象数较少就可完成收集。 老年代对象存活率高，使用标记-压缩算法，以提高垃圾回收效率。
   
-  ## 集合（补充）
-  Java集合类主要由两个接口派生出：Collection和Map，这两个接口是Java集合的根接口。
-  
-  Collection接口是集合类的根接口，Java中没有提供这个接口的直接的实现类。但是却让其被继承产生了两个接口，就是 Set和List。Set中不能包含重复的元素。List是一个有序的集合，可以包含重复的元素，提供了按索引访问的方式。
-  
-  Map是Java.util包中的另一个接口，它和Collection接口没有关系，是相互独立的，但是都属于集合类的一部分。Map包含了key-value对。Map不能包含重复的key，但是可以包含相同的value。
-  
-  ### List和Set比较
-  List,Set都是继承自Collection接口，Map则不是; List特点：元素有放入顺序，元素可重复; Set特点：元素无放入顺序，元素不可重复，重复元素会覆盖掉，（注意：元素虽然无放入顺序，但是元素在set中的位置是有该元素的HashCode决定的，其位置其实是固定的，加入Set 的Object必须定义equals()方法; 
-  
-  ### List和Vector比较
-  Vector是多线程安全的，线程安全就是说多线程访问同一代码，不会产生不确定的结果。而ArrayList不是，这个可以从源码中看出，Vector类中的方法很多有synchronized进行修饰，这样就导致了Vector在效率上无法与ArrayList相比；
-  两个都是采用的线性连续空间存储元素，但是当空间不足的时候，两个类的增加方式是不同，Vector可以设置增长因子，而ArrayList不可以。
-  
   ## 6、常量池
   ### 6.1 Integer中的128(-128~127)
   当数值范围为-128~127时：如果两个new出来Integer对象，即使值相同，通过“==”比较结果为false，但两个对象直接赋值，则通过“==”比较结果为“true，这一点与String非常相似。 
@@ -345,8 +429,11 @@ content: '''
   ### 6.2 为什么是-128~127
   在Integer类中有一个静态内部类IntegerCache，在IntegerCache类中有一个Integer数组，用以缓存当数值范围为-128~127时的Integer对象。
   
-  
+  ## 文献
+  [【7万字干货】2021Java实习必看面试两百题解析_资源分享_牛客网](https://www.nowcoder.com/discuss/395523?type=0&order=0&pos=16&page=0)
 '''
-linesHighlighted: []
+linesHighlighted: [
+  174
+]
 isStarred: false
 isTrashed: false
