@@ -1,5 +1,5 @@
 createdAt: "2019-10-16T02:39:38.018Z"
-updatedAt: "2020-05-12T05:28:24.440Z"
+updatedAt: "2020-05-27T05:30:57.702Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Java面试题"
@@ -305,8 +305,9 @@ content: '''
   3.cccvolatile是一种轻量级的同步机制，在访问volatile修饰的变量时并不会执行加锁操作，线程不会阻塞，使用synchronized加锁会阻塞线程。
   
   ### 讲一讲ReentrantLock
-  1.ReentrantLock是Lock接口的实现类，是一个可重入式的独占锁，通过AQS实现。
-  2.支持公平锁与非公平锁，还提供了可响应中断锁（线程在等待锁的过程中可以根据需要取消对锁的请求，通过interrupt方法中断）、可轮询锁（通过tryLock获取锁，如果有可用锁返回true否则立即返回false）、定时锁（通过带long时间参数的tryLock方法获取锁，如果在给定时间内获取到可用锁且当前线程未被中断返回true，如果超过指定时间则返回false，如果获取锁时被终断则抛出异常并清除已终止状态）等避免死锁的方法。③通过lock和unlock方法显式地加锁和释放锁。
+  1.ReentrantLock是Lock接口的实现类，是一个可重入锁，通过AQS实现。
+  2.支持公平锁与非公平锁，还提供了可响应中断锁（线程在等待锁的过程中可以根据需要取消对锁的请求，通过interrupt方法中断）、可轮询锁（通过tryLock获取锁，如果有可用锁返回true否则立即返回false）、定时锁（通过带long时间参数的tryLock方法获取锁，如果在给定时间内获取到可用锁且当前线程未被中断返回true，如果超过指定时间则返回false，如果获取锁时被终断则抛出异常并清除已终止状态）等避免死锁的方法。
+  3.通过lock和unlock方法显式地加锁和释放锁。
   
   ### synchronized和ReentrantLock有哪些区别？
   1.synchronized是隐式锁，ReentrantLock是显式锁，使用时必须在finally代码块中进行释放锁的操作。
@@ -348,8 +349,9 @@ content: '''
   3.提高juc的locks包中ReadWriteLock的实现类ReentrantReadWriteLock的readLock()和writeLock()来分别获取读锁和写锁。
   
   ### 讲一讲共享锁与排它锁
-  1.共享锁：允许多个线程同时获取该锁，并发访问共享资源，ReentrantReadWriteLock的读锁为共享锁的实现。②排它锁：也叫互斥锁 ，每次只允许有一个线程独占该锁，ReentrantLock为排它锁的实现。
-  2.排它锁是一种悲观的加锁策略，同一时刻只允许一个线程读取锁资源，限制了读操作的并发性，因为并发读线程并不会影响数据的一致性，因此共享锁采用了乐观的加锁策略，允许多个执行读操作的线程同时访问共享资源。
+  1.共享锁：允许多个线程同时获取该锁，并发访问共享资源，ReentrantReadWriteLock的读锁为共享锁的实现。
+  2.排它锁：也叫互斥锁 ，每次只允许有一个线程独占该锁，ReentrantLock为排它锁的实现。
+  3.排它锁是一种悲观的加锁策略，同一时刻只允许一个线程读取锁资源，限制了读操作的并发性，因为并发读线程并不会影响数据的一致性，因此共享锁采用了乐观的加锁策略，允许多个执行读操作的线程同时访问共享资源。
   
   ### 锁有哪些状态？
   1. 无锁，偏向锁，轻量级锁和重量级锁。
@@ -364,6 +366,88 @@ content: '''
   3.读分离：指根据不同的应用场景将锁的功能进行分离以应对不同的变化，最常见的锁分离思想就是读写锁，这样既保证了线程安全又提高了性能。
   4.锁粗化：指为了保障性能，会要求尽可能将锁的操作细化以减少线程持有锁的时间，但如果锁分的太细反而会影响性能提升，这种情况下建议将关联性强的锁操作集中处理。
   5.锁消除：注意代码规范，消除不必要的锁来提高性能。
+  
+  ### 线程池是什么？为什么需要线程池
+  1.在生产中为每一个任务创建一个线程存在一些缺陷，如果无限制地大量创建线程会消耗很多资源，影响系统稳定性和性能，产生内存溢出等问题。
+  2.线程池是管理一组同构工作线程的资源池，线程池与工作队列密切相关，工作队列中保存了所有需要等待执行的任务。工作线程的任务很简单，从工作队列获取任务，执行任务，返回线程池并等待下一次任务。
+  3.线程池通过重用现有的线程，可以在处理多个请求时分摊线程在创建和撤销过程中的开销，另一个好处是当请求到达时工作线程通常已经存在，不会出现等待线程而延迟任务的执行，提高了响应性。通过调整线程池的大小，可以创建足够多的线程保持处理器处于忙碌状态，同时还可以防止线程过多导致内存资源耗尽。
+  
+  ### 创建线程池时，ThreadPoolExecutor构造器中都有哪些参数，有什么含义?
+  1.corePoolSize： 线程池核心大小，即在没有任务执行时线程池的大小，并且只有在工作队列满了的情况下才会创建超出这个数量的线程。
+  2.maximumPoolSize： 线程池最大大小，表示可同时活动的线程数量的上限。
+  3.keepAliveTime：存活时间，如果某个线程的空闲时间超过了存活时间，那么将被标记为可回收的，并且当线程池的当前大小超过基本大小时，这个线程将被终止。
+  4.unit： 存活时间的单位，可选的参数为TimeUnit枚举中的几个静态变量： NANOSECONDS、MICROSECONDS、MILLISECONDS、SECONDS。
+  5.workQueue： 线程池所使用的阻塞队列。
+  6.thread factory：线程池使用的创建线程工厂方法，可省略，将使用默认工厂。
+  7.handler：所用的拒绝执行处理策略，可省略，将使用默认拒绝执行策略。
+  
+  ### 创建线程池的方法有哪些？
+  可以通过Executors的静态工厂方法创建线程池，内部通过重载ThreadExecutorPool不同的构造器创建线程池。
+  1.newFixedThreadPool:
+  作用：创建一个可重用固定线程数的线程池，以共享的无界队列方式来运行这些线程。在任意点，在大多数 nThreads 线程会处于处理任务的活动状态。如果在所有线程处于活动状态时提交附加任务，则在有可用线程之前，附加任务将在队列中等待。如果在关闭前的执行期间由于失败而导致任何线程终止，那么一个新线程将代替它执行后续的任务（如果需要）。在某个线程被显式地关闭之前，池中的线程将一直存在。
+  
+  特征： 
+  （1）线程池中的线程处于一定的量，可以很好的控制线程的并发量 
+  （2）线程可以重复被使用，在显示关闭之前，都将一直存在 
+  （3）超出一定量的线程被提交时候需在队列中等待
+  
+  创建方式： 
+  （1）Executors.newFixedThreadPool(int nThreads)；//nThreads为线程的数量 
+  （2）Executors.newFixedThreadPool(int nThreads，ThreadFactory threadFactory)；//nThreads为线程的数量，threadFactory创建线程的工厂方式'
+  
+  2.newCachedThreadPool:
+  作用：创建一个可根据需要创建新线程的线程池，但是在以前构造的线程可用时将重用它们，并在需要时使用提供的 ThreadFactory 创建新线程。
+  
+  特征： 
+  （1）线程池中数量没有固定，可达到最大值（Interger. MAX_VALUE） 
+  （2）线程池中的线程可进行缓存重复利用和回收（回收默认时间为1分钟） 
+  （3）当线程池中，没有可用线程，会重新创建一个线程
+  
+  创建方式： Executors.newCachedThreadPool();
+  
+  3.newSingleThreadExecutor:
+  作用：创建一个使用单个 worker 线程的 Executor，以无界队列方式来运行该线程。（注意，如果因为在关闭前的执行期间出现失败而终止了此单个线程，那么如果需要，一个新线程将代替它执行后续的任务）。可保证顺序地执行各个任务，并且在任意给定的时间不会有多个线程是活动的。与其他等效的 newFixedThreadPool(1) 不同，可保证无需重新配置此方法所返回的执行程序即可使用其他的线程。
+  
+  特征： 
+  （1）线程池中最多执行1个线程，之后提交的线程活动将会排在队列中以此执行
+  
+  创建方式： 
+  （1）Executors.newSingleThreadExecutor() ； 
+  （2）Executors.newSingleThreadExecutor(ThreadFactory threadFactory)；// threadFactory创建线程的工厂方式
+  
+  4.newScheduledThreadPool:
+  作用： 创建一个线程池，它可安排在给定延迟后运行命令或者定期地执行。
+  
+  特征： 
+  （1）线程池中具有指定数量的线程，即便是空线程也将保留 
+  （2）可定时或者延迟执行线程活动
+  
+  创建方式： 
+  （1）Executors.newScheduledThreadPool(int corePoolSize)；// corePoolSize线程的个数 
+  （2）newScheduledThreadPool(int corePoolSize, ThreadFactory threadFactory)；// corePoolSize线程的个数，threadFactory创建线程的工厂
+  
+  5.newSingleThreadScheduledExecutor
+  作用： 创建一个单线程执行程序，它可安排在给定延迟后运行命令或者定期地执行。
+  
+  特征： 
+  （1）线程池中最多执行1个线程，之后提交的线程活动将会排在队列中以此执行 
+  （2）可定时或者延迟执行线程活动
+  
+  创建方式： 
+  （1）Executors.newSingleThreadScheduledExecutor() ； 
+  （2）Executors.newSingleThreadScheduledExecutor(ThreadFactory threadFactory) ；//threadFactory创建线程的工厂
+  
+  
+  ### 线程池的工作原理？
+  [Java并发编程：线程池的使用 - Matrix海子 - 博客园](https://www.cnblogs.com/dolphin0520/p/3932921.html)
+  
+  ### Executor 与Executors的区别
+  1.Executor 接口对象能执行我们的线程任务；
+  2.Executors 工具类的不同方法按照我们的需求创建了不同的线程池，来满足业务的需求。
+  ExecutorService 接口继承了Executor接口并进行了扩展，提供了更多的方法，我们能够获得任务执行的状态并且可以获取任务的返回值。
+  
+  ### 简述ExecutorService的生命周期
+  
   
   ## java的类加载过程
   [深入浅出Java类加载过程 - 神仙果 - 博客园](https://www.cnblogs.com/luohanguo/p/9469851.html)
