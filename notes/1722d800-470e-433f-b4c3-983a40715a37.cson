@@ -1,0 +1,129 @@
+createdAt: "2020-05-17T07:15:49.654Z"
+updatedAt: "2020-05-31T09:18:55.050Z"
+type: "MARKDOWN_NOTE"
+folder: "bfd1eca2e356e7181dfa"
+title: "即时通讯项目里面的语音处理-基础实现篇"
+tags: []
+content: '''
+  # 即时通讯项目里面的语音处理-基础实现篇
+  [TOC]
+  
+  ## 第1章 课程介绍
+  
+  ### 1-1 IM应用语音功能概述
+  IM 应用简介:
+  1、IM(Instant Message)即时通讯
+  2、消息内容不大，传输快速
+  3、即时到达，实时通知
+  
+  语音功能简介：
+  1.控制消息大小，语音时长在一分钟以内
+  2.数据压缩，减小传输数据量
+  3.长连接接收通知，声音文件单独下载
+  
+  语音功能流程：
+  ![搜狗截图20年05月17日1525_1.png](:storage\\1722d800-470e-433f-b4c3-983a40715a37\\c0e32b6c.png)
+  
+  主要API
+  声音采集:
+  MediaRecorder:直接录制成文件并且保存起来。
+  AudioRecord：直接把声音实时的字节数据返还给我们。
+  
+  声音播放：
+  MediaPlayer:提供基于文件播放的API
+  AudioTrack:提供基于字节数据播放的API
+  
+  多线程：
+  ExecutorService
+  
+  使用场景：
+  基于文件:HTTP文件上传下载。
+  使用MediaRecorder,MediaPlayer.
+  
+  基于字节流：TCP/WebSocket
+  使用AudioRecord,AudioTrack
+  
+  声音效果处理:
+  1、音量可视化
+  2、变速播放
+  3、特殊音效
+  
+  ### 1-2 课程涉及到的关键技术
+  关键技术：
+  1.安卓系统API的使用
+  2.多线程处理
+  
+  录音API的使用：
+  1.MediaRecorder 基于文件录音，方便
+  2.AudioRecord 基于字节流录音，灵活
+  
+  播放API的使用：
+  1.MediaPlayer 基于文件播放，方便
+  2.AudiaTrack 基于字节流播放，灵活
+  
+  多线程处理：ExecutorService
+  1.使用简单，功能强大
+  2.内置各种线程组，线程池
+  
+  ## 第2章 两种模式进行声音采集
+  ### 2-5 录音过程多线程处理
+  涉及哪些多线程问题：
+  1.防止阻塞主线程，提高App响应能力
+  2.主线程和后台线程状态同步
+  3.录音JNI函数不能多线程调用，避免闪退。
+  提高App响应能力：
+  1.主线程16ms执行限制，不能执行I/O等耗时操作
+  2.模拟器：文件模式开启录音耗时20~30ms,停止录音耗时30~50ms
+  3.字节流模式需要循环读写数据，必须在后台线程。
+  主线程和后台线程状态同步：
+  1.后台线程在循环中读状态值，主线程改变状态值让后台线程退出。
+  2.不需要synchronized互斥访问。
+  3.需要volatile保证主线程的修改后台线程可见。
+  避免录音JNI函数闪退
+  
+  ### 2-6录音函数的关键参数分析
+  文件模式
+  1.setAudioSource
+    1）麦克风：MediaRecorder.AudioSource.MIC
+    2）语音识别：VOICE_RECOGNITION
+    3）语音通话：VOICE_COMMUNICATION
+  
+  2.setOutputFormat/setAudioEncoder
+    1）文件容器：MediaRecorder.OutputFormat.MPEG_4
+    2）声音编码：MediaRecorder.AudioEncoder.ACC
+  
+  3.setAudioSamplingRate
+    1）说话声音是模拟信号，需要采样为数字信号
+    2）采样频率越高（密集），数据越大，音质越好
+    3）常用频率：8KHZ,11.025KHZ,22.05KHZ,16KHZ,37.8KHZ,44.1KHZ
+  
+  4.setAudioEncodingBitRate
+    1）声音编码，码率越大，压缩越小，音质越好
+    2）AAC HE(Hight Efficiency):32kbps~96kpbs,码率低，音质一般。
+    3）ACC LC(Low Complexity):96kbps~192kbps,平衡低码率和高品质。
+  
+  字节流模式
+  1.channelConfig
+    1)音频的采集和播放可以叠加
+    2)同时从多个音频源采集，分别输出到不同的扬声器。
+    3)单声道（Mono）和双声道(Sterer)比较常见
+  
+  2.audioFormat
+    1)量化精度：原始PCM数据，每个采样点的数据大小
+    2)4bit,8bit,16bit,32bit 位数越多，音质越好，数据越大
+    3)16bit兼容所有安卓手机。
+  
+  课程小结
+  1.录音/播放功能回顾
+    1）文件模式：使用方便，
+    2）字节流模式：使用复杂，但更灵活
+  2.后台线程操作，不阻塞主线程，后台单线程，防止JNI闪退
+  3.主线程，后台线程数据同步，volatile
+  
+  
+  
+  
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false
