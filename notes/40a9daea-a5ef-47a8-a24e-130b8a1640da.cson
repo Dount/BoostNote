@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-06-30T05:27:32.692Z"
+updatedAt: "2020-06-30T08:42:49.264Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -314,35 +314,37 @@ content: '''
   我们知道，一个应用中可能有多个 Activity，而这些 Activity 被以栈的形式管理。当我们新打开 Activity 或者按返回时，会导致 Activity 的入栈/出栈。
   Task 是指在执行特定任务时与用户交互的一系列 Activity。 这些 Activity 按照各自的打开顺序排列在堆栈中。
   
+  
   ### 4.4 ActivityThread类
   1. 在Android中它就代表了Android的主线程，注意是代表而不是说它就是一个Thread类
   2. 它是创建完新进程之后（肯定是在一个线程中啊），main函数被加载，然后执行一个loop的循环使当前线程进入消息循环，并且作为主线程。
   3. 接下来还会初始化很多必要的属性. 它的很多成员变量和内部类十分的重要，深入理解这些成员变量有助于我们进一步的认识Android系统的各个组件的交互。
   
-  ### 4.5 ActivityManagerService[AMS]
+  ### 4.5 拓展
+  #### 4.5.1 ActivityManagerService[AMS]
   AMS是系统的引导服务，应用进程的启动、切换和调度、四大组件的启动和管理都需要AMS的支持。
   [ActivityManagerService 你了解多少？ - Android - 掘金](https://juejin.im/entry/582d319e0ce463006ce68110)
   
-  ### 4.6 ActivityStarter
+  #### 4.5.2 ActivityStarter
   ActivityStarter是加载Activity的控制类，收集所有的逻辑来决定如何将Intent和Flags转为Activity并将其与Task和Stack关联。
   
-  ### 4.7 ActivityStackSupervisor
+  #### 4.5.3 ActivityStackSupervisor
   AMS 通过操作ActivityStackSupervisor来管理Activity
   
-  ### 4.8 ActivityStack
+  #### 4.5.4 ActivityStack
   ActivityStack从名称来看是跟栈相关的类，其实它是一个管理类，用来管理系统所有Activity的各种状态。它由ActivityStackSupervisor来进行管理的，而ActivityStackSupervisor在AMS中的构造方法中被创建。
   
-  ### 4.9 ApplicationThread
+  #### 4.5.5 ApplicationThread
   它是ActivityThread的私有内部类，也是一个Binder对象。在此处它是作为IApplicationThread对象的server端等待client端 的请求然后进行处理，最大的client就是AMS.
   
-  ### 4.10 Context,Activity,Application的关系
+  #### 4.5.6 Context,Activity,Application的关系
   相同：Activity和Application都是Context的子关系
   不同：
      1.维护的生命周期不同
      2.Context维护的是当前Activity的生命周期
      3.Application维护的是整个项目的周期
   
-  ### 4.11 Context
+  ### 4.6 Context
   1.描述的一个应用程序环境的信息即上下文的意思，在实际应用中它也确实是起到了管理 上下文环境中各个参数和变量的总用,方便我们可以简单的访问到各种资源。
   2.Context是一个接口，实现该接口的具体实现类Contextlml
   3.通过它我们可以获取应用程序的资源和类，也包括一些应用级别软件，例如，启动一个Activity,发送广播，接受intent信息等。
@@ -466,12 +468,14 @@ content: '''
   **冷启动优化** 
   减少在Application和第一个Activity的onCreate()方法的工作量； 不要让Application参与业务的操作； 不要在Application进行耗时操作； 不要以静态变量的方式在Application中保存数据； 减少布局的复杂性和深度；
   
+  ## 文献
   
+  [jeanboy_jeanboydev_CSDN博客-Android进阶,Java基础,Android进阶领域博主](https://blog.csdn.net/freekiteyu/article/list/1)
 '''
 linesHighlighted: [
   159
-  339
-  400
+  341
+  402
 ]
 isStarred: false
 isTrashed: false
