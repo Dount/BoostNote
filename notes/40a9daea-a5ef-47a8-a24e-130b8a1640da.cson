@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-06-22T06:55:45.494Z"
+updatedAt: "2020-06-30T05:27:32.692Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -180,7 +180,7 @@ content: '''
   ### 4.2 Activity生命周期
   ![16bff4353c5b177c.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\51da952a.png)
   
-  #### Activity的形态
+  #### 4.2.1 Activity的形态
   **Active/Running:** 
   Activity处于活动状态，此时Activity处于栈顶，是可见状态，可与用户进行交互
   
@@ -193,7 +193,7 @@ content: '''
   **Killed:**
   当Activity被系统回收掉时，Activity就处于Killed状态。
   
-  #### Activity的生命周期
+  #### 4.2.2 Activity的生命周期
   所谓的典型的生命周期就是在有用户参与的情况下，Activity经历从创建，运行，停止，销毁等正常的生命周期过程。
   
   **onCreate**
@@ -218,11 +218,135 @@ content: '''
   **onDestroy**
   此时Activity正在被销毁，也是生命周期最后一个执行的方法，一般我们可以在此方法中做一些回收工作和最终的资源释放。
   
-  **总结**
-  当Activity启动时，依次会调用onCreate(),onStart(),onResume()，
-  当Activity退居后台时（不可见，点击Home或者被新的Activity完全覆盖），onPause()和onStop()会依次被调用。
-  当Activity重新回到前台（从桌面回到原Activity或者被覆盖后又回到原Activity）时，onRestart()，onStart()，onResume()会依次被调用。
-  当Activity退出销毁时（点击back键），onPause()，onStop()，onDestroy()会依次被调用，到此Activity的整个生命周期方法回调完成。
+  1) 当Activity启动时，依次会调用onCreate(),onStart(),onResume()，
+  2) 当Activity退居后台时（不可见，点击Home或者被新的Activity完全覆盖），onPause()和onStop()会依次被调用。
+  3) 当Activity退居后台且系统内存不足， 系统会杀死这个后台状态的Activity，若再次回到这个Activity,则会走onCreate()-->onStart()--->onResume()
+  4) 当Activity返回前台（从桌面回到原Activity或者被覆盖后又回到原Activity）时，onRestart()，onStart()，onResume()会依次被调用。
+  5) 当Activity退出销毁时（点击back键），onPause()，onStop()，onDestroy()会依次被调用，到此Activity的整个生命周期方法回调完成。
+  6) 锁定屏与解锁屏幕 只会调用onPause()，而不会调用onStop方法，开屏后则调用onResume()
+  7) 两个Activity之间切换: Activity A 启动另一个Activity B，回调如下:Activity A 的onPause() → Activity B的onCreate() → onStart() → onResume() → Activity A的onStop();如果B是透明主题又或则是个DialogActivity，则不会回调A的onStop；
+  
+  #### 4.2.3 onSaveInstanceState() onRestoreInstanceState()
+  1. onSaveInstanceState()
+  (1)、当用户按下HOME键时。
+  (2)、长按HOME键，选择运行其他的程序时。 
+  (3)、按下电源按键（关闭屏幕显示）时。
+  (4)、从activity A中启动一个新的activity时。
+  (5)、屏幕方向切换时，例如从竖屏切换到横屏时。
+  
+  2. onRestoreInstanceState()
+  onRestoreInstanceState()被调用的前提是，activity A“确实”被系统销毁了。
+  
+  3. 屏幕旋转测试
+  android:screenOrientation="portrait"
+  去掉，支持转屏。然后就一定会触发onSaveInstanceState()和onRestoreInstanceState()。
+  
+  4. 保存Activity状态
+  当Activity开始停止时，系统会调用，onSaveInstanceState()以便您的Activity可以使用一组键值对来保存状态信息。此方法的默认实现保存有关Activity视图层次结构状态的信息，例如EditText小部件中的文本或ListView的滚动位置。
+  为了保存Activity的附加状态信息，您必须实现onSaveInstanceState()并向对象添加键值对Bundle
+  ```
+  static final String STATE_SCORE = "playerScore";
+  static final String STATE_LEVEL = "playerLevel";
+  ...
+  
+  @Override
+  public void onSaveInstanceState(Bundle savedInstanceState) {
+      // 保存用户自定义的状态
+      savedInstanceState.putInt(STATE_SCORE, mCurrentScore);
+      savedInstanceState.putInt(STATE_LEVEL, mCurrentLevel);
+      
+      // 调用父类交给系统处理，这样系统能保存视图层次结构状态
+      super.onSaveInstanceState(savedInstanceState);
+  }
+  ```
+  
+  5. 恢复Activity状态
+  当Activity在之前被破坏后重新创建时，您可以从Bundle系统通过您的Activity中恢复您的保存状态。这两个方法onCreate()和onRestoreInstanceState()回调方法都会收到Bundle包含实例状态信息的相同方法。
+  
+  因为onCreate()调用该方法是否系统正在创建一个新的Activity实例或重新创建一个以前的实例，所以必须Bundle在尝试读取之前检查该状态是否为空。如果它为空，那么系统正在创建一个Activity的新实例，而不是恢复之前被销毁的实例。
+  ```
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState); // 记得总是调用父类
+     
+      // 检查是否正在重新创建一个以前销毁的实例
+      if (savedInstanceState != null) {
+          // 从已保存状态恢复成员的值
+          mCurrentScore = savedInstanceState.getInt(STATE_SCORE);
+          mCurrentLevel = savedInstanceState.getInt(STATE_LEVEL);
+      } else {
+          // 可能初始化一个新实例的默认值的成员
+      }
+      ...
+  }
+  ```
+  onCreate()可以选择执行onRestoreInstanceState()，而不是在系统调用onStart()方法之后恢复状态。系统onRestoreInstanceState()只有在存在保存状态的情况下才会恢复，因此您不需要检查是否Bundle为空：
+  ```
+  public void onRestoreInstanceState(Bundle savedInstanceState) {
+      // 总是调用超类，以便它可以恢复视图层次超级
+      super.onRestoreInstanceState(savedInstanceState);
+     
+      // 从已保存的实例中恢复状态成员
+      mCurrentScore = savedInstanceState.getInt(STATE_SCORE);
+      mCurrentLevel = savedInstanceState.getInt(STATE_LEVEL);
+  }
+  ```
+  
+  ### 4.3 启动模式
+  #### 4.3.1 standard
+  默认模式，可以不用写配置。在这个模式下，都会默认创建一个新的实例。因此，在这种模式下，可以有多个相同的实例，也允许多个相同Activity叠加。
+  
+  #### 4.3.2 singleTop
+  可以有多个实例，但是不允许多个相同Activity叠加。即，如果Activity在栈顶的时候，启动相同的Activity，不会创建新的实例，而会调用其onNewIntent方法。
+  
+  #### 4.3.3 singleTask
+  只有一个实例。在同一个应用程序中启动他的时候，若Activity不存在，则会在当前task创建一个新的实例，若存在，则会把task中在其之上的其它Activity destory掉并调用它的onNewIntent方法。
+  
+  如果是在别的应用程序中启动它，则会新建一个task，并在该task中启动这个Activity，singleTask允许别的Activity与其在一个task中共存，也就是说，如果我在这个singleTask的实例中再打开新的Activity，这个新的Activity还是会在singleTask的实例的task中。
+  
+  [singleTask启动模式引发的问题和感悟 - 简书](https://www.jianshu.com/p/fe98ae8e3fb4)
+  
+  #### 4.3.4 singleInstance
+  只有一个实例，并且这个实例独立运行在一个task中，这个task只有这个实例，不允许有别的Activity存在。
+  [Activity SingleInstance启动模式 - javakam - 博客园](https://www.cnblogs.com/jooy/p/9494165.html)
+  [SingleTask和SingleInstance详解_ywj2167917的专栏-CSDN博客_singletask和singleinstance](https://blog.csdn.net/ywj2167917/article/details/8827830)
+  #### 4.3.5 task
+  我们知道，一个应用中可能有多个 Activity，而这些 Activity 被以栈的形式管理。当我们新打开 Activity 或者按返回时，会导致 Activity 的入栈/出栈。
+  Task 是指在执行特定任务时与用户交互的一系列 Activity。 这些 Activity 按照各自的打开顺序排列在堆栈中。
+  
+  ### 4.4 ActivityThread类
+  1. 在Android中它就代表了Android的主线程，注意是代表而不是说它就是一个Thread类
+  2. 它是创建完新进程之后（肯定是在一个线程中啊），main函数被加载，然后执行一个loop的循环使当前线程进入消息循环，并且作为主线程。
+  3. 接下来还会初始化很多必要的属性. 它的很多成员变量和内部类十分的重要，深入理解这些成员变量有助于我们进一步的认识Android系统的各个组件的交互。
+  
+  ### 4.5 ActivityManagerService[AMS]
+  AMS是系统的引导服务，应用进程的启动、切换和调度、四大组件的启动和管理都需要AMS的支持。
+  [ActivityManagerService 你了解多少？ - Android - 掘金](https://juejin.im/entry/582d319e0ce463006ce68110)
+  
+  ### 4.6 ActivityStarter
+  ActivityStarter是加载Activity的控制类，收集所有的逻辑来决定如何将Intent和Flags转为Activity并将其与Task和Stack关联。
+  
+  ### 4.7 ActivityStackSupervisor
+  AMS 通过操作ActivityStackSupervisor来管理Activity
+  
+  ### 4.8 ActivityStack
+  ActivityStack从名称来看是跟栈相关的类，其实它是一个管理类，用来管理系统所有Activity的各种状态。它由ActivityStackSupervisor来进行管理的，而ActivityStackSupervisor在AMS中的构造方法中被创建。
+  
+  ### 4.9 ApplicationThread
+  它是ActivityThread的私有内部类，也是一个Binder对象。在此处它是作为IApplicationThread对象的server端等待client端 的请求然后进行处理，最大的client就是AMS.
+  
+  ### 4.10 Context,Activity,Application的关系
+  相同：Activity和Application都是Context的子关系
+  不同：
+     1.维护的生命周期不同
+     2.Context维护的是当前Activity的生命周期
+     3.Application维护的是整个项目的周期
+  
+  ### 4.11 Context
+  1.描述的一个应用程序环境的信息即上下文的意思，在实际应用中它也确实是起到了管理 上下文环境中各个参数和变量的总用,方便我们可以简单的访问到各种资源。
+  2.Context是一个接口，实现该接口的具体实现类Contextlml
+  3.通过它我们可以获取应用程序的资源和类，也包括一些应用级别软件，例如，启动一个Activity,发送广播，接受intent信息等。
+  ![16dfd0c7a29d65e6.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\cca26d9c.png)
   
   ## 5、Activity,PhoneWindow和DecorView 的关系
   ![16bff4353cd98658.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\852c0377.png)
@@ -346,8 +470,8 @@ content: '''
 '''
 linesHighlighted: [
   159
-  232
-  293
+  339
+  400
 ]
 isStarred: false
 isTrashed: false
