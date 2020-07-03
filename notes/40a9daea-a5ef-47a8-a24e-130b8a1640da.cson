@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-06-30T08:42:49.264Z"
+updatedAt: "2020-07-02T08:17:24.245Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -84,7 +84,7 @@ content: '''
   #### onRebind()：
   当旧的组件与服务解绑后，另一个新的组件与服务绑定，onUnbind()返回true时，系统将调用此方法。
   
-  ## 3、fragment
+  ## 3、Fragment
   
   ### 3.1 创建方式
   
@@ -171,6 +171,7 @@ content: '''
   
   [Fragment的懒加载](https://blog.csdn.net/u011315960/article/details/71404177)
   
+  
   ## 4、Activity
   ### 4.1 点击Launcher图标来启动Activity
   用户从Launcher程序点击应用图标可启动应用的入口Activity，Activity启动时需要多个进程之间的交互，Android系统中有一个zygote进程专用于孵化Android框架层和应用层程序的进程。还有一个system_server进程，该进程里运行了很多binder service。例如ActivityManagerService，PackageManagerService，WindowManagerService，这些binder service分别运行在不同的线程中，其中ActivityManagerService负责管理Activity栈，应用进程，task。
@@ -226,13 +227,42 @@ content: '''
   6) 锁定屏与解锁屏幕 只会调用onPause()，而不会调用onStop方法，开屏后则调用onResume()
   7) 两个Activity之间切换: Activity A 启动另一个Activity B，回调如下:Activity A 的onPause() → Activity B的onCreate() → onStart() → onResume() → Activity A的onStop();如果B是透明主题又或则是个DialogActivity，则不会回调A的onStop；
   
-  #### 4.2.3 onSaveInstanceState() onRestoreInstanceState()
+  **注意**
+  1. 透明主题对生命周期的影响
+    当A-Activity启动B-Activity时，并且启动之后A-Activity还处于部分可见状态，当启动完B之后并不回调A的onStop()方法。
+  [Activity A启动Activity B它们的生命周期变化（及设置Activity的透明度）_YoungForYou-CSDN博客_activitya启动activityb生命周期](https://blog.csdn.net/weixin_43589682/article/details/97030740)
+  2. 屏幕旋转,屏幕大小改,键盘发生了改变,键盘的可用性发生了改变对生命周期的影响
+  
+  没有配置 configChanges：
+  ```
+  A: ==> onCreate()
+  A: ==> onStart()
+  A: ==> onResume()
+  A: ==> onPause()
+  A: ==> onSaveInstanceState()
+  A: ==> onStop()
+  A: ==> onDestroy()
+  屏幕旋转后
+  A: ==> onCreate()
+  A: ==> onStart()
+  A: ==> onRestoreInstanceState()
+  A: ==> onResume()
+  ```
+  配置 configChanges 后：android:configChanges="keyboard|orientation|screenSize|keyboardHidden"
+  ```
+  A: ==> onCreate()
+  A: ==> onStart()
+  A: ==> onResume()
+  A: ==> onConfigurationChanged()
+  ```
+  
+  #### 4.2.3 保存与恢复 onSaveInstanceState() onRestoreInstanceState()
   1. onSaveInstanceState()
-  (1)、当用户按下HOME键时。
-  (2)、长按HOME键，选择运行其他的程序时。 
-  (3)、按下电源按键（关闭屏幕显示）时。
-  (4)、从activity A中启动一个新的activity时。
-  (5)、屏幕方向切换时，例如从竖屏切换到横屏时。
+  (1)、当用户按下HOME键时。会调用 onSaveInstanceState() 方法
+  (2)、长按HOME键，选择运行其他的程序时。会调用 onSaveInstanceState() 方法 
+  (3)、按下电源按键（关闭屏幕显示）时。会调用 onSaveInstanceState() 方法
+  (4)、从activity A中启动一个新的activity时。会调用 onSaveInstanceState() 方法
+  (5)、屏幕方向切换时，例如从竖屏切换到横屏时。会调用 onSaveInstanceState() ,onRestoreInstanceState()方法
   
   2. onRestoreInstanceState()
   onRestoreInstanceState()被调用的前提是，activity A“确实”被系统销毁了。
@@ -240,6 +270,7 @@ content: '''
   3. 屏幕旋转测试
   android:screenOrientation="portrait"
   去掉，支持转屏。然后就一定会触发onSaveInstanceState()和onRestoreInstanceState()。
+  因为当 Activity 横竖屏切换的时候会重新走一遍生命周期，所以 Activity 会被销毁创建，由此会执行 onRestoreInstanceState() 方法。
   
   4. 保存Activity状态
   当Activity开始停止时，系统会调用，onSaveInstanceState()以便您的Activity可以使用一组键值对来保存状态信息。此方法的默认实现保存有关Activity视图层次结构状态的信息，例如EditText小部件中的文本或ListView的滚动位置。
@@ -304,6 +335,7 @@ content: '''
   
   如果是在别的应用程序中启动它，则会新建一个task，并在该task中启动这个Activity，singleTask允许别的Activity与其在一个task中共存，也就是说，如果我在这个singleTask的实例中再打开新的Activity，这个新的Activity还是会在singleTask的实例的task中。
   
+  个人理解：启动顺序A->B->C->D->B ,这时候B由于是singleTask,会把C D destory掉。task里只剩A B.
   [singleTask启动模式引发的问题和感悟 - 简书](https://www.jianshu.com/p/fe98ae8e3fb4)
   
   #### 4.3.4 singleInstance
@@ -314,30 +346,180 @@ content: '''
   我们知道，一个应用中可能有多个 Activity，而这些 Activity 被以栈的形式管理。当我们新打开 Activity 或者按返回时，会导致 Activity 的入栈/出栈。
   Task 是指在执行特定任务时与用户交互的一系列 Activity。 这些 Activity 按照各自的打开顺序排列在堆栈中。
   
-  
   ### 4.4 ActivityThread类
   1. 在Android中它就代表了Android的主线程，注意是代表而不是说它就是一个Thread类
   2. 它是创建完新进程之后（肯定是在一个线程中啊），main函数被加载，然后执行一个loop的循环使当前线程进入消息循环，并且作为主线程。
   3. 接下来还会初始化很多必要的属性. 它的很多成员变量和内部类十分的重要，深入理解这些成员变量有助于我们进一步的认识Android系统的各个组件的交互。
   
-  ### 4.5 拓展
-  #### 4.5.1 ActivityManagerService[AMS]
+  ### 4.5 Intent类
+  Intent 分两种，显式 Intent 和隐式 Intent。 
+  #### 4.5.1 显式Intent
+  如果一个 Intent 明确指定了要启动的组件的完整类名，那么这个 Intent 就是显式 Intent.
+  ```
+  Intent intent = new Intent(this, xxx.class);
+  startActivity(intent);
+  ```
+  
+  #### 4.5.2 隐式Intent
+  [Android的进阶学习(三)--Intent和IntentFilter - 简书](https://www.jianshu.com/p/a2f826064e29)
+  [IntentFilter匹配规则详解 - 天涯海角路 - 博客园](https://www.cnblogs.com/aademeng/articles/11026731.html)
+  IntentFilter(意图过滤器),当隐式启动系统组件的时候，就会根据IntentFilter来筛选出合适的进行启动。
+  在Intent启动的时候对应设置Action、Category、DataAndType，这里设置的是为了过滤的时候对应IntentFilter匹配action、category、data。
+  除过滤广播的的IntentFilter可以在代码中创建外，其它的IntentFilter都得在AndroidManifest.xml中给设置。
+  
+  ```
+  Intent  intent = new Intent();
+  intent.addAction(Intent.ACTION_BATTERY_LOW);
+  intent.addCategory(Intent.CATEGORY_APP_EMAIL);
+  intent.addDataType("video/mpeg");
+  ```
+  AndroidManifest.xml 设置
+  ```
+  <activity  android:name=".Activity_B"    
+             android:label="@string/title_activity_activity__b"
+             android:launchMode="singleInstance">  
+    <intent-filter> 
+      <action android:name="android.intent.action.ANSWER" />    
+      <category android:name="android.intent.category.APP_EMAIL" />        
+      <data  android:host="www.mathiasluo.com"   
+             android:scheme="http" />  
+    </intent-filter>
+  </activity>
+  ```
+  一个组件可以有多个IntentFilter，在过滤的时候只要有一组符合要求的，就会被视为过滤通过。
+  
+  1) action匹配
+  action的匹配要求Intent中的action存在且必须和过滤规则中的其中一个action相同
+  2) category匹配
+  如果Intent中的存在category那么所有的category都必须和IntentFilter中的category相同。才能和这个Activity匹配。
+  Intent中的category数量可能少于IntentFilter中的category数量，但是Intent中category必须和IntentFilter中的category相同才能匹配。
+  3) data匹配
+  如果IntentFilter中有定义data，那么Intent中也必须也要定义date
+  4) 隐式启动的判断
+  判断隐式启动的Intent是否能找到相应的组件方法
+  <一>
+  ```
+  Intent intent = new Intent();
+  intent.setAction(Intent.ACTION_BATTERY_LOW);
+  intent.addCategory(Intent.CATEGORY_APP_EMAIL);
+  intent.setDataAndType(Uri.EMPTY, "video/mpeg");
+  PackageManager packageManager = getPackageManager();
+  List<ResolveInfo> infoList = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+  Log.i(TAG, infoList.size() + "");
+  if (infoList.size() != 0) {  
+    startActivity(intent);
+  } else { 
+     Log.e(TAG, "没有匹配到Activity");
+  }
+  ```
+  <二>
+  ```
+  Intent intent = new Intent();
+  intent.setAction(Intent.ACTION_BATTERY_LOW);
+  intent.addCategory(Intent.CATEGORY_APP_EMAIL);
+  intent.setDataAndType(Uri.EMPTY, "video/mpeg");
+  ComponentName name =  intent.resolveActivity(getPackageManager());
+  if (name != null){
+      startActivity(intent);
+  }else {
+      Log.e(TAG,"没有匹配到Activity");
+  }
+  ```
+  
+  **注意**
+  1. 如果 intent-filter 中没有包含任何Action类型，那么无论什么Intent请求都无法和这条 nintent-filter 匹配。
+  2. 如果Intent请求中没有设定Action类型，那么只要 intent-filter 中包含有Action类型，这个Intent请求就将顺利地通过 intent-filter 的行为测试。
+  3. intent中可以不存在category，但如果存在就必须匹配intent-filter其中一个
+  4. 系统在startActivity或者startActivityForResult的时候默认为Intent加上一个android.intent.category.DEAFAULT，所以必须在intent-filter中加上android.intent.category.DEFAULT这个category
+  
+  ### 4.6 URL Scheme
+  Android 中的 Scheme 是一种页面内跳转协议，是一种非常好的实现机制。通过定义自己的 Scheme 协议，可以非常方便跳转 App 中的各个页面。
+  #### 4.6.1 使用场景
+  通过小程序，利用 Scheme 协议打开原生 App。
+  - H5 页面点击锚点，根据锚点具体跳转路径 App 端跳转具体的页面。
+  - App 端收到服务器端下发的 Push 通知栏消息，根据消息的点击跳转路径跳转相关页面。
+  - App 根据URL跳转到另外一个 App 指定页面。
+  - 通过短信息中的 URL 打开原生 App。
+  
+  #### 4.6.2 Scheme 路径的规则
+  ```
+  <scheme> :// <host> : <port> [<path>|<pathPrefix>|<pathPattern>]
+  ```
+  #### 4.6.3 设置Scheme
+  在 AndroidManifest.xml 中对标签增加设置 Scheme。
+  ```
+  <activity
+      android:name=".ui.activity.SchemeActivity"
+      android:screenOrientation="portrait">
+      <!--Android 接收外部跳转过滤器-->
+      <!--要想在别的 App 上能成功调起 App，必须添加 intent 过滤器-->
+      <intent-filter>
+          <!--协议部分配置，注意需要跟 web 配置相同-->
+          <!--协议部分，随便设置 aa://bb:1024/from?type=jeanboy-->
+          <data android:scheme="aa"
+              android:host="bb"
+              android:port="1024"
+              android:path="/from"/>
+          <!--下面这几行也必须得设置-->
+          <category android:name="android.intent.category.DEFAULT" />
+          <!--表示 Activity 允许通过网络浏览器启动，以显示链接方式引用，如图像或电子邮件-->
+          <category android:name="android.intent.category.BROWSABLE" />
+          <action android:name="android.intent.action.VIEW" />
+      </intent-filter>
+  </activity>
+  ```
+  #### 4.6.4 原生调用
+  ```
+  Uri uri = Uri.parse("aa://bb:1024/from?type=jeanboy");
+  Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+  startActivity(intent);
+  ```
+  #### 网页调用
+  ```
+  <a href="aa://bb:1024/from?type=jeanboy">打开 App</a>
+  ```
+  #### 在Activity中处理Scheme跳转
+  ```
+  public class SchemeActivity extends AppCompatActivity {
+  
+      @Override
+      protected void onCreate(@Nullable Bundle savedInstanceState) {
+          super.onCreate(savedInstanceState);
+          Uri uri = getIntent().getData();
+          if (uri != null) {
+              //获取指定参数值
+              String type = uri.getQueryParameter("type");
+              Log.e("SchemeActivity", "type:" + type);
+  
+              if(type.equals("jeanboy")){
+                  ActivityUtils.startActivity(XXXActivity.class);
+              }else if(type.equals("main")){
+                  ActivityUtils.startActivity(MainActivity.class);
+              }
+          }
+          finish();
+      }
+  }
+  ```
+  
+  ### 4.x 拓展
+  #### 4.x.1 ActivityManagerService[AMS]
   AMS是系统的引导服务，应用进程的启动、切换和调度、四大组件的启动和管理都需要AMS的支持。
   [ActivityManagerService 你了解多少？ - Android - 掘金](https://juejin.im/entry/582d319e0ce463006ce68110)
   
-  #### 4.5.2 ActivityStarter
+  #### 4.x.2 ActivityStarter
   ActivityStarter是加载Activity的控制类，收集所有的逻辑来决定如何将Intent和Flags转为Activity并将其与Task和Stack关联。
   
-  #### 4.5.3 ActivityStackSupervisor
+  #### 4.x.3 ActivityStackSupervisor
   AMS 通过操作ActivityStackSupervisor来管理Activity
   
-  #### 4.5.4 ActivityStack
+  #### 4.x.4 ActivityStack
   ActivityStack从名称来看是跟栈相关的类，其实它是一个管理类，用来管理系统所有Activity的各种状态。它由ActivityStackSupervisor来进行管理的，而ActivityStackSupervisor在AMS中的构造方法中被创建。
   
-  #### 4.5.5 ApplicationThread
+  #### 4.x.5 ApplicationThread
   它是ActivityThread的私有内部类，也是一个Binder对象。在此处它是作为IApplicationThread对象的server端等待client端 的请求然后进行处理，最大的client就是AMS.
   
-  #### 4.5.6 Context,Activity,Application的关系
+  #### 4.x.6 Context,Activity,Application的关系
   相同：Activity和Application都是Context的子关系
   不同：
      1.维护的生命周期不同
@@ -350,14 +532,18 @@ content: '''
   3.通过它我们可以获取应用程序的资源和类，也包括一些应用级别软件，例如，启动一个Activity,发送广播，接受intent信息等。
   ![16dfd0c7a29d65e6.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\cca26d9c.png)
   
-  ## 5、Activity,PhoneWindow和DecorView 的关系
+  ## 5、BroadcastReceiver
+  
+  ## 6、ContentProvider
+  
+  ## 7、Activity,PhoneWindow和DecorView 的关系
   ![16bff4353cd98658.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\852c0377.png)
   
-  ### 5.1 DecorView 浅析
+  ### 7.1 DecorView 浅析
   ![16bff4356573308b.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\4aeeca66.png)
   如图所示，DecorView为整个Window界面的最顶层View，它只有一个子元素LinearLayout。代表整个Window界面，包含通知栏、标题栏、内容显示栏三块区域。其中LinearLayout中有两个FrameLayout子元素。
   
-  ### 5.2 DecorView 的作用
+  ### 7.2 DecorView 的作用
   DecorVuew是顶级View,本质是一个FrameLayout它包含两部分，标题栏和内容栏，都是FrameLayout,内容栏id是content,也就是Activity中设置setContentView的部分,最终将布局添加到id为content的FrameLayout中。获取content:
   ViewGroup content=findViewByld(android.id.content)获取设置的View :getChildAt(0);
   
@@ -367,9 +553,9 @@ content: '''
   PhoneWindow:将DecorView设置为整个应用窗口的根View,是Window的实现类。它是Android中的基本的窗口系统，每个Activity均会创建一个PhoneWindow对象，是Activity和整个View系统交互的接口。
   DecorView:是顶层视图，将要呈现的具体内容呈现在PhoneWindow上，DecorView是当前Activity所有View的祖先，它并不会向用户呈现任何东西。
   
-  ## 6、系统原理
+  ## 8、系统原理
   
-  ### 6.1 打包原理
+  ### 8.1 打包原理
   1. 通过AAPT工具进行资源文件(包括AndroidManifest.xml、布局文件、各种xml资源等)的打包，生成R.java文件。
   AAPT:Android Asset Packaging Tool，在SDK的build-tools目录下。
   3. 通过AIDL工具处理 AIDL文件，生成相应的java文件。
@@ -384,7 +570,7 @@ content: '''
   ZipAlign:Android SDK中包含了一个用于优化APK的新工具zipalign。它提高了优化后的Applications与Android系统的交互效率可以使整个系统的运行速度有了较大的提升。
   ![16bff4358a12ae4c.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\886e21c0.png)
   
-  ### 6.2 安装流程
+  ### 8.2 安装流程
   1. 复制APK到/data/app目录下，解压并扫描安装包
   2. 资源管理器解析APK里的资源文件.
   3. 解析AndroidManifest文件，并在/data/data/目录下创建对应的应用数据目录。
@@ -393,26 +579,26 @@ content: '''
   6. 安装完成后，发送广播
   ![252739b9.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\252739b9.png)
   
-  ## 7、屏幕适配
+  ## 9、屏幕适配
   
-  ### 6.1 基本概念
-  #### 屏幕尺寸
+  ### 9.1 基本概念
+  #### 9.1.1 屏幕尺寸
   含义：手机对角线的物理尺寸单位：英寸（inch）,1英寸=2.52cm
   Android手机常见的尺寸有5寸，5.5寸，6寸，6.5寸等等
   
-  #### 屏幕分辨率
+  #### 9.1.2 屏幕分辨率
   含义：手机在横向、纵向上的像素点数总和
   一般描述成屏幕的”宽x高”=AxB 含义：屏幕在横向方向（宽度）上有A个像素点，在纵向方向（高）有B个像素点。
   例子：1080x1920，即宽度方向上有1080个像素点，在高度方向上有1920个像素点。
   单位：px（pixel），1px=1像素点
   Android手机常见的分辨率：320x480、480x800、720x1280、1080x1920
   
-  #### 屏幕像素密度
+  #### 9.1.3 屏幕像素密度
   含义：每英寸的像素点数 单位：dpi（dots per ich）
   
   假设设备内每英寸有160个像素，那么该设备的屏幕像素密度=160dpi
   
-  #### 适配方法
+  #### 9.1.4 适配方法
   1. 支持各种屏幕尺寸:使用wrap_content,match_parent,weight 
   2. 要确保布局的灵活性并适应各种尺寸的屏幕，应使用"wrap_content","match_parent"控制某些视图组件的宽度和高度。
   3. 使用相对布局
@@ -421,17 +607,17 @@ content: '''
   当组件宽度设置为”match_parent”的时候，这里的权重值，表示的组件显示的优先级，而且值越小优先级越高，因为按钮2优先级为1，大于按钮1的优先级，所以按钮2占的是3/4,按钮1占的是1/4。 
   在wrap_content(0dp)情况下，**权重设置的是按比例分配显示空间**
   
-  ## 8、性能优化
-  ### 内存优化
-  #### LeakCanary工具
+  ## 10、性能优化
+  ### 10.1 内存优化
+  #### 10.1.1 LeakCanary工具
   LeakCanary是Square公司基于MAT开发的一款监控Android内存泄漏的开源框架。其工作的原理是： 监测机制利用了Java的WeakReference和ReferenceQueue，通过将Activity包装到WeakReference中，被WeakReference包装过的Activity对象如果被回收，该WeakReference引用会被放到ReferenceQueue中，通过监测ReferenceQueue里面的内容就能检查到Activity是否能够被回收（在ReferenceQueue中说明可以被回收，不存在泄漏；否则，可能存在泄漏，LeakCanary是执行一遍GC，若还未在ReferenceQueue中，就会认定为泄漏）。
   
   如果Activity被认定为泄露了，就抓取内存dump文件(Debug.dumpHprofData)；之后通过HeapAnalyzerService.runAnalysis进行分析内存文件分析；接着通过HeapAnalyzer (checkForLeak—findLeakingReference---findLeakTrace)来进行内存泄漏分析。最后通过DisplayLeakService进行内存泄漏的展示。
-  #### Android Lint工具
+  #### 10.1.2 Android Lint工具
   Android Lint Tool 是Android Sutido种集成的一个Android代码提示工具，它可以给你布局、代码提供非常强大的帮助。硬编码会提示以级别警告，例如：在布局文件中写了三层冗余的LinearLayout布局、直接在TextView中写要显示的文字、字体大小使用dp而不是sp为单位，就会在编辑器右边看到提示。
   
-  ### APK瘦身
-  #### 安装包的组成
+  ### 10.2 APK瘦身
+  #### 10.2.1 安装包的组成
   assets文件夹 存放一些配置文件，资源文件，assets不会自动生成对应的ID,而是通过AssetManager类的接口获取
   
   res res是resource的缩写，这个目录存放资源文件，会自欧东生成对应的ID并映射到.R文件中，访问直接使用资源ID。
@@ -444,13 +630,13 @@ content: '''
   
   resources.arsc 记录着资源文件和资源ID之间的映射关系，用来根据资源ID寻找资源。
   
-  #### 减少安装包大小
+  #### 10.2.2 减少安装包大小
   
   代码混淆：使用IDE 自带的 proGuard 代码混淆器工具 ，它包括压缩、优化、混淆等功能。 
   资源优化：使用 Android Lint 删除冗余资源，资源文件最少化等。 
   图片优化: 利用 PNG优化工具 对图片做压缩处理。推荐目前最先进的压缩工具Googlek开源库zopfli。如果应用在0版本以上，推荐使用 WebP图片格式。 
   
-  ### 冷启动与热启动
+  ### 10.3 冷启动与热启动
   
   **冷启动** 
   在启动应用时，系统中没有该应用的进程，这时系统会创建一个新的进程分配给该应用；
@@ -474,8 +660,8 @@ content: '''
 '''
 linesHighlighted: [
   159
-  341
-  402
+  512
+  577
 ]
 isStarred: false
 isTrashed: false
