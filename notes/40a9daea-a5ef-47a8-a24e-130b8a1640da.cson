@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-07-02T08:17:24.245Z"
+updatedAt: "2020-07-10T10:11:05.429Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -85,10 +85,41 @@ content: '''
   当旧的组件与服务解绑后，另一个新的组件与服务绑定，onUnbind()返回true时，系统将调用此方法。
   
   ## 3、Fragment
+  [Android-ReadTheFuckingSourceCode/02_fragment.md at master · jeanboydev/Android-ReadTheFuckingSourceCode · GitHub](https://github.com/jeanboydev/Android-ReadTheFuckingSourceCode/blob/master/article/android/basic/02_fragment.md)
+  ### 3.1 Activity与Fragment生命周期
   
-  ### 3.1 创建方式
+  ![0d0a189d.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\88518779.png)
   
-  ####  静态创建
+  Activity 直接影响它所包含的 Fragment 的生命周期，所以对 Activity 的某个生命周期方法的调用也会产生对Fragment 相同方法的调用。例如：当 Activity 的 onPause() 方法被调用时，它所包含的所有的 Fragment 的onPause() 方法都会被调用。
+  
+  Fragment 比 Activity 还要多出几个生命周期回调方法，这些额外的方法是为了与 Activity 的交互，如下：
+  - onAttach()
+  当 Fragment 被加入到 Activity 时调用（在这个方法中可以获得所在的 Activity）。
+  - onCreateView()
+  当 Activity 要得到 Fragment 的 layout 时，调用此方法，Fragment 在其中创建自己的 layout (界面)。
+  - onActivityCreated()
+  当 Activity 的 onCreated() 方法返回后调用此方法。
+  - onDestroyView()
+  当 Fragment 的 layout 被销毁时被调用。
+  - onDetach()
+  当 Fragment 被从 Activity 中删掉时被调用。
+  
+  一旦 Activity 进入 resumed 状态（也就是 running 状态），你就可以自由地添加和删除 Fragment 了。因此，只有当 Activity 在 resumed 状态时，Fragment 的生命周期才能独立的运转，其它时候是依赖于 Activity 的生命周期变化的。
+  
+  #### 3.1.1 动态加载:
+  动态加载时，Activity的onCreate()调用完，才开始加载Fragment并调用其生命周期方法，所以第一个生命周期方法onAttach()中便能获取Activity以及Activity的布局的组件。
+  
+  #### 3.1.2 静态加载:
+  1. 静态加载时，Activiy的onCreate()调用过程中，fragment也在加载，所以fragment无法获取到Activity的布局中的组件，但为什么能获取到Activity呢？
+  
+  2. 原来在fragment调用onAttach()之前其实还调用了一个方法onInflate(),该方法被调用时fragment已经是和Activity相互结合了，所以可以获取到对方，但是Activity的OnCreate()调用还未完成，故无法获取Activity的组件。
+  
+  3. Activity的OnCreate()调用完成时，fragment会调用onActivityCreated()生命周期方法，因此在这开始便能获取到Activity的布局组件。
+  
+  
+  ### 3.2 创建方式
+  
+  ####  3.2.1 静态创建
   首先我们需要创建一个xml文件，然后创建与之对应的java文件，通过onCreatView()的返回方法进行关联，最后我们需要在Activity中进行配置相关参数即在Activity的xml文件中放上fragment的位置。
   ```
    <fragment
@@ -97,7 +128,7 @@ content: '''
           android:layout_height="match_parent">
       </fragment>
   ```
-  #### 动态创建
+  #### 3.2.2 动态创建
   动态创建Fragment 主要有以下几个步骤：
   1. 创建待添加的fragment示例。
   2. 获取FragmentManager,在Activity中可以直接通过调用getSupportFramentManager()方法得到。
@@ -105,51 +136,221 @@ content: '''
   4. 向内容内添加或替换fragment,一般使用replace()方法实现，需要传入容器的id和待添加的fragment实例。
   5. 提交事务，调用commit()方法来完成。
   
-  ### 3.2 Adapter对比 (ViewPage与Adapter使用)
+  ### 3.3 Adapter对比 (ViewPage与Adapter使用)
   FragmentPageAdapter
   在每次切换页面时，只是将Fragment进行分离，适合页面较少的Fragment使用以保存一些内存，对系统内存不会多大影响。
   FragmentPageStateAdapter
   继承子 pager。该 PagerAdapter 的实现将只保留当前页面，当页面不在当前显示的时候，页面会清理，释放其资源。而在页面需要显示时，生成新的页面，重新生成数据。这么实现的好处就是当拥有大量的页面时，不必在内存中占用大量的内存。
   
-  ### 3.3 Activity与Fragment生命周期
-  
-  ![16bff4353c643fce.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\aecf795e.png)
-  
-  #### 动态加载:
-  动态加载时，Activity的onCreate()调用完，才开始加载Fragment并调用其生命周期方法，所以第一个生命周期方法onAttach()中便能获取Activity以及Activity的布局的组件。
-  
-  #### 静态加载:
-  1. 静态加载时，Activiy的onCreate()调用过程中，fragment也在加载，所以fragment无法获取到Activity的布局中的组件，但为什么能获取到Activity呢？
-  
-  2. 原来在fragment调用onAttach()之前其实还调用了一个方法onInflate(),该方法被调用时fragment已经是和Activity相互结合了，所以可以获取到对方，但是Activity的OnCreate()调用还未完成，故无法获取Activity的组件。
-  
-  3. Activity的OnCreate()调用完成时，fragment会调用onActivityCreated()生命周期方法，因此在这开始便能获取到Activity的布局组件。
-  
   ### 3.4 Fragment与Activity通信
-  为什么不能用构造函数进行通信？
-  因为fragmen不通过构造函数进行传值的原因是因为横屏切换的时候获取不到值。
   
-  #### Activity向Fragment传值
-  Activity向Fragment传值，要传的值放到bundle对象里，在Activity中创建该Fragment的对象fragment,通过调用setArguments()传递到fragment中，在该Fragment中通过调用getArguments()得到bundle 对象，就能得到里面的值。
+  #### 3.4.1 Activity向Fragment传值
+  1. 第一种 handle方案
+  activity响应事件，发送msg，到fragment中，而fragment中用来接收msg，所以用注册Handler对象，activity中发送msg的对象与fragment中handler对象必须为同一个（handler，msgqueen和looper相互唯一绑定），所以要在activity中暴露pubilic方法让fragment的acttch周期中传递handler。
   
-  #### Fragment向Activity传值
-  1. 第一种
-  在Activity中调用getFragmentManager()得到fragmentManager,调用findFragmentByTag(tag)或者通过findFragmentByld(id)
+  activity的响应事件发送msg：
   ```
-  FragmentManager fragmentManager = getFragmentManager()；
-  Fragment fragment = fragmentManager.findFragmentByTag(tag)；
+  tvMain.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                  //如果是activity相应事件，发送msg
+                  if(handler == null){
+                      return;
+                  }
+                  Message message = new Message();
+                  Bundle bundle = new Bundle();
+                  bundle.putString("hehe","我是activity发送的msg");
+                  message.setData(bundle);
+                  handler.sendMessage(message);
+              }
+          });
   ```
-  3. 第二种
-  通过回调的方式，定义一个接口（可以再Fragment类中定义），接口中有一个空的方法，在fragment中需要的时候调用接口的方法，值可以作为参数放在这个方法中，
-  然后让Activity实现这个接口，必然会重写这个方法，这样值就传到了Activity中。
+  activity中暴露的setHandler方法：
+  ```
+   //activity暴露方法来给fragment来设置
+      public void setHandler(Handler handler){
+          this.handler = handler;
+      }
+  ```
+  fragment中传递handler：
+  ```
+  @Override
+      public void onAttach(Context context) {
+          super.onAttach(context);
+          MainActivity activity = (MainActivity) getActivity();
+          activity.setHandler(mHandler);
+      }
+  ```
+  fragment注册handler用来接收msg：
+  ```
+  private Handler mHandler = new Handler(){
   
-  #### Fragment与Fragment 之间是如何传值的
-  1. 第一种
-  通过findFragmentByTag得到另一个的Fragment的对象，这样就可以调用另一个的方法了。
-  2. 第二种
-  通过接口回调的方式。
-  3. 第三种
-  通过setArguments,getArguments的方式。
+          @Override
+          public void handleMessage(Message msg) {
+              super.handleMessage(msg);
+  
+              Bundle bundle = msg.getData();
+              strHandler = bundle.getString("hehe");
+              textView.setText(strHandler+TwoFragment.class.getName());
+          }
+      };
+  ```
+  - fragment向activity传递消息同样可以利用此方法
+  - Fragment对具体的activity存在耦合比较高，不利于Fragment复用，不利于维护。
+  
+  2. 第二种 Bundle方案
+    1) Fragment动态加载的状态
+    (Fragment是动态加载的)在activity中建一个bundle，把要传的值存入bundle，然后通过fragment的setArguments（bundle）传到fragment，在fragment中，用getArguments接收
+  Activity:
+  ```
+  MyFragment fragment = new MyFragment();
+  	Bundle bundle=new Bundle();
+      bundle.putString("one","要传的值");
+      fragment.setArguments(bundle);
+      FragmentManager fm = getFragmentManager();
+  	FragmentTransaction ft=fm.beginTransaction();
+  	ft.add(R.id.frame,myFragment,"myFragment");
+      ft.commit();
+  ```
+  Fragment:
+  ```
+  Bundle bundle=getArguments();
+  String s=bundle.getString("one");
+  ```
+    2) Fragment静态加载的状态
+  (Fragment是静态加载的)在Fragment中设置set,get方法，在activity中获取Fragment对象，fragment.setValue(),Fragment中getValue()
+  注：静态加载Fragment的时候，一定要给Fragment设置一个唯一标识，id/tag
+  
+  activity：
+  ```
+  FragmentManager fm = getFragmentManager();
+  MyFragment myFragment = (MyFragment)fm.findFragmentById(R.id.fragment);
+  myFragment.setValue("传值");
+  ```
+  Fragment：
+  ```
+  	private String value;
+  
+  	private void setValue(String value){
+  		this.value = value;
+  	}
+  
+  	private String getValue(){
+  		return this.value;
+  	}
+  
+  //在需要获取的地方调用getValue()
+  	@Nullable
+      @Override
+      public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+          View v=inflater.inflate(R.layout.fragment,null);
+          // 给fragment上的按钮添加点击事件
+          text = v.findViewById(R.id.tv_show);
+          btn = v.findViewById(R.id.btn_get);
+          btn.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+  				 text.setText(getValue());
+              }
+          });
+          return v;
+      }
+  ```
+  #### 3.4.2 Fragment向Activity传值
+  1. 第一种 广播 方案
+  在fragment中发送广播，在activity中注册广播接收者，并作出相应逻辑。
+  在fragment中发送广播信息：
+  ```
+  button.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                  //发送广播
+                  Intent intent = new Intent();
+                  intent.setAction("co.daggertest.fragment.ThreeFragment");
+                  intent.putExtra("heihei","fragment发送广播");
+                  //使用的本地广播，用于单个app内通信，性能和安全性好点
+                  LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
+              }
+          });
+  ```
+  在activity中注册广播：
+  ```
+    //注册本地广播接收者
+          myBroadcast = new MyBroadcast();
+          IntentFilter intentFilter = new IntentFilter();
+          intentFilter.addAction("co.daggertest.fragment.ThreeFragment");
+          LocalBroadcastManager.getInstance(this).registerReceiver(myBroadcast,intentFilter);
+  ```
+  ```
+      内部类创建实例
+   class MyBroadcast extends BroadcastReceiver{
+  
+          @Override
+          public void onReceive(Context context, Intent intent) {
+              heihei = intent.getStringExtra("heihei");
+              tvMain.setText(heihei+MainActivity.class.getName());
+  
+          }
+      }
+  ```
+  在activity的onDestory中注销广播：
+  ```
+  @Override
+      protected void onDestroy() {
+          super.onDestroy();
+          LocalBroadcastManager.getInstance(this).unregisterReceiver(myBroadcast);
+      }
+  ```
+  2. 第二种 回调接口 方案
+  在fragment中创建接口，activity实现接口中方法，完成回调和参数传递。
+  创建接口：
+  ```
+  public interface FourMainActivity{
+          void changerSomething(String msg);
+      }
+  ```
+  绑定activity：
+  ```
+   @Override
+      public void onAttach(Context context) {
+          super.onAttach(context);
+          fourMainActivity = (FourMainActivity) context;
+      }
+  ```
+  设置监听回调：
+  ```
+  button.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                  fourMainActivity.changerSomething("我是通过接口传递到MainActivity中");
+              }
+          });
+  ```
+  activity实现接口：
+  ```
+  public class MainActivity extends AppCompatActivity implements FourFragment.FourMainActivity
+  ```
+  实现接口方法：
+  ```
+  @Override
+      public void changerSomething(String msg) {
+          tvMain.setText(msg);
+      }
+  ```
+  
+  #### 3.4.3 Fragment与Fragment 之间是如何传值的
+  
+  1. 第一种 实现接口（中间依赖Activity） 方案
+  [A_activity_Two_fragment· GitHub](https://github.com/wanglianghai/A_activity_Two_fragment/commit/3d591c6286bc57667d341f7a96d46bd2f2f8a3fb?diff=unified)
+  [同一个Activity托管的两个Fragment之间的数据交互 - 简书](https://www.jianshu.com/p/dd6376cf1f9d)
+  [在同一个Activity下实现两个Fragment之间的通信 - 简书](https://www.jianshu.com/p/bf923a23358c)
+  
+  2. 第二种 EventBus 方案 
+  [EventBus使用详解_cyc的专栏-CSDN博客_eventbus](https://blog.csdn.net/u012317510/article/details/78935720)
+  
+  **参考**
+  [Fragment与Activity之间的传值_Silence_Sep的博客-CSDN博客_fragment向activity传递数据](https://blog.csdn.net/Silence_Sep/article/details/86572297)
+  [fragment通信的几种方式（接口框架）_HUandroid的博客-CSDN博客_fragmeng通信](https://blog.csdn.net/HUandroid/article/details/79481363)
   
   ### 3.5 API的区别
   1. add
@@ -659,9 +860,9 @@ content: '''
   [jeanboy_jeanboydev_CSDN博客-Android进阶,Java基础,Android进阶领域博主](https://blog.csdn.net/freekiteyu/article/list/1)
 '''
 linesHighlighted: [
-  159
-  512
-  577
+  380
+  733
+  798
 ]
 isStarred: false
 isTrashed: false
