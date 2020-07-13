@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-07-10T10:11:05.429Z"
+updatedAt: "2020-07-12T11:58:17.039Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -106,20 +106,9 @@ content: '''
   
   一旦 Activity 进入 resumed 状态（也就是 running 状态），你就可以自由地添加和删除 Fragment 了。因此，只有当 Activity 在 resumed 状态时，Fragment 的生命周期才能独立的运转，其它时候是依赖于 Activity 的生命周期变化的。
   
-  #### 3.1.1 动态加载:
-  动态加载时，Activity的onCreate()调用完，才开始加载Fragment并调用其生命周期方法，所以第一个生命周期方法onAttach()中便能获取Activity以及Activity的布局的组件。
-  
-  #### 3.1.2 静态加载:
-  1. 静态加载时，Activiy的onCreate()调用过程中，fragment也在加载，所以fragment无法获取到Activity的布局中的组件，但为什么能获取到Activity呢？
-  
-  2. 原来在fragment调用onAttach()之前其实还调用了一个方法onInflate(),该方法被调用时fragment已经是和Activity相互结合了，所以可以获取到对方，但是Activity的OnCreate()调用还未完成，故无法获取Activity的组件。
-  
-  3. Activity的OnCreate()调用完成时，fragment会调用onActivityCreated()生命周期方法，因此在这开始便能获取到Activity的布局组件。
-  
-  
   ### 3.2 创建方式
   
-  ####  3.2.1 静态创建
+  ####  3.2.1 静态创建(静态加载)
   首先我们需要创建一个xml文件，然后创建与之对应的java文件，通过onCreatView()的返回方法进行关联，最后我们需要在Activity中进行配置相关参数即在Activity的xml文件中放上fragment的位置。
   ```
    <fragment
@@ -128,12 +117,35 @@ content: '''
           android:layout_height="match_parent">
       </fragment>
   ```
-  #### 3.2.2 动态创建
+  #### 3.2.2 动态创建(动态加载)
   动态创建Fragment 主要有以下几个步骤：
   1. 创建待添加的fragment示例。
   2. 获取FragmentManager,在Activity中可以直接通过调用getSupportFramentManager()方法得到。
   3. 开启一个实务，通过调用beginTransaction()方法开启。
-  4. 向内容内添加或替换fragment,一般使用replace()方法实现，需要传入容器的id和待添加的fragment实例。
+  4. 向内容内add fragment，需要传入容器的id和待添加的fragment实例。
+  ```
+  FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
+          hide(fragmentTransaction);
+          if(i==0){
+              if(fragment1==null){
+                  fragment1=new Fragment1();
+                  fragmentTransaction.add(R.id.framelayout,fragment1);
+              }else {
+                  fragmentTransaction.show(fragment1);
+              }
+          }
+          if(i==1){
+              if(fragment2==null){
+                  fragment2=new Fragment2();
+                  fragmentTransaction.add(R.id.framelayout,fragment2);
+              }
+              else {
+                  fragmentTransaction.show(fragment2);
+              }
+          }
+          fragmentTransaction.commit();
+  
+  ```
   5. 提交事务，调用commit()方法来完成。
   
   ### 3.3 Adapter对比 (ViewPage与Adapter使用)
@@ -371,7 +383,6 @@ content: '''
   由于setUserVisibleHint这个方法优于onCreate()，onCreateView()方法，它会通过isVisiBleToUser告诉我们当前Fragment我们是否可见，当可见时候再进行网络加载。但是如果在setUserVisibleHint()要实现懒加载的话，就必须要确保View 以及其他变量都已经初始化结束，避免空指针。
   
   [Fragment的懒加载](https://blog.csdn.net/u011315960/article/details/71404177)
-  
   
   ## 4、Activity
   ### 4.1 点击Launcher图标来启动Activity
@@ -733,9 +744,162 @@ content: '''
   3.通过它我们可以获取应用程序的资源和类，也包括一些应用级别软件，例如，启动一个Activity,发送广播，接受intent信息等。
   ![16dfd0c7a29d65e6.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\cca26d9c.png)
   
-  ## 5、BroadcastReceiver
+  ## 5、Broadcast
+  ### 5.1 简介
+  Broadcast（广播） 是 Android 的四大组件之一，用于进程/线程间通信。
+  
+  广播最大的特点就是发送方并不关心接收方是否接到数据，也不关心接收方是如何处理数据的，它只负责「说」而不管你「听不听」。
+  
+  广播可以来之系统，例如，Android 系统在发生各种系统事件时发送广播（系统启动或者设备开始充电时）。
+  
+  也可以来自于其他应用程序，例如，应用程序也可以发送自定义广播，来通知其他应用程序接受他们可能感兴趣的内容（更新数据）。
+  
+  ### 5.2 广播的分类
+  #### 5.2.1 按发送方式分类
+  - 标准广播
+  是一种「完全异步执行」的广播，没有任何先后顺序，所有的广播接收器几乎同一时刻接收到这条广播消息，效率高，无法被截断。
+  - 有序广播
+  是一种「同步执行」的广播，有先后顺序，同一时刻只有一个接收器可以接收这个广播消息，优先级高的广播接收器可以先收到广播消息，并且前面的广播接收器还可以截断正在传递的广播，这样后面的广播接收器就无法接收广播消息了。
+  
+  #### 5.2.2 按注册方式分类
+  - 静态广播
+  不管应用程序是否处于活动状态，都会进行监听。每次触发都会建立新的 Receiver 对象。
+  - 动态广播
+  在代码中进行注册，注意动态注册的广播一定要取消注册才行，通常是在 onDestroy() 方法中调用 unregisterReceiver() 方法来实现。
+  从开始创建直到其被解除注册会使用同一个 Receiver，无论这个广播被触发几次。
+  
+  #### 5.2.3 按定义方式分类
+  - 系统广播
+  Android 系统中内置了多个系统广播，每个系统广播都具有特定的 IntentFilter，其中主要包括具体的 Action，系统广播发出后，将被相应的 BroadcastReceiver 接收。系统广播在系统内部当特定事件发生时，由系统自动发出。
+  
+  - 自定义广播
+  由应用程序开发者自己定义的广播。
+  
+  #### 5.2.4 按范围方式分类
+  - 全局广播
+  发出的广播可以被其他任意的应用程序接收，或者可以接收来自其他任意应用程序的广播。
+  - 本地广播
+  只能在应用程序的内部进行传递的广播，广播接收器也只能接收内部的广播，不能接受其他应用程序的广播。
+  
+  ### 5.3 广播的使用
+  #### 5.3.1 创建广播接收器
+  使用广播我们需要先创建 BroadcastReceiver（广播接收器） ，直接继承 BroadcastReceiver 创建子类并实现父类的 onReceive() 方法即可
+  ```
+  public class MyReceiver extends BroadcastReceiver {
+    // 自定义 action
+    private static final String ACTION = "com.jeanboy.broadcast.MyReceiverFilter";
+    
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      //TODO: 接收到广播进行处理
+    }
+  }
+  ```
+  #### 5.3.2 静态广播
+  在使用广播时还需要在 AndroidMainfest 文件中定义，也就是注册静态广播。
+  ```
+  <receiver android:name=".ui.broadcast.MyReceiver"
+            android:enabled="true"
+            android:exported="true">
+      <intent-filter>
+          <!-- 例如：接收系统开机广播 -->
+          <action android:name="android.intent.action.BOOT_COMPLETED" />
+          <!-- 例如：接收自定义的广播 -->
+          <action android:name="com.jeanboy.broadcast.MyReceiverFilter" />
+      </intent-filter>
+  </receiver>
+  ```
+  上面的 enabled 设置为 true 意味着能够接受到广播信息。exported 为 true 意味着能够接收到外部 APK 发送的广播信息。
+  
+  #### 5.3.3 动态广播
+  使用动态广播不需要在 AndroidMainfest 文件中定义，只需在代码中注册即可。
+  ```
+  // 创建广播
+  MyReceiver myReceiver = new MyReceiver();
+  // 创建 IntentFilter
+  IntentFilter intentFilter = new IntentFilter();
+  // 例如：添加系统广播 action 接受网络变化
+  intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+  // 例如：添加自定义的 action
+  intentFilter.addAction(MyReceiver.ACTION);
+  // 注册广播
+  registerReceiver(myReceiver, intentFilter);
+  // 注销广播
+  unregisterReceiver(myReceiver);
+  ```
+  #### 5.3.4 发送广播
+  发送广播比较简单，无论静态广播还是动态广播，都是如下方式（系统广播 Android 系统会自动发送，不在本文讨论范围）。
+  ```
+  // 创建 Intent
+  Intent intent = new Intent();
+  // 例如：添加自定义的 action
+  intent.setAction(MyReceiver.ACTION);
+  // 发送广播
+  sendBroadcast(intent);
+  ```
+  ### 5.4 带权限的广播
+  使用广播可能引发的安全问题：
+  - 如果别的应用程序监听我们的广播，那么会造成我们应用程序的数据泄露；
+  - 如果别的应用程序冒充我们的应用发送广播，那么就会频繁的启动我们的广播接收程序，造成我们应用的混乱，甚至崩溃。
+  为了避免以上安全问题，Android 为我们提供了权限机制。
+  首先在注册静态广播时可以在 AndroidMainfest 文件中添加权限。
+  ```
+  <manifest ...>
+    <!-- 自定义一个自己的权限 -->
+    <permission android:name="com.jeanboy.permissions.MY_BROADCAST"/>
+    <!-- 使用自定义的权限 -->
+    <uses-permission android:name="com.jeanboy.permissions.MY_BROADCAST"/>
+  
+    <application ...>
+      <!-- 添加权限 -->
+      <receiver android:name=".ui.broadcast.MyReceiver"
+                android:permission="com.jeanboy.broadcast.MY_BROADCAST"
+                android:enabled="true"
+                android:exported="true">
+        <intent-filter>
+          <!-- 例如：接收自定义的广播 -->
+          <action android:name="com.jeanboy.broadcast.MyReceiverFilter" />
+        </intent-filter>
+      </receiver>
+    </application>
+  </manifest>
+  ```
+  然后在我们发送广播时，可以为它指定一个权限，只有具有该权限的应用才能接收到广播，如下所示：
+  ```
+  // 创建 Intent
+  Intent intent = new Intent();
+  // 例如：添加自定义的 action
+  intent.setAction(MyReceiver.ACTION);
+  // 发送广播，添加权限
+  sendBroadcast(intent, "com.jeanboy.permissions.MY_BROADCAST");
+  ```
+  ### 5.5 本地广播
+  上面介绍的 Broadcast 用于应用之间的传递消息，本质上它是跨进程的，还有可能被其他应用拦截。
+  
+  而 LocalBroadcast（本地广播）用于应用内部传递消息，比 跨进程Broadcast 更加高效，它只在应用内部有效，不需要考虑安全问题。
+  
+  本地广播的创建仍然是继承 BroadcastReceiver 创建子类，并实现父类的 onReceive() 方法。在注册、发送、注销广播时使用 LocalBroadcastManager 来进行相关操作。
+  ```
+  // 创建广播
+  MyReceiver myReceiver = new MyReceiver();
+  // 创建 IntentFilter
+  IntentFilter intentFilter = new IntentFilter();
+  // 例如：添加自定义的 action
+  intentFilter.addAction(MyReceiver.ACTION);
+  // 注册本地广播
+  LocalBroadcastManager.getInstance(this)
+                  .registerReceiver(myReceiver, intentFilter);
+  
+  // 发送广播
+  Intent intent = new Intent(MyReceiver.ACTION));
+  LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+  
+  // 注销本地广播
+  LocalBroadcastManager.getInstance(this).unregisterReceiver(myReceiver);
+  ```
   
   ## 6、ContentProvider
+  [Android：关于ContentProvider的知识都在这里了！ - 简书](https://www.jianshu.com/p/ea8bc4aaf057)
   
   ## 7、Activity,PhoneWindow和DecorView 的关系
   ![16bff4353cd98658.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\852c0377.png)
@@ -860,9 +1024,10 @@ content: '''
   [jeanboy_jeanboydev_CSDN博客-Android进阶,Java基础,Android进阶领域博主](https://blog.csdn.net/freekiteyu/article/list/1)
 '''
 linesHighlighted: [
-  380
-  733
-  798
+  357
+  390
+  776
+  955
 ]
 isStarred: false
 isTrashed: false
