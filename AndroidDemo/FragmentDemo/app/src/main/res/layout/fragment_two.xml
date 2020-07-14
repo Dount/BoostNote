@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/fragment2_text"
+        android:text="这是Fragment2的Text"/>
+    <Button
+        android:id="@+id/fragment2_button"
+        android:textAllCaps="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="sendMessageToActivity"/>
+
+    <Button
+        android:textAllCaps="false"
+        android:id="@+id/fragment2_button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="sendMessageToFragment2"/>
+    <TextView
+        android:id="@+id/fragment2_text2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</LinearLayout>
