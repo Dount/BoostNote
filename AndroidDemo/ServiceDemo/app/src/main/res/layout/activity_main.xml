@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="StartService设定项"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <Button
+                android:textAllCaps="false"
+                android:id="@+id/startService"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="StartService"/>
+
+            <Button
+                android:textAllCaps="false"
+                android:id="@+id/stopService"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="StopService"/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BindService设定项" />
+
+            <Button
+                android:id="@+id/bindService"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BindService"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/unbindService"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="unBindService"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/getbindServiceData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="getServiceData"
+                android:textAllCaps="false" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BindService Message设定项" />
+
+            <Button
+                android:id="@+id/MessageerService"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BindService"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/unbindMessageerService"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="unMessageerBindService"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/getMessageerServiceData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="getServiceData"
+                android:textAllCaps="false" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ForegroudnService设定项" />
+
+            <Button
+                android:id="@+id/ForegroudnService"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="StartForegroudnService"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/unForegroudnService"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="unForegroudnService"
+                android:textAllCaps="false" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</LinearLayout>

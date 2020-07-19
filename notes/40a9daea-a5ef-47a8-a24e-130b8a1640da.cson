@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-07-17T09:03:53.499Z"
+updatedAt: "2020-07-19T13:54:49.291Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -114,7 +114,7 @@ content: '''
   ```
   从上面的代码我们可以看出SimpleService继承了Service类，并重写了onBind方法，该方法是必须重写的，但是由于此时是startService()的服务，则该方法无须实现，返回null即可，只有在bindService()的情况下才需要实现该方法并返回一个IBinder的实现类（这个后面会详细说），接着重写了onCreate、onStartCommand、onDestroy三个主要的生命周期方法，关于这几个方法说明如下:
   - onBind()
-  当另一个组件想通过调用 bindService() 与服务绑定（例如执行 RPC）时，系统将调用此方法。在此方法的实现中，必须返回 一个IBinder 接口的实现类，供客户端用来与服务进行通信。无论是启动状态还是绑定状态，此方法必须重写，但在启动状态的情况下直接返回 null。
+  当另一个组件想通过调用 bindService() 与服务绑定（例如执行 RPC）时，系统将调用此方法。在此方法的实现中，必须返回 一个IBinder 接口的实现类，供客户端用来与服务进行通信。无论是startService状态还是bindService状态，此方法必须重写，但在startService状态的情况下直接返回 null。
   - onCreate()
   首次创建服务时，系统将调用此方法来执行一次性设置程序（在调用 onStartCommand() 或onBind() 之前）。如果服务已在运行，则不会调用此方法，该方法只调用一次
   - onStartCommand()
@@ -202,12 +202,12 @@ content: '''
   
   
   ### 2.6 Service绑定服务
-      绑定服务是Service的另一种变形，当Service处于绑定状态时，其代表着“客户端-服务器”中的服务器。
+  绑定服务是Service的另一种变形，当Service处于绑定状态时，其代表着“客户端-服务器”中的服务器。
       情况1：需要从Activity组建中去调用Service中的方法。当其他组件（如 Activity）绑定到服务时，此时Activity以绑定的方式挂靠到Service后，就可以得到Service中的指定方法。
       情况2：组件（如Activity）可以向Service（也就是服务端）发送请求，或者调用Service（服务端）的方法，此时被绑定的Service（服务端）会接收信息并响应。
       情况3：可以通过绑定服务进行执行进程间通信 (即IPC，这个后面再单独分析)。
       **注意**
-      与启动服务不同的是绑定服务的生命周期通常只在为其他应用组件(如Activity)服务时处于活动状态，不会无限期在后台运行，也就是说宿主(如Activity)解除绑定后，绑定服务就会被销毁。
+      与StartService不同的是BinderService的生命周期通常只在为其他应用组件(如Activity)服务时处于活动状态，不会无限期在后台运行，也就是说宿主(如Activity)销毁后，绑定服务就会被销毁。
   
   - 扩展Binder类
   如果服务是提供给自有应用专用的，并且Service(服务端)与客户端相同的进程中运行（常见情况），则应通过扩展 Binder 类并从 onBind() 返回它的一个实例来创建接口。客户端收到 Binder 后，可利用它直接访问 Binder 实现中以及Service 中可用的公共方法。如果我们的服务只是自有应用的后台工作线程，则优先采用这种方法。 不采用该方式创建接口的唯一原因是，服务被其他应用或不同的进程调用。
@@ -426,7 +426,7 @@ content: '''
   系统会调用该方法以传递服务的　onBind() 方法返回的 IBinder。其中service便是服务端返回的IBinder实现类对象，通过该对象我们便可以调用获取LocalService实例对象，进而调用服务端的公共方法。而ComponentName是一个封装了组件(Activity, Service, BroadcastReceiver, or ContentProvider)信息的类，如包名，组件描述等信息，较少使用该参数。
   
   - onServiceDisconnected(ComponentName name) 
-  Android 系统会在与服务的连接意外中断时（例如当服务崩溃或被终止时）调用该方法。注意:当客户端取消绑定时，系统“绝对不会”调用该方法。
+  **Android 系统会在与服务的连接意外中断时（例如当服务崩溃或被终止时）调用该方法。注意:当客户端取消绑定时，系统“绝对不会”调用该方法。**
   
   在onServiceConnected()被回调前，我们还需先把当前Activity绑定到服务LocalService上，绑定服务是通过通过bindService()方法，解绑服务则使用unbindService()方法，
   - bindService(Intent service, ServiceConnection conn, int flags) 
@@ -439,8 +439,12 @@ content: '''
   运行程序，点击绑定服务并多次点击绑定服务接着多次调用LocalService中的getCount()获取数据，最后调用解除绑定的方法移除服务，其结果如下： 
   ![20161003123125076.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\cc9b396a.png)
   
-   通过Log可知，当我们第一次点击绑定服务时，LocalService服务端的onCreate()、onBind方法会依次被调用，此时客户端的ServiceConnection中onServiceConnected()被调用并返回LocalBinder对象，接着调用LocalBinder#getService方法返回LocalService实例对象，此时客户端便持有了LocalService的实例对象，也就可以任意调用LocalService类中的声明公共方法了。更值得注意的是，我们多次调用bindService方法绑定LocalService服务端，而LocalService得onBind方法只调用了一次，那就是在第一次调用bindService时才会回调onBind方法。接着我们点击获取服务端的数据，从Log中看出我们点击了3次通过getCount()获取了服务端的3个不同数据，最后点击解除绑定，此时LocalService的onUnBind、onDestroy方法依次被回调，并且多次绑定只需一次解绑即可。此情景也就说明了绑定状态下的Service生命周期方法的调用依次为onCreate()、onBind、onUnBind、onDestroy。
+   通过Log可知，当我们第一次点击绑定服务时，LocalService服务端的onCreate()、onBind方法会依次被调用，此时客户端的ServiceConnection中onServiceConnected()被调用并返回LocalBinder对象，接着调用LocalBinder#getService方法返回LocalService实例对象，此时客户端便持有了LocalService的实例对象，也就可以任意调用LocalService类中的声明公共方法了。**更值得注意的是，我们多次调用bindService方法绑定LocalService服务端，而LocalService得onBind方法只调用了一次，那就是在第一次调用bindService时才会回调onBind方法。**接着我们点击获取服务端的数据，从Log中看出我们点击了3次通过getCount()获取了服务端的3个不同数据，最后点击解除绑定，此时LocalService的onUnBind、onDestroy方法依次被回调，并且多次绑定只需一次解绑即可。此情景也就说明了绑定状态下的Service生命周期方法的调用依次为onCreate()、onBind、onUnBind、onDestroy。
   
+  ### Bind使用总结
+  - onBind只会调用一次.
+  - onServiceDisconnected,系统在与服务的连接意外中断时调用该方法。注意:当客户端取消绑定时，系统“绝对不会”调用该方法。
+  - BinderService会随着宿主的销毁而销毁。
   
   ### 2.9 使用Messenger
   前面了解了如何使用IBinder应用内同一进程的通信后，我们接着来了解服务与远程进程（即不同进程间）通信，而不同进程间的通信，最简单的方式就是使用 Messenger 服务提供通信接口，利用此方式，我们无需使用 AIDL 便可执行进程间通信 (IPC)。以下是 Messenger 使用的主要步骤：
@@ -625,7 +629,7 @@ content: '''
   接着多次点击绑定服务，然后发送信息给服务端，最后解除绑定，
   ![20161003162626563.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\1bd63ebb.png)
   
-  通过上述例子可知Service服务端确实收到了客户端发送的信息，而且在Messenger中进行数据传递必须将数据封装到Message中，**因为Message和Messenger都实现了Parcelable接口，可以轻松跨进程传递数据，而Message可以传递的信息载体有，what,arg1,arg2,Bundle以及replyTo，至于object字段，对于同一进程中的数据传递确实很实用，但对于进程间的通信，则显得相当尴尬，在android2.2前，object不支持跨进程传输，但即便是android2.2之后也只能传递android系统提供的实现了Parcelable接口的对象，也就是说我们通过自定义实现Parcelable接口的对象无法通过object字段来传递，因此object字段的实用性在跨进程中也变得相当低了。不过所幸我们还有Bundle对象，Bundle可以支持大量的数据类型。**接着从Log我们也看出无论是使用拓展Binder类的实现方式还是使用Messenger的实现方式，它们的生命周期方法的调用顺序基本是一样的，即onCreate()、onBind、onUnBind、onDestroy，而且多次绑定中也只有第一次时才调用onBind()。
+  通过上述例子可知Service服务端确实收到了客户端发送的信息，而且在Messenger中进行数据传递必须将数据封装到Message中，**因为Message和Messenger都实现了Parcelable接口，可以轻松跨进程传递数据，而Message可以传递的信息载体有，what,arg1,arg2,Bundle以及replyTo，至于object字段，对于同一进程中的数据传递确实很实用，但对于进程间的通信，则显得相当尴尬，在android2.2前，object不支持跨进程传输，但即便是android2.2之后也只能传递android系统提供的实现了Parcelable接口的对象，也就是说我们通过自定义实现Parcelable接口的对象无法通过object字段来传递，因此object字段的实用性在跨进程中也变得相当低了。不过所幸我们还有Bundle对象，Bundle可以支持大量的数据类型**。接着从Log我们也看出无论是使用拓展Binder类的实现方式还是使用Messenger的实现方式，它们的生命周期方法的调用顺序基本是一样的，即onCreate()、onBind、onUnBind、onDestroy，而且多次绑定中也只有第一次时才调用onBind()。
   
   ### 2.11 使用Message双向传递消息Demo
   在服务端，我们只需修改IncomingHandler，收到消息后，给客户端回复一条信息。
@@ -735,10 +739,8 @@ content: '''
   该方法是用来从前台删除服务，此方法传入一个布尔值，指示是否也删除状态栏通知，true为删除。 注意该方法并不会停止服务。 
   但是，如果在服务正在前台运行时将其停止，则通知也会被删除。
   
-  
-  
-  
-  ### 2.15 前台服务通知Demo
+  ### 2.15 前台服务通知Demo (Android8.0以后兼容有问题)
+  [Android 8通过startService引起crash问题 - 王强博客 - 博客园](https://www.cnblogs.com/wangqiang9/p/10595417.html)
   ForegroundService代码实现:
   
   ```
@@ -943,7 +945,20 @@ content: '''
   ```
   - 用户通过 settings -> Apps -> Downloaded -> Force Stop 方式强制性杀死Service 
   
-  ### 2.17 IntentService
+  ### 2.17 服务Service与线程Thread的区别
+  - 两者概念的迥异
+    - Thread 是程序执行的最小单元，它是分配CPU的基本单位，android系统中UI线程也是线程的一种，当然Thread还可以用于执行一些耗时异步的操作。
+    - **Service是Android的一种机制**，**服务是运行在主线程上的，它是由系统进程托管**。它与其他组件之间的通信类似于client和server，是一种轻量级的IPC通信，**这种通信的载体是binder**，它是在linux层交换信息的一种IPC，而所谓的后台Service只不过是指没有UI的组件罢了。(把 Service 想象成一种消息服务)
+  - 两者的执行任务迥异
+    - 在android系统中，线程一般指的是工作线程(即后台线程)，而主线程是一种特殊的工作线程，它负责将事件分派给相应的用户界面小工具，如绘图事件及事件响应，因此为了保证应用 UI 的响应能力主线程上不可执行耗时操作。如果执行的操作不能很快完成，则应确保它们在单独的工作线程执行。
+    - Service 则是android系统中的组件，一般情况下它运行于主线程中，因此在Service中是不可以执行耗时操作的，否则系统会报ANR异常，之所以称Service为后台服务，大部分原因是它本身没有UI，用户无法感知(当然也可以利用某些手段让用户知道)，但如果需要让Service执行耗时任务，可在Service中开启单独线程去执行。
+  - 两者使用场景
+    - 当要执行耗时的网络或者数据库查询以及其他阻塞UI线程或密集使用CPU的任务时，都应该使用工作线程(Thread)，这样才能保证UI线程不被占用而影响用户体验。
+    - 在应用程序中，如果需要长时间的在后台运行，而且不需要交互的情况下，使用服务。比如播放音乐，通过Service+Notification方式在后台执行同时在通知栏显示着。
+  - 两者的最佳使用方式
+    在大部分情况下，Thread和Service都会结合着使用，比如下载文件，一般会通过Service在后台执行+Notification在通知栏显示+Thread异步下载，再如应用程序会维持一个Service来从网络中获取推送服务。在Android官方看来也是如此，所以官网提供了一个Thread与Service的结合来方便我们执行后台耗时任务，它就是IntentService，当然 IntentService并不适用于所有的场景，但它的优点是使用方便、代码简洁，**不需要我们创建Service实例并同时也创建线程**。
+  
+  ### 2.18 IntentService
   IntentService是一个抽象类，继承自Service，内部存在一个ServiceHandler（Handler）和HandlerThread（Thread）。
   IntentService是处理异步请求的一个类，在IntentService中有一个工作线程（HandlerThread）来处理耗时操作，启动IntentService的方式和普通的一样，不过当执行完任务之后，IntentService会自动停止。
   另外可以多次启动IntentService，每一个耗时操作都会以工作队列的形式在IntentService的onHandleIntent回调中执行，并且每次执行一个工作线程。
@@ -954,7 +969,6 @@ content: '''
   [关于Android Service真正的完全详解，你需要知道的一切_zejian的博客-CSDN博客_android service](https://blog.csdn.net/javazejian/article/details/52709857)
   [](https://mp.weixin.qq.com/s/w1xiDiaOJTmxdcmQlCt0bg?)
   [【Android】Service前台服务的使用 - 简书](https://www.jianshu.com/p/5505390503fa)
-  [【Android】Service那点事儿 - 简书](https://www.jianshu.com/p/1e49e93c3ec8)
   
   ## 3、Fragment
   [Android-ReadTheFuckingSourceCode/02_fragment.md at master · jeanboydev/Android-ReadTheFuckingSourceCode · GitHub](https://github.com/jeanboydev/Android-ReadTheFuckingSourceCode/blob/master/article/android/basic/02_fragment.md)
@@ -1894,12 +1908,15 @@ content: '''
   ## 文献
   
   [jeanboy_jeanboydev_CSDN博客-Android进阶,Java基础,Android进阶领域博主](https://blog.csdn.net/freekiteyu/article/list/1)
+  
+  
+  
 '''
 linesHighlighted: [
-  1727
-  1548
-  1162
-  1129
+  1732
+  1553
+  1167
+  1134
 ]
 isStarred: false
 isTrashed: false

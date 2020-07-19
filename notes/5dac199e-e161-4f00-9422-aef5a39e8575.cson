@@ -1,5 +1,5 @@
 createdAt: "2020-07-11T14:24:13.654Z"
-updatedAt: "2020-07-13T14:41:44.958Z"
+updatedAt: "2020-07-18T13:58:19.124Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "JAVAScript 进阶教程"
@@ -139,10 +139,379 @@ content: '''
     2) 事件类型 如何触发 什么事件 比如鼠标点击（onclick）还是鼠标经过还是键盘按下。
     3) 事件处理程序 通过一个函数赋值的方式完成
   
+  ### 2.5 操作元素
+  JavaScript的DOM操作可以改变网页内容，结构和样式，我们可以利用DOM操作元素来改变元素里面的内容，属性等。
+  1.改变元素内容
+  ```
+  var btn=document.querySelector('button');
+  var div=document.querySelector('div');
+  btn.onclick = function(){
+    div.innerText='2019-6-6';
+  }
+  ```
+  从起始位置到终止位置的内容，但它去除html标签，同时空格和换行也会去掉,即纯文本插入。
+  ```
+  var div =document.querySelector('div');
+  div.innerHTML ='<strong>今天是：</strong>2019';
+  ```
+  起始位置到终止位置的全部内容，包括html标签，同时保留空格和换行,即html的形式插入。
   
+  **注意** 只能针对div标签里面的内容，表单里面的值是通过value来修改。
+  2.常用元素的属性操作
+  src,href,id,alt,title.
+  ```
+  <button id='tlp'>特朗普</button>
+      <button id='xll'>希拉里</button>
+      <img src="1.jpg" alt="123" title="特朗普">
+      <script>
+          var tlp=document.getElementById('tlp');
+          var xll=document.getElementById('xll');
+          var img=document.querySelector('img');
+          tlp.onclick=function(){
+              img.src='1.jpg';
+              img.title='特朗普';
+          }
+          xll.onclick=function(){
+              img.src='2.jpg';
+              img.title='希拉里'; 
+          }
+      </script>
+  ```
+  #### 2.5.3 表单元素的属性操作
+  利用DOM可以操作如下表单元素的属性：
+  type,value,checker,selected,disabled
+  ```
+  var btn =document.querySelector('button');
+  var input =document.querySelector('input');
+  btn=onclick=function(){
+   input.value='被点击了';
+   this.disable=true;
+  }
+  ``` 
   
+  #### 2.5.4 样式属性操作
+  可以通过JS修改元素的大小，颜色，位置等样式。
+  1.element.style 行内样式操作
+  
+  ```
+  <div></div>
+      <script>
+          //1.获取元素
+          var div=document.querySelector('div');
+          //2.注册事件，处理程序
+          div.onclick = function(){
+              this.style.backgroundColor ='purple';
+              this.style.width ='250px'; //会加到行内样式中。
+          }
+      </script>
+  ```
+  **注意**
+  1).JS里面的样式采取驼峰命名法，比如fontSize,backgroundColor
+  2).JS修改style样式操作，产生的是行内样式，css权重比较高（重要）
+  
+  2.element.className 类名样式操作
+  ```
+  <style>
+          .change{
+              background-color :purple;
+              color: #fff;
+              font-size:25px;
+              margin-top: 100px;
+          }
+      </style>
+  <div>文本</div>
+      <script>
+          var text=document.querySelector('div');
+          text.onclick=function(){
+              this.className='change';
+          }
+      </script>
+  ```
+  1. 如果样式修改较多，可以采取操作类名方式更改元素样式。
+  2. class因为是个保留字，因此使用className来操作元素类名属性。
+  3. className 会直接更改元素的类名，会覆盖原先的类名。
+  
+  #### 2.5.5 获取焦点
+  获取焦点：onfocus
+  失去焦点：onblur
+  ```
+  <input type="text" value="手机">
+      <script>
+          var text=document.querySelector('input');
+          text.onfocus = function (){
+              if(this.value==='手机'){
+                  this.value='';
+              }
+              this.style.color ='#333';
+          }
+          text.onblur =function (){
+              if(this.value===''){
+                  this.value='手机';
+              }
+              this.style.color='#999';
+          }
+      </script>
+  ```
+  获取鼠标焦点：onmouseover
+  失去鼠标焦点：onmouseout
+  
+  ```
+  <script>
+           var child =document.querySelector('tbody').querySelectorAll('tr');
+           for(var i = 0; i < child.length ; i++){
+               child[i].onmouseover = function(){
+                  this.className = 'bg';
+               }
+               child[i].onmouseout =function(){
+                   this.className = '';
+               }
+           }        
+      </script>
+  ```
+  
+  #### 2.5.6 操作元素总结
+  ![6a24e78e.png](:storage\\5dac199e-e161-4f00-9422-aef5a39e8575\\6a24e78e.png)
+  
+  #### 2.5.7 表单全选与取消全选
+  ```
+   <script>
+          var thead =document.getElementById('j_cbAll');
+          var tbody= document.getElementById('j_tb').querySelectorAll('input');
+          thead.onclick=function(){
+              for(var i=0;i<tbody.length;i++){
+                  tbody[i].checked=this.checked;
+              }
+          }
+          for(var i=0;i<tbody.length;i++){    
+              tbody[i].onclick=function(){
+                  var flag=true;
+                  for(var i=0 ;i < tbody.length; i++){
+                      if(!tbody[i].checked){
+                          flag=false;
+                          break;
+                      }
+                  }
+                  thead.checked=flag;
+              }
+          }
+      </script>
+  ```
+  #### 2.5.8 自定义属性的操作
+  1. 获取属性值
+  - element.属性 获取属性值
+  - element.getAttribute('属性')
+  
+  2. 区别
+  - element.属性 获取内置属性值（元素本身自带的属性）
+  - element.getAttribute('属性');主要获取自定义的属性
+  
+  3. 设置属性值
+  - element.属性 ='值' 设置内置属性值
+  - element.setAttribute('属性'，'值');
+  
+  4. 区别:
+  - element.属性 设置内置属性值
+  - element.setAttribute('属性')；主要设置自定义的属性
+  
+  5. 移除属性
+  - element.removeAttribute('属性')
+  
+  #### 2.5.9 tab栏切换布局分析（重要）
+  ```
+   <script>
+          var father=document.querySelector('.tab_list');
+          var child=father.querySelectorAll('li');
+          var tab_con=document.querySelectorAll('.item');
+          for(var i=0;i<child.length;i++){
+              child[i].setAttribute('index',i);
+              child[i].onclick=function(){
+                  for(var i=0;i<child.length;i++){
+                      child[i].className='';
+                  }
+                  this.className='current';
+                  var index=this.getAttribute('index');
+                  console.log(index);
+                  for(var i=0;i<tab_con.length;i++){
+                      tab_con[i].style.display='none';
+                  }
+                  tab_con[index].style.display='block';
+              }
+          }
+  
+      </script>
+  ```
+  
+  #### 2.5.10 H5自定义属性
+  自定义属性目的：是为了保存并使用数据。有些数据可以保存到页面中而不用保存到数据库中。
+  自定义属性获取是通过getAttribute('属性')获取。
+  **H5规定自定义属性必须以data-开头做为属性名并且赋值**
+  比如
+  ```
+  <div data-index="1"></div>
+  ```
+  或者使用JS设置
+  element.setAttribute('data-index',2)
+  
+  #### 2.5.11 获取H5自定义属性
+  1.兼容性获取 element.getAttribute('data-index');
+  2.H5新增element.dataset.index 或者element.dataset['index'] ie 11才开始支持。
+  
+  ### 2.6 节点操作
+  
+  #### 2.6.1 为什么学节点操作
+  ![dd83efbb.png](:storage\\5dac199e-e161-4f00-9422-aef5a39e8575\\dd83efbb.png)
+  
+  #### 2.6.2 节点概述
+  网页中的所有内容都是节点（标签，属性，文本，注释等），在DOM中，节点使用node来表示。
+  HTML DOM树种的所有节点均可通过JavaScript进行访问。所有HTML元素（节点）均可被修改，也创建和删除
+  ![bcc5a16c.png](:storage\\5dac199e-e161-4f00-9422-aef5a39e8575\\bcc5a16c.png)
+  一般地，节点至少用于nodeType(节点类型)，nodeName(节点名称)和nodeValue(节点值)这三个基本属性。
+  - 元素节点 nodeType 为1
+  - 属性节点 nodeType 为2
+  - 文本节点 nodeType 为3
+  **在实际开发中节点操作主要操作的是元素节点**
+  
+  #### 2.6.3节点层级
+  利用DOM树可以把节点划分为不同的层级关系，常见的是父子兄层级关系。
+  1.父级节点
+  ```
+  node.parentNode
+  ```
+  - parentNode属性可返回某节点的父节点，注意是最近的一个父节点。
+  - 如果指定的节点没有父节点则返回null
+  
+  2.子节点
+  方式1：（不推荐）
+  ```
+  parentNode.childNodes(标准)
+  ```
+  parentNode.childNodes返回包含指定节点的子节点的集合，该集合为即时更新的集合。
+  **注意**
+  返回值里面包含了所有的子节点，包括元素节点，文本节点等。
+  如果只想要获得里面的元素节点，则需要专门处理。所以一般不提倡使用childNodes.
+  ```
+  var ul=document.querySelector('ul');
+  for(var i=0,i<ul.childNodes.length;i++){
+    if(ul.childNodes[i].nodeType==1){
+        console.log(ul.childNodes[i]) //是元素节点
+    }
+  }
+  
+  ```
+  方式2：（推荐）
+  ```
+  parentNode.children
+  ```
+  parentNode.children是一个只读属性，返回所有子元素节点。它只返回子元素节点，其余节点不返回。
+  虽然children是一个非标准，但是得到了各个浏览器的支持。
+  
+  #### 2.6.4 新浪下拉菜单
+  ```
+  <script>
+          var father = document.querySelector('.nav');
+          var child = father.children;
+          console.log(child);
+          for(var i=0;i<child.length;i++){
+              child[i].onmouseover=function(){
+                  this.children[1].style.display='block';
+              }
+              child[i].onmouseout=function(){
+                  this.children[1].style.display='none';
+              }
+          }
+  
+      </script>
+  ```
+  
+  #### 2.6.5 兄弟节点
+  ```
+  node.nextSibling
+  ```
+  nextSibing 返回当前元素的下一个兄弟节点，找不到则返回null.同样，也是包含所有的节点。
+  ```
+  node.previousSibling
+  ```
+  previousSibling 返回当前元素上一个兄弟节点，找不到则返回null.同样，也是包含所有的节点。
+  ```
+  node.nextElementSibling (重要)
+  ```
+  nextElementSibling返回当前元素下一个兄弟元素节点，找不到则返回null
+  ```
+  node.previousElementSibling
+  ```
+  previousElementSibling返回当前元素上一个兄弟节点，找不到则返回null
+  
+  #### 2.6.6 创建节点
+  ```
+  document.createElement('tagName')
+  ```
+  document.createElement()方法创建由tagName指定的HTML元素。因为这些元素原先不存在，
+  是根据我们的需求动态生成的，所以我们也称为动态创建元素节点。
+  
+  #### 2.6.7 添加节点
+  ```
+  node.appendChild(child)
+  ```
+  node为父级节点，child是子级
+  node.appendChild()方法将一个节点添加到指定父节点的字节点列表末尾。
+  
+  #### 2.6.8 删除节点
+  ```
+  node.removeChild(child)
+  ```
+  node.removeChild()方法从DOM中删除一个子节点，返回删除的节点。
+  
+  #### 2.6.9 删除留言案例
+  ```
+   <textarea name="" id=""></textarea>
+      <button>发布</button>
+      <ul>
+  
+      </ul>
+      <script>
+          var text=document.querySelector('textarea');
+          var btn=document.querySelector('button');
+          var ul=document.querySelector('ul');
+          btn.onclick=function(){
+              if(text.value===''){
+                  alert('没有输入');
+                  return
+              }
+              else{
+                  //创建节点
+                  var li =document.createElement('li');
+                  li.innerHTML=text.value+"<a href='javaScript:;'>删除</a>";
+                  console.log(li);
+                  //追加节点
+                  ul.insertBefore(li,ul.children[0])
+                  //删除节点
+                  var a=document.querySelectorAll('a');
+                  for(var i =0;i<a.length;i++){
+                      a[i].onclick=function(){
+                          ul.removeChild(this.parentNode);
+                      }
+                  }
+              }
+          }
+  
+      </script>
+  ```
+  
+  #### 2.6.10 复制节点
+  
+  ```
+  node.cloneNode()
+  ```
+  node.cloneNode()方法返回调用该方法的节点的一个副本，也称为克隆节点/拷贝节点
+  
+  **注意**
+  - 如果括号参数为空或者为false,则是浅拷贝，即只克隆复制节点本身，不克隆里面的子节点。
+  - 如果括号参数为true,则是深度拷贝，会复制节点本身以及里面所有的子节点。
   
 '''
-linesHighlighted: []
+linesHighlighted: [
+  118
+  135
+]
 isStarred: false
 isTrashed: false
