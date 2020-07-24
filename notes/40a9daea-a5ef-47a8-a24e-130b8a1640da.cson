@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-07-19T13:54:49.291Z"
+updatedAt: "2020-07-24T10:07:39.001Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -7,13 +7,73 @@ tags: []
 content: '''
   # Android 面试题
   [toc]
-  ## 1、 Android类加载器
-  在Android开发中，不管是插件化还是组件化，都是基于Android系统的类加载器ClassLoader来设计的。只不过Android平台上虚拟机运行的是Dex字节码，一种对class文件优化的产物，传统Class文件是一个Java源码文件会生成一个.class文件，而Android是把所有Class文件进行合并、优化，然后再生成一个最终的class.dex，目的是把不同class文件重复的东西只需保留一份，在早期的Android应用开发中，如果不对Android应用进行分dex处理，那么最后一个应用的apk只会有一个dex文件。
+  ## 1、Application 生命周期
+  - Application和Activity,Service一样，是Android框架的一个系统组件。
+  - 当Android程序启动时系统会创建一个application对象用来存储系统的一些信息。
+  - Android系统会为每个程序运行时创建一个Application类的对象且只创建一个。
   
-  Android中常用的类加载器有两种，DexClassLoader和PathClassLoader，它们都继承于BaseDexClassLoader,而BaseDexClassLoader继承自ClassLoader。
-  区别在于
-  PathClassLoader用来加载系统类及已安装的应用程序的类；
-  DexClassLoader用来加载jar、apk、dex文件中的类。
+  ### 1.1 Application中五个公开的方法
+  1）void  onConfigurationChanged(Configuration newConfig)
+  配置被改变时触发 
+  2）void  onCreate() 
+  程序创建时创建
+  3）void  onLowMemory()
+  内存不够时触发
+  4）void  onTerminate()
+  当终止程序时调用 但是不能保证一定调用
+  5）void onTrimMemory()
+  内存清理时触发
+  
+  ### 1.2 实例展示
+  ```
+  /**
+   * @author ljcheng
+   * @date 2019/6/29
+   */
+  public class MyApplication extends Application {
+  
+      private static String TAG = "MyApplication";
+  
+      @Override
+      public void onCreate() {
+          // 程序创建的时候执行
+          KLog.d(TAG, "onCreate");
+          super.onCreate();
+      }
+  
+      @Override
+      public void onTerminate() {
+          // 程序终止的时候执行
+          //当终止应用程序对象时调用，不保证一定被调用，意思是当程序被内核终止以便为其他应用程序释放资源，那
+          //么将不会提醒，并且不调用应用程序的对象的onTerminate方法而直接终止进程
+          KLog.d(TAG, "onTerminate");
+          super.onTerminate();
+      }
+  
+      @Override
+      public void onLowMemory() {
+          // 当后台程序已经终止资源还匮乏时会调用这个方法。好的应用程序一般会在这个方法里面释放一些不必
+          // 要的资源来应付当后台程序已经终止，前台应用程序内存还不够时的情况。
+          KLog.d(TAG, "onLowMemory");
+          super.onLowMemory();
+      }
+  
+      @Override
+      public void onTrimMemory(int level) {
+          // 程序在内存清理的时候执行
+          KLog.d(TAG, "onTrimMemory");
+          super.onTrimMemory(level);
+      }
+  
+      @Override
+      //配置改变时触发这个方法
+      public void onConfigurationChanged(Configuration newConfig) {
+          KLog.d(TAG, "onConfigurationChanged");
+          super.onConfigurationChanged(newConfig);
+      }
+  
+  }
+  ```
   
   ## 2、Service
   
@@ -964,7 +1024,6 @@ content: '''
   另外可以多次启动IntentService，每一个耗时操作都会以工作队列的形式在IntentService的onHandleIntent回调中执行，并且每次执行一个工作线程。
   **IntentService的本质是：封装了一个HandlerThread和Handler的异步框架**。
   
-  
   **参考**
   [关于Android Service真正的完全详解，你需要知道的一切_zejian的博客-CSDN博客_android service](https://blog.csdn.net/javazejian/article/details/52709857)
   [](https://mp.weixin.qq.com/s/w1xiDiaOJTmxdcmQlCt0bg?)
@@ -1426,7 +1485,7 @@ content: '''
   默认模式，可以不用写配置。在这个模式下，都会默认创建一个新的实例。因此，在这种模式下，可以有多个相同的实例，也允许多个相同Activity叠加。
   
   #### 4.3.2 singleTop
-  可以有多个实例，但是不允许多个相同Activity叠加。即，如果Activity在栈顶的时候，启动相同的Activity，不会创建新的实例，而会调用其onNewIntent方法。
+  可以有多个实例，但是不允许多个相同Activity叠加。即，如果Activity在栈顶的时候，**启动相同的Activity**，不会创建新的实例，而会调用其onNewIntent方法。
   
   #### 4.3.3 singleTask
   只有一个实例。在同一个应用程序中启动他的时候，若Activity不存在，则会在当前task创建一个新的实例，若存在，则会把task中在其之上的其它Activity destory掉并调用它的onNewIntent方法。
@@ -1440,6 +1499,7 @@ content: '''
   只有一个实例，并且这个实例独立运行在一个task中，这个task只有这个实例，不允许有别的Activity存在。
   [Activity SingleInstance启动模式 - javakam - 博客园](https://www.cnblogs.com/jooy/p/9494165.html)
   [SingleTask和SingleInstance详解_ywj2167917的专栏-CSDN博客_singletask和singleinstance](https://blog.csdn.net/ywj2167917/article/details/8827830)
+  
   #### 4.3.5 task
   我们知道，一个应用中可能有多个 Activity，而这些 Activity 被以栈的形式管理。当我们新打开 Activity 或者按返回时，会导致 Activity 的入栈/出栈。
   Task 是指在执行特定任务时与用户交互的一系列 Activity。 这些 Activity 按照各自的打开顺序排列在堆栈中。
@@ -1785,78 +1845,474 @@ content: '''
   ```
   
   ## 6、ContentProvider
+  ### 6.1 ContentProvider 作用与原理
+  作用：进程间进行数据交互与共享，即跨进程通信。
+  ![944365-3c4339c5f1d4a0fd.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\931e58bc.png)
+  
+  原理：Android中的Binder机制。
+  
+  ### 6.2 ContentProvice 具体使用
+  
+  #### 6.2.1 统一资源标识符（URL）
+  外界通过URL来获取ContentProvider其中的数据，再进行数据操作。
+  ![944365-96019a2054eb27cf.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\b1ee5396.png)
+  
+  - 设置URI
+  Uri uri = Uri.parse("content://com.carson.provider/User/1") 
+  上述URI指向的资源是：名为 `com.carson.provider`的`ContentProvider` 中表名 为`User` 中的 `id`为1的数据
+  
+  - URI模式存在匹配通配符* & ＃
+  ```
+  // *：匹配任意长度的任何有效字符的字符串
+  // 以下的URI 表示 匹配provider的任何内容
+  content://com.example.app.provider/* 
+  // ＃：匹配任意长度的数字字符的字符串
+  // 以下的URI 表示 匹配provider中的table表的所有行
+  content://com.example.app.provider/table/# 
+  ```
+  #### 6.2.2 MIME数据类型
+  作用：指定某个扩展名的文件用某种应用程序来打开
+  如指定.html文件采用text应用程序打开、指定.pdf文件采用flash应用程序打开
+  
+  #### 6.2.3 MIME具体使用
+  1. ContentProvider根据 URI 返回MIME类型
+  ```
+  ContentProvider.geType(uri)
+  ```
+  2. MIME类型组成
+  每种MIME类型 由2部分组成 = 类型 + 子类型
+  ```
+  text / html
+  // 类型 = text、子类型 = html
+  ```
+  
+  3. MIME类型形式
+     1)单条记录 
+  ```
+   vnd.android.cursor.item/自定义
+  ```
+     2)多条记录
+  ```
+   vnd.android.cursor.dir/自定义 
+  ```
+  - vnd：表示父类型和子类型具有非标准的、特定的形式。
+  - 父类型已固定好（即不能更改），只能区别是单条还是多条记录
+  - 子类型可自定义
+  
+  ```
+  <-- 单条记录 -->
+    // 单个记录的MIME类型
+    vnd.android.cursor.item/vnd.yourcompanyname.contenttype 
+  
+    // 若一个Uri如下
+    content://com.example.transportationprovider/trains/122   
+    // 则ContentProvider会通过ContentProvider.geType(url)返回以下MIME类型
+    vnd.android.cursor.item/vnd.example.rail
+  
+  
+  <-- 多条记录 -->
+    // 多个记录的MIME类型
+    vnd.android.cursor.dir/vnd.yourcompanyname.contenttype 
+    // 若一个Uri如下
+    content://com.example.transportationprovider/trains 
+    // 则ContentProvider会通过ContentProvider.geType(url)返回以下MIME类型
+    vnd.android.cursor.dir/vnd.example.rail
+  
+  ```
+  
+  ### 6.3 ContentProvice类
+  
+  #### 6.3.1 四个核心方法
+  ```
+    public Uri insert(Uri uri, ContentValues values) 
+  ```
+  外部进程向 ContentProvider 中添加数据
+  ```
+   public int delete(Uri uri, String selection, String[] selectionArgs) 
+  ```
+  外部进程 删除 ContentProvider 中的数据
+  ```
+  public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs)
+  ```
+  外部进程更新 ContentProvider 中的数据
+  
+  ```
+  public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,  String sortOrder)　 
+  ```
+  外部应用 获取 ContentProvider 中的数据
+  
+  #### 6.3.2 两个其它方法
+  ```
+  public boolean onCreate() 
+  ```
+  ContentProvider创建后 或 打开系统后其它进程第一次访问该ContentProvider时 由系统进行调用
+  注：运行在ContentProvider进程的主线程，故不能做耗时操作
+  
+  ```
+  public String getType(Uri uri)
+  
+  ```
+  得到数据类型，即返回当前 Url 所代表数据的MIME类型
+  
+  ### 6.4 ContentResolver类
+  
+  1. 作用
+     - 通过 URI 即可操作 不同的ContentProvider 中的数据
+     - 外部进程通过 ContentResolver类 从而与ContentProvider类进行交互
+  
+  2. 具体使用
+  ```
+  public Uri insert(Uri uri, ContentValues values)　 
+  ```
+  外部进程向 ContentProvider 中添加数据
+  ```
+  public int delete(Uri uri, String selection, String[] selectionArgs)
+  ```
+  外部进程 删除 ContentProvider 中的数据
+  
+  ```
+  public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs)
+  ```
+  外部进程更新 ContentProvider 中的数据
+  
+  ```
+  public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)
+  ```
+  外部应用 获取 ContentProvider 中的数据
+  
+  3. 实例说明
+  使用ContentResolver前，需要先获取ContentResolver
+  可通过在所有继承Context的类中 通过调用getContentResolver()来获得ContentResolver
+  ```
+  ContentResolver resolver =  getContentResolver();  
+  ```
+  设置ContentProvider的URI
+  ```
+  Uri uri = Uri.parse("content://cn.scu.myprovider/user"); 
+  ```
+  根据URI 操作 ContentProvider中的数据
+  ```
+  Cursor cursor = resolver.query(uri, null, null, null, "userid desc"); 
+  ```
+  此处是获取ContentProvider中 user表的所有记录 
+  
+  ### 6.5 辅助工具类
+  1. ContentUris类
+  - 核心方法有两个：withAppendedId（） &parseId（）
+  withAppendedId（）作用：向URI追加一个id
+  ```
+  Uri uri = Uri.parse("content://cn.scu.myprovider/user") 
+  Uri resultUri = ContentUris.withAppendedId(uri, 7);  
+  ```
+  最终生成后的Uri为：content://cn.scu.myprovider/user/7
+  
+  parseId（）作用：从URL中获取ID
+  ```
+  Uri uri = Uri.parse("content://cn.scu.myprovider/user/7") 
+  long personid = ContentUris.parseId(uri); 
+  ```
+  获取的结果为:7
+  
+  2. UriMatcher类
+  - 在ContentProvider 中注册URI
+  - 根据 URI 匹配 ContentProvider 中对应的数据表
+  ```
+  // 步骤1：初始化UriMatcher对象
+      UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH); 
+      //常量UriMatcher.NO_MATCH  = 不匹配任何路径的返回码
+      // 即初始化时不匹配任何东西
+  
+  // 步骤2：在ContentProvider 中注册URI（addURI（））
+      int URI_CODE_a = 1；
+      int URI_CODE_b = 2；
+      matcher.addURI("cn.scu.myprovider", "user1", URI_CODE_a); 
+      matcher.addURI("cn.scu.myprovider", "user2", URI_CODE_b); 
+      // 若URI资源路径 = content://cn.scu.myprovider/user1 ，则返回注册码URI_CODE_a
+      // 若URI资源路径 = content://cn.scu.myprovider/user2 ，则返回注册码URI_CODE_b
+  
+  // 步骤3：根据URI 匹配 URI_CODE，从而匹配ContentProvider中相应的资源（match（））
+  
+  @Override   
+      public String getType(Uri uri) {   
+        Uri uri = Uri.parse(" content://cn.scu.myprovider/user1");   
+  
+        switch(matcher.match(uri)){   
+       // 根据URI匹配的返回码是URI_CODE_a
+       // 即matcher.match(uri) == URI_CODE_a
+        case URI_CODE_a:   
+          return tableNameUser1;   
+          // 如果根据URI匹配的返回码是URI_CODE_a，则返回ContentProvider中的名为tableNameUser1的表
+        case URI_CODE_b:   
+          return tableNameUser2;
+          // 如果根据URI匹配的返回码是URI_CODE_b，则返回ContentProvider中的名为tableNameUser2的表
+      }   
+  }
+  ```
+  3. ContentObserver类
+  - 当ContentProvider 中的数据发生变化（增、删 & 改）时，就会触发该 ContentObserver类
+  ```
+  // 步骤1：注册内容观察者ContentObserver
+      getContentResolver().registerContentObserver（uri）；
+      // 通过ContentResolver类进行注册，并指定需要观察的URI
+  
+  // 步骤2：当该URI的ContentProvider数据发生变化时，通知外界（即访问该ContentProvider数据的访问者）
+      public class UserContentProvider extends ContentProvider { 
+        public Uri insert(Uri uri, ContentValues values) { 
+        db.insert("user", "userid", values); 
+        getContext().getContentResolver().notifyChange(uri, null); 
+        // 通知访问者
+     } 
+  }
+  
+  // 步骤3：解除观察者
+   getContentResolver().unregisterContentObserver（uri）；
+      // 同样需要通过ContentResolver类进行解除
+  ```
+  
+  ### 6.6 进程内通信Demo
+  
+  
+  ### 6.7 进程间通信Demo
+  
+  
+  
+  ### 文献
   [Android：关于ContentProvider的知识都在这里了！ - 简书](https://www.jianshu.com/p/ea8bc4aaf057)
+  [Android 的这 13 道 ContentProvider 面试题，你都会了吗？ - 知乎](https://zhuanlan.zhihu.com/p/113619338)
   
-  ## 7、Activity,PhoneWindow和DecorView 的关系
-  ![16bff4353cd98658.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\852c0377.png)
   
-  ### 7.1 DecorView 浅析
-  ![16bff4356573308b.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\4aeeca66.png)
-  如图所示，DecorView为整个Window界面的最顶层View，它只有一个子元素LinearLayout。代表整个Window界面，包含通知栏、标题栏、内容显示栏三块区域。其中LinearLayout中有两个FrameLayout子元素。
+  ## 7、 Android - 系统启动过程
   
-  ### 7.2 DecorView 的作用
-  DecorVuew是顶级View,本质是一个FrameLayout它包含两部分，标题栏和内容栏，都是FrameLayout,内容栏id是content,也就是Activity中设置setContentView的部分,最终将布局添加到id为content的FrameLayout中。获取content:
-  ViewGroup content=findViewByld(android.id.content)获取设置的View :getChildAt(0);
+  ### 7.1  启动流程图
+  ![完整启动过程.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\2dc66a3e.png)
   
-  使用总结
+  ### 7.2 启动步骤
+  Step1  Bootlloader —系统启动加载器
   
-  每个Activity都包含一个Window对象，Window对象通常是由PhoneWindow实现的。
-  PhoneWindow:将DecorView设置为整个应用窗口的根View,是Window的实现类。它是Android中的基本的窗口系统，每个Activity均会创建一个PhoneWindow对象，是Activity和整个View系统交互的接口。
-  DecorView:是顶层视图，将要呈现的具体内容呈现在PhoneWindow上，DecorView是当前Activity所有View的祖先，它并不会向用户呈现任何东西。
+  Step2  Bootloader —会读取Boot ROM找到操作系统并将 Kernel(Linux内核) 加载到RAM中。
   
-  ## 8、系统原理
+  Step3  当Kernel(Linux内核)启动后会初始化各种软硬环境，加载驱动程序，挂载根文件系统，最后Kernel会调用init.cpp中main()方法。——init是Linux系统中用户空间的第一个进程(pid=1).
   
-  ### 8.1 打包原理
-  1. 通过AAPT工具进行资源文件(包括AndroidManifest.xml、布局文件、各种xml资源等)的打包，生成R.java文件。
-  AAPT:Android Asset Packaging Tool，在SDK的build-tools目录下。
-  3. 通过AIDL工具处理 AIDL文件，生成相应的java文件。
-  AIDL::Android Interface Definition Language,Android 接口定义语言（跨进程访问服务）
-  为了使其他的应用程序也可以访问本应用程序提供的服务，Android系统采用了远程过程调用（Remote Procedure Call，RPC）方式来实现。与很多其他的基于RPC的解决方案一样，Android使用一种接口定义语言（Interface Definition Language，IDL）来公开服务的接口。我们知道4个Android应用程序组件中的3个（Activity、BroadcastReceiver和ContentProvider）都可以进行跨进程访问，另外一个Android应用程序组件Service同样可以。
-  5. 通过javac工具编译项目编码，生成Class文件。
-  6. 通过DX工具将所有的Class 文件转换成DEX文件，该过程主要完成java字节码转换成Dalvik字节码，压缩常量池以及清除,冗余信息等工作。
-  DX工具:android将jar包转成dex格式二进制jar包工具,在SDK的platform-tools目录下
-  7. 通过ApkBilder工具将资源文件、DEX文件打包生成Apk文件
-  8. 利用KeyStore对生成的Apk文件进行签名
-  9. 如果是正式版的APK,还会利用ZipAlign工具进行对齐处理，对齐的过程就是将APK文件中所有的资源文件举例文件的起始举例都偏移4字节的整数倍,这样通过内存映射访问Apk文件的速度会更快。
-  ZipAlign:Android SDK中包含了一个用于优化APK的新工具zipalign。它提高了优化后的Applications与Android系统的交互效率可以使整个系统的运行速度有了较大的提升。
-  ![16bff4358a12ae4c.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\886e21c0.png)
+  Step4  init.main() 首先初始化Kernel log ,创建一块共享的内存空间，加载/default.prop文件，解析init.rc文件。
   
-  ### 8.2 安装流程
-  1. 复制APK到/data/app目录下，解压并扫描安装包
-  2. 资源管理器解析APK里的资源文件.
-  3. 解析AndroidManifest文件，并在/data/data/目录下创建对应的应用数据目录。
-  4. 然后对dex文件进行优化，并保存的dalvik-cache目录下。
-  5. 将AndroidManifest文件解析出的四大组件信息注册到PackageManagerService中。
-  6. 安装完成后，发送广播
-  ![252739b9.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\252739b9.png)
+  Step5  init.rc 脚本中配置了一些重要服务，init进程通过创建子进程来启动这些服务。（注意:在这个阶段可以看到 Android log 画面）
   
-  ## 9、屏幕适配
+  Step6  Zygote进程用来孵化所有的Android 应用程序, 该进程的启动也标志着Framework框架初始化启动的开始。Zygote进程启动后，会执行App_main.cpp. 文件的main()方法。开始启动java 虚拟机. 
   
-  ### 9.1 基本概念
-  #### 9.1.1 屏幕尺寸
-  含义：手机对角线的物理尺寸单位：英寸（inch）,1英寸=2.52cm
-  Android手机常见的尺寸有5寸，5.5寸，6寸，6.5寸等等
+  Step7  在App_main.cpp中启动ZygoteInit.main()方法，启动预加载和资源，并启动system_server.
   
-  #### 9.1.2 屏幕分辨率
-  含义：手机在横向、纵向上的像素点数总和
-  一般描述成屏幕的”宽x高”=AxB 含义：屏幕在横向方向（宽度）上有A个像素点，在纵向方向（高）有B个像素点。
-  例子：1080x1920，即宽度方向上有1080个像素点，在高度方向上有1920个像素点。
-  单位：px（pixel），1px=1像素点
-  Android手机常见的分辨率：320x480、480x800、720x1280、1080x1920
+  Step8  system_server进程启动后将开启 引导服务，核心服务，其它服务。
   
-  #### 9.1.3 屏幕像素密度
-  含义：每英寸的像素点数 单位：dpi（dots per ich）
+  Step9  在Zygote中启动的服务都会注册到ServiceManager中。
   
-  假设设备内每英寸有160个像素，那么该设备的屏幕像素密度=160dpi
+  Step10 ActivityManagerService 服务启动完成后，会进入 ActivityManagerService.systemReady()，然后启动 SystemUI，WebViewFactory，Watchdog，最后启动桌面 Launcher App。
   
-  #### 9.1.4 适配方法
-  1. 支持各种屏幕尺寸:使用wrap_content,match_parent,weight 
-  2. 要确保布局的灵活性并适应各种尺寸的屏幕，应使用"wrap_content","match_parent"控制某些视图组件的宽度和高度。
-  3. 使用相对布局
-  4. 使用LinearLayout的weight的属性
-  在Match_parent情况下，**权重设置的是显示优先级**
-  当组件宽度设置为”match_parent”的时候，这里的权重值，表示的组件显示的优先级，而且值越小优先级越高，因为按钮2优先级为1，大于按钮1的优先级，所以按钮2占的是3/4,按钮1占的是1/4。 
-  在wrap_content(0dp)情况下，**权重设置的是按比例分配显示空间**
+  ### 7.3 init.rc 进程中启动的服务
+  1. service_manager： Binder IPC 通信过程中的守护进程，本身也是一个 Binder 服务。ServiceManager 进程主要是启动 Binder，提供服务的查询和注册。
+  2. mountd：设备安装 Daemon，负责设备安装及状态通知
+  3. debuggerd：启动 debug system，处理调试进程的请求
+  4. rild：启动 radio interface layer daemon 服务，处理电话相关的事件和请求
+  5. media_server：MediaServer 进程主要是启动 AudioFlinger 音频服务，CameraService 相机服务。负责处理音频解析播放，相机相关的处理。
+  6. surface_flinger：负责图像绘制，是应用 UI 的核心，其功能是合成所有 Surface 并渲染到显示设备。SurfaceFlinger 进程主要是启动 FrameBuffer，初始化显示系统。
+  7. zygote：进程孵化器，启动 Android Java VMRuntime 和启动 systemserver，负责 Android 应用进程的孵化工作 （重要）
+  
+  ### 7.4 system_server进程启动的服务
+  1. 引导服务：
+  ActivityManagerService，
+  PowerManagerService，
+  LightsService，
+  DisplayManagerService，
+  PackageManagerService，
+  UserManagerService。
+  
+  2. 核心服务：
+  BatteryService
+  UsageStatsService
+  
+  3. 其它服务：
+  InputManagerService，
+  WindowManagerService
+  
+  ### 7.5 参考文献
+  [Android-ReadTheFuckingSourceCode/Android-系统启动过程.md at master · jeanboydev/Android-ReadTheFuckingSourceCode · GitHub](https://github.com/jeanboydev/Android-ReadTheFuckingSourceCode/blob/master/article/android/framework/Android-系统启动过程.md)
+  
+  
+  ## 8、Android - Activity 启动过程
+  
+  ### 8.1 启动流程图
+  ![Activity启动过程.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\6fab0b8b.png)
+  
+  ### 8.2 启动步骤
+  Activity进程已存在的情况
+  Step 1 : 点击App应用图标，通过Instrumention.execStartActivity方法获取ActivityManagerProxy对象.
+  Step 2 : 调用ActivityManagerProxy对象调用startActivity()方法，通过Binder方式 发送START_ACTIVITY_TRANSACTION
+  Step 3 : 在system_server 进程中的ActivityManagerService 收到 START_ACTIVITY_TRANSACTION 命令后进行处理，调用 startActivity() 方法。
+  Step 4 : 在ActivityManagerService 服务中，调用ActivityStackSupervisor.startActivityLocked()方法获取调用者的进程信息。
+  Step 5 : 通过ActivityStackSupervisor.startSpecificActivityLocked() 来判断该进程是否存在，存在的话直接设置Activity状态为 resumed，不存在则会创建新进程。
+  
+  Activity进程不已存在的情况
+  Step1 : 如果应用没有启动过，会fork一个新进程。在创建进程时会对ActivityManagerService的ProcessRecord(其实是包名)进行判断。如果已经存在就不会新建进程。
+  Step2 : 如果ProcessRecord不存在。调用ActivityManagerService.startProcessLocked()方法创建新进程。
+  Step3 : 进入App进程后将ActivityThread类加载到新进程中，其中调用ActivityManagerProxy.attachApplication()方法，发送 ATTACH_APPLICATION_TRANSACTION 命令。
+  (这个过程的目的是，将本地的 ApplicationThread 传递到 ActivityMangerService。然后 ActivityMangerService 就可以通过 ApplicationThread 的代理 ApplicationThreadProxy 来调用应用程序 ApplicationThread.bindApplication，通知应用程序的 ApplicationThread 已和 ActivityMangerService 绑定，可以不借助其他进程帮助直接通信了。)
+  Step4 : 在 system_server 进程中的服务端 ActivityManagerService 收到 ATTACH_APPLICATION_TRANSACTION 命令后进行处理，调用 attachApplication()方法。将该进程设置为前台进程 PROCESS_STATE_TOP
+  Step5 : ApplicationThreadProxy.scheduleLaunchActivity()发送SCHEDULE_LAUNCH_ACTIVITY_TRANSACTION 命令来启动App。
+  Step6 : ApplicationThreadProxy.bindApplication() 发送 BIND_APPLICATION_TRANSACTION 命令来创建 Application
+  
+  ### 8.3 参考文献
+  [Android-ReadTheFuckingSourceCode/Android-Activity启动过程.md at master · jeanboydev/Android-ReadTheFuckingSourceCode · GitHub](https://github.com/jeanboydev/Android-ReadTheFuckingSourceCode/blob/master/article/android/framework/Android-Activity%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B.md)
+  
+  
+  ## 9、IPC(跨进程通信)
+  
+  ### 9.1 Android中实现IPC通信的8种方式
+  1. 使用Bundle ----> 用于android四大组件间的进程间通信
+  2. 使用SharePreference ---->用于单线程读写
+  3. 使用Messenger ---->用于可存放在message中的数据的传递
+  4. 使用AIDL ---->主要用于调用远程服务的方法的情况 还可以注册接口
+  5. ContentProvider方式----> 实现对另一个应用进程开放provider数据的查询
+  6. Socket方法----> 这种方式也可以实现 但是不常用
+  7. BroadCase ----> 不关心何时发来广播，大多也不关心是谁发送的，只管接收特定类型的消息(应用场景比较单一)
+  
+  ### 9.2 AIDL 知识
+  
+  #### 9.2.1 序列化与反序列化的知识
+  序列化
+  - 将对象或数据结构转化为字节序列的过程
+  反序列化
+  - 将字节序列恢复为原始对象的过程
+  
+  #### 9.2.2 Serializable与Parcelable的区别
+  
+  - Serializable接口是在java中的序列化抽象类，而Parcelable接口则是android中特有的序列化接口
+  - Serializable使用IO读写存储在硬盘上。序列化过程使用了反射技术，并且期间产生大量临时对象,从而引起频繁的GC。
+  - Parcelable是直接在内存中读写，由于内存的读写速度肯定优于硬盘读写速度，所以Parcelable序列化方式性能上要优于Serializable方式很多。
+  
+  [序列化与反序列化之Parcelable和Serializable浅析_zejian的博客-CSDN博客_parcelable和serializable](https://blog.csdn.net/javazejian/article/details/52665164)
+  #### 9.2.3 Parcelable 实现案例
+  ```
+  package com.zejian.ipctest;
+  import android.os.Parcel;
+  import android.os.Parcelable;
+  
+  public class NewClient implements Parcelable {
+  
+      public int id;
+      public String name;
+      public User user;
+  
+      /**
+       * 当前对象的内容描述,一般返回0即可
+       */
+      @Override
+      public int describeContents() {
+          return 0;
+      }
+  
+      /**
+       * 将当前对象写入序列化结构中
+       */
+      @Override
+      public void writeToParcel(Parcel dest, int flags) {
+          dest.writeInt(this.id);
+          dest.writeString(this.name);
+          dest.writeParcelable(this.user,0);
+      }
+  
+      public NewClient() {
+      }
+  
+      /**
+       * 从序列化后对象中创建原始对象
+       */
+      protected NewClient(Parcel in) {
+          this.id = in.readInt();
+          this.name = in.readString();
+         //User是另一个序列化对象，此方法序列需要传递当前线程的上下文类加载器，否则会报无法找到类的错误
+         this.user=in.readParcelable(Thread.currentThread().getContextClassLoader());
+      }
+  
+      /**
+       * public static final一个都不能少，内部对象CREATOR的名称也不能改变，必须全部大写。
+       * 重写接口中的两个方法：
+       * createFromParcel(Parcel in) 实现从Parcel容器中读取传递数据值,封装成Parcelable对象返回逻辑层，
+       * newArray(int size) 创建一个类型为T，长度为size的数组，供外部类反序列化本类数组使用。
+       */
+      public static final Parcelable.Creator<NewClient> CREATOR = new Parcelable.Creator<NewClient>() {
+          /**
+           * 从序列化后的对象中创建原始对象
+           */
+          @Override
+          public NewClient createFromParcel(Parcel source) {
+              return new NewClient(source);
+          }
+  
+          /**
+           * 创建指定长度的原始对象数组
+           * @param size
+           * @return
+           */
+          @Override
+          public NewClient[] newArray(int size) {
+              return new NewClient[size];
+          }
+      };
+  }
+  ```
+  从代码可知，通过writeToParcel将我们的对象映射成Parcel对象，再通过createFromParcel将Parcel对象映射成我们的对象。
+  
+  **Parcel是一个容器，它主要用于存储序列化数据，然后可以通过Binder在进程间传递这些数据**
+  
+  #### 9.2.4 AIDL的概述
+  在Android系统中，每个进程都运行在一块独立的内存中，在其中完成自己的各项活动，与其他进程都分隔开来。可是有时候我们又有应用间进行互动的需求，比较传递数据或者任务委托等，AIDL就是为了满足这种需求而诞生的。
+  **通过AIDL，可以在一个进程中获取另一个进程的数据和调用其暴露出来的方法，从而满足进程间通信的需求**。
+  
+  #### 9.2.5 AIDL的语法
+  支持的数据类型:
+  - 八种基本数据类型：byte、char、short、int、long、float、double、boolean
+  - String，CharSequence
+  - 实现了Parcelable接口的数据类型
+  - List 类型。List承载的数据必须是AIDL支持的类型，或者是其它声明的AIDL对象
+  - Map类型。Map承载的数据必须是AIDL支持的类型，或者是其它声明的AIDL对象
+  
+  #### 9.2.6 AIDL文件构成
+  1. 一类用来声明实现了Parcelable接口的数据类型，以供其他AIDL文件使用那些非默认支持的数据类型。
+  2. 一类是用来定义接口方法，声明要暴露哪些接口给客户端调用，定向Tag就是用来标注这些方法的参数值。
+  
+  
+  #### 9.2.7 AIDL定向Tag
+  定向Tag表示在跨进程通信中数据的流向，用于标注方法的参数值，分为 in、out、inout 三种。
+  in:表示数据只能由客户端流向服务端。
+  out:表示数据只能由服务端流向客户端。
+  inout:表示数据可在服务端与客户端之间双向流通。
+  **注意**
+  如果AIDL方法接口的参数值类型是：基本数据类型、String、CharSequence或者其他AIDL文件定义的方法接口，那么这些参数值的定向 Tag 默认是且只能是 in，所以除了这些类型外，其他参数值都需要明确标注使用哪种定向Tag。
+  
+  #### 9.2.8 使用AIDL的Demo
+  [Android AIDL 使用 - 妖久 - 博客园](https://www.cnblogs.com/tangZH/p/10775848.html)
+  
+  #### 9.2.9 AIDL的工作原理
+  [Android：学习AIDL，这一篇文章就够了(下) - 简书](https://www.jianshu.com/p/0cca211df63c)
+  **在客户端与服务端通信的过程中，真正协助发挥作用的是通过AIDL编译出来的.java文件。AIDL文件的目的就是为了生成.java文件**。
+  1. 客户端分析
+  Proxy类是.java中的核心。其中transact是客户端和服务端通信的核心方法。调用这个方法之后，客户端将会挂起当前线程，等候服务端执行完相关任务后通知并接收返回的 reply 数据流。
+    1) transact() 方法的第一个参数是一个方法 ID ，这个是客户端与服务端约定好的给方法的编码，彼此一一对应。在AIDL文件转化为 .java 文件的时候，系统将会自动给AIDL文件里面的每一个方法自动分配一个方法 ID。
+    2) transact() 方法的第四个参数是一个 int 值，它的作用是设置进行 IPC 的模式，为 0 表示数据可以双向流通，即 reply 流可以正常的携带数据回来，如果为 1 的话那么数据将只能单向流通，从服务端回来的 reply 流将不携带任何数据。
+  Proxy类的工作流程：
+  - 1，生成 data 和 reply 数据流，并向 data 中存入客户端的数据。
+  - 2，通过 transact() 方法将它们传递给服务端，并请求服务端调用指定方法。
+  - 3，接收 reply 数据流，并从中取出服务端传回来的数据
+  
+  2. 服务端分析
+  同样在.java文件中一个叫ontransact的方法是用来接收来客户端回传来的信息。
+  服务端的工作流程:
+  - 1，获取客户端传过来的数据，根据方法 ID 执行相应操作。
+  - 2，将传过来的数据取出来，调用本地写好的对应方法。
+  - 3，将需要回传的数据写入 reply 流，传回客户端。
+  
+  3. 客户端与服务端使用AIDL进行 IPC 的工作流程
+  ![2491431-425990373820aaf6.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\4a0f8f69.png)
+  
   
   ## 10、性能优化
   ### 10.1 内存优化
@@ -1905,18 +2361,40 @@ content: '''
   **冷启动优化** 
   减少在Application和第一个Activity的onCreate()方法的工作量； 不要让Application参与业务的操作； 不要在Application进行耗时操作； 不要以静态变量的方式在Application中保存数据； 减少布局的复杂性和深度；
   
-  ## 文献
+  
+   
+  ## 、Activity,PhoneWindow和DecorView 的关系
+  ![16bff4353cd98658.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\37ed51f2.png)
+  
+  ###  DecorView 浅析
+  ![16bff4356573308b.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\03572325.png)
+  如图所示，DecorView为整个Window界面的最顶层View，它只有一个子元素LinearLayout。代表整个Window界面，包含通知栏、标题栏、内容显示栏三块区域。其中LinearLayout中有两个FrameLayout子元素。
+  
+  ### DecorView 的作用
+  DecorVuew是顶级View,本质是一个FrameLayout它包含两部分，标题栏和内容栏，都是FrameLayout,内容栏id是content,也就是Activity中设置setContentView的部分,最终将布局添加到id为content的FrameLayout中。获取content:
+  ViewGroup content=findViewByld(android.id.content)获取设置的View :getChildAt(0);
+  
+  使用总结
+  
+  每个Activity都包含一个Window对象，Window对象通常是由PhoneWindow实现的。
+  PhoneWindow:将DecorView设置为整个应用窗口的根View,是Window的实现类。它是Android中的基本的窗口系统，每个Activity均会创建一个PhoneWindow对象，是Activity和整个View系统交互的接口。
+  DecorView:是顶层视图，将要呈现的具体内容呈现在PhoneWindow上，DecorView是当前Activity所有View的祖先，它并不会向用户呈现任何东西。
+  
+  
+  ## 参考文献
   
   [jeanboy_jeanboydev_CSDN博客-Android进阶,Java基础,Android进阶领域博主](https://blog.csdn.net/freekiteyu/article/list/1)
-  
+  [成功入职字节跳动的小姐姐告诉你，Android面试吃透这一篇就没有拿不到的offer！ - 知乎](https://zhuanlan.zhihu.com/p/136796040)
   
   
 '''
 linesHighlighted: [
-  1732
-  1553
-  1167
-  1134
+  1791
+  1612
+  1192
+  1225
+  2488
+  2415
 ]
 isStarred: false
 isTrashed: false
