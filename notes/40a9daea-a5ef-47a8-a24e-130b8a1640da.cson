@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-07-24T10:07:39.001Z"
+updatedAt: "2020-07-26T15:12:38.229Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -2052,7 +2052,7 @@ content: '''
   - 当ContentProvider 中的数据发生变化（增、删 & 改）时，就会触发该 ContentObserver类
   ```
   // 步骤1：注册内容观察者ContentObserver
-      getContentResolver().registerContentObserver（uri）；
+      getContentResolver().registerContentObserver（uri,true,MyContentObserver）；
       // 通过ContentResolver类进行注册，并指定需要观察的URI
   
   // 步骤2：当该URI的ContentProvider数据发生变化时，通知外界（即访问该ContentProvider数据的访问者）
@@ -2064,22 +2064,42 @@ content: '''
      } 
   }
   
-  // 步骤3：解除观察者
+  // 步骤3 创建MyContentObserver类，并继承ContentObserver.在onchange方法中通过回调处理数据变更的逻辑。
+  
+  
+  // 步骤4：解除观察者
    getContentResolver().unregisterContentObserver（uri）；
       // 同样需要通过ContentResolver类进行解除
   ```
-  
   ### 6.6 进程内通信Demo
-  
+  Step1:创建数据库类
+  Step2:自定义Provider类，如果涉及多个表可以使用uriMatcher工具。
+  Step3:自定义Provider类中，需要在oncreate中对数据进行初始化（例如获取数据库getWritableDatabase）
+  Step4:自定义Provider类中，对增删改查方法进行重写。
+  Step5:在AndroidManifest注册ContentProvider类
+  Step6:在处理类中，首先定义URI链接以及获取ContentResolver
+  Step7:在处理类中，通过ContentResolver 根据URI 向ContentProvider中进行增删改查处理。
   
   ### 6.7 进程间通信Demo
+  Step1:在进程1中创建数据库类 自定义 ContentProvider 类 
+  Step2:注册 创建的 ContentProvider类 ,
+  Step3:声明外界进程可访问该Provider的权限
+  例如：
+  android:permission="scut.carson_ho.PROVIDER"
+  android:readPermisson = "scut.carson_ho.Read"
+  android:writePermisson = "scut.carson_ho.Write"
+  Step4: 设置此provider是否可以被其他进程使用(android:exported="true")
+  Step5: 声明本应用 可允许通信的权限(<permission android:name="scut.carson_ho.Read" android:protectionLevel="normal"/>)
+  Step6: 进程2中声明本应用可允许通信的权限( <uses-permission android:name="scut.carson_ho.PROVIDER"/>)
+  Step7: 同样在处理类中，首先定义URI链接以及获取ContentResolver，并通过ontentResolver 根据URI 向ContentProvider中进行增删改查处理。
   
+  ### 6.8 多个进程同时调用一个ContentProvider的query获取数据，ContentPrvoider是如何反应的呢？
+  一个content provider可以接受来自另外一个进程的数据请求。尽管ContentResolver与ContentProvider类隐藏了实现细节，但是ContentProvider所提供的query()，insert()，delete()，update()都是在ContentProvider进程的线程池中被调用执行的，而不是进程的主线程中。这个线程池是有Binder创建和维护的，其实使用的就是每个应用进程中的Binder线程池。
   
   
   ### 文献
   [Android：关于ContentProvider的知识都在这里了！ - 简书](https://www.jianshu.com/p/ea8bc4aaf057)
-  [Android 的这 13 道 ContentProvider 面试题，你都会了吗？ - 知乎](https://zhuanlan.zhihu.com/p/113619338)
-  
+  [Android ContentObserver的使用](https://www.jb51.net/article/121731.htm)
   
   ## 7、 Android - 系统启动过程
   
@@ -2393,8 +2413,9 @@ linesHighlighted: [
   1612
   1192
   1225
-  2488
-  2415
+  15
+  2438
+  2511
 ]
 isStarred: false
 isTrashed: false
