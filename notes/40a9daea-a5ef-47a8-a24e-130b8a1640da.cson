@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-07-26T15:12:38.229Z"
+updatedAt: "2020-07-28T09:21:49.010Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -1482,32 +1482,47 @@ content: '''
   
   ### 4.3 启动模式
   #### 4.3.1 standard
-  默认模式，可以不用写配置。在这个模式下，都会默认创建一个新的实例。因此，在这种模式下，可以有多个相同的实例，也允许多个相同Activity叠加。
+  ![20160723152327677.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\22397131.png)
+  
+  标准模式是系统的默认模式（可以不指定），在这样模式下，每启动一个Activity都会重新创建一个Activity的新实例，并且将其加入任务栈中，而且完全不会去考虑这个实例是否已存在。
   
   #### 4.3.2 singleTop
-  可以有多个实例，但是不允许多个相同Activity叠加。即，如果Activity在栈顶的时候，**启动相同的Activity**，不会创建新的实例，而会调用其onNewIntent方法。
+  ![20160723155025823.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\ec26731d.png)
+  栈顶复用模式,在这种模式下，如果有新的Activity已经存在任务栈的栈顶，那么此Activity就不会被重新创建新实例，而是复用已存在任务栈栈顶的Activity。此时Activity的onCreate、onStart方法不会被调用，会调用onNewIntent方法因为Activity并没有被重建。
+  
+  ![20160723155032885.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\5b936102.png)
+  如果新的Activity的实例已存在但没有位于栈顶，那么新的Activity仍然会被重建。
   
   #### 4.3.3 singleTask
-  只有一个实例。在同一个应用程序中启动他的时候，若Activity不存在，则会在当前task创建一个新的实例，若存在，则会把task中在其之上的其它Activity destory掉并调用它的onNewIntent方法。
+  ![20160723162300494.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\e30a1cfd.png)
+  1. 只有一个实例。在同一个应用程序中启动他的时候，若Activity不存在，则会在当前task创建一个新的实例，若存在不在栈顶，则会把task中在其之上的其它Activity destory掉并调用它的onNewIntent方法。若存在在栈顶，会调用onNewIntent方法。
   
-  如果是在别的应用程序中启动它，则会新建一个task，并在该task中启动这个Activity，singleTask允许别的Activity与其在一个task中共存，也就是说，如果我在这个singleTask的实例中再打开新的Activity，这个新的Activity还是会在singleTask的实例的task中。
-  
-  个人理解：启动顺序A->B->C->D->B ,这时候B由于是singleTask,会把C D destory掉。task里只剩A B.
-  [singleTask启动模式引发的问题和感悟 - 简书](https://www.jianshu.com/p/fe98ae8e3fb4)
+  2. 如果是在别的应用程序中启动它，则会新建一个task，并在该task中启动这个Activity，singleTask允许别的Activity与其在一个task中共存，也就是说，如果我在这个singleTask的实例中再打开新的Activity，这个新的Activity还是会在singleTask的实例的task中。
   
   #### 4.3.4 singleInstance
   只有一个实例，并且这个实例独立运行在一个task中，这个task只有这个实例，不允许有别的Activity存在。
+  例如，ActivityA->ActivityB(SingleInstance)->ActivityC 
+  点击Back退出顺序：结果为C-》A-》B
+  原因：singleInstance模式是存在于另一个任务栈中的。也就是说ActivityA和ActivityC是处于同一个任务栈中的，ActivityB则是存在另个栈中。
+  所以当关闭了ActivityC的时候，先去找当前任务栈存在的activity。当前的activity都finish了之后，才会去找另一个任务栈中的activity。
+  解决方法是：在ActivityB定义一个全局变量，在onCreate方法将returnActivityB=true;
+  然后在ActivityA界面onStart方法里判断returnActivityB是否为true，是的话就跳转到ActivityB，同时将returnActivityB=false;
+  
+  
+  
+  #### 4.3.5 启动模式参考文献
+  [Activity启动模式与任务栈(Task)全面深入记录（下）_zejian的博客-CSDN博客_22activitytask](https://blog.csdn.net/javazejian/article/details/52072131)
+  [Activity启动模式与任务栈(Task)全面深入记录（上）_zejian的博客-CSDN博客_任务栈的合并](https://blog.csdn.net/javazejian/article/details/52071885)
   [Activity SingleInstance启动模式 - javakam - 博客园](https://www.cnblogs.com/jooy/p/9494165.html)
   [SingleTask和SingleInstance详解_ywj2167917的专栏-CSDN博客_singletask和singleinstance](https://blog.csdn.net/ywj2167917/article/details/8827830)
+  [singleTask启动模式引发的问题和感悟 - 简书](https://www.jianshu.com/p/fe98ae8e3fb4)
   
-  #### 4.3.5 task
-  我们知道，一个应用中可能有多个 Activity，而这些 Activity 被以栈的形式管理。当我们新打开 Activity 或者按返回时，会导致 Activity 的入栈/出栈。
-  Task 是指在执行特定任务时与用户交互的一系列 Activity。 这些 Activity 按照各自的打开顺序排列在堆栈中。
-  
-  ### 4.4 ActivityThread类
-  1. 在Android中它就代表了Android的主线程，注意是代表而不是说它就是一个Thread类
-  2. 它是创建完新进程之后（肯定是在一个线程中啊），main函数被加载，然后执行一个loop的循环使当前线程进入消息循环，并且作为主线程。
-  3. 接下来还会初始化很多必要的属性. 它的很多成员变量和内部类十分的重要，深入理解这些成员变量有助于我们进一步的认识Android系统的各个组件的交互。
+  ### 4.4 Task任务栈
+  - android任务栈又称为Task，它是一个栈结构，具有后进先出的特性，用于存放我们的Activity组件
+  - 我们每次打开一个新的Activity或者退出当前Activity都会在一个称为任务栈的结构中添加或者减少一个Activity组件，因此一个任务栈包含了一个activity的集合, android系统可以通过Task有序地管理每个activity，并决定哪个Activity与用户进行交互:只有在任务栈栈顶的activity才可以跟用户进行交互。 
+  - 在退出应用程序时，必须把所有的任务栈中所有的activity清除出栈时,任务栈才会被销毁。当然任务栈也可以移动到后台, 并且保留了每一个activity的状态. 可以有序的给用户列出它们的任务, 同时也不会丢失Activity的状态信息。
+  - 一个App中可能不止一个任务栈，某些特殊情况下，单独一个Actvity可以独享一个任务栈。
+  - 一个Task中的Actvity可以来自不同的App，同一个App的Activity也可能不在一个Task中。
   
   ### 4.5 Intent类
   Intent 分两种，显式 Intent 和隐式 Intent。 
@@ -1659,36 +1674,6 @@ content: '''
       }
   }
   ```
-  
-  ### 4.x 拓展
-  #### 4.x.1 ActivityManagerService[AMS]
-  AMS是系统的引导服务，应用进程的启动、切换和调度、四大组件的启动和管理都需要AMS的支持。
-  [ActivityManagerService 你了解多少？ - Android - 掘金](https://juejin.im/entry/582d319e0ce463006ce68110)
-  
-  #### 4.x.2 ActivityStarter
-  ActivityStarter是加载Activity的控制类，收集所有的逻辑来决定如何将Intent和Flags转为Activity并将其与Task和Stack关联。
-  
-  #### 4.x.3 ActivityStackSupervisor
-  AMS 通过操作ActivityStackSupervisor来管理Activity
-  
-  #### 4.x.4 ActivityStack
-  ActivityStack从名称来看是跟栈相关的类，其实它是一个管理类，用来管理系统所有Activity的各种状态。它由ActivityStackSupervisor来进行管理的，而ActivityStackSupervisor在AMS中的构造方法中被创建。
-  
-  #### 4.x.5 ApplicationThread
-  它是ActivityThread的私有内部类，也是一个Binder对象。在此处它是作为IApplicationThread对象的server端等待client端 的请求然后进行处理，最大的client就是AMS.
-  
-  #### 4.x.6 Context,Activity,Application的关系
-  相同：Activity和Application都是Context的子关系
-  不同：
-     1.维护的生命周期不同
-     2.Context维护的是当前Activity的生命周期
-     3.Application维护的是整个项目的周期
-  
-  ### 4.6 Context
-  1.描述的一个应用程序环境的信息即上下文的意思，在实际应用中它也确实是起到了管理 上下文环境中各个参数和变量的总用,方便我们可以简单的访问到各种资源。
-  2.Context是一个接口，实现该接口的具体实现类Contextlml
-  3.通过它我们可以获取应用程序的资源和类，也包括一些应用级别软件，例如，启动一个Activity,发送广播，接受intent信息等。
-  ![16dfd0c7a29d65e6.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\cca26d9c.png)
   
   ## 5、Broadcast
   ### 5.1 简介
@@ -2097,7 +2082,7 @@ content: '''
   一个content provider可以接受来自另外一个进程的数据请求。尽管ContentResolver与ContentProvider类隐藏了实现细节，但是ContentProvider所提供的query()，insert()，delete()，update()都是在ContentProvider进程的线程池中被调用执行的，而不是进程的主线程中。这个线程池是有Binder创建和维护的，其实使用的就是每个应用进程中的Binder线程池。
   
   
-  ### 文献
+  ### 6.9 文献
   [Android：关于ContentProvider的知识都在这里了！ - 简书](https://www.jianshu.com/p/ea8bc4aaf057)
   [Android ContentObserver的使用](https://www.jb51.net/article/121731.htm)
   
@@ -2333,18 +2318,73 @@ content: '''
   3. 客户端与服务端使用AIDL进行 IPC 的工作流程
   ![2491431-425990373820aaf6.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\4a0f8f69.png)
   
+  ## 10、Binder学习
   
-  ## 10、性能优化
-  ### 10.1 内存优化
-  #### 10.1.1 LeakCanary工具
+  ### 10.1 Binder概述
+  Binder是跨进程通信(IPC)的桥梁
+  - 从性能上:
+  共享内存虽然无需数据拷贝，但控制复杂。
+  Socket需要2次数据拷贝，传输效率低，开销大
+  Binder,需要1次数据拷贝，性能上仅此共享内存
+  - 从稳定性上：
+  Binder采用C/S架构，需求控制架构较清晰。
+  共享内存虽然无需拷贝数据，控制比较复杂，难以使用。
+  - 从安全性上：
+  传统的IPC要发送类似的UID也只能放在数据包里，但也容易被拦截，恶意进攻，
+  socket则需要暴露自己的ip和端口，这些恶意程序则可以进行任意接入。
+  Binder 为每个 APP 分配 UID，进程的 UID 是鉴别进程身份的重要标志，因此安全性较高。
+  
+  ### 10.2 进程隔离的概念
+  - 操作系统中，进程与进程间内存是不共享的。两个进程就像两个平行的世界，A 进程没法直接访问 B 进程的数据.
+  - 但是内核空间却是可共享的。Client进程向Server进程通信恰恰是利用内核空间来完成底层通信工作的。
+  
+  ### 10.3 用户空间（User Space）/内核空间(Kernel Space)区别
+  用户空间：是用户程序运行的空间，可以执行任意命令，调用系统的一切资源； 
+  内核空间：是Linux内核的运行空间，只能执行简单的运算，不能直接调用系统资源，必须通过系统接口（又称 system call），才能向内核发出指令。
+  
+  系统调用主要通过如下两个函数来实现：
+  copy_from_user() //将数据从用户空间拷贝到内核空间
+  copy_to_user() //将数据从内核空间拷贝到用户空间
+  
+  ### 10.4 Binder驱动概念
+  Android通过LKM（动态内核可加载模块）添加一个内核模块运行在内核空间，使得进程间通过这个模块作为桥梁，就可以完成通信了。
+  Android 系统中，这个运行在内核空间的，负责进程间通信的内核模块叫做 Binder 驱动;
+  
+  ### 10.5 一次Binder IPC通信过程
+  ![binder_main_request.jpg](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\2dadde28.jpg)
+  Step1：Service先注册服务，首先向ServiceManager注册服务，
+  Step2:  向Kernel(内核)中Binder驱动的全局链表binder_procs中插入服务端的信息
+  Step3:  向ServiceManager的svcinfo列表中缓存一下注册的服务。
+  Step4:  客户端通过ServiceManager向svcinfo列表中查询一下返回服务端的代理。
+  Step5:  客户端利用获取到的服务端代理，通过BinderProxy将请求发送给ServiceManager.
+  Step6:  使用内核方法copy_from_user()将参数拷贝到内核空间。
+  Step7:  这时候客户端进入等待状态。
+  Step8:  然后 Binder 驱动向binder_proc的 todo 队列里面插入一条事务.
+  Step9:  执行完之后把执行结果通过 copy_to_user() 将内核的结果拷贝到用户空间
+  Step10: 唤醒等待的客户端并把结果响应给客户端。
+  
+  ### 10.6 Binder 进程与线程
+  ![process_thread.jpg](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\55fc103c.jpg)
+  对于底层Binder驱动，通过 binder_procs 链表记录所有创建的 binder_proc 结构体，binder 驱动层的每一个 binder_proc 结构体都与用户空间的一个用于 binder 通信的进程一一对应，
+  且每个进程有且只有一个 ProcessState 对象，这是通过单例模式来保证的。在每个进程中可以有很多个线程，每个线程对应一个 IPCThreadState 对象，IPCThreadState 对象也是单例模式，
+  即一个线程对应一个 IPCThreadState 对象，在 Binder 驱动层也有与之相对应的结构，那就是 Binder_thread 结构体。在 binder_proc 结构体中通过成员变量 rb_root threads，
+  来记录当前进程内所有的 binder_thread。
+  
+  ### 10.7 参考文献
+  [Android-ReadTheFuckingSourceCode/Android-Binder进程间通讯.md at master · jeanboydev/Android-ReadTheFuckingSourceCode · GitHub](https://github.com/jeanboydev/Android-ReadTheFuckingSourceCode/blob/master/article/android/framework/Android-Binder%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E8%AE%AF.md)
+  [Binder系列—开篇 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2015/10/31/binder-prepare/)
+  
+  ## 11、性能优化
+  ### 11.1 内存优化
+  #### 11.1.1 LeakCanary工具
   LeakCanary是Square公司基于MAT开发的一款监控Android内存泄漏的开源框架。其工作的原理是： 监测机制利用了Java的WeakReference和ReferenceQueue，通过将Activity包装到WeakReference中，被WeakReference包装过的Activity对象如果被回收，该WeakReference引用会被放到ReferenceQueue中，通过监测ReferenceQueue里面的内容就能检查到Activity是否能够被回收（在ReferenceQueue中说明可以被回收，不存在泄漏；否则，可能存在泄漏，LeakCanary是执行一遍GC，若还未在ReferenceQueue中，就会认定为泄漏）。
   
   如果Activity被认定为泄露了，就抓取内存dump文件(Debug.dumpHprofData)；之后通过HeapAnalyzerService.runAnalysis进行分析内存文件分析；接着通过HeapAnalyzer (checkForLeak—findLeakingReference---findLeakTrace)来进行内存泄漏分析。最后通过DisplayLeakService进行内存泄漏的展示。
-  #### 10.1.2 Android Lint工具
+  #### 11.1.2 Android Lint工具
   Android Lint Tool 是Android Sutido种集成的一个Android代码提示工具，它可以给你布局、代码提供非常强大的帮助。硬编码会提示以级别警告，例如：在布局文件中写了三层冗余的LinearLayout布局、直接在TextView中写要显示的文字、字体大小使用dp而不是sp为单位，就会在编辑器右边看到提示。
   
-  ### 10.2 APK瘦身
-  #### 10.2.1 安装包的组成
+  ### 11.2 APK瘦身
+  #### 11.2.1 安装包的组成
   assets文件夹 存放一些配置文件，资源文件，assets不会自动生成对应的ID,而是通过AssetManager类的接口获取
   
   res res是resource的缩写，这个目录存放资源文件，会自欧东生成对应的ID并映射到.R文件中，访问直接使用资源ID。
@@ -2357,13 +2397,13 @@ content: '''
   
   resources.arsc 记录着资源文件和资源ID之间的映射关系，用来根据资源ID寻找资源。
   
-  #### 10.2.2 减少安装包大小
+  #### 11.2.2 减少安装包大小
   
   代码混淆：使用IDE 自带的 proGuard 代码混淆器工具 ，它包括压缩、优化、混淆等功能。 
   资源优化：使用 Android Lint 删除冗余资源，资源文件最少化等。 
   图片优化: 利用 PNG优化工具 对图片做压缩处理。推荐目前最先进的压缩工具Googlek开源库zopfli。如果应用在0版本以上，推荐使用 WebP图片格式。 
   
-  ### 10.3 冷启动与热启动
+  ### 11.3 冷启动与热启动
   
   **冷启动** 
   在启动应用时，系统中没有该应用的进程，这时系统会创建一个新的进程分配给该应用；
@@ -2381,8 +2421,82 @@ content: '''
   **冷启动优化** 
   减少在Application和第一个Activity的onCreate()方法的工作量； 不要让Application参与业务的操作； 不要在Application进行耗时操作； 不要以静态变量的方式在Application中保存数据； 减少布局的复杂性和深度；
   
+  ## 12、HandleThread 使用与源码解析
   
+  ### 12.1 HandleThread 使用
+  1. 创建实例对象
+  ```
+  HandlerThread handlerThread = new HandlerThread("downloadImage");
+  ```
+  2. 启动HandlerThread线程
+  ```
+  必须先开启线程
+  handlerThread.start();
+  ```
+  3. 构建循环消息处理机制
+  ```
+  该callback运行于子线程
+      class ChildCallback implements Handler.Callback {
+          @Override
+          public boolean handleMessage(Message msg) {
+              在子线程中进行相应的网络请求
+              通知主线程去更新UI
+              mUIHandler.sendMessage(msg1);
+              return false;
+          }
+      }
+  ```
+  4. 构建异步handler
+  ```
+  Handler childHandler = new Handler(handlerThread.getLooper(),new ChildCallback());
+  ```
+  
+  ### 12.2 源码解析
+  - HandleThread 继承于Thread
+  - 在创建HandlerThread对象后，调用start方法后执行HandleThread类中的run方法，由于run方法中有Looper.parpare(),会使当前线程变为异步线程，这样能保证传给handler对象是Looper对象。进而确保Handler对象中的handleMessage方法是在异步线程执行的
+  - Looper对象创建后将其赋值给HandlerThread的内部变量mLooper，并通过notifyAll()方法去唤醒等待线程，最后执行Looper.loop();代码，开启looper循环语句，这里利用notifyAll的目的是因为Looper的创建是在子线程中执行的，而调用getLooper方法则是在主线程进行的，这样我们就无法保障在调用getLooper方法时Looper已经被创建，只有当线程创建成功并且Looper对象也创建成功之后才能获得mLooper的值，HandlerThread内部则通过等待唤醒机制解决了同步问题。
+  
+  ### 12.3 参考文献
+  [Android 多线程之HandlerThread 完全详解_zejian的博客-CSDN博客_handlerthread](https://blog.csdn.net/javazejian/article/details/52426353)
+  [Handler机制-Looper源码解析_yumodev-CSDN博客_handler looper](https://blog.csdn.net/wangkaishou/article/details/90302304)
+  [Handler机制-Looper源码解析_yumodev-CSDN博客_handler looper](https://blog.csdn.net/wangkaishou/article/details/90302304)
    
+  ## 13、AsyncTask
+  
+  ### 13.1 AsyncTask中的方法
+  1. onPreExecute()
+  该方法在主线程中执行，将在execute(Params… params)被调用后执行，一般用来做一些UI的准备工作，如在界面上显示一个进度条。
+  
+  2. doInBackground(Params…params)
+  抽象方法，必须实现，该方法在线程池中执行，用于执行异步任务，将在onPreExecute方法执行后执行。其参数是一个可变类型，表示异步任务的输入参数，在该方法中还可通过publishProgress(Progress… values)来更新实时的任务进度，而publishProgress方法则会调用onProgressUpdate方法。此外doInBackground方法会将计算的返回结果传递给onPostExecute方法。
+  
+  3. onProgressUpdate(Progress…)
+  在主线程中执行，该方法在publishProgress(Progress… values)方法被调用后执行，一般用于更新UI进度，如更新进度条的当前进度。
+  
+  4. onPostExecute(Result)
+  在主线程中执行，在doInBackground 执行完成后，onPostExecute 方法将被UI线程调用，doInBackground 方法的返回值将作为此方法的参数传递到UI线程中，并执行一些UI相关的操作，如更新UI视图。
+  
+  5. onCancelled()
+  在主线程中执行，当异步任务被取消时,该方法将被调用,要注意的是这个时onPostExecute将不会被执行
+  
+  ### 13.1 AsyncTask中调用的顺序
+  Step1 在主线程中调用execute方法会先去执行onPreExecute方法。
+  Step2 接着是doInBackground异步方法,去执行耗时操作。
+  Step3 在doInBackground中如果调用了publishProgress方法，那么onProgressUpdate方法将会被执行。
+  Step4 最后doInBackground方法执行后完后。
+  Step5 onPostExecute方法将被执行。
+  
+  ### 13.2 AsyncTask使用规则
+  - AsyncTask的实例必须在主线程（UI线程）中创建 ，execute方法也必须在主线程中调用。
+  - 不要在程序中直接的调用onPreExecute(), onPostExecute(Result)，doInBackground(Params…), onProgressUpdate(Progress…)这几个方法。
+  - 不能在doInBackground(Params… params)中更新UI。
+  - 一个AsyncTask对象只能被执行一次，也就是execute方法只能调用一次，否则多次调用时将会抛出异常。
+  
+  ### 13.3 参考文献
+  [android多线程-AsyncTask之工作原理深入解析(上)_zejian的博客-CSDN博客_asynctask原理 site:blog.csdn.net](https://blog.csdn.net/javazejian/article/details/52462830)
+  [android多线程-AsyncTask之工作原理深入解析(下)_zejian的博客-CSDN博客_android asynctask工作原理](https://blog.csdn.net/javazejian/article/details/52464139)
+  
+  
   ## 、Activity,PhoneWindow和DecorView 的关系
   ![16bff4353cd98658.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\37ed51f2.png)
   
@@ -2409,13 +2523,15 @@ content: '''
   
 '''
 linesHighlighted: [
-  1791
-  1612
   1192
   1225
   15
-  2438
-  2511
+  2601
+  2528
+  2325
+  2313
+  1770
+  1621
 ]
 isStarred: false
 isTrashed: false
