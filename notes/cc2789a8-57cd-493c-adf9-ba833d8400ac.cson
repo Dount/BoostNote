@@ -1,5 +1,5 @@
 createdAt: "2019-08-05T09:03:07.605Z"
-updatedAt: "2019-08-05T09:03:49.351Z"
+updatedAt: "2020-07-30T08:42:22.183Z"
 type: "MARKDOWN_NOTE"
 folder: "a829d630b1a42b272c49"
 title: "Fragment 问题汇总"
@@ -15,4 +15,4 @@ content: '''
 '''
 linesHighlighted: []
 isStarred: false
-isTrashed: false
+isTrashed: true

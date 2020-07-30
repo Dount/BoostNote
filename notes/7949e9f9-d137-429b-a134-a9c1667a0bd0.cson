@@ -1,5 +1,5 @@
 createdAt: "2019-03-26T01:41:46.670Z"
-updatedAt: "2019-03-26T01:49:27.206Z"
+updatedAt: "2020-07-30T08:42:06.152Z"
 type: "MARKDOWN_NOTE"
 folder: "a829d630b1a42b272c49"
 title: "理解和使用Activity的4中启动模式"
@@ -52,4 +52,4 @@ linesHighlighted: [
   3
 ]
 isStarred: false
-isTrashed: false
+isTrashed: true

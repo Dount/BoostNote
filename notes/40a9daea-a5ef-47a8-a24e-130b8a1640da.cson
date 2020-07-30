@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-07-28T09:21:49.010Z"
+updatedAt: "2020-07-30T08:28:57.516Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -2496,6 +2496,110 @@ content: '''
   [android多线程-AsyncTask之工作原理深入解析(上)_zejian的博客-CSDN博客_asynctask原理 site:blog.csdn.net](https://blog.csdn.net/javazejian/article/details/52462830)
   [android多线程-AsyncTask之工作原理深入解析(下)_zejian的博客-CSDN博客_android asynctask工作原理](https://blog.csdn.net/javazejian/article/details/52464139)
   
+  ## 14、EventBus
+  ### 14.1 EventBus概述
+  EventBus简化了应用程序内各个组件之间进行通信的复杂度，尤其是Fragment之间进行通信的问题,可以避免由于使用广播通信而带来的诸多不便。
+  1. EventBus  三个角色
+  Event事件，Subscriber事件订阅者，Publisher事件发布者
+  
+  2. 四种线程模式
+  POSTING (默认) 表示事件处理函数的线程跟发布事件的线程在同一个线程。
+  MAIN 表示事件处理函数的线程在主线程(UI)线程，因此在这里不能进行耗时操作。
+  BACKGROUND 表示事件处理函数的线程在后台线程，因此不能进行UI操作。如果发布事件的线程是主线程(UI线程)，那么事件处理函数将会开启一个后台线程，如果发布事件的线程是在后台线程，那么事件处理函数就使用该线程。
+  ASYNC 表示无论事件发布的线程是哪一个，事件处理函数始终会新建一个子线程运行，同样不能进行UI操作。
+  
+  ### 14.2 EventBus基本使用
+  #### 14.2.1 定义事件
+  首先创建一个model类，初始化get/set方法，以及构造函数。
+  
+  #### 14.2.2 订阅事件
+  订阅者需要定义事件处理方法，当发布对应类型的事件时，该方法将被调用。
+  在EventBus3中用@Subscribe注解来定义订阅者方法。
+  然后根据Activity或者Fragment的生命周期来注册和注销。
+  EventBus.getDefault().register(this);
+  EventBus.getDefault().unregister(this);
+  
+  注意：
+  在fagment中使用，由于项目中一般我们都会使用BaseFragment等基类，
+  而Context也是作为基类的protected变量初始化，方便在其他地方获取context。
+  但是在EventBus初始化中，register（）方法传入的是一个Object，而不是Context，如果将基类的Context传入，就会导致应用直接崩溃。
+  
+  #### 14.2.3 发布事件
+  通过post方法将事件发布出去。
+  EventBus.getDefault().post();
+  
+  ### 14.3 线程模式
+  1. ThreadMode.POSTING:
+  只能在同一个线程中接收,
+  如果在主线程中发布消息就只能在主线程中接收消息。
+  如果是在子线程中，那么也只能在相同的子线程中去接收消息。
+  
+  2. ThreadMode.MAIN:
+  这种模式保证了订阅者指定的那个接收方法肯定要主线程中执行，可以放心的在里面执行更新UI操作。
+  无论发布者是在主线程中还是在那一条子线程中发布消息，这边接收的都在主线程中。
+  其做法是通过Handler去发送消息，然后在HandleMessage中执行的。 
+  
+  3. ThreadMode.BACKGROUND:
+  无论发布者是在主线程或者是那一条子线程中发布消息，接收的肯定是在子线程中，
+  如果是在主线程中发布消息，那么就会随机开辟一条子线程来接收消息。
+  如果是在子线程中发布消息，那么就会在相同的子线程来接收消息。
+  
+  4. ThreadMode.ASYNC:
+  无论你在那个线程中发布消息都会在不同的线程中接受消息。
+  如果你在主线程中发布消息，就会随机的开辟一条子线程来接收消息。
+  如果是在子线程中发布消息，就会开辟一条不同的子线程来接收消息。
+  
+  ### 14.4 粘性事件
+  在发送事件之后再订阅该事件也能收到该事件的通知。
+  例如，把一个Event发送到一个还没有初始化Fragment，即尚未订阅事件。如果只用Post一个事件，是无法收到通知的。
+  如果利用PostSticky的话，会等待Fragment初始化后，再发送通知。此时要注意注册订阅时机不能早与控件的初始化。
+  
+  ### 14.5 粘性事件使用步骤
+  Step1: @Subscribe(sticky=true)
+  Step2: EventBus.getDefault().postStick(Object event);
+  Step3: removeStickyEvent  移除指定的粘性事件
+  
+  ### 14.6 事件优先级
+  在定义订阅者方法时指定事件传递的优先级。默认情况下，订阅者方法的事件传递优先级为0，数值越大，优先级越高。
+  在相同的线程模式下，更高优先级的订阅者方法将优先接收到事件。
+  注意：优先级只有在相同的线程模式下才有效。
+  
+  设置优先级:
+  Step1 priority=x(数值越大，优先级越高)
+  Step2 EventBus.getDefault().cancelEventDelivery(event); 取消事件订阅后等级低的将不接收该事件。
+  
+  ### 14.7 EventBus的实现原理
+  EventBus的设计理念是基于观察者模式。主要通过三个模块来实现。
+  1. 获取实例的过程
+  getDefault方法获取实例是通过单例模式双重校验锁的方式来获取。
+  builder方式直接获取一个EventBusBuilder对象，然后通过EventBusBuilder可以定制EventBus.
+  
+  2. 注册
+  Step1 首先获取注册的类，
+  Step2 通过subscriberMethodFinder实例去查找类中带有Subscribe标注的订阅方法。
+  Step3 首先从缓存中去取该订阅者的订阅方法，如果缓存中没有，
+  Step4 从当前类开始遍历该类的所有父类，其中会用反射的方法获取用注册声明的订阅方法。当获取了所有的订阅方法后，至此查找订阅者的订阅方法结束。
+  Step5 开始注册订阅方法，首先会将观察者和订阅方法封装为一个，Subscription对象。然后对它进行 优先级排序和是否需要粘性处等处理。至此注册流程结束。
+  
+  3. 通知
+  Step1 在post方法中，通过循环事件队列，将事件取出进行处理。
+  Step2 在处理的过程中循环查找该事件的所有订阅者，
+  Step3 根据ThreadMode,在不同线程中调用订阅者的事件响应函数。
+  
+  ### 14.8 在EventBus中，使用 @Subscribe 注解的时候指定的 ThreadMode 是如何实现在不同线程间传递数据的？
+  会根据当前线程的状态和ThreadMode指定的线程状态来决定在哪个线程触发。
+  PostThread模式，不需要线程切换，ThreadMode在哪个线程就在哪个线程进行处理。
+  MainThread模式，通过Handle进行线程切换。
+  BackgroundThread模式，不是主线程则在发布者线程直接处理事件，否则线程切换至线程池处理。
+  Async模式 ，不论是主线程还是子线程，都会重新另起一个新的线程。
+  
+  ### 14.9 参考文献
+  [EventBus使用详解_cyc的专栏-CSDN博客_eventbus](https://blog.csdn.net/u012317510/article/details/78935720)
+  [EventBus的粘性事件 - 你要 - 博客园](https://www.cnblogs.com/fuyaozhishang/p/7968059.html)
+  [EventBus 源码解析 EventBus 是一个 Android 事件发布/订阅框架，通过解耦发布者和订阅者简化 Android 事件传递，这里的事件可以理解 @codeKK 开源项目源码分析站](http://a.codekk.com/detail/Android/Trinea/EventBus%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90)
+  [消息框架 EventBus 的实现原理](https://mp.weixin.qq.com/s?__biz=MzA3MzgzMzgyNw==&mid=2247483871&idx=1&sn=da92daf306552ba8dd621d3cc9a4c625&chksm=9f084dd3a87fc4c583dfd45bd337cf20198684f18d2b9160616376bf2fd998a2da3989075833&token=1320086544&lang=zh_CN#rd)
+  
+  
   
   ## 、Activity,PhoneWindow和DecorView 的关系
   ![16bff4353cd98658.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\37ed51f2.png)
@@ -2526,12 +2630,12 @@ linesHighlighted: [
   1192
   1225
   15
-  2601
-  2528
   2325
   2313
   1770
   1621
+  2702
+  2629
 ]
 isStarred: false
 isTrashed: false
