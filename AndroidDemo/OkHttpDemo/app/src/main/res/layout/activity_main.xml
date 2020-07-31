@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/HttpURLConnectionGet"
+            android:textAllCaps="false"
+            android:text="HttpURLConnection 的 GET 请求"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/HttpURLConnectionPost"
+            android:textAllCaps="false"
+            android:text="HttpURLConnection 的 Post 请求"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:text="OKHttp同步get方法"
+            android:id="@+id/OkHttpget"
+            android:textAllCaps="false"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:text="OKHttp异步get方法"
+            android:id="@+id/OKHttpAsyacGet"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:text="OKHttp异步Post方法"
+            android:id="@+id/OkHttpPost"
+            android:textAllCaps="false"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:text="OKHttp异步Post方式上传文件"
+            android:id="@+id/OkHttpPostFile"
+            android:textAllCaps="false"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:text="OKHttp异步Post multipart 请求"
+            android:id="@+id/OkHttpPostmultipart"
+            android:textAllCaps="false"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:text="OKHttp设置超时时间"
+            android:id="@+id/OkHttpPostSetTime"
+            android:textAllCaps="false"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:text="OKHttp取消请求"
+            android:id="@+id/OkHttpPostCancelRequest"
+            android:textAllCaps="false"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+</LinearLayout>

@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-07-30T08:28:57.516Z"
+updatedAt: "2020-07-31T09:44:18.910Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -2479,22 +2479,58 @@ content: '''
   5. onCancelled()
   在主线程中执行，当异步任务被取消时,该方法将被调用,要注意的是这个时onPostExecute将不会被执行
   
-  ### 13.1 AsyncTask中调用的顺序
+  ### 13.1 AsyncTask中四个方法调用的顺序
   Step1 在主线程中调用execute方法会先去执行onPreExecute方法。
   Step2 接着是doInBackground异步方法,去执行耗时操作。
   Step3 在doInBackground中如果调用了publishProgress方法，那么onProgressUpdate方法将会被执行。
   Step4 最后doInBackground方法执行后完后。
   Step5 onPostExecute方法将被执行。
   
-  ### 13.2 AsyncTask使用规则
+  ### 13.2 AsyncTask使用步骤
+  Step 1 自定义AsyncTask的子类，同时指定三种泛型参数的类型。
+  Step 2 重写AsyncTask的四种方法。
+  Step 3 在主线程中创建AsyncTask子类的对象并且调用execute()方法启动子线程。
+  Step 4 在主线程销毁时查看子线程是否在运行，如果在运行那么销毁子线程。
+  
+  ### 13.3 AsyncTask使用规则
   - AsyncTask的实例必须在主线程（UI线程）中创建 ，execute方法也必须在主线程中调用。
   - 不要在程序中直接的调用onPreExecute(), onPostExecute(Result)，doInBackground(Params…), onProgressUpdate(Progress…)这几个方法。
   - 不能在doInBackground(Params… params)中更新UI。
   - 一个AsyncTask对象只能被执行一次，也就是execute方法只能调用一次，否则多次调用时将会抛出异常。
   
-  ### 13.3 参考文献
+  
+  ### 13.4 AsyncTask原理
+  ![20160907201617633.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\b7ec1796.png)
+  
+  准备工作：AsyncTask 构造函数时 初始化了一个线程池，mWorker,mFuture,mHandler这三个对象，
+  - mWorker是一个Callbale对象，其中的call方法回调的结果将传递给doinBackground.
+  - mFuture是一个FutureTask对象，并封装了mWorker对象，目的是需要向线程池中传出一个Runnable对象。FutureTask  继承的是Runnable
+  - mHandler 是主线程的Hanlder对象，这也是为什么AsyncTask的类要在主线程加载。
+  
+  Step1 execute方法中执行executeOnExecutor方法，此时会判断AsyncTask对象任务的状态，如果多次执行execute方法会报异常。
+  
+  Step2 执行onPreExecute()方法。此时的线程为主线程。
+  
+  Step3 开始线程切换，这时通过线程池执行mFuture对象，其中在mWorker回调call方法中将执行结果传递给doinBackground，在doinBackground中将执行结果通过Handler方式发送。
+  
+  Step4 Handler把doInBackGround的执行结果，发送到InternalHandler中，并通过handleMessage对消息的类型进行了判断，
+  如果这是一条 MESSAGE_POST_RESULT 消息，就会去执行 finish() 方法，
+  如果这是一条 MESSAGE_POST_PROGRESS 消息，就会去执行 onProgressUpdate() 方法
+  这里由于Handle 是主线程的Handle，因此handleMessage也是在主线程处理。
+  
+  Step5 在finish()方法中如果当前任务被取消掉了，就会调用 onCancelled() 方法，如果没有被取消，则调用 onPostExecute() 方法。
+  
+  ### 13.5 AsyncTask 的类为什么必须在主线程加载 
+  AsyncTask的构造函数中对handler进行了初始化的操作，重要的一步就是要获取主线程的handle,否则AsyncTask无法进行线程切换工作。
+  
+  ### 13.6  AsyncTask 调用 cancel() 任务是否立即停止执行？onPostExecute() 还会被调用吗？onCancelled() 什么时候被调用？ 
+  并不会打断doInbackground中的异步的任务，cancel()方法是将AsyncTask 设置为已取消的状态。onProgressUpdate 和 onPostExecute 都不会被调用是因为当异步任务执行完成后，会根据cancel的状态决定是否执行。
+  
+  ### 13.5 参考文献
   [android多线程-AsyncTask之工作原理深入解析(上)_zejian的博客-CSDN博客_asynctask原理 site:blog.csdn.net](https://blog.csdn.net/javazejian/article/details/52462830)
   [android多线程-AsyncTask之工作原理深入解析(下)_zejian的博客-CSDN博客_android asynctask工作原理](https://blog.csdn.net/javazejian/article/details/52464139)
+  [理解 AsyncTask 原理 - 掘金](https://juejin.im/post/6844903784968093704)
+  [AsyncTask 面试解析 - 掘金](https://juejin.im/post/6844903842841100295#heading-9)
   
   ## 14、EventBus
   ### 14.1 EventBus概述
@@ -2600,6 +2636,11 @@ content: '''
   [消息框架 EventBus 的实现原理](https://mp.weixin.qq.com/s?__biz=MzA3MzgzMzgyNw==&mid=2247483871&idx=1&sn=da92daf306552ba8dd621d3cc9a4c625&chksm=9f084dd3a87fc4c583dfd45bd337cf20198684f18d2b9160616376bf2fd998a2da3989075833&token=1320086544&lang=zh_CN#rd)
   
   
+  ## 15 OKHttp
+  
+  ### 参考文献
+  [Android 主流开源框架（二）OkHttp 使用详解 - 掘金](https://juejin.im/post/6844903970662514701#heading-8)
+  
   
   ## 、Activity,PhoneWindow和DecorView 的关系
   ![16bff4353cd98658.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\37ed51f2.png)
@@ -2634,8 +2675,8 @@ linesHighlighted: [
   2313
   1770
   1621
-  2702
-  2629
+  2743
+  2670
 ]
 isStarred: false
 isTrashed: false
