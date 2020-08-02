@@ -1,0 +1,355 @@
+createdAt: "2020-07-29T13:43:48.667Z"
+updatedAt: "2020-08-02T10:28:11.709Z"
+type: "MARKDOWN_NOTE"
+folder: "bfd1eca2e356e7181dfa"
+title: "JNI学习"
+tags: []
+content: '''
+  # JNI学习
+  [TOC]
+  
+  ## 1、C语言基础
+  
+  ### 1.1、C语言基本类型
+  1. char,int,float,double,long,short,signed,unsigned,void
+  2. sizeof("类型")返回类型的长度
+  3. 占位符：%d
+  4. C语言中没有byte
+  5. signed有符号：-128~127，unsigned无符号:0~255
+  
+  ### 1.2、输出函数
+  printf("你要输出的内容对应的占位符")
+  
+  %d -int
+  %ld -long int
+  %c -char
+  %f -float
+  %u -无符号数
+  %hd -短整形
+  %lf -double
+  %x - 十六进制输出int 或者long int 或者short int
+  %o - 八进制输出
+  %s - 字符串
+  不同的类型，要用不同的占位符去输出，否则精度丢失。
+  ```
+  #include<stdio.h>
+  #include<stdlib.h>
+  
+  main(){
+  	char c = 'A';
+  	int i = 12345678;
+  	long l = 12345678;
+  	float f = 3.1415;
+  	double d = 3.1415926535;
+  	
+  	printf("c==%c\\n",c);
+  	printf("i==%d\\n",i);
+  	printf("l==%ld\\n",l);
+  	printf("f==%.4f\\n",f);
+  	printf("d==%.101f\\n",d);
+  	
+  	char cArray[] = {'A','B'};
+  	printf("cArray内存地址==%#x\\n",&cArray);
+  	system("pause");
+  }
+  ```
+  ### 1.2 输入函数
+  scanf("占位符",&地址) 
+  1.输入
+  ```
+  #include<stdio.h>
+  #include<stdlib.h>
+  
+  main(){
+  	int i;
+  	printf("请输入");
+  	scanf("%d",&i);
+  	printf("您输入的数字是：%d\\n",i);
+  	system("pause");
+  }
+  ```
+  2.输入字符序列
+  ```
+  #include<stdio.h>
+  #include<stdlib.h>
+  
+  main(){
+  	char cArray[5];
+  	printf("请输入Hello:\\n");
+  	//在C语言中没有String类型，但是可以用char数组来表示
+  	scanf("%s",&cArray); //&其实是放在内存中，不是放在数组中。 
+  	int j;
+  	int length=sizeof(cArray)/sizeof(cArray[0]);
+  	printf("数组大小=%d\\n",length);
+  	for( j=0;j<length;j++){
+  		printf("cArray[%d]==%c\\n",j,cArray[j]);
+  	} 
+  	printf("cArray==%s\\n",cArray);
+  	
+  	system("pause");
+  }
+  ```
+  ### 1.3 指针
+  指针就是内存地址
+  案例1 i的值修改前p为100，修改后p为200 
+  ```
+  	int i=100;
+  	int*p =&i;
+  	printf("修改i值前,p的值是:%d\\n",*p);
+  	i=200;
+  	printf("修改i值后,p的值是:%d\\n",*p);
+  	system("pause");
+  ```
+  案例2 p的值修改前i为100，修改后i为100 
+  ```
+  int i=100;
+  	int*p =&i;
+  	printf("修改p值前,i的值是:%d\\n",i);
+  	int j =200; 
+  	p=&j;
+  	printf("修改p值后,i的值是:%d\\n",i);
+  ```
+  案例3 *p的值修改前i为100,修改后i为200*
+  ```
+  int i=100;
+  	int*p =&i;
+  	printf("修改*p值前,i的值是:%d\\n",i);
+  	*p =200; 
+  	printf("修改*p值后,i的值是:%d\\n",i);
+  	system("pause");
+  ```
+  ### 1.4 指针和指针变量的关系
+  指针就是地址，地址就是指针
+  地址就是内存单元的编号
+  **指针变量是存放地址的变量**
+  指针和指针变量是两个不同的概念
+  例如：
+  指针里存的是100，指针:地址——具体
+  指针里存的是地址，指针:指针变量——可变
+  
+  ### 1.5 两个地址互换
+  ```
+  void stich2 (int* a, int* b){
+  	int temp = *a;
+  	*a = *b;
+  	*b = temp;
+  	printf("sitch 中a地址===%#x\\n",a);
+  	printf("sitch 中b地址===%#x\\n",b);
+  }
+  
+  
+  main(){
+  	int a= 100;
+  	int b= 200;
+  	printf("main中a地址==%#x\\n",&a);
+  	printf("main中b地址==%#x\\n",&b);
+  	printf("a===%d\\n",a);
+  	printf("b===%d\\n",b);
+  	stich2(&a,&b);
+  	printf("a===%d\\n",a);
+  	printf("b===%d\\n",b);	 
+  }
+  ```
+  
+  ### 1.6 函数返回多个值
+  ```
+  void close(int* a,int* b ){
+  	*a= 0;
+  	*b= 0;
+  }
+  
+  main(){
+  	int a=1;
+  	int b=1;
+  	close(&a,&b);
+  	
+  	printf("a===%d\\n",a);
+  	printf("b===%d\\n",b);
+  	
+  
+  }
+  ```
+  通过被调函数修改主调函数普通变量的值
+  1.实参必须是普通变量的地址
+  2.形参必须是指针变量
+  3.被掉函数中通过修改 *形参名的方式修改主调函数相关变量的值
+  
+  ### 1.7 多级指针
+  ![3883eafa.png](:storage\\76f92696-7465-486f-ae81-14fe7005be6c\\3883eafa.png)
+  ```
+  main(){
+  	int i=100;
+  	int* address1=&i;
+  	printf("address1==%#x\\n",address1);
+  	int** address2=&address1;
+  	printf("address2==%#x\\n",address2);
+  	int*** address3 = &address2;
+  	printf("address3==%#x\\n",address3);
+  	int**** address4 =&address3;
+  	printf("***address4=%d\\n",****address4);
+  	****address4 =2000;
+  	printf("**** address4==%d\\n",****address4);
+  	printf("*** address4==%#x\\n",***address4);
+  	printf("** address4==%#x\\n",**address4);
+  	printf("* address4==%#x\\n",*address4);
+  	system("pause");
+  }
+  ```
+  ### 1.8 数组
+  ```
+  main(){
+  	char cArray [] = {'H','E','L','L','O'};
+  	int iArray[] = {1,2,3,4,5};
+  	//取数值的值 
+  	printf("cArray[0]==%c\\n",cArray[0]);
+  	printf("cArray[1]==%c\\n",cArray[1]);
+  	printf("iArray[0]==%d\\n",iArray[0]);
+  	printf("iArray[1]==%d\\n",iArray[1]);
+  	
+  	//取内存地址值
+  	printf("cArray地址==%#x\\n",&cArray);
+  	printf("cArray[0]地址==%#x\\n",&cArray[0]);
+  	printf("cArray[1]地址==%#x\\n",&cArray[1]);
+  	printf("cArray[2]地址==%#x\\n",&cArray[2]);
+  	
+  	//内存是一块连续的内存空间
+  	printf("cArray地址==%#x\\n",&iArray);
+  	printf("iArray[0]地址==%#x\\n",&iArray[0]);
+  	printf("iArray[1]地址==%#x\\n",&iArray[1]);
+  	printf("iArray[2]地址==%#x\\n",&iArray[2]);
+  	printf("iArray[3]地址==%#x\\n",&iArray[3]);
+  	
+  	//用指针取值
+  	printf("iArray[0]==%d\\n",*(iArray+0));
+  	printf("iArray[1]==%d\\n",*(iArray+1));
+  	printf("iArray[2]==%d\\n",*(iArray+2));
+  	printf("iArray[3]==%d\\n",*(iArray+3));
+  	
+  }
+  ```
+  ### 1.9 输入数组
+  ```
+  main(){
+  	printf("请输入数组的长度:\\n");
+  	//用户输入数组的长度 
+  	int length;
+  	scanf("%d",&length);
+  	printf("您输入的数组长度为：%d\\n",length);
+  	//根据用户输入的长度创建数组
+  	int iArray[length];
+  	int i;
+  	for(i=0;i<length;i++){
+  		printf("请输入iArray[%d]的值:\\n",i);
+  		scanf("%d",&iArray[i]);
+  	}
+  	for(i=0;i<length;i++){
+  		printf("iArray[%d]==%d\\n",i,iArray[i]);
+  	}
+  	system("pause");
+  }
+  ```
+  
+  ### 1.10 静态内存分配
+  ```
+  void func(int** address){
+  	int i =100;
+  	*address =&i;
+  }
+  
+  main(){
+  	int* iPoint;
+  	func(&iPoint);
+  	printf("*iPoint===%d\\n",*iPoint);
+  	//当再次调用时*iPoint会被系统回收。 
+  	printf("*iPoint===%d\\n",*iPoint);
+  	printf("*iPoint===%d\\n",*iPoint);
+  	 
+  	system("pause");
+  }
+  ```
+  静态内存是程序编译执行后系统自动分配，由系统自动释放，静态内存是栈分配的。
+  动态内存是开发者手动分配的，是堆分配的。
+  
+  ### 1.11 动态内存分配
+  
+  ```
+  	int* temp;
+  	//手动申请内存地址 
+  	temp =(int* )malloc(sizeof(int));	
+  	//把i对应的值，赋值给temp地址对应的值 
+  	*temp =i;
+  	//把address 对应的地址对应的值修改为temp 
+  	*address = temp;
+  }
+  
+  main(){
+  	int* iPoint;
+  	func(&iPoint);
+  	printf("*iPoint===%d\\n",*iPoint);
+  	printf("*iPoint===%d\\n",*iPoint);
+  	printf("*iPoint===%d\\n",*iPoint);
+  	system("pause");
+  }
+  ```
+  malloc(int)初始化堆内存地址
+  free(int)回收内存
+  realloc重新分配
+  ### 1.12 动态创建数组
+  ```
+  main(){
+  	//动态数组的创建 
+  	printf("请输入您要创建数组的长度:\\n");
+  	//让用户输入一个长度 
+  	int length;
+  	scanf("%d",&length);
+  	printf("您输入数组的长度为:%d\\n",length);
+  	//自定义数组内存 
+  	int* iArray= (int* )malloc(length*4);
+  	int i ; 
+  	for(i=0;i<length;i++){
+  		printf("请输入iArray[%d]的值: ",i);
+  		scanf("%d",iArray+i);
+  	}
+  	int supportlength;
+  	printf("请输入你要扩展的长度");
+  	scanf("%d",&supportlength);
+  	printf("您要扩展的数组的长度:%d\\n",supportlength);
+  	//根据扩展的长度重新分配空间。 
+  	iArray=(int* )realloc(iArray,(length+supportlength)*4);
+  	//把扩展长度的元素让用户赋值 
+  	for(i=length;i<length+supportlength;i++){
+  		printf("请输入iArray[%d]的值",i);
+  		scanf("%d",iArray+i);
+  	}
+  	
+  	for(i=0;i<length+supportlength;i++){
+  		printf("iArray[%d]==%d\\n",i,*(iArray+i));
+  	}
+  	//释放创建的内存 
+  	free(iArray); 
+  	system("pause");
+  }
+  ```
+  ### 1.13 函数指针
+  ```
+  int add(int x,int y)
+  {
+  	return x+y;
+  }
+  
+  main(){
+  	//定义函数指针
+  	int (*android)(int x,int y);
+  	//函数指针赋值
+  	android =add;
+  	//使用函数指针;
+  	int result = android(99,1);
+  	printf("result==%d\\n",result); 
+  	system("pause");
+  }
+  ```
+  
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false
