@@ -9,16 +9,31 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import com.lypeer.okhttpdemo.Method.HttpConGet;
 import com.lypeer.okhttpdemo.Method.HttpConPost;
+import com.lypeer.okhttpdemo.Method.OkHttpAsycGet;
+import com.lypeer.okhttpdemo.Method.OkHttpCancel;
+import com.lypeer.okhttpdemo.Method.OkHttpGet;
+import com.lypeer.okhttpdemo.Method.OkHttpMultipart;
+import com.lypeer.okhttpdemo.Method.OkHttpPost;
+import com.lypeer.okhttpdemo.Method.OkHttpPostFile;
+import com.lypeer.okhttpdemo.Method.OkHttpSetTime;
 
 public class MainActivity extends AppCompatActivity {
     private static int WRITE_EXTERNAL_STORAGE_REQUEST_CODE=0x11;
     private HttpConGet httpConGet;
     private HttpConPost httpConPost;
+    private OkHttpGet okHttpGet;
+    private OkHttpAsycGet okHttpAsycGet;
+    private OkHttpPost okHttpPost;
+    private OkHttpPostFile okHttpPostFile;
+    private OkHttpMultipart okHttpMultipart;
+    private OkHttpSetTime okHttpSetTime;
+    private OkHttpCancel okHttpCancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +57,13 @@ public class MainActivity extends AppCompatActivity {
     public void init(Context context){
         httpConGet = new HttpConGet(context);
         httpConPost = new HttpConPost(context);
+        okHttpGet = new OkHttpGet(context);
+        okHttpAsycGet = new OkHttpAsycGet(context);
+        okHttpPost = new OkHttpPost(context);
+        okHttpPostFile = new OkHttpPostFile(context);
+        okHttpMultipart = new OkHttpMultipart(context);
+        okHttpSetTime = new OkHttpSetTime(context);
+        okHttpCancel = new OkHttpCancel(context);
         Button button1 = findViewById(R.id.HttpURLConnectionGet);
         Button button2 = findViewById(R.id.HttpURLConnectionPost);
         Button button3 = findViewById(R.id.OkHttpget);
@@ -84,18 +106,35 @@ public class MainActivity extends AppCompatActivity {
                     thread1.start();
                     break;
                 case R.id.OkHttpget:
+                    Thread thread2=new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                okHttpGet.get();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    thread2.start();
                     break;
                 case R.id.OKHttpAsyacGet:
+                    okHttpAsycGet.Get();
                     break;
                 case R.id.OkHttpPost:
+                    okHttpPost.Post();
                     break;
                 case R.id.OkHttpPostFile:
-                    break;
-                case R.id.OkHttpPostCancelRequest:
+                    okHttpPostFile.post();
                     break;
                 case R.id.OkHttpPostmultipart:
+                    okHttpMultipart.post();
                     break;
                 case R.id.OkHttpPostSetTime:
+                    okHttpSetTime.setTime();
+                    break;
+                case R.id.OkHttpPostCancelRequest:
+                    okHttpCancel.Cancel();
                     break;
             }
         }
