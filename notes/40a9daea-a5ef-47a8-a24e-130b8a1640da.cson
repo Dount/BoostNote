@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-07-31T09:44:18.910Z"
+updatedAt: "2020-08-04T03:06:45.379Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -2633,14 +2633,16 @@ content: '''
   [EventBus使用详解_cyc的专栏-CSDN博客_eventbus](https://blog.csdn.net/u012317510/article/details/78935720)
   [EventBus的粘性事件 - 你要 - 博客园](https://www.cnblogs.com/fuyaozhishang/p/7968059.html)
   [EventBus 源码解析 EventBus 是一个 Android 事件发布/订阅框架，通过解耦发布者和订阅者简化 Android 事件传递，这里的事件可以理解 @codeKK 开源项目源码分析站](http://a.codekk.com/detail/Android/Trinea/EventBus%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90)
-  [消息框架 EventBus 的实现原理](https://mp.weixin.qq.com/s?__biz=MzA3MzgzMzgyNw==&mid=2247483871&idx=1&sn=da92daf306552ba8dd621d3cc9a4c625&chksm=9f084dd3a87fc4c583dfd45bd337cf20198684f18d2b9160616376bf2fd998a2da3989075833&token=1320086544&lang=zh_CN#rd)
-  
+  [消息框架 EventBus 的实现原理](https://mp.weixin.qq.com/s?__biz=MzA3MzgzMzgyNw==&mid=2247483871&idx=1&sn=da92daf306552ba8dd621d3cc9a4c625&chksm=9f084dd3a87fc4c583dfd45bd337cf20198684f18d2b9160616376bf2fd998a2da3989075833&scene=158#rd)
   
   ## 15 OKHttp
   
+  
+  
   ### 参考文献
   [Android 主流开源框架（二）OkHttp 使用详解 - 掘金](https://juejin.im/post/6844903970662514701#heading-8)
-  
+  [Android 主流开源框架（三）OkHttp 源码解析 - 掘金](https://juejin.im/post/6844903975091699726)
+  [Java 大白话讲解设计模式之 -- 建造者（Builder）模式 - 简书](https://www.jianshu.com/p/afe090b2e19c)
   
   ## 、Activity,PhoneWindow和DecorView 的关系
   ![16bff4353cd98658.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\37ed51f2.png)
@@ -2675,8 +2677,8 @@ linesHighlighted: [
   2313
   1770
   1621
-  2743
-  2670
+  2747
+  2674
 ]
 isStarred: false
 isTrashed: false
