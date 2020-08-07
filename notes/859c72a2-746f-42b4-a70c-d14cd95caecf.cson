@@ -1,20 +1,26 @@
 createdAt: "2020-08-06T10:02:59.558Z"
-updatedAt: "2020-08-06T10:03:13.844Z"
+updatedAt: "2020-08-07T08:33:47.833Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
-title: "JNI的使用："
+title: "JNI学习"
 tags: []
 content: '''
-  1. JNI的使用：
-  Java层
-  Step1 在static代码中，调用System.loadLibrary方法。
-  在MakeFile文件中，相应的语句应该LOCAL_MODULE:=libXXX_jni。
-  而在System.loadLibrary方法参数仅是XXX_jni即可。
-  Step2 声明native函数
-  private native void xxx();
+  # JNI学习
+  [TOC]
   
-  Native层
+  ## 1.JNI的使用
+  
+  ### 1.2 Java层
+  Step1：
+  在static代码中，调用System.loadLibrary方法。
+  在MakeFile文件中，相应的语句应该LOCAL_MODULE:=libXXX_jni。而在System.loadLibrary方法参数仅是XXX_jni即可。
+  
+  Step2：
+  声明native函数 private native void xxx();
+  
+  ### 1.3 Native层
   在Java层中由于声明了 public native void native_helloWorld()，在JNI层，为了找到对应的native函数，我们需要作注册JNI函数的操作
+  
   Step1 动态注册,首先声明一个static的结构体数组，如下：
   static JNINativeMethod sMethods[] = {
       {
@@ -23,6 +29,7 @@ content: '''
           (void*)test_jnitest_helloWorld  //对应的JNI函数的函数指针
       },
   };
+  
   Step2 注册操作 
   int register_test_jnitest(JNIEnv* env) {
       return jniRegisterNativeMethods(env, "test/jnitest/JNITestController", sMethods, NELEM(sMethods));
@@ -30,150 +37,197 @@ content: '''
   Step3 重写JNI_OnLoad方法
   当Java层通过调用System.loadLibrary完成JNI动态库的加载后，JNI_OnLoad函数就会被调用，从而完成动态注册的工作。
   
-  2. JNI类型签名
-  1、JNI类型签名由参数类型和返回值类型组成，格式为：
+  ## 2. JNI类型签名
+  1. JNI类型签名由参数类型和返回值类型组成，格式为：
   (参数类型标示)返回值类型标示
-  2、
-  void ->V 
-  int -> I
-  boolean ->Z
-  String -> Ljava/lang/String
-  Double ->D
-  object ->L包名(例如:java/lang/String);
-  long  ->J
-  int[] ->[l
   
+  2. 类型标示
+  ![6f6e66ba.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\6f6e66ba.png)
+  
+  3. 例子
+  ```
+  private native String setParam(int param1, int param2, int param3);
+  -> (III)Ljava/lang/String;
+  
+  private native void processFile(String path, int mimeType, Parcel param);					
+  -> (Ljava/lang/String;ILandroid/os/Parcel;)V
+  ```
+  
+  4. 数据类型转换
   完成注册后，在java层调用到JNI层中的函数，就可以实现与native之间的交互。
-  
-  3. 数据类型转换
   对于Java中的基本数据类型，其对应的JNI类型仅需在前面加上一个j即可
   例如：int->jint;double -> jdouble;
   
-  4. 引用数据类型
-  java.lang.class ->jclass
-  java.lang.String ->jstring
-  java.lang.Throwable ->jthrowable
-  xxx[] -> jxxxArray
+  5. 引用数据类型
+  ![2b3030df.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\2b3030df.png)
+  
   例如
+  ```
   Java中声明的native方法：private native void processDirectory(String path, MediaScannerClient client);
   对应的JNI层的方法：static void android_media_MediaScanner_processDirectory(JNIEnv *env, jobject thiz, jstring path, jobject client)
   
   Java中声明的静态native方法：private static native long nativeCreate(String name, int cursorWindowSize);
   对应的JNI层的方法：static jlong nativeCreate(JNIEnv* env, jclass clazz, jstring nameObj, jint cursorWindowSize)
   
-  5. JNI层的函数会比Java层的native函数多出来两个参数的问题。
-  1.多出来的两个参数是JNI函数调用时虚拟机传下来的
-  2.如果不是静态方法，第二个参数标示具体是哪一个java对象在调用这个native方法
-  3.如果是静态方法，由于没有对应的java实例对象，因此JNI层的函数第二个参数是jclass clazz，表示调用哪一个Java 的Class的静态方法。
+  ```
+  6. JNI层的函数会比Java层的native函数多出来两个参数的问题。
   
-  6. JNIEnv
-  6.1 JNIEnv的获取
-  1)虚拟机传入
+  1) 多出来的两个参数是JNI函数调用时虚拟机传下来的
+  
+  2) 如果不是静态方法，第二个参数标示具体是哪一个java对象在调用这个native方法
+  
+  3) 如果是静态方法，由于没有对应的java实例对象，因此JNI层的函数第二个参数是jclass clazz，表示调用哪一个Java 的Class的静态方法。
+  
+  ## 3 JNIEnv
+  JNIEnv是JNI层一个至关重要的东西。它其实是一个与线程相关的结构体，它提供了我们会经常使用到的诸多JNI系统函数。
+  
+  ### 3.1 JNIEnv的获取
+  
+  1. 虚拟机传入
   上面提到了，当我们在Java层调用native方法后，到了JNI层的对应函数后，虚拟机会把JNIEnv传递过来作为函数的第一个参数，因此我们直接使用这个JNIEnv就可以了。
   
-  2)主动获取
+  2. 主动获取
   如果我们需要从Native层主动回调Java的方法，可以使用下面的函数来获取当前线程的JNIEnv：
   JNIEnv *env = AndroidRuntime::getJNIEnv();
   
-  6.2 JNIEnv的使用
-  6.2.1 操作jobject
-  1)获取jfieldID 和jmethodID
-      // 成员变量和成员函数
-      jfieldID  GetFieldID(jclass clazz, const char* name, const char* sig)
-      jmethodID GetMethodID(jclass clazz, const char* name, const char* sig)
-      // 静态成员变量和静态成员函数
-      jfieldID  GetStaticFieldID(jclass clazz, const char* name, const char* sig)
-      jmethodID GetStaticMethodID(jclass clazz, const char* name, const char* sig)
+  ### 3.2 JNIEnv的使用
+  #### 3.2.1 操作jobject
+  1) 获取jfieldID 和jmethodID
+  ```
+   // 成员变量和成员函数
+  jfieldID  GetFieldID(jclass clazz, const char* name, const char* sig)
+  jmethodID GetMethodID(jclass clazz, const char* name, const char* sig)
+  
+  // 静态成员变量和静态成员函数
+  jfieldID  GetStaticFieldID(jclass clazz, const char* name, const char* sig)
+  jmethodID GetStaticMethodID(jclass clazz, const char* name, const char* sig)
+  
   第一个参数clazz代表该成员所属的Java类，
   第二个参数name表示该成员属性/方法的名字，
   第三个参数sig表示该成员属性/方法的签名信息。
+  ```
   例如：
+  ```
    jclass controllerClass = env->FindClass("test/jnitest/JNITestController");  //通过Java类JNITestController的包名，获取该类的jclass。
    jmethodID jHelloWorld = env->GetMethodID(controllerClass, "helloWorld", "(Ljava/lang/String;)V");  //获取该类中void helloWorld(String)的成员函数
    jfieldID jHahaID = env->GetFieldID(controllerClass, "HAHAHA", "Ljava/lang/String;"); //获取该类中String类型的成员变量HAHAHA
   
-  2）使用jfieldID和jmethodID
-  1)通过jfieldID操作成员变量
-   //普通成员变量：
-    jint GetIntField(jobject obj, jfieldID fieldID)
-    void SetIntField(jobject obj, jfieldID fieldID, jint value)
-    //静态成员变量：
-    jint GetStaticIntField(jclass clazz, jfieldID fieldID)
-    void SetStaticIntField(jclass clazz, jfieldID fieldID, jint value)
-  例如：
-   NativeType Get<type>Field(jobject obj, jfieldID fieldID)
-   void Set<type>Field(jobject obj, jfieldID fieldID, NativeType value)
+  ```
   
-  2)通过jmethodID操作成员变量
-   //普通成员函数：
-    void CallVoidMethod(jobject obj, jmethodID methodID, ...)
-    //静态成员函数：
-    void CallStaticVoidMethod(jclass clazz, jmethodID methodID, ...)
+  2) 使用jfieldID和jmethodID
+  通过jfieldID操作成员变量
+  ```
+  //普通成员变量：
+  jint GetIntField(jobject obj, jfieldID fieldID)
+  void SetIntField(jobject obj, jfieldID fieldID, jint value)
+  
+  //静态成员变量：
+  jint GetStaticIntField(jclass clazz, jfieldID fieldID)
+  void SetStaticIntField(jclass clazz, jfieldID fieldID, jint value)
+  
   例如：
+  NativeType Get<type>Field(jobject obj, jfieldID fieldID)
+  void Set<type>Field(jobject obj, jfieldID fieldID, NativeType value)
+  ```
+  
+  通过jmethodID操作成员变量
+  ```
+  //普通成员函数：
+  void CallVoidMethod(jobject obj, jmethodID methodID, ...)
+  
+  //静态成员函数：
+  void CallStaticVoidMethod(jclass clazz, jmethodID methodID, ...)
+  
+  ```
+  例如：
+  ```
   NativeType Call<type>Method(jobject obj, jmethodID methodID, ...)
-    NativeType CallStatic<type>Method(jclass clazz, jmethodID methodID, ...)
+  NativeType CallStatic<type>Method(jclass clazz, jmethodID methodID, ...)
+  ```
+  #### 3.2.1 操作jstring
   
-  6.2.2 操作jstring
-  1.利用Native字符串构建Java字符串
+  1. 利用Native字符串构建Java字符串
+  ```
   jstring NewStringUTF(const char* bytes)
+  ```
   例如：
+  ```
   jstring str=env->NewStringUTF(char*）
-  
-  2.利用java字符串构建Native字符串
+  ```
+  2. 利用java字符串构建Native字符串
+  ```
   const char* GetStringUTFChars(jstring string, jboolean* isCopy)
-  -当调用GetStringUTFChars函数时，虚拟机会分配一块内存来存储UTF-8字符串，当发生OutOfMemory导致内存分配失败时，函数会返回NULL，所以要记得对返回值作判断。
-  -当使用完通过GetStringUTFChars获取到的字符串之后，务必记得调用ReleaseStringUTFChars通知虚拟机释放这块内存，否则会造成内存泄漏的问题。
+  ```
+  - 当调用GetStringUTFChars函数时，虚拟机会分配一块内存来存储UTF-8字符串，当发生OutOfMemory导致内存分配失败时，函数会返回NULL，所以要记得对返回值作判断。
+  - 当使用完通过GetStringUTFChars获取到的字符串之后，务必记得调用ReleaseStringUTFChars通知虚拟机释放这块内存，否则会造成内存泄漏的问题。
   例如：
+  ```
   char* str=env->getStringUTFChars(path,0)
   if(str==null){
     return null;
   }
   env ->ReleaseStringUTFChars(path,str);
+  ```
+  ### 3.3 内存管理与垃圾回收
   
-  7.内存管理与垃圾回收
-  1)Local Reference局部引用
-    jobject NewLocalRef(jobject ref)
-    void DeleteLocalRef(jobject localRef)
+  #### 3.3.1 Local Reference局部引用
+  ```
+  jobject NewLocalRef(jobject ref)
+  void DeleteLocalRef(jobject localRef)
+  ```
   局部引用的有效期只在一次JNI函数调用中，当本地方法返回时，局部引用会被自动释放。
   而调用DeleteLocalRef方法，可以立即释放局部引用。
   例如:
-   jstring jstr = env->NewStringUTF("test");
-   env->DeleteLocalRef(jstr);  //手动释放局部引用。
-  
-  2)Global Reference 全局引用
-    jobject NewGlobalRef(jobject obj)
-    void DeleteGlobalRef(jobject globalRef)
-  例如：
+  ```
+  jstring jstr = env->NewStringUTF("test");
+  env->DeleteLocalRef(jstr);  //手动释放局部引用。
+  ```
+  #### 3.3.2 Global Reference 全局引用
+  ```
+  jobject NewGlobalRef(jobject obj)
+  void DeleteGlobalRef(jobject globalRef)
+  ```
   可以跨线程使用，会阻止引用对象被垃圾回收，需要手动创建，并且不再使用后需要手动销毁。 
   因此，我们需要保存Java层的引用对象时，可以创建它的全局引用然后保存下来，以供后续使用而不用担心它会被垃圾回收掉。
   
-  3） Weak Global Reference 弱全局引用
-    jweak NewWeakGlobalRef(jobject obj)
-    void DeleteWeakGlobalRef(jweak obj)
+  #### 3.3.3 Weak Global Reference 弱全局引用
+  ```
+  jweak NewWeakGlobalRef(jobject obj)
+  void DeleteWeakGlobalRef(jweak obj)
+  ```
   类似全局引用，但是不会阻止垃圾回收器来回收这个引用所指向的对象。
   因此在使用时，需要调用JNIEnv的IsSameObject方法判断其是否被回收。
   
-  8.在JNI中操作Parcel
+  ### 3.4 在JNI中操作Parcel
   Parcel类的作用是将数据进行打包与分包,Parcel被广泛应用于Android的Binder通讯架构与JNI当中。
+  ```
   jobject createJavaParcelObject(JNIEnv* env)
+  ```
   这个接口可以创建一个新的Java层的Parcel对象，返回的是jobject类型。
+  ```
   Parcel* parcelForJavaObject(JNIEnv* env, jobject obj)
+  ```
   这个接口可以返回一个Native的Parcel指针，指向的就是Java层的Parcel对象在Native层中的方法。
   
   例如：
-  在JNI中操作Java层传递下来的Java Parcel
+  - 在JNI中操作Java层传递下来的Java Parcel
+  ```
   static void android_setParameter(JNIEnv *env, jobject thiz, jobject java_parcel) {
       Parcel *native_parcel = parcelForJavaObject(env, java_parcel);
       int request = native_parcel->readInt32();  //我们可以直接通过native_parcel指针来操作这个parcel。
   }
-  在JNI中向Java层返回Java Parcel
+  ```
+  - 在JNI中向Java层返回Java Parcel
+  ```
   static jobject android_getParameter(JNIEnv *env, jobject thiz) {
       jobject java_parcel = createJavaParcelObject(env);  //创建一个新的java parcel
       Parcel *native_parcel = parcelForJavaObject(env, java_parcel);  //获取这个java parcel对应的native parcel指针
       native_parcel->writeInt32(0); //相当于直接操作java parcel
       return java_parcel;
   }
-  在JNI中调用Java函数并将Java Parcel作为参数传递
+  ```
+  - 在JNI中调用Java函数并将Java Parcel作为参数传递
+  ```
   static void native_func(JNIEnv* env, jobject thiz) {
       jclass class = env->GetObjectClass(thiz);
       jmethodID id = env->GetMethodID(class, "notify", "(Landroid/os/Parcel;)V");
@@ -186,10 +240,13 @@ content: '''
           env->CallVoidMethod(thiz, id, jParcel);
           env->DeleteLocalRef(jParcel);  //别忘了主动销毁局部引用噢！
   }
+  ```
+  ### 3.5 参考文献
+  
   
 '''
 linesHighlighted: [
-  56
+  76
 ]
 isStarred: false
 isTrashed: false
