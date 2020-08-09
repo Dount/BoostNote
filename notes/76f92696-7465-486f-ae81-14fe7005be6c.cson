@@ -1,5 +1,5 @@
 createdAt: "2020-07-29T13:43:48.667Z"
-updatedAt: "2020-08-02T10:28:11.709Z"
+updatedAt: "2020-08-08T07:36:42.140Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "JNI学习"
@@ -352,4 +352,4 @@ content: '''
 '''
 linesHighlighted: []
 isStarred: false
-isTrashed: false
+isTrashed: true

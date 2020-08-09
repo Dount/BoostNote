@@ -1,5 +1,5 @@
 createdAt: "2020-07-11T14:24:13.654Z"
-updatedAt: "2020-08-01T13:59:43.833Z"
+updatedAt: "2020-08-09T10:16:44.979Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "JAVAScript 进阶教程"
@@ -508,7 +508,89 @@ content: '''
   - 如果括号参数为空或者为false,则是浅拷贝，即只克隆复制节点本身，不克隆里面的子节点。
   - 如果括号参数为true,则是深度拷贝，会复制节点本身以及里面所有的子节点。
   
-  ~中间省略 P48~P76
+  #### 2.6.11 动态生成表格(重点)
+  ```
+  <body>
+      <table cellspacing="0">
+          <thead>
+              <tr>
+                  <th>姓名</th>
+                  <th>科目</th>
+                  <th>成绩</th>
+                  <th>操作</th>
+              </tr>
+          </thead>
+          <tbody>
+  
+          </tbody>
+          <script>
+              // 1.先去准备好学生的数据
+          var datas = [{
+              name: '魏璎珞',
+              subject: 'JavaScript',
+              score: 100
+          }, {
+              name: '弘历',
+              subject: 'JavaScript',
+              score: 98
+          }, {
+              name: '傅恒',
+              subject: 'JavaScript',
+              score: 99
+          }, {
+              name: '明玉',
+              subject: 'JavaScript',
+              score: 88
+          }, {
+              name: '大猪蹄子',
+              subject: 'JavaScript',
+              score: 0
+          }];
+          //往tbody里面创建行，有几个人我们就创建几行
+          var tbody =document.querySelector('tbody');
+          for(var i=0;i<datas.length;i++){
+              //创建tr行
+              var tr=document.createElement('tr');
+              tbody.appendChild(tr);
+              //行里面创建单元格td，单元格的数量取决于每个对象里面的属性个数
+              //for循环遍历对象datas[i]
+              for(var j in datas[i]){
+                  //创建单元格
+                  var td =document.createElement('td');
+                  //把对象里面的属性值给td
+                  td.innerHTML=datas[i][j];
+                  tr.appendChild(td);
+              }
+              //创建由删除2个字的单元格
+              var td = document.createElement('td');
+              td.innerHTML='<a href="javascript:;">删除</a>';
+              tr.appendChild(td);
+          }
+          //删除操作开始
+          var a =document.querySelectorAll('a');
+          for(var i=0;i<a.length;i++){
+              a[i].onclick=function(){
+                  //点击a删除当前a所在的行(链接的爸爸的爸爸)
+                  tbody.removeChild(this.parentNode.parentNode);
+              }
+          }
+          </script>
+      </table>
+  </body>
+  ```
+  
+  #### 2.6.12 三种动态创建元素区别 （重点）
+  - document.write()
+  - element.innerHTML
+  - document.createElement()
+  区别
+  1.document.write是直接将内容写入页面的内容流，但是文档流执行完毕，则它会导致页面全部重绘。
+  2.innerHTML是将内容写入某个DOM节点，不会导致页面全部重绘
+  3.innerHTML创建多个元素效率跟高（采用数组拼接，不用拼接字符串行）。
+  4.createElement()创建多个元素效率稍微低一点点，但是结构更清晰。
+  
+  ~中间省略 P56~P76
+  
   
   ## 3 学习BOM
   
@@ -892,6 +974,7 @@ content: '''
           })
       </script>
   ```
+  
 '''
 linesHighlighted: [
   118

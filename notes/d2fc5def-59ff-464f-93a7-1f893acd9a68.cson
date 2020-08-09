@@ -1,40 +1,10 @@
 createdAt: "2019-09-27T10:12:54.029Z"
-updatedAt: "2019-09-27T10:15:38.215Z"
+updatedAt: "2020-08-08T13:20:02.305Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
-title: "面试题整理"
+title: ""
 tags: []
-content: '''
-  ## 面试题整理
-  - RecycleView复用机制
-  - RecyclerView的LayoutManager如何布局
-  - 设计模式：观察者模式
-  - APP启动优化
-  - 注解原理
-  - java内存模型
-  - 内存泄漏处理；可能出现的内存泄漏问题
-  - 性能优化如何做——这是一个比较泛的问题,主要从布局分析、绘制分析、内存优化几个大的方面去延伸，如何定位、如何解决，说出自己的理解和经验即可
-  - 链表和数组比较
-  - 死锁和多线程
-  - 自定义view。要具体到在onMeasure里怎么处理，onLayout怎么处理
-  - 矩阵原理，因为我说了我熟悉Canvas
-  - 事件处理，事件分发。同学们，这道题基本必问。敲黑板！
-  - 差值器原理
-  - 线程池原理，涉及到阻塞队列
-  - Kotlin，apply和let区别
-  - AS如何检查内存泄漏——考察你的工具使用熟练度
-  - canvas的绘制是如何实现的——硬绘和软绘
-  - 遇到的印象最深一次的内存问题
-  - 如何写一套图片加载库——考验你的综合能力
-  - Bitmap的缓存，软引用、Lrucache。recycle如何实现
-  - view的post如何实现
-  - Fragment和View的区别
-  - Http的请求方式，RestFul熟悉吗——网络我基本只知道一些概念
-  - linearlayou 和relativelayou性能比较
-  - MessageQueue 和message 的创建
-  - 手写快速排序，手写二分查找
-  
-'''
+content: ""
 linesHighlighted: []
 isStarred: false
-isTrashed: false
+isTrashed: true

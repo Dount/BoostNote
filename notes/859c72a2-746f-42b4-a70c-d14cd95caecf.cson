@@ -1,5 +1,5 @@
 createdAt: "2020-08-06T10:02:59.558Z"
-updatedAt: "2020-08-07T08:33:47.833Z"
+updatedAt: "2020-08-08T07:36:26.532Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "JNI学习"
@@ -242,8 +242,7 @@ content: '''
   }
   ```
   ### 3.5 参考文献
-  
-  
+  [JNI入门介绍（Android Studio 3.4）_黑白棋的博客-CSDN博客](https://blog.csdn.net/qq_41786131/article/details/91355438)
 '''
 linesHighlighted: [
   76
