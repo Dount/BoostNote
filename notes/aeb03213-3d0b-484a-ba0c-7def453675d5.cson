@@ -1,0 +1,37 @@
+createdAt: "2020-08-11T03:30:32.549Z"
+updatedAt: "2020-08-11T08:49:29.510Z"
+type: "MARKDOWN_NOTE"
+folder: "537068cf3ce988a4b28a"
+title: "计算机网络"
+tags: []
+content: '''
+  # 计算机网络
+  [toc]
+  
+  ## 1.HTTP(Hyper Text Transfer Protocol)
+  ### 1.1 HTTP简洁
+  HTTP是一个基于TCP/IP通信协议来传递数据（HTML 文件, 图片文件, 查询结果等）。
+  
+  #### 1.1.1 HTTP工作方式
+  HTTP协议工作于Client-Service架构上，浏览器作为HTTP客户端通过URL向HTTP服务端即WEB服务器发送所有请求。
+  
+  Step1 用户输入地址后点击链接。
+  
+  Step2 浏览器拼装HTTP报文并发送请求给服务器。
+  
+  Step3 服务器处理请求后发送响应报文给浏览器。
+  
+  Step4 浏览器解析响应报文并使用渲染引擎显示到界面。
+  
+  ### 1.2 HTTP消息结构
+  
+  
+  
+  ## 2.TCP|IP
+  
+  
+  ## 3.HTTPS (Hypertext Transfer Protocol over Secure Socket Layer)
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-08-04T03:06:45.379Z"
+updatedAt: "2020-08-11T08:20:40.137Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -2637,12 +2637,152 @@ content: '''
   
   ## 15 OKHttp
   
+  ### 15.1 OKHttp使用步骤
+  1. 创建OkHttpClient对象
+  2. 创建Request对象
+  3. 创建Call对象
+  4. 发送请求(execute/enqueue)并获取服务器返回的数据。
   
+  ### 15.2 OKHttp中的变种Build模式
+  1. 在构建类中创建一个静态内部类Builder。
+  2. Builder的参数与构建类一致。
+  3. 在构建类的构造方法中，使用Builder的变量一一赋值给构建类。
+  4. Builder静态内部类提供参数的setter方法，并且返回值是当前Builder对象。
+  5. 提供一个build方法作用是new 一个构建类的对象，参数是当前Builder对象。
+  ```
+  public class Person {
+      /*名字（必须）*/
+      private final String name;
+      /*性别（必须）*/
+      private final String gender;
+      /*年龄（非必须）*/
+      private final String age;
+      /*鞋子（非必须）*/
+   
+      private Person(Builder builder) {
+          this.name = builder.name;
+          this.gender = builder.gender;
+          this.age = builder.age;
+      }
   
-  ### 参考文献
+      public static class Builder {
+          private final String name;
+          private final String gender;
+          private String age;
+  
+          public Builder(String name,String gender) {
+              this.name = name;
+              this.gender = gender;
+          }
+  
+          public Builder age(String age) {
+              this.age = age;
+              return this;
+          }
+      }
+  ```
+  ### 15.3 OKHttp源码分析
+  Step1 在OkhttpClient类通过Builder模式对常量进行初始化。
+  Step2 创建Request对象。同样通过Builder模式对常量进行初始化。
+  Step3 创建Call对象,主要目的是new一个RealCall对象。
+  Step4 通过RealCall对象设定是异步请求(enqueue())或同步请求(execute())。
+  
+  #### 15.3.1 RealCall()中的同步与异步
+  情况1：同步请求
+  在RealCall中实现了同步方法
+  Step1 将RealCall 加入一个双端队列(runningSyncCalls)，runningSyncCalls是用来记录正在运行的同步请求队列。
+  Step2 通过getResponseWithInterceptorChain(),返回Response。
+  Step3 通过calls.remove(all)把当前RealCall从正在运行的同步请求队列中移除。
+  	
+  情况2：异步请求
+  在RealCall中实现了异步方法
+  Step 1 在Dispatcher(分发器)中先判断当前，正在运行的异步请求队列数（即runningAsyncCalls双端队列的大小）小于最大并发请求书，同时判断每个主机正在运行的请求数(即runningCallsForHost)小于每个主机最大请求数。
+  如果满足将当前请求继续加入"正在运行的异步请求队列"并在线程池中执行，否则将当前请求加入"准备中的异步请求队列"。
+  
+  Step 2 通过getResponseWithInterceptorChain(),返回Response的回调。
+  
+  ##### 15.3.2 getResponseWithInterceptorChain() 拦截器 (重点)
+  责任链模式: 拦截器构建成一条责任链，每个拦截器负责相应的功能，上一个拦截器完成会传给下一个拦截器，直到最后一个拦截器执行完再一层层向上返回Response。
+  
+  源码分析:
+  Step1: 构建一条责任链，并把责任链需要用到的参数传过去。
+  Step2: 开始处理责任链中的拦截器。
+  Step3: 从拦截器集合中取出当前拦截器并调用intercept()方法。
+  Step4: 如果完成任务会马上返回Response.
+  Step5  否则会在intercept()方法中继续处理责任链。
+  
+  ##### 15.3.3 重试与重定向拦截器(RetryAndFollowUpInterceptor) 
+  主要负责失败后重连以及重定向
+  1. 创建StreamAllocation对象，用来协调connections,Stream,Calls之间的关心。
+      1）Connections:连接到远程服务器的物理套接字。
+      2）Streams:在连接层的逻辑http请求/响应。
+      3）Calls:流的逻辑序列,通常是初始请求以及它的重定向请求。
+  2. 执行BridgeInterceptor拦截器，
+  3. 发送异常进行重试。
+     1）客户端配置出错不再重试。
+     2）无法再次发送request body。
+     3）发生协议,中断,SLL等异常。
+     4）没有更多的路线可供尝试。
+  
+  ##### 15.3.4 桥拦截器(BridgeInterceptor)
+  将用户的请求转换为发给服务器的请求，然后使用该请求访问网络，最后将服务器返回的响应转换为用户可用的响应。
+  1. 将用户的请求添加一些请求头，并转换为服务器请求。
+  2. 执行下一个拦截器进行网络请求。
+  3. 将服务器返回的响应转换为用户可用的响应。主要是解析服务器返回的header.
+  
+  ##### 15.3.5 缓存拦截器(CacheInterceptor)
+  主要用来实现缓存的读取和存储，即进行网络请求的时候执行到缓存拦截器会先判断是否有缓存，如果有会直接返回缓存，没有则会执行后面的拦截器继续请求网络，请求成功会将请求到的数据缓存起来。
+  1. 通过request 获取cache缓存（Cache底层使用DiskLruCache）
+  2. 通过CacheStrategy(缓存策略)判断是使用缓存还是使用网络请求，或者都不使用，直接返回失败，停止后面的拦截器的执行。如果不使用网络请求，则直接返回缓存，然后停止后面拦截器。
+  3. 如果从网络获取数据，则会继续执行下一个拦截器。
+  4. 最后将请求返回的结果进行缓存。
+  
+  ##### 15.3.6 连接拦截器(ConnectInterceptor)(重点)
+  主要用来打开与目标服务器的连接，然后继续执行下一个拦截器。
+  1. 通过newStream方法创建HttpCodec对象。
+  1.1 newStream方法中通过findHealthyConnection方法寻找可用的连接,并通过这个链接创建HttpCodec对象。
+  1.1.1 findHealthyConnection方法中通过findConnection()方法寻找一个连接，如果是健康链接则不需要后面你的健康检查。如果不健康，则禁止创建新流，并且继续循环查找可用的链接。
+  1.1.2 findConnection方法中, 判断当前连接是否可用
+    1) 可用则进行复制，直接返回。
+    2) 不可用，先从连接池中获取可用连接。
+    3) 连接池中没有可用连接，切换不同的路由再次从连接池中获取可用连接。
+    4) 还是没有的话，就重新创建一个新的连接。
+  1.1.3 通过TCP和TLS进行连接(核心)，并将新创建的连接放到连接池中。
+  1.2 通过newStream返回的连接对象，去创建一个HttpCodec对象。
+  2. 执行下一个拦截器
+  
+  ##### 15.3.7 服务器请求拦截器（CallServerInterceptor）
+  主要用来向服务器发起请求并获取数据，它是责任链中的最后一个拦截器，获取到服务器的数据后会直接返回给上一个拦截器。
+  1. 通过上一个ConnectInterceptor拦截器获取上HttpCodec以及StreamAllocation对象。
+  2. 通过HttpCodec以及StreamAllocation向服务器进行读写操作。
+  3. 将获取的数据，返回给上一个拦截器。
+  
+  ### 15.4 ConnectionPool(连接池)
+  连接池的作用是从连接池中找到了可用的连接，那么就不用重新创建新的连接，也省去了 TCP 和 TLS 握手。
+  1. 连接池中默认设置最大允许空闲的连接数量为 5 个，连接的存活时间为 5 分钟。
+  2. get方法，连接池中获取可用的连接，做法是遍历记录连接的双端队列。
+  3. put方法，将新创建的连接放进连接池中，做法是先删除无效的连接，然后再将新创建的连接插入到双端队列中。
+  
+  ### 15.5 okhttp中的线程池的参数 
+  ```
+  new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), Util.threadFactory("OkHttp Dispatcher", false));
+  ```
+  1. corePoolSize为0表示，没有核心线程，所有执行请求的线程，使用完了如果过期了就回收。
+  2. maximumPoolSize为max_Value 表示无限大的线程池空间
+  3. keepAliveTime 为60 表示 线程空闲时存活时间为 60 秒。
+  4. SynchronousQueue 表示一个同步队列，它里面每插入一个操作必须等待另一个线程移除之后才能操作。
+  5. threadFactory , 创建一个守护线程来处理dispatcher类。
+  
+  ### 15.6 总结
+  okHttp用到的有build模式，责任链模式，其核心是通过拦截器形成责任链，每个拦截器负责相应的功能，发送的请求通过拦截器由上到下依次执行，响应的数据依次从下往上。而底层连接方式是通过socket进行通信。
+  
+  ### 15.7 参考文献
   [Android 主流开源框架（二）OkHttp 使用详解 - 掘金](https://juejin.im/post/6844903970662514701#heading-8)
   [Android 主流开源框架（三）OkHttp 源码解析 - 掘金](https://juejin.im/post/6844903975091699726)
   [Java 大白话讲解设计模式之 -- 建造者（Builder）模式 - 简书](https://www.jianshu.com/p/afe090b2e19c)
+  [Android-OkHttp3-分发器和线程池配置 - 简书](https://www.jianshu.com/p/da4a526a9d72)
+  [腾讯被面Okhttp3 惨挂，我总结了一套学习心得 - 知乎](https://zhuanlan.zhihu.com/p/160788977)
+  [OkHttp3(六)--Dispatcher - 简书](https://www.jianshu.com/p/efc6faa7a8a0)
   
   ## 、Activity,PhoneWindow和DecorView 的关系
   ![16bff4353cd98658.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\37ed51f2.png)
@@ -2677,8 +2817,8 @@ linesHighlighted: [
   2313
   1770
   1621
-  2747
-  2674
+  2802
+  2875
 ]
 isStarred: false
 isTrashed: false
