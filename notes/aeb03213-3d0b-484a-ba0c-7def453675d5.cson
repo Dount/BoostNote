@@ -1,5 +1,5 @@
 createdAt: "2020-08-11T03:30:32.549Z"
-updatedAt: "2020-08-11T08:49:29.510Z"
+updatedAt: "2020-08-14T10:25:44.491Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "计算机网络"
@@ -15,22 +15,147 @@ content: '''
   #### 1.1.1 HTTP工作方式
   HTTP协议工作于Client-Service架构上，浏览器作为HTTP客户端通过URL向HTTP服务端即WEB服务器发送所有请求。
   
-  Step1 用户输入地址后点击链接。
-  
-  Step2 浏览器拼装HTTP报文并发送请求给服务器。
-  
-  Step3 服务器处理请求后发送响应报文给浏览器。
-  
-  Step4 浏览器解析响应报文并使用渲染引擎显示到界面。
+  案例:
+  用户输入地址后点击链接->浏览器拼装HTTP报文并发送请求给服务器->服务器处理请求后发送响应报文给浏览器->浏览器解析响应报文并使用渲染引擎显示到界面。
   
   ### 1.2 HTTP消息结构
+  - HTTP是基于客户端/服务端(C/S)的架构模型，通过一个可靠的链接来交换信息，是一个无状态的请求/响应协议。
+  - 一个HTTP"客户端"是一个应用程序(Web浏览器或其他任何客户端),通过连接到服务器达到向服务器发送一个或多个HTTP的请求的目的。
+  - 一个HTTP"服务器"同样也是一个应用程序(通常是一个Web服务，如Apache Web服务器或IIS服务器等),通过接收客户端的请求并向客户端发送HTTP响应数据。
+  - HTTP使用统一资源标识符(Uniform Resource Identifiers, URI)来传输数据和建立连接。
   
+  ### 1.2.1 客户端请求消息
+  客户端发送一个HTTP请求到服务器的请求消息包括以下格式：请求行（request line）、请求头部（header）、空行和请求数据四个部分组成。
+  ```
+  POST /examples/default.jsp HTTP/1.1   --请求行
+                             
+  Accept: text/plain; text/html         --请求头     
+  Accept-Language: en-gb 
+  Connection: Keep-Alive 
+  Host: localhost 
+  User-Agent: Mozilla/4.0 (compatible; MSIE 4.01; Windows 98) 
+  Content-Length: 33 
+  Content-Type: application/x-www-form-urlencoded 
+  Accept-Encoding: gzip, deflate        --请求头        
+                                        --空行
+  lastName=Franks&firstName=Michael     --请求数据
+  ```
   
+  ### 1.2.2 服务器响应消息
+  HTTP响应也由四个部分组成，分别是：状态行、消息报头、空行和响应正文。
+  ```
+  HTTP/1.1 200 OK                       --状态行
+  Server: Microsoft-IIS/4.0             --消息报头
+  Date: Mon, 5 Jan 2004 13:13:33 GMT 
+  Content-Type: text/html 
+  Last-Modified: Mon, 5 Jan 2004 13:13:12 GMT 
+  Content-Length: 112                   --消息报头
+                                        --空行 
+  <html>                                --响应正文
+  <head> 
+  <title>HTTP Response Example</title> 
+  </head> 
+  <body> 
+  Welcome to Brainy Software 
+  </body> 
+  </html>                               --响应正文
+  ```
+  ### 1.3 HTTP请求方法
+  | 序号 | 方法    | 描述                                                                                                                                     |
+  | ---- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+  | 1    | GET     | 请求指定的页面信息，并返回实体主体。                                                                                                     |
+  | 2    | HEAD    | 类似于 GET 请求，只不过返回的响应中没有具体的内容，用于获取报头                                                                          |
+  | 3    | POST    | 向指定资源提交数据进行处理请求（例如提交表单或者上传文件）。数据被包含在请求体中。POST 请求可能会导致新的资源的建立和/或已有资源的修改。 |
+  | 4    | PUT     | 从客户端向服务器传送的数据取代指定的文档的内容。                                                                                         |
+  | 5    | DELETE  | 请求服务器删除指定的页面。                                                                                                               |
+  | 6    | CONNECT | HTTP/1.1 协议中预留给能够将连接改为管道方式的代理服务器。                                                                                |
+  | 7    | OPTIONS | 允许客户端查看服务器的性能。                                                                                                             |
+  | 8    | TRACE   | 回显服务器收到的请求，主要用于测试或诊断。                                                                                               |
+  | 9    | PATCH   | 是对 PUT 方法的补充，用来对已知资源进行局部更新 。                                                                                       |
+  
+  ### 1.4 HTTP状态码
+  
+  - 200("OK")
+  一切正常。实体主体中的文档（若存在的话）是某资源的表示。
+  
+  - 400("Bad Request")
+  客户端方面的问题。实体主题中的文档（若存在的话）是一个错误消息。希望客户端能够理解此错误消息，并改正问题。
+  
+  - 500("Internal Server Error")
+  服务期方面的问题。实体主体中的文档（如果存在的话）是一个错误消息。该错误消息通常无济于事，因为客户端无法修复服务器方面的问题。
+  
+  - 301("Moved Permanently")
+  当客户端触发的动作引起了资源URI的变化时发送此响应代码。另外，当客户端向一个资源的旧URI发送请求时，也发送此响应代码。
+  
+  - 404("Not Found") 和410("Gone")
+  当客户端所请求的URI不对应于任何资源时，发送此响应代码。404用于服务器端不知道客户端要请求哪个资源的情况；410用于服务器端知道客户端所请求的资源曾经存在，但现在已经不存在了的情况。
+  
+  - 409("Conflict")
+  当客户端试图执行一个”会导致一个或多个资源处于不一致状态“的操作时，发送此响应代码。
   
   ## 2.TCP|IP
   
+  ### 2.1 什么是TCP/IP
+  - TCP/IP 是供已连接因特网的计算机进行通信的通信协议。
+  - TCP/IP 是互联网相关的各类协议族的总称，比如：TCP，UDP，IP，FTP，HTTP，ICMP，SMTP 等都属于 TCP/IP 族内的协议
+  
+  ### 2.2 网络参考模型
+  ![251bc2ef.png](:storage\\aeb03213-3d0b-484a-ba0c-7def453675d5\\251bc2ef.png)
+  
+  ### 2.2 TCP/IP内部包含的协议
+  在 TCP/IP 中包含一系列用于处理数据通信的协议:
+  
+  - FTP(File Transfer Protocol）是文件传输协议，一般上传下载用FTP服务，数据端口是 20H，控制端口是 21H。
+  
+  - Telnet 服务是用户远程登录服务，使用 23H 端口，使用明码传送，保密性差、简单方便。
+  
+  - DNS(Domain Name Service）是域名解析服务，提供域名到 IP 地址之间的转换，使用端口 53。
+  
+  - SMTP(Simple Mail Transfer Protocol）是简单邮件传输协议，用来控制信件的发送、中转，使用端口 25。
+  
+  - NFS（Network File System）是网络文件系统，用于网络中不同主机间的文件共享。
+  
+  - HTTP(Hypertext Transfer Protocol）是超文本传输协议，用于实现互联网中的 WWW 服务，使用端口 80。
+  
+  - ARP(Address Resolution Protocol) 地址转换协议。
+  
+  - RARP(Reverse ARP) 反向地址转换协议
+  
+  ### 2.3 什么是TCP
+  TCP（Transmission Control Protocol 传输控制协议）是一种面向连接的、可靠的、基于字节流的传输层通信协议。
+  #### 2.3.1 连接建立
+  TCP是因特网中的传输层协议，使用三次握手协议建立连接。当主动方发出SYN连接请求后，等待对方回答 SYN + ACK ，并最终对对方的 SYN 执行 ACK 确认。
+  这种建立连接的方法可以防止产生错误的连接，TCP 使用的流量控制协议是可变大小的**滑动窗口协议**。
+  ![88aee65d.png](:storage\\aeb03213-3d0b-484a-ba0c-7def453675d5\\88aee65d.png)
+  
+  1. 客户端发送 SYN（SEQ=x）报文给服务器端，进入 SYN_SEND 状态。
+  2. 服务器端收到 SYN 报文，回应一个 SYN （SEQ=y）ACK(ACK=x+1）报文，进入 SYN_RECV 状态。
+  3. 客户端收到服务器端的 SYN 报文，回应一个 ACK(ACK=y+1）报文，进入 Established 状态。
+  
+  #### 2.3.2 连接终止
+  终止一个连接要经过四次挥手，这是由TCP的半关闭（half-close）造成的。
+  ![7e1e7f6a.png](:storage\\aeb03213-3d0b-484a-ba0c-7def453675d5\\7e1e7f6a.png)
+  
+  1. 某个应用进程首先调用 close，称该端执行“主动关闭”（active close）。该端的 TCP 于是发送一个 FIN 分节，表示数据发送完毕。
+  2. 接收到这个 FIN 的对端执行 “被动关闭”（passive close），这个 FIN 由 TCP 确认。
+  3. 一段时间后，接收到这个文件结束符的应用进程将调用 close 关闭它的套接字。这导致它的 TCP 也发送一个 FIN。
+  4. 接收这个最终FIN的原发送端 TCP（即执行主动关闭的那一端）确认这个 FIN。 既然每个方向都需要一个 FIN 和一个 ACK，因此通常需要4个分节。
+  
+  
+  ### 2.4 什么是UDP
+  - TCP/IP 意味着 TCP 和 IP 在一起协同工作。
+  - TCP 负责应用软件（比如您的浏览器）和网络软件之间的通信。
+  - IP 负责计算机之间的通信。
+  - TCP 负责将数据分割并装入 IP 包，然后在它们到达的时候重新组合它们。
+  - IP 负责将包发送至接受者
   
   ## 3.HTTPS (Hypertext Transfer Protocol over Secure Socket Layer)
+  
+  
+  ## 参考文献
+  [Android-ReadTheFuckingSourceCode/TCP_IP_UDP_Socket.md at master · jeanboydev/Android-ReadTheFuckingSourceCode · GitHub](https://github.com/jeanboydev/Android-ReadTheFuckingSourceCode/blob/master/article/network/TCP_IP_UDP_Socket.md)
+  
+  [Android-ReadTheFuckingSourceCode/HTTP_HTTPS_SSL_TSL.md at master · jeanboydev/Android-ReadTheFuckingSourceCode · GitHub](https://github.com/jeanboydev/Android-ReadTheFuckingSourceCode/blob/master/article/network/HTTP_HTTPS_SSL_TSL.md)
 '''
 linesHighlighted: []
 isStarred: false
