@@ -25,18 +25,24 @@ ENDIF()
 
 add_library( # Sets the name of the library.
         native-lib
-
         # Sets the library as a shared library.
         SHARED
 
         # Provides a relative path to your source file(s).
+        jni/jni_reference_type.cpp
+        jni/jni_access_field.cpp
+        jni/jni_access_method.cpp
+        jni/jni_constrctor.cpp
+        jni/jni_exception.cpp
+        jni/jni_product_and_consumer.cpp
+        jni/jni_bitmap.cpp
         native-lib.cpp)
 #add_library的使用
 
 add_library(
         people-lib
         SHARED
-        people/people.cpp)
+        People/people.cpp)
 
 #动态注册
 add_library(
@@ -44,7 +50,9 @@ add_library(
         SHARED
         jni/jni_dynamic_load.cpp
         jni/jni_invoke_method.cpp
+        base/jvm.cpp
         thread/jni_thread.cpp
+        thread/jni_wait_notify.cpp
 )
 
 #include_directories()的使用
@@ -62,7 +70,7 @@ find_library( # Sets the name of the path variable.
 
         # Specifies the name of the NDK library that
         # you want CMake to locate.
-        log)
+        log )
 
 # Specifies libraries CMake should link to your target library. You
 # can link multiple libraries, such as libraries you define in this
@@ -72,7 +80,14 @@ find_library( # Sets the name of the path variable.
 target_link_libraries( # Specifies the target library.
         native-lib
         people-lib
-        dynamic-lib
+        jnigraphics
+
         # Links the target library to the log library
         # included in the NDK.
-        ${log-lib})
+        ${log-lib} )
+
+target_link_libraries(
+        dynamic-lib
+        jnigraphics
+        ${log-lib}
+)

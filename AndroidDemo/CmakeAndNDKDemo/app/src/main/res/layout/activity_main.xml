@@ -19,8 +19,53 @@
     <TextView
         android:layout_marginTop="20dp"
         android:id="@+id/registText"
-        android:text="动态注册"
+        android:hint="动态注册"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+
+    <Button
+        android:layout_marginTop="10dp"
+        android:id="@+id/thread_button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="无参启动线程"/>
+
+    <Button
+        android:id="@+id/thread_button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="有参启动线程"/>
+
+    <Button
+        android:id="@+id/thread_button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="线程Join操作"/>
+
+    <Button
+        android:textAllCaps="false"
+        android:id="@+id/lockButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Wait"/>
+
+    <Button
+        android:textAllCaps="false"
+        android:id="@+id/unlockButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Notify"/>
+
+    <Button
+        android:id="@+id/product_resumer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="生产消费模型"/>
+
+    <ImageView
+        android:id="@+id/bitmap_image"
+        app:srcCompat="@drawable/timg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 </LinearLayout>
