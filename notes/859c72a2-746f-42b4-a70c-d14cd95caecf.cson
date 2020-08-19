@@ -1,5 +1,5 @@
 createdAt: "2020-08-06T10:02:59.558Z"
-updatedAt: "2020-08-08T07:36:26.532Z"
+updatedAt: "2020-08-19T08:22:15.182Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "JNI学习"
@@ -241,8 +241,29 @@ content: '''
           env->DeleteLocalRef(jParcel);  //别忘了主动销毁局部引用噢！
   }
   ```
-  ### 3.5 参考文献
+  
+  ### 3.5 JNI 实现原理
+  
+  1. native方法与普通方法的区别。 
+  native方法与普通方法 通过ACC_NATIVE区分开
+  java在执行普通的方法调用的时候，可以通过找方法表，再找到相应的code属性表，最终解释执行代码
+  
+  2. so库如何装在进内存。
+  在Java层，首先通过System.loadLibrary()将so库名传递到NativeLibrary类中。
+  NativeLibrary 中实现了很多Native方法，例如load,find.等
+  通过load方法又将库名传递到Native层中对应的方法中。(classLoader下的这个os::dll_load)
+  os::dll_load方法中通过dlopen库将so库最终加载到内存中。
+  
+  3. native方法怎么调用。
+  native层通过dlopen库将so库加载到内存后。
+  再使用dlsym库将调用so库中的方法。
+  
+  ### 3.6 参考文献
   [JNI入门介绍（Android Studio 3.4）_黑白棋的博客-CSDN博客](https://blog.csdn.net/qq_41786131/article/details/91355438)
+  
+  [Java JNI实现原理初探_最帅惋红曲-CSDN博客_jni原理](https://blog.csdn.net/hackooo/article/details/48395765/)
+  
+  [dlopen 与dlsym-好喜儿-ChinaUnix博客](http://blog.chinaunix.net/uid-26285146-id-3262288.html)
 '''
 linesHighlighted: [
   76

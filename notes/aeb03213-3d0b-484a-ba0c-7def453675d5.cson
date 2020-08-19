@@ -1,5 +1,5 @@
 createdAt: "2020-08-11T03:30:32.549Z"
-updatedAt: "2020-08-14T10:25:44.491Z"
+updatedAt: "2020-08-19T09:25:32.289Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "计算机网络"
@@ -10,7 +10,7 @@ content: '''
   
   ## 1.HTTP(Hyper Text Transfer Protocol)
   ### 1.1 HTTP简洁
-  HTTP是一个基于TCP/IP通信协议来传递数据（HTML 文件, 图片文件, 查询结果等）。
+  HTTP是一个基于TCP/IP通信协议来传递数据（HTML 文件, 图片文件, 查询结果等）,TCP 协议是 HTTP 协议的基石——HTTP 协议需要依靠 TCP 协议来传输数据。
   
   #### 1.1.1 HTTP工作方式
   HTTP协议工作于Client-Service架构上，浏览器作为HTTP客户端通过URL向HTTP服务端即WEB服务器发送所有请求。
@@ -93,6 +93,22 @@ content: '''
   - 409("Conflict")
   当客户端试图执行一个”会导致一个或多个资源处于不一致状态“的操作时，发送此响应代码。
   
+  ### 1.5 URI和URL的区别
+  URI (Uniform Resource Identifier，统一资源标识符)
+  URI 属于 URL 更高层次的抽象，一种字符串文本标准, URL 是 URI 的一个子集。 
+  
+  URL(Uniform Resource Locator，统一资源定位符)
+  采用URL可以用一种统一的格式来描述各种信息资源，包括文件、服务器的地址和目录,URL是URI概念的一种实现方式。
+  
+  
+  二者的区别在于
+  - URI 表示请求服务器的路径，定义这么一个资源而 URL 同时说明要如何访问这个资源。
+  - 只要能唯一标识资源的就是URI，在URI的基础上给出其资源的访问方式的就是URL。
+  
+  
+  URL (Uniform Resource Locator，统一资源定位符)
+  
+  
   ## 2.TCP|IP
   
   ### 2.1 什么是TCP/IP
@@ -141,21 +157,89 @@ content: '''
   3. 一段时间后，接收到这个文件结束符的应用进程将调用 close 关闭它的套接字。这导致它的 TCP 也发送一个 FIN。
   4. 接收这个最终FIN的原发送端 TCP（即执行主动关闭的那一端）确认这个 FIN。 既然每个方向都需要一个 FIN 和一个 ACK，因此通常需要4个分节。
   
-  
   ### 2.4 什么是UDP
-  - TCP/IP 意味着 TCP 和 IP 在一起协同工作。
-  - TCP 负责应用软件（比如您的浏览器）和网络软件之间的通信。
-  - IP 负责计算机之间的通信。
-  - TCP 负责将数据分割并装入 IP 包，然后在它们到达的时候重新组合它们。
-  - IP 负责将包发送至接受者
+  UDP（User Datagram Protocol 用户数据包协议）在网络中它与TCP协议一样用于处理数据包，是一种无连接的协议。在OSI模型中，在第四层——传输层，处于IP协议的上一层。UDP有不提供数据包分组、组装和不能对数据包进行排序的缺点，也就是说，当报文发送之后，是无法得知其是否安全完整到达的。
   
-  ## 3.HTTPS (Hypertext Transfer Protocol over Secure Socket Layer)
+  #### 2.4.1 面向无连接
+  首先 UDP 是不需要和 TCP一样在发送数据前进行三次握手建立连接的，想发数据就可以开始发送了。并且也只是数据报文的搬运工，不会对数据报文进行任何拆分和拼接操作。
+  - 在发送端，应用层将数据传递给传输层的 UDP 协议，UDP 只会给数据增加一个 UDP 头标识下是 UDP 协议，然后就传递给网络层了
+  - 在接收端，网络层将数据传递给传输层，UDP 只去除 IP 报文头就传递给应用层，不会任何拼接操作
+  - 
+  #### 2.4.2 有单播，多播，广播的功能
+  UDP 不止支持一对一的传输方式，同样支持一对多，多对多，多对一的方式，也就是说 UDP 提供了单播，多播，广播的功能。
+  
+  #### 2.4.3 UDP是面向报文的
+  发送方的UDP对应用程序交下来的报文，在添加首部后就向下交付IP层。UDP对应用层交下来的报文，既不合并，也不拆分，而是保留这些报文的边界。因此，应用程序必须选择合适大小的报文
+  
+  #### 2.4.4 不可靠性
+  首先不可靠性体现在无连接上，通信都不需要建立连接，想发就发，这样的情况肯定不可靠。
+  
+  并且收到什么数据就传递什么数据，并且也不会备份数据，发送数据也不会关心对方是否已经正确接收到数据了。
+  
+  再者网络环境时好时坏，但是 UDP 因为没有拥塞控制，一直会以恒定的速度发送数据。即使网络条件不好，也不会对发送速率进行调整。
+  这样实现的弊端就是在网络条件不好的情况下可能会导致丢包，但是优点也很明显，在某些实时性要求高的场景（比如电话会议）就需要使用 UDP 而不是 TCP。
+  
+  ### 2.5 什么是IP
+  IP(Internet Protocol 网际协议) 目的是为计算机网络相互连接进行通信而设计的协议。在因特网中，它是能使连接到网上的所有计算机网络实现相互通信的一套规则，规定了计算机在因特网上进行通信时应当遵守的规则。任何厂家生产的计算机系统，只要遵守 IP协议就可以与因特网互连互通。
+  
+  ### 2.5.1  IP协议的用途
+  1. 寻址与路由：
+  首先要用IP地址来标识Internet的主机：在每个IP数据报中，都会携带源IP地址和目标IP地址来标识该IP数据报的源和目的主机。IP协议可以根据路由选择协议提供的路由信息对IP数据报进行转发，直至抵达目的主机。然后IP地址和MAC地址的匹配，ARP协议。数据链路层使用MAC地址来发送数据帧，因此在实际发送IP报文时，还需要进行IP地址和MAC地址的匹配，由TCP/IP协议簇中的ARP完成。
+  
+  2. 分段与重组：
+  IP数据报通过不同类型的通信网络发送，IP数据报的大小会受到这些网络所规定的最大传输单元(MTU)的限制。再将IP数据报拆分成一个个能够适合下层技术传输的小数据报，被分段后的IP数据报可以独立地在网络中进行转发，在到达目的主机后被重组，恢复成原来的IP数据报。
+  
+  ### 2.6 什么是 Socket 
+  Socket是TCP/IP网络的API（Application Programming Interface,应用程序编程接口），是一组调用接口，Socket本身并不是协议，Socket接口定义了许多函数或例程，可以用它们来开发 TCP/IP网络上的应用程序。
+  
+  #### 2.6.1 socket调用过程
+  ![6c224f4a20a446230b22bd709422720e0cf3d733.jpg](:storage\\aeb03213-3d0b-484a-ba0c-7def453675d5\\39a893cb.jpg)
+  
+  
+  ## 4.HTTPS (Hypertext Transfer Protocol over Secure Socket Layer)
+  HTTPS 其实是“HTTP over SSL”或“HTTP over TLS”，它是 HTTP 与 SSL/TSL 的结合使用而已。
+  ![http_https.jpg](:storage\\aeb03213-3d0b-484a-ba0c-7def453675d5\\d31ad9f8.jpg)
+  
+  ### 4.1 什么是SSL/TSL
+  SSL和TSL是一种安全协议,其中SSL是早起采用的安全协议,后来TSL是在SSL的基础上进一步标准化了SSL协议。SSL和TSL位于传输层之上，在数据到达传输层之前都会经过SSL/TSL协议层处理，由SSL/TSL保证数据的机密性和完整性。
+  
+  #### 4.1.2 对称密钥加密
+  对称加密就是编码和解码使用同一个密钥的加密技术。
+  ![16c9ebc360bfa161.png](:storage\\aeb03213-3d0b-484a-ba0c-7def453675d5\\5c430c98.png)
+  在对称加密中，发送端和接收端使用相同的密钥进行通信。发送端使用共享的密钥发送报文，然后将密文发送到接收端。接收端使用相同密钥解密密文，恢复原始数据。
+  
+  #### 4.1.3 非对称密钥加密
+  非对称加密也成为公开密钥加密技术，就是使用不同密钥进行通信的加密技术。
+  ![16c9ebc5e96a9e8b.png](:storage\\aeb03213-3d0b-484a-ba0c-7def453675d5\\fb96ca8a.png)
+  非对称加密技术使用了不同的密钥进行通信，在发送端使用公钥对报文进行加密（公钥就是所用人都可以获取到的密钥），然后在接收端使用私钥对加密的密文进行解密。
+  
+  
+  #### 4.1.4 数字签名
+  数字签名是附加在报文上的特殊加密校验码。数字签名可以防止报文被篡改，如果有恶意攻击在传输过程在篡改了报文，那么校验的时候校验和就不再匹配，因此可以确认报文被篡改了。
+  数字签名的加解密过程：
+  - 发送端将报文通过算法（比如通过HASH函数）提取为定长的摘要；
+  - 发送端将摘要应用签名算法，以私有密钥作为参数生成一个签名；
+  - 计算得出签名后，将签名附加在报文末端发送给接收方；
+  - 接收端收到报文后，对签名进行检查。接收端通过公开密钥解码签名。然后比对报文生成的摘要是否与签名一致便可判断报文是否被篡改。
+  
+  #### 4.1.5 数字证书
+  数字证书是由权威机构给某网站颁发的一种认可凭证。它主要包含一些认证信息，比如：对象的名称（服务器、组织、个人等）、过期时间、证书颁发者、来自证书发布者的数字签名。
+  ![b0f9d7c6.png](:storage\\aeb03213-3d0b-484a-ba0c-7def453675d5\\b0f9d7c6.png)
+  
+  #### 4.1.6 HTTPS的工作流程
+  ![6782944-5e82a9a52d02c10a.png](:storage\\aeb03213-3d0b-484a-ba0c-7def453675d5\\d250d860.png)
   
   
   ## 参考文献
   [Android-ReadTheFuckingSourceCode/TCP_IP_UDP_Socket.md at master · jeanboydev/Android-ReadTheFuckingSourceCode · GitHub](https://github.com/jeanboydev/Android-ReadTheFuckingSourceCode/blob/master/article/network/TCP_IP_UDP_Socket.md)
   
   [Android-ReadTheFuckingSourceCode/HTTP_HTTPS_SSL_TSL.md at master · jeanboydev/Android-ReadTheFuckingSourceCode · GitHub](https://github.com/jeanboydev/Android-ReadTheFuckingSourceCode/blob/master/article/network/HTTP_HTTPS_SSL_TSL.md)
+  
+  [URI和URL的区别比较与理解_小猛同学的博客-CSDN博客_uri](https://blog.csdn.net/qq_32595453/article/details/80563142)
+  
+  [HTTPS工作原理 - 掘金](https://juejin.im/post/6844903917931724807)
+  
+  [完全图解 HTTPS - 掘金](https://juejin.im/post/6844903764399243278)
 '''
 linesHighlighted: []
 isStarred: false
