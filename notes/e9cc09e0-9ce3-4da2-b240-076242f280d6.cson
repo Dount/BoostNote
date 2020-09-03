@@ -1,5 +1,5 @@
 createdAt: "2019-10-16T02:39:38.018Z"
-updatedAt: "2020-08-14T03:18:55.473Z"
+updatedAt: "2020-09-02T11:46:22.236Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Java面试题"
@@ -66,12 +66,12 @@ content: '''
   ## 面向对象
   
   ### 简述面向对象的特性
-    1）封装：建议成员变量私有，然后提供公有的getter/setter方法来获取值/赋值，封装的核心思想是合理隐藏，合理暴露。可以提高安全性，实现代码的组件化
-    2）继承：一种子类到父类的关系，可以提高代码的复用性，相同代码可写到父类，子类的功能更加强大，不仅得到了父类的功能，还有自己的功能。
+    1) 封装：建议成员变量私有，然后提供公有的getter/setter方法来获取值/赋值，封装的核心思想是合理隐藏，合理暴露。可以提高安全性，实现代码的组件化
+    2) 继承：一种子类到父类的关系，可以提高代码的复用性，相同代码可写到父类，子类的功能更加强大，不仅得到了父类的功能，还有自己的功能。
     3) 多态：同一个类型的对象执行相同的行为，在不同的状态下表现出不同的特征。多态可以降低类之间的耦合度，右边对象可以实现组件化切换，业务功能随之改变，便于扩展和维护。
   ### 列举Object类的方法
-     1）equals(Object obj):判断其他对象是否与当前对象相等。
-     2）toString():打印当前对象的字符串表示
+     1) equals(Object obj):判断其他对象是否与当前对象相等。
+     2) toString():打印当前对象的字符串表示
      3) wait():导致当前线程等待，等待其它线程唤醒，会释放锁。
      4) notify()/notifyAll():随机唤醒一个/全部线程
      5) hashCode():返回当前对象的hashCode值。
@@ -80,7 +80,7 @@ content: '''
   ### 接口和抽象类有什么区别
     1）接口中只能定义public static final 修饰的常量，抽象类中可以定义普通变量。
     2）接口和抽象类都不能实例化，但接口没有构造器，抽象类有构造器。
-    3）接口可以多实现，抽象类只能单集成。
+    3）接口可以多实现，抽象类只能单继承。
     4）接口在JDK1.8之前只能定义public abstract修饰的方法，JDK1.8开始可以定义默认方法和静态方法，JDK1.9开始可以定义私有方法，抽象类中的方法没有限制。
     
   ### 什么时候应该使用接口，什么时候应该使用抽象类
@@ -181,15 +181,15 @@ content: '''
   
   ## 集合
   ### 简述一下集合主要有哪些类和接口，各自有什么特点。
-  1.主要有两个接口Collection和Map.
-  2.Collection包括List,Set和Queue
-    1）List是有序的，主要包括ArrayList，LinkedList和Vector，ArrayList底层通过数组实现，线程不安全，Vector是线程安全的ArrayList，但效率较低，LinkedList底层通过双向链表实现，与ArrayList相比增删快查询慢。
-    2) Set是唯一且无序的，主要包括HashSet，LinkedHashSet和TreeSet。HashSet底层其实就是HashMap，利用了key来保证元素的唯一性。LinkedHashSet可以按照key的操作顺序排序，TreeSet支持按照默认或指定的排序规则排序。
-    3) Queue是队列结构，主要有ArrayBlockingQueue基于数组的阻塞队列、LinkedBlockingQueue基于链表的阻塞队列等
-  3.Map以key-value键值对的形式存储元素,包括：HashMap、LinkedHashMap和TreeMap。
-    1）HashMap底层通过数组+链表/红黑树实现
-    2）LinkedHashMap可以按照key的操作顺序对集合排序
-    3）TreeMap可以按照默认或指定的排序规则对集合排序
+  1. 主要有两个接口Collection和Map.
+  2. Collection包括List,Set和Queue
+    1)List是有序的，主要包括ArrayList，LinkedList和Vector，ArrayList底层通过数组实现，线程不安全，Vector是线程安全的ArrayList，但效率较低，LinkedList底层通过双向链表实现，与ArrayList相比增删快查询慢。
+    2)Set是唯一且无序的，主要包括HashSet，LinkedHashSet和TreeSet。HashSet底层其实就是HashMap，利用了key来保证元素的唯一性。LinkedHashSet可以按照key的操作顺序排序，TreeSet支持按照默认或指定的排序规则排序。
+    3)Queue是队列结构，主要有ArrayBlockingQueue基于数组的阻塞队列、LinkedBlockingQueue基于链表的阻塞队列等
+  3. Map以key-value键值对的形式存储元素,包括：HashMap、LinkedHashMap和TreeMap。
+    1)HashMap底层通过数组+链表/红黑树实现
+    2)LinkedHashMap可以按照key的操作顺序对集合排序
+    3)TreeMap可以按照默认或指定的排序规则对集合排序
   
   ### HashMap是线程安全吗？
   1.HashMap是线程不安全的，可以使用ConcurrentHashMap保证线程安全。
@@ -1139,6 +1139,7 @@ linesHighlighted: [
   174
   470
   899
+  182
 ]
 isStarred: false
 isTrashed: false

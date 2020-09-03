@@ -1,11 +1,11 @@
 createdAt: "2019-08-21T08:28:42.449Z"
-updatedAt: "2019-08-21T08:29:58.987Z"
+updatedAt: "2020-08-17T14:08:12.140Z"
 type: "MARKDOWN_NOTE"
 folder: "8b201a0d43bb3b317af3"
-title: "自定义View进阶11——Matrix Camera"
+title: "11.自定义View进阶——Matrix Camera"
 tags: []
 content: '''
-  # 自定义View进阶11——Matrix Camera
+  # 11.自定义View进阶——Matrix Camera
   
   本篇依旧属于Matrix，主要讲解Camera，Android下有很多相机应用，其中的美颜相机更是不少，不过今天这个Camera可不是我们平时拍照的那个相机，而是graphic包下的Camera，专业给View拍照的相机，不过既然是相机，作用都是类似的，主要是将3D的内容拍扁变成2D的内容。
   

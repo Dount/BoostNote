@@ -1,11 +1,11 @@
 createdAt: "2019-08-26T07:51:22.086Z"
-updatedAt: "2019-08-26T08:17:24.451Z"
+updatedAt: "2020-08-17T14:08:48.591Z"
 type: "MARKDOWN_NOTE"
 folder: "8b201a0d43bb3b317af3"
-title: "自定义View进阶16——Android 多点触控详解"
+title: "16.自定义View进阶——Android 多点触控详解"
 tags: []
 content: '''
-  #  自定义View进阶16——Android 多点触控详解
+  # 16.自定义View进阶——Android 多点触控详解
   
   Android 多点触控详解，在前面的几篇文章中我们大致了解了 Android 中的事件处理流程和一些简单的处理方案，本次带大家了解 Android 多点触控相关的一些知识。  
   

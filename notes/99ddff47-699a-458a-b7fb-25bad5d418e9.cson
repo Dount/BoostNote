@@ -1,0 +1,266 @@
+createdAt: "2020-08-23T08:53:29.209Z"
+updatedAt: "2020-09-02T15:02:24.657Z"
+type: "MARKDOWN_NOTE"
+folder: "bfd1eca2e356e7181dfa"
+title: "C++ 基础入门"
+tags: []
+content: '''
+  # C++ 基础入门
+  [TOC]
+  
+  ## 1.常量 
+  作用：用于记录程序中不可改变的数据
+  C++ 定义常量两种方式
+  
+  1.#define宏常量：#define 常量名 常量值
+  - 通常在文件上方定义，表示一个常量, 不可修改
+  
+  2.const 修饰的变量const数据类型 常量名 = 常量值
+  - 通常在变量定义前加关键字const,修饰该变量为常量，不可修改。
+  
+  案例
+  ```
+  #define day 7 
+  
+  int main(){
+      cout << "一周有" << day <<"天"<<endl;
+      const int mouth=30;
+  
+      cout <<"一月有" << mouth <<"天"<<endl;
+  
+      system("pause");
+      return 0;
+  }
+  ```
+  
+  ## 2.数据类型
+  C++规定在创建一个变量或者常量时，必须指定出相应的数据类型，否则无法给变量分配内存。
+  
+  ### 2.1 整型
+  作用：整型变量表示的是整数类型的数据
+  | 数据类型  | 占用空间                                        | 取值范围       |
+  | --------- | ----------------------------------------------- | -------------- |
+  | short     | 2字节                                           | (-32768~32767) |
+  | int       | 4字节                                           | (-2^31~2^31-1) |
+  | long      | Windows为4字节，Linux为4字节(32位)，8字节(64位)   | (-2^31~2^31-1) |
+  | long long | 8字节                                           | (-2^63~2^63-1) |
+  
+  ### 2.2 sizeof关键字
+  作用：利用sizeof关键字可以统计数据类型所占内存大小
+  语法：(sizeof(数据类型/变量))
+  
+  案例:
+  ```
+  int main(){
+      
+      cout << "short 类型所占内存空间为：" << sizeof(short) <<endl;
+  
+      cout << "int 类型所占内存空间为:" << sizeof(int) <<endl;
+  
+      cout << "long 类型所占内存空间为:" << sizeof(long) << endl;
+  
+      cout << "long long 类型所占内存空间为" <<sizeof(long long) <<endl;
+  
+      system("pause");
+      return 0;
+  }
+  ```
+  
+  ### 2.2 浮点型
+  作用：用于表示小数
+  浮点型变量分为两种：
+  1.单精度float
+  2.双精度double
+  
+  两者的区别在于表示的有效数组范围不同
+  | 数据类型 | 占用空间 | 有效数字范围    |
+  | -------- | -------- | --------------- |
+  | float    | 4字节    | 7位有效数组     |
+  | double   | 8字节    | 15~16位有效数字 |
+  
+  案例：
+  ```
+  int main(){
+      
+      float f1= 3.14f;
+      double d1 =3.14;
+      
+  
+      cout<< f1 <<endl;
+      cout<< d1 <<endl;
+      cout<< "float sizeof="<<sizeof(f1)<<endl;
+      cout<< "double sizeof="<<sizeof(d1)<<endl;
+  
+      system("pause");
+      return 0;
+  }
+  ```
+  ### 2.3 字符型
+  作用：字符型变量用于显示单个字符
+  语法：char ch ='a';
+  - C和C++中字符型变量只占用1个字符
+  - 字符型变量并不是把字符本身放到内存中存储，而是将对用的ASCII编码放入到存储单元。
+  案例：
+  ```
+  char ch ='a';
+  cout << ch<<endl;
+  cout <<sizeof(char)<<endl;
+  ```
+  
+  ### 2.4 字符串型
+  作用：用于表示一串字符
+  语法: string 变量名=“字符串值”
+  案例：
+  ``` 
+      需要加入头文件#include<string>
+      string var ="zhouwei";
+      cout << var <<endl;
+  ```
+  
+  ### 2.5 数据的输入
+  作用：用于从键盘获取数据
+  语法：cin >>变量
+  案例：
+  ```
+   int a =0;
+      cout << "请输入整形变量" << endl;
+      cin >> a;
+      cout << a <<endl;
+  ```
+  
+  ### 2.6 循环案例-猜数字
+  ```
+  #include <iostream>
+  #include <string>
+  #include <stdlib.h>
+  using namespace std;
+  
+  int main(){
+      //rand()方法需要导入包stdlib.h
+      //rand()%100+1生成 0~100之间的一个随机数
+      int num =rand() % 100+1;
+      int input=0;
+      cin >> input;
+      while (input!=num)
+      {
+          if(input<num){
+              cout<< "猜小了"<<endl;
+          }
+          if(input>num){
+              cout<< "猜大了"<<endl;
+          }
+          cout<<"请重新输入"<<endl;
+          cin >> input;
+          /* code */
+      }
+      cout <<"猜对了"<<endl;
+      
+      system("pause");
+      return 0;
+  }
+  ```
+  
+  ### 2.7 数组名的用途
+  1. 可以通过数组名统计整个数组占用内存大小
+  ```
+  int arr[10]={1,2,3,4,5,6};
+  cout << "整个数组占用内存空间为："<<sizeof(arr) <<endl;
+  cout << "每个元素占用内存空间为: "<<sizeof(arr[0])<<endl;
+  cout << "数组中元素个数为:"<< sizeof(arr)/sizeof(arr[0]) << endl;
+  ```
+  2. 可以通过数组名查看数组首地址
+  ```
+  cout << "数组首地址为："<<arr << endl;
+  cout << "数组中第一个元素地址为：" << &arr[0]<<endl;
+  cout << "数组中第二个元素地址为：" << &arr[1]<<endl;
+  ```
+  ### 2.8 二维数组
+  1. 二维数组的定义方式
+  - 数据类型 数组名【行数】【列数】;
+  - 数据类型 数组名【行数】【列数】={{数据1，数据2},{数据3，数据4}};
+  - 数据类型 数组名【行数】【列数】={数据1，数据2，数据3，数据4};
+  - 数据乐行 数组名【】【列数】={数据1，数据2，数据3，数据4};
+  2. 二维数组名
+  ```
+  int main(){
+      int arr[2][3]={
+          {1,2,3},
+          {4,5,6}
+      };
+      cout << "二维数组占用内存空间为："<< sizeof(arr) <<endl;
+      cout << "二维数组第一行占用内存为："<< sizeof(arr[0])<<endl;
+      cout << "二维数组第一个元素占内存为:" << sizeof(arr[0][0]) <<endl;
+      cout << "二维数组行数为: " << sizeof(arr)/sizeof(arr[0])<<endl;
+      cout << "二维数组列数为: " << sizeof(arr[0])/sizeof(arr[0][0]) << endl;
+      
+      system("pause");
+      return 0;
+  }
+  ```
+  
+  ### 2.9 指针的定义和使用
+  1. 定义指针
+  int a= 10;
+  指针定义的语法：数据类型 * 指针变量名
+  int * p;
+  让指针记录变量a的地址
+  p=&a
+  
+  2. 使用指针
+  可以通过解引用的方式来找到指针指向的内存
+  指针前面 * 代表解引用，找到指针指向的内存中的数据
+  ** p =1000;
+  
+  ### 2.10 空指针和野指针
+  1. 空指针
+  - 指针变量指向内存中编号为0的空间
+  - 空指针指向的内存是不可以访问的
+  ```
+  int main(){
+      int *p = NULL
+      //空指针不能引用
+      cout << *p <<endl;
+      system("pause");
+      return 0;
+  }
+  ```
+  
+  2. 野指针
+  - 指针变量指向非法的内存空间
+  ```
+  int main(){
+      //指向变量p指向内存地址编号为0x1100的空间
+      int *p = (int *)0x1100;
+      cout << *p <<endl;
+      system("pause");
+      return 0;
+  }
+  ```
+  
+  ### 2.11 const修饰指针
+  const修饰指针有三种情况
+  1. const修饰指针 ——常量指针
+  - 指针的指向可以修改，但是指针指向的值不可以修改。
+  ```
+  const int * p=&a
+   * p=20 指针指向的值不可以修改，
+   * p=&b 指针指向可以改。
+  ```
+  2. const修饰常量 —— 指针常量
+  - 指针的指向不可以改，指针指向的值可以改。 
+  ```
+  int * const p =&a;
+  * p=20 指向的值可以改，
+  * p=&b 指针指向不可以改。
+  ```
+  3. const即修饰指针，又修饰常量
+  ```
+  const int * const p =&a
+  ```
+  
+'''
+linesHighlighted: [
+  55
+]
+isStarred: false
+isTrashed: false

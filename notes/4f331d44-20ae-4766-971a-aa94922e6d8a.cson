@@ -1,11 +1,11 @@
 createdAt: "2019-08-13T09:53:42.719Z"
-updatedAt: "2019-08-21T08:16:20.892Z"
+updatedAt: "2020-08-17T14:07:07.429Z"
 type: "MARKDOWN_NOTE"
 folder: "8b201a0d43bb3b317af3"
-title: "自定义View进阶3——Canvas之画布操作"
+title: "3.自定义View进阶——Canvas之画布操作"
 tags: []
 content: '''
-  # 自定义View进阶3——Canvas之画布操作
+  # 3.自定义View进阶——Canvas之画布操作
   
   
   上一篇[Canvas之绘制基本形状](https://github.com/GcsSloop/AndroidNote/blob/master/CustomView/Advance/%5B02%5DCanvas_BasicGraphics.md)中我们了解了如何使用Canvas绘制基本图形，本次了解一些基本的画布操作。

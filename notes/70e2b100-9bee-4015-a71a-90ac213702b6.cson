@@ -1,11 +1,11 @@
 createdAt: "2019-08-21T07:37:10.796Z"
-updatedAt: "2019-08-21T07:38:18.327Z"
+updatedAt: "2020-08-17T14:07:59.920Z"
 type: "MARKDOWN_NOTE"
 folder: "8b201a0d43bb3b317af3"
-title: "自定义View进阶9——Matrix原理"
+title: "9.自定义View进阶——Matrix原理"
 tags: []
 content: '''
-  # 自定义View进阶9——Matrix原理
+  # 9.自定义View进阶——Matrix原理
   
   本篇的主角Matrix，是一个一直在后台默默工作的劳动模范，虽然我们所有看到View背后都有着Matrix的功劳，但我们却很少见到它，本篇我们就看看它是何方神圣吧。
   

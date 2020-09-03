@@ -1,11 +1,11 @@
 createdAt: "2019-08-23T10:34:19.399Z"
-updatedAt: "2019-08-23T10:35:25.529Z"
+updatedAt: "2020-08-17T14:08:32.151Z"
 type: "MARKDOWN_NOTE"
 folder: "8b201a0d43bb3b317af3"
-title: "自定义View进阶14——MotionEvent 详解"
+title: "14.自定义View进阶——MotionEvent 详解"
 tags: []
 content: '''
-  # 自定义View进阶14——MotionEvent 详解
+  # 14.自定义View进阶——MotionEvent 详解
   
   Android MotionEvent 详解，之前用了两篇文章 [事件分发机制原理][customview/dispatch-touchevent-theory] 和 [事件分发机制详解][customview/dispatch-touchevent-source] 来讲解事件分发，而作为事件分发主角之一的 MotionEvent 并没有过多的说明，本文就带大家了解 MotionEvent 的相关内容，简要介绍触摸事件，主要包括 单点触控、多点触控、鼠标事件 以及 getAction() 和 getActionMasked() 的区别。
   

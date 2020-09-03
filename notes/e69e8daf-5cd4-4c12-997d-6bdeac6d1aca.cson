@@ -1,11 +1,11 @@
 createdAt: "2019-08-22T02:26:48.080Z"
-updatedAt: "2019-08-22T02:56:05.939Z"
+updatedAt: "2020-08-17T14:08:19.539Z"
 type: "MARKDOWN_NOTE"
 folder: "8b201a0d43bb3b317af3"
-title: "自定义View进阶12——事件分发机制原理"
+title: "12.自定义View进阶——事件分发机制原理"
 tags: []
 content: '''
-  # 自定义View进阶12——事件分发机制原理
+  # 12.自定义View进阶——事件分发机制原理
   
   之前讲解了很多与View绘图相关的知识，你可以在 [安卓自定义View教程目录](http://www.gcssloop.com/customview/CustomViewIndex) 中查看到这些文章，如果你理解了这些文章，那么至少2D绘图部分不是难题了，大部分的需求都能满足，但是关于View还有很多知识点，例如: `让绘图更加炫酷的Paint`，`让View动起来的动画`，`与用户交互的触控事件` 等一系列内容。**本次就带大家简单的了解一下与交互息息相关的东西－事件分发原理**。
   

@@ -1,11 +1,11 @@
 createdAt: "2019-08-19T06:08:45.250Z"
-updatedAt: "2019-08-19T06:57:13.263Z"
+updatedAt: "2020-08-17T14:07:37.361Z"
 type: "MARKDOWN_NOTE"
 folder: "8b201a0d43bb3b317af3"
-title: "自定义View进阶6——Path之贝塞尔曲线"
+title: "6.自定义View进阶——Path之贝塞尔曲线"
 tags: []
 content: '''
-  # 自定义View进阶6——Path之贝塞尔曲线
+  # 6.自定义View进阶——Path之贝塞尔曲线
   
   ## 一.Path常用方法表
   > 为了兼容性(_偷懒_) 本表格中去除了在API21(即安卓版本5.0)以上才添加的方法。忍不住吐槽一下，为啥看起来有些顺手就能写的重载方法要等到API21才添加上啊。宝宝此刻内心也是崩溃的。
