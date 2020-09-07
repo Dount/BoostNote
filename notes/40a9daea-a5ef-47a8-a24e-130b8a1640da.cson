@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-08-12T03:53:10.156Z"
+updatedAt: "2020-09-07T11:49:37.924Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -1494,15 +1494,15 @@ content: '''
   如果新的Activity的实例已存在但没有位于栈顶，那么新的Activity仍然会被重建。
   
   #### 4.3.3 singleTask
-  ![20160723162300494.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\e30a1cfd.png)
+  ![20160723162300494.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\1d4703c5.png)
   1. 只有一个实例。在同一个应用程序中启动他的时候，若Activity不存在，则会在当前task创建一个新的实例，若存在不在栈顶，则会把task中在其之上的其它Activity destory掉并调用它的onNewIntent方法。若存在在栈顶，会调用onNewIntent方法。
   
   2. 如果是在别的应用程序中启动它，则会新建一个task，并在该task中启动这个Activity，singleTask允许别的Activity与其在一个task中共存，也就是说，如果我在这个singleTask的实例中再打开新的Activity，这个新的Activity还是会在singleTask的实例的task中。
   
   #### 4.3.4 singleInstance
+  ![20160723180108411.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\1ec24d5e.png)
   只有一个实例，并且这个实例独立运行在一个task中，这个task只有这个实例，不允许有别的Activity存在。
-  例如，ActivityA->ActivityB(SingleInstance)->ActivityC 
-  点击Back退出顺序：结果为C-》A-》B
+  例如，ActivityA->ActivityB(SingleInstance)->ActivityC 点击Back退出顺序：结果为C-》A-》B
   原因：singleInstance模式是存在于另一个任务栈中的。也就是说ActivityA和ActivityC是处于同一个任务栈中的，ActivityB则是存在另个栈中。
   所以当关闭了ActivityC的时候，先去找当前任务栈存在的activity。当前的activity都finish了之后，才会去找另一个任务栈中的activity。
   解决方法是：在ActivityB定义一个全局变量，在onCreate方法将returnActivityB=true;
@@ -2808,17 +2808,20 @@ content: '''
   [成功入职字节跳动的小姐姐告诉你，Android面试吃透这一篇就没有拿不到的offer！ - 知乎](https://zhuanlan.zhihu.com/p/136796040)
   
   
+  
 '''
 linesHighlighted: [
   1192
   1225
   15
-  2325
-  2313
-  1770
-  1621
-  2802
-  2875
+  1487
+  1490
+  2327
+  2315
+  1772
+  1623
+  2878
+  2805
 ]
 isStarred: false
 isTrashed: false
