@@ -1,5 +1,5 @@
 createdAt: "2020-09-07T13:12:52.024Z"
-updatedAt: "2020-09-13T11:39:29.738Z"
+updatedAt: "2020-09-14T16:13:44.636Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "C++ 核心编程"
@@ -600,6 +600,104 @@ content: '''
   void test01(){
      Person p("zhouwei","iphone");
      p.playGame();
+  }
+  
+  int main(){
+     test01();
+     system("pause");
+     return 0;
+  }
+  ```
+  
+  #### 4.2.11 静态成员
+  静态成员就是在成员变量和成员函数前加上关键字static,称为静态成员。
+  静态成员分为：
+  1. 静态成员变量
+     1)所有对象共享同一份数据
+     2)在编译阶段分配内存
+     3)类内声明，类外初始化
+  2. 静态成员函数
+     1)所有对象共享同一个函数
+     2)静态成员函数只能访问静态成员变量，即不可以访问非静态成员变量。
+  
+  ```
+  class Person{
+     public:
+     //静态成员函数特点:
+     //1 程序共享一个函数
+     //2 静态成员函数只能访问静态成员变量
+     static void func(){
+        cout << "func调用" <<endl;
+        m_A =100;
+        //m_B =100;  不可以访问非静态成员变量
+     }  
+     static int m_A;//静态成员变量
+     int m_B;
+     private:
+     //静态成员函数也有访问权限
+     static void func2(){
+        cout << "func2调用" <<endl;
+     }
+  };
+  int Person ::m_A =10; 
+  
+  int main(){
+     //静态成员变量两种访问方式
+     //1.通过对象
+     Person p1;
+     p1.func();
+     //2. 通过类名
+     Person::func();
+     //Person::func2();// 私有权限访问不到
+     system("pause");
+     return 0;
+  }
+  ```
+  ### 4.3 C++ 对象模型和this指针
+  
+  #### 4.3.1 成员变量和成员函数分开存储
+  在C++中，类内的成员变量和成员函数分开存储
+  只有非静态成员变量才属于类的对象上。
+  ```
+  int m_A //非静态成员变量，属于类的对象上
+  static int m_B //非静态成员变量 不属于类的对象上
+  void func(){} //非静态成员函数 不属于类对象上
+  static void func2(){} //静态成员函数 不属于类的对象上
+  ```
+  #### 4.3.2 this 指针概念 (重要)
+  **this 指针指向被调用的成员函数所属的对象**
+  
+  this指针是隐含每一个非静态成员函数的一种指针。
+  this指针不需要定义，直接使用即可。
+  
+  this指针的用途:
+  - 当形参和成员变量同名时，可用this 指针来区分 (解决名称冲突)
+  - 在类的非静态成员函数中返回对象本身，可使用return *this 
+  ```
+  class Person{
+  public:
+     Person(int age){
+        //当形参和成员变量同名时，可用this指针来区分.
+        this->age =age;
+     }
+  
+     //返回值的话就是创建新的对象，返回引用的话就不会创建新对象。
+     Person& PersonAddPerson(Person &p){
+        this->age +=p.age;
+        //返回对象本身
+        return *this;
+     }
+  
+     int age;
+  };
+  
+  void test01(){
+     Person p1(10);
+     cout << "p1.age=" <<p1.age <<endl;
+  
+     Person p2(10); //链式编程思想
+     p2.PersonAddPerson(p1).PersonAddPerson(p1).PersonAddPerson(p1);
+     cout<< "p2.age=" <<p2.age<<endl; 
   }
   
   int main(){
