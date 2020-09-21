@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-09-09T05:52:39.585Z"
+updatedAt: "2020-09-21T05:53:34.410Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -2848,7 +2848,9 @@ content: '''
     }  
   ```
   判断Looper是否为空，如果为null，那么就会报错，在前面说过Handler的作用有两个—发送消息和处理消息，使用Handler发送消息，由Handler发送的消息必须被送到指定的MessageQueue;否则就无法进行消息循环。而MessageQueue是由Looper负责管理的，也就是说，如果希望Handler正常工作的话，就必须在当前线程中有一个Looper对象。
-  
+  为了保证Handler一定有Looper线程，需要分两种情况:
+  1. 主UI线程中，系统已经初始化好了一个Looper对象，因此我们可以直接创建Handler并使用即可。
+  2. 在子线程中，必须自己手动去创建一个Looper对象，并且去启动它，才可以使用Handler进行消息发送与处理,如下。
   ```
   class childThread extends Thread{
           public Handler mHandler;
@@ -2870,7 +2872,6 @@ content: '''
           }
       }
   ```
-  在子线程中，必须自己手动去创建一个Looper对象，并且去启动它，才可以使用Handler进行消息发送与处理。
   
   ### 16.2 Handler主要方法源码
   ```
@@ -3054,8 +3055,43 @@ content: '''
   		msg.recycle();
   	}
   ```
+  通过looper()方法内部源码可以知道，首先会通过myLoooper()去获取一个Looper对象，如果Looper对象为null，就会报出一个非常熟悉的错误提示，“No Looper;Looper.prepare() wasn't called on this thread”,要求我们先通过Looper.prepare()方法去创建Looper对象；如果Looper不为null，那么就会去获取消息队列MessageQueue对象，接着就进入一个for的死循环，不断从消息队列MessageQueue对象中获取消息，如果消息不为空，那么久会调用msg.target的dispatchMessage(Message)方法，msg.target就是创建的Handler对象(msg.target=this);
+  ```
+  // 在looper类中的loop()方法内部调用的方法
+  public void dispatchMessage(Message msg) {
+  	if (msg.callback != null) {
+  		handleCallback(msg);
+  	} else {
+  		if (mCallback != null) {
+  			if (mCallback.handleMessage(msg)) {
+  				return;
+  			}
+  		}
+  		handleMessage(msg);
+  	}
+  ```
+  首先，检测Message的callback是否为null，不为null就通过handleCallback方法来处理消息,接着会去检查mCallback是否为null，不为null，则调用mCallback的handleMessage回调方法来处理消息。
+  最后如果以上条件都不成立的话，就会去调用Handler的handleMessage方法来处理消息。而 我们的Handler是在主线程创建的，也就是说Looper也是主线程的Looper，因此handleMessage内部处理最终都会在主线程上执行，
   
-  ### 16.4 参考文献
+  ![20160304230155772.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\c6c56a57.png)
+  
+  
+  ### 16.4 Handler总结
+  Android中的Looper类主要作用是用来**封装消息循环和消息队列**，Handler是用来**向消息队列中插入消息的并对消息进行处理**。
+  
+  (1) Looper类主要是为每个线程开启的单独的消息循环。 默认情况下android中新诞生的线程是没有开启消息循环的。（主线程除外，主线程系统会自动为其创建Looper对象，开启消息循环） Looper对象负责管理MessageQueue，而MessageQueue主要是用来存放handler发送的消息，而且一个线程只能有一个Looper，对应一个MessageQueue。
+  
+  (2) 我们通常是通过Handler对象来与Looper进行交互的。Handler可看做是Looper的一个接口，用来向指定的Looper中的MessageQueue发送消息并且Handler还必须定义自己的处理方法。 默认情况下Handler会与其被定义时所在线程的Looper绑定，如Handler在主线程中定义，它是与主线程的Looper绑定。 
+  mainHandler = new Handler() 等价于 new Handler（Looper.myLooper()）
+  Looper.myLooper(),获取当前**进程**的looper对象， 
+  Looper.getMainLooper() 用于获取**主线程**的Looper对象。 
+  
+  (3) 在非主线程中直接new Handler() 会报如下的错误:  Can't create handler inside thread that has not called Looper.prepare() 原因是非主线程中默认没有创建Looper对象，需要先调用Looper.prepare()启用Looper，然后再调用Looper.loop()。
+  
+  (4) Looper.loop():启动looper中的循环线程，Handler就会从消息队列里取消息并进行对应处理。 
+  最后要注意的是写在Looper.loop()之后的代码不会被执行，这个函数内部应该是一个循环，当调用mHandler.getLooper().quit()后，loop()才会中止，其后的代码才能得以运行。
+  
+  ### 16.5 参考文献
   [深入Android的消息机制源码详解～Handler,MessageQueue与Looper关系_zejian的博客-CSDN博客](https://blog.csdn.net/javazejian/article/details/50791598)
   
   
@@ -3097,8 +3133,9 @@ linesHighlighted: [
   1623
   23
   2764
-  3128
-  3201
+  2846
+  3234
+  3161
 ]
 isStarred: false
 isTrashed: false
