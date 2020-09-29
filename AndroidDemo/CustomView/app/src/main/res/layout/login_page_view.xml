@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:padding="10dp"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/phone_num"
+            android:textColor="#fff"
+            android:background="@drawable/shape_log_page_view_edit"
+            android:paddingLeft="30dp"
+            android:paddingTop="10dp"
+            android:paddingRight="20dp"
+            android:paddingBottom="10dp"
+            android:layout_width="250dp"
+            android:textColorHint="#fff"
+            android:maxLength="7"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.example.customview.CustomCombinationView.LoginKeyboard
+            android:id="@+id/numpageview"
+            android:layout_width="250dp"
+            android:layout_height="150dp">
+
+        </com.example.customview.CustomCombinationView.LoginKeyboard>
+
+    </LinearLayout>
+</LinearLayout>

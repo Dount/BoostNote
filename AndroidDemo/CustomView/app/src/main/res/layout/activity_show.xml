@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:zw="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="#ffffff"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <com.example.customview.CustomCombinationView.InputNumberView
+        android:id="@+id/myinputNumber"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        zw:max="30"
+        zw:min="-30"
+        zw:btnBackground="#ffffff"
+        zw:defaultvalue="5"
+        zw:disable="true"
+        zw:step="7">
+    </com.example.customview.CustomCombinationView.InputNumberView>
+
+
+    <com.example.customview.CustomCombinationView.LoginPageView
+        android:id="@+id/myloginView"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        zw:verifyCodeSize="7">
+
+    </com.example.customview.CustomCombinationView.LoginPageView>
+
+    <com.example.customview.CustomViewGroup.FlowLayout
+        android:id="@+id/myflow"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    </com.example.customview.CustomViewGroup.FlowLayout>
+
+    <com.example.customview.CustomCombinationView.KeypadView
+        zw:itemMargin="4dp"
+        zw:numberSize="20sp"
+        zw:itemNormalColor="#686868"
+        zw:itemPressColor="#ff8978"
+        android:id="@+id/mykeypad"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+    </com.example.customview.CustomCombinationView.KeypadView>
+
+    <com.example.customview.CustomViewGroup.SlideMenuView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:id="@+id/mSlideMenuView"
+        zw:function="delete|read">
+        
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:background="#334499"
+            android:gravity="center"
+            android:text="群通知"
+            android:textSize="20sp"/>
+    </com.example.customview.CustomViewGroup.SlideMenuView>
+
+
+    <com.example.customview.CustomView.WatchFace
+        zw:WathchfaceBackground ="@mipmap/timebg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </com.example.customview.CustomView.WatchFace>
+
+</LinearLayout>
