@@ -1,0 +1,219 @@
+createdAt: "2020-09-21T07:09:27.164Z"
+updatedAt: "2020-09-30T03:39:54.142Z"
+type: "MARKDOWN_NOTE"
+folder: "bfd1eca2e356e7181dfa"
+title: "深入理解Android 卷I学习"
+tags: []
+content: '''
+  # 深入理解Android 卷I学习
+  [TOC]
+  ## 1 Android 系统架构
+  ![5430736-a8b60894c3d5c87b.png](:storage\\a4b3a90a-af8c-48ce-8a5d-ba3a190a47a9\\cefa4170.png)
+  
+  Application层：与用户直接交互的应用程序，主要用Java开发。
+  Framework层：大部分是Java语言编写，它是Android平台上Java世界的基石。
+  NativeC/C++ Libraries层：这一层提供动态库，Android运行时库，Dalvik虚拟机等。大部分都是C或C++开发。
+  Linux 内核层：包含了Linux内核和一些驱动模块(USB驱动，Camera驱动，蓝牙驱动等)。
+  
+  ## 2 Java世界和Native世界交互
+  ![65423ede.png](:storage\\a4b3a90a-af8c-48ce-8a5d-ba3a190a47a9\\65423ede.png)
+  从上图可知：
+  1. Java层具有与平台无关的特性，但Java和具体平台之间的隔离却是由JNI层来实现的。Java是通过JNI层调用Linux OS中，的系统调用来完成对应功能的。
+  2. 除了Java世界，还有一个核心的Native世界，它为整个系统高效，和平稳地运行提供了强有力的支持。一般而言，Java世界经由JNI层通过IPC方式与Native世界交互，而Android平台上最为神秘的IPC方法就是Binder了。
+  
+  ### 2.1 学习JNI实例：MediaScanner
+  ![a8443754.png](:storage\\a4b3a90a-af8c-48ce-8a5d-ba3a190a47a9\\a8443754.png)
+  - JNI层对应的是libmedia_jni.so。media_jni是JNI库的名字，其中，下划线前的"media"是Native层库的名字，这里就是libmedia库。下划线后的"jni"表示它是一个JNI库。
+  - Native层对应的是libmedia.so,这个库完成了实际的功能。
+  - MediaScanner 将通过JNI库libmedia_jni.so和Native层的libmedia.so交互。
+  
+  ### 2.2 Java层的MediaScanner分析
+  MediaScanner(简称MS)是Android平台中多媒体系统的重要组成部分，它的功能是扫描媒体文件，得到诸如歌曲时长，歌曲作者等媒体信息，并将它们存入到媒体数据库中，供其他应用程序使用。
+  以下是JNI有关的部分。
+  ![55e0faae.png](:storage\\a4b3a90a-af8c-48ce-8a5d-ba3a190a47a9\\55e0faae.png)
+  **要点：**
+  1. 加载JNI库
+  2. Java的native函数
+  
+  ### 2.3 加载JNI库
+  在类的static语句中加载，并调用System.loadLibrary方法，参数是动态库的名字，即media_jni.
+  系统会自动根据不同的平台拓展成真实的动态库文件名，在Linux系统上会拓展成libmedia_jni.so.而在Windows平台上则会拓展成media_jni.dll。
+  
+  ### 2.4 Java的native函数和总结
+  在上面代码中，native_init和processFile函数前都有Java的关键字native.它表示这两个函数将由JNI层来实现。
+  目前在Java层中，只要完成1.加载对应的JNI库，2.声明由关键字native修饰的函数，两项工作即可。
+  
+  ### 2.5 注册JNI函数
+  ![57e143fd.png](:storage\\a4b3a90a-af8c-48ce-8a5d-ba3a190a47a9\\57e143fd.png)
+  在Native语言中，符号“.”有特殊的意义,所以JNI层需要把Java函数名称中的“.”换成“_”。
+  例如:
+  native_init函数位于android.media这个包中，它的全路径名应该是android.media.MediaScanner.native_init，而JNI层函数的名字是android_media_MediaScanner_native_init。
+  
+  #### 2.5.1 静态注册方法
+  流程如下：
+  1. 先编写Java代码,然后编译生成.class文件。
+  2. 使用Java的工具程序javah, 如javah -o output packagename.classname.
+  3. 会生成一个output.h的JNI层头文件。其中声明了对应的JNI层函数。
+  
+  native与JNI函数的对应过程：
+  当Java层调用native_init函数时，它会从对应的JNI库中寻找Java_android_media_Media-Scanner_native_lint函数。如果没有，就会报错。如果找到，则会为这个native_init和Java_android_media_MediaScanner_native_lint建立一个关联关系，其实就是保存JNI层函数的函数指针。当再调用native_init函数时，直接使用这个函数指针就可以了。
+  当然这项工作是由虚拟机完成的。
+  
+  总结：
+  Java native函数是通过函数指针来和JNI层函数建立关联关系的。
+  
+  #### 2.5.2 动态注册方法
+  **需要用JNINativeMethod结构体来保存Java native函数和JNI函数之间的关系。**
+  流程如下：
+  1. 定义一个JNINativeMethod数组，
+  static JNINativeMethod gMethods[]{}
+  2. 其中成员参数包括：
+    (1)Java中native函数的名字
+    (2)Java函数的签名，即参数类型和返回值类型的组合
+    (3)JNI层对应函数的函数指针。
+    (4)举例：
+  ```
+  static const JNINativeMethod gMethods[] = {
+      {
+          "processDirectory",
+          "(Ljava/lang/String;Landroid/media/MediaScannerClient;)V",
+          (void *)android_media_MediaScanner_processDirectory
+      },
+      {
+          "processFile",
+          "(Ljava/lang/String;Ljava/lang/String;Landroid/media/MediaScannerClient;)Z",
+          (void *)android_media_MediaScanner_processFile
+      },
+  };
+  ```
+  3. 通过registerNativeMethods方法注册JNINativeMethod数组,其内部通过jniRegisterNativeMethods 函数完成注册。
+  ```
+  registerNativeMethods(JNIEnv* env,const char* className,const JNINativeMethod* gMethods,int numMethods){
+    调用jniRegisterNativeMethods函数完成注册。
+    return jniRegisterNativeMethods(env,className,gMethods,numMethods);
+  }
+  (1)env 代表JNIEnv*结构体
+  (2)Java中哪个类
+  (3)注册方法个数
+  ```
+  动态注册中函数注册与调用的流程:
+  当Java层通过System.loadLibrary加载完JNI动态库后，紧接着会查找该库中的一个叫JNI_OnLoad的函数。如果有，就调用它，而动态注册的工作就是在这里完成的。所以，如果想使用动态注册方法，就必须实现JNI_OnLoad函数，只有在这个函数中才有机会完成动态注册的工作。
+  
+  ### 2.6 数据类型转换
+  1. 基本数据类型的转换
+  ![3c5ca8b3.png](:storage\\a4b3a90a-af8c-48ce-8a5d-ba3a190a47a9\\3c5ca8b3.png)
+  
+  2. 引用数据类型的转换
+  ![3c77c4db.png](:storage\\a4b3a90a-af8c-48ce-8a5d-ba3a190a47a9\\3c77c4db.png)
+  
+  ### 2.7 JNIEnv介绍
+  JNIEnv是一个与线程相关的代表JNI环境的结构体。
+  在多线程条件最好只使用一份JNIEnv。
+  ```
+  //全进程只有一个JavaVM对象，所以可以保存，并且在任何地方使用都没有问题。
+  Jint JNI_OnLoad(JavaVM* vm,void* reserved)
+  ```
+  JavaVM和JNIEnv的关系:
+  1. 当调用JavaVM的AttachCurrentThread函数，就可以得到这个线程的JNIEnv结构体。这样就可以再后台线程中回调Java函数了。
+  2. 在后台线程退出前，需要调用JavaVM的DetachCurrentThread函数来释放对应的资源。
+  
+  ### 2.8 通过JNIEnv操作jobject
+  JNIEnv 通过操作jobject的本质是操作这些对象的成员变量和成员函数。
+  
+  #### 2.8.1 jfieldID和jmethodID介绍
+  在JNI规则中，用jFieldID和jMethodID来表示Java类的成员变量和成员函数。
+  ```
+  jfieldID GetFieldID(jclass clazz,const char *name,const char *sig);
+  jmethodID GetMethodID(jclass clazz,const char *name,const char *sig);
+  ```
+  1. jclass代表Java类。
+  2. name表示成员函数或成员变量的名字。
+  3. sig为这个函数和变量的签名信息。
+  
+  MediaScanner中使用GetFieldID和GetMethodID
+  ```
+  //先找到android.media.MediaScannerClient类在JNI层中对应的jclass实例。
+  jclass mediaScannerClientInterface = env->FindClass("android/media/MediaScannerClient");
+  //取出MediaScannerClient类中函数scanFile的jMethodID .
+  mScanFileMethodID = env->GetMethodID(mediaScannerClientInterface,"scanFile","(Ljava/lang/String;JJ)V");
+  //取出MediaScannerClient 类中函数handleStringTag的jMethodID.
+  mHandleStringTagMethodID = env->GetMethodID(mediaScannerClientInterface,"handleStringTag","(Ljava/lang/String;Ljava/lang/String;)V");
+  ```
+  MediaScanner中使用jfieldID和jMethodID
+  1. jMethodID的使用
+  JNIEnv通过CallVoidMethod函数，就能够调用Java对象的函数。
+  ```
+  mEnv ->CallVoidMethod(mClient,mScanFileMethodID,pathStr,lastModified,fileSize);
+  第一个参数是代表MediaScannerClient的jobject对象。
+  第二个参数是函数scanFile的jmethodID,后面是Java中scanFile的参数。
+  ```
+  实际上JNIEnv有一系列类似CallVoidMethod的函数。
+  ```
+  NativeType call<type>Method(JNIEnv *env,jobject obj ,jmethodID methodID,....)
+  ```
+  如果想调用Java中的static函数，则用JNIEnv的CallStatic(Type)Method系列函数。
+  
+  2. jfieldID的使用
+  获得fieldID后，可调用Get(Type)Field系列函数获取jobject对应的成员变量的值。
+  ```
+  NativeType Get<type>Field(JNIEnv *env,jobject obj,jfieldID fieldID)
+  ```
+  或者调用Set(type)Field系列函数来设置jobject对应的成员变量的值。
+  ```
+  void Set<type>Field(JNIEnv *env,jobject obj,jfieldID fieldID,NativeType value)
+  ```
+  ![16013479883453.png](:storage\\a4b3a90a-af8c-48ce-8a5d-ba3a190a47a9\\db0d5a1f.png)
+  
+  ### 2.9 jstring介绍
+  1. 调用JNIEnv的NewString(),可以从Native中得到一个jstring对象。
+  ```
+  NewString(JNIEnv *env,const jchar *unicodeChars,jsize len)
+  ```
+  2. 调用JNIEnv的NewStringUTF将根据Native的一个UTF-8字符串得到一个jstring对象。
+  ```
+  NewStringUTF(JNIEnv *env,const char *bytes);
+  ```
+  3. 调用GetStringChars得到一个Unicode字符串，调用GetStringUTFChars得到一个UTF-8字符串。
+  ```
+  const jchar * GetStringChars(JNIEnv *env, jstring string, jboolean *isCopy);
+  const char* GetStringUTFChars(JNIEnv *env,jstring string ,jboolean *isCopy)
+  
+  ```
+  4. 调用ReleaseStringChars和ReleaseStringUTFChars函数来对应的释放资源。否则会导致JVM内存泄漏。
+  ```
+  void ReleaseStringChars(JNIEnv *env, jstring string, const jchar *chars);
+  void ReleaseStringUTFChars(JNIEnv *env, jstring string, const char *utf);
+  ```
+  
+  ### 2.10 JNI类型签名介绍
+  - JNI类型签名的目的：
+  由于Java支持函数重载，可以定义同名但不同参数的函数。依靠函数名是没法找到具体函数的。
+  因此JNI技术中将参数类型和返回值类型的组合作为了一个函数的签名信息。有了签名信息和函数名，就可以找到Java中对应的函数。
+  
+  - JNI规范定义的函数:
+  (参数1类型标示;参数2类型标示;参数n类型标示)返回值类型标示
+  
+  - 案例
+  ```
+  void processFile(String path,String mimeType).
+  对应的JNI函数签名
+  (Ljava/lang/String;Ljava/lang/String;Landroid/media/MediaScannerClient;)V
+  其中，括号内是参数类型的标示
+  ```
+  - 类型标示示意图:
+  ![2164186e.png](:storage\\a4b3a90a-af8c-48ce-8a5d-ba3a190a47a9\\2164186e.png)
+  
+  - javap工具生成函数或变量信息
+  ```
+  javap -s -p xxx
+  ```
+  其中xxx为编译后的class文件，s表示输出内部数据类型的签名信息，p表示打印所有函数和成员的签名信息，默认只会打印public成员和函数的签名信息。
+  
+  ### 2.11 垃圾回收
+  
+'''
+linesHighlighted: [
+  23
+]
+isStarred: false
+isTrashed: false

@@ -1,5 +1,5 @@
 createdAt: "2020-08-06T10:02:59.558Z"
-updatedAt: "2020-08-19T08:22:15.182Z"
+updatedAt: "2020-09-30T03:22:44.520Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "JNI学习"
@@ -50,7 +50,7 @@ content: '''
   -> (III)Ljava/lang/String;
   
   private native void processFile(String path, int mimeType, Parcel param);					
-  -> (Ljava/lang/String;ILandroid/os/Parcel;)V
+  -> (Ljava/lang/String;I;Landroid/os/Parcel;)V
   ```
   
   4. 数据类型转换
