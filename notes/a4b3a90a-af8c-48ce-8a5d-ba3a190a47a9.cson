@@ -1,5 +1,5 @@
 createdAt: "2020-09-21T07:09:27.164Z"
-updatedAt: "2020-09-30T03:39:54.142Z"
+updatedAt: "2020-10-09T10:23:29.472Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "深入理解Android 卷I学习"
@@ -210,7 +210,30 @@ content: '''
   其中xxx为编译后的class文件，s表示输出内部数据类型的签名信息，p表示打印所有函数和成员的签名信息，默认只会打印public成员和函数的签名信息。
   
   ### 2.11 垃圾回收
+  1. Local Reference : 本地引用，在JNI层函数中使用的非全局引用对象都是Local Reference,它包括函数调用时传入的jobject和在JNI层函数中创建的jobject.Local Reference最大的特点就是，一旦JNI层函数返回，这些object就可能被垃圾回收。
+  ```
+  jstring str_obj = (*env)->NewObject(env, cls_string, cid_string, elemArray);
+  jstring str_obj_local_ref = (*env)->NewLocalRef(env,str_obj);   // 通过NewLocalRef函数创建
+  (*env)->DeleteLocalRef(env,local_ref)
+  ```
   
+  2. Global Reference : 全局引用，这种对象如不主动释放，它永远不会被垃圾回收。
+  ```
+  jclass localRefCls = (*env)->FindClass(env, "java/lang/String"); 
+  stringclass = (*env)->NewGlobalRef(env,localRefCls) 创建全局引用
+  (*env)->DeleteLocalRef(env, localRefCls); 
+  ```
+  
+  3. Weak Global Referenece : 弱全局引用，一种特殊的Global Reference,在运行过程中可能会被垃圾回收。所以在使用它之间，需要调用JNIEnv的IsSameObject判断它是否被回收了。
+  ```
+  jclass cls_string = (*env)->FindClass(env, "java/lang/String");
+  g_cls_string = (*env)->NewWeakGlobalRef(env,cls_string);
+  (*env)->DeleteWeakGlobalRef(env,g_cls_string)
+  ```
+  ### 2.12 JNI中异常处理
+  1. ExceptionOccured函数，用来判断是否发生异常
+  2. ExceptionClear函数，用来清理当前JNI层中发生的异常
+  3. ThrowNew 函数，用来向Java层抛出异常。
 '''
 linesHighlighted: [
   23
