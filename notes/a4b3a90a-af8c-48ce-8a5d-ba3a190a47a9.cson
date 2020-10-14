@@ -1,5 +1,5 @@
 createdAt: "2020-09-21T07:09:27.164Z"
-updatedAt: "2020-10-09T10:23:29.472Z"
+updatedAt: "2020-10-10T02:54:14.049Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "深入理解Android 卷I学习"
@@ -234,6 +234,17 @@ content: '''
   1. ExceptionOccured函数，用来判断是否发生异常
   2. ExceptionClear函数，用来清理当前JNI层中发生的异常
   3. ThrowNew 函数，用来向Java层抛出异常。
+  
+  ## 3 深入理解init
+  init是一个进程，是Linux系统中用户空间的第一个进程。由于Android是基于Linux内核，因此init是Android系统中用户控件的第一个进程。
+  
+  ### 3.1 init工作流程分析
+  1. 解析两个配置文件，系统配置文件init.rc与硬件配置文件
+  2. 创建zygote
+  3. 调用property_init初始化属性相关的资源，并启动property_start_service启动属性服务。
+  4. init进入一个无限循环，并且等待一些事情的发生。
+  
+  ### 3.
 '''
 linesHighlighted: [
   23
