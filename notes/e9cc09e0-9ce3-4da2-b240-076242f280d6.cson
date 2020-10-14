@@ -1,5 +1,5 @@
 createdAt: "2019-10-16T02:39:38.018Z"
-updatedAt: "2020-10-14T10:13:46.858Z"
+updatedAt: "2020-10-14T16:22:41.932Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Java面试题"
@@ -188,39 +188,52 @@ content: '''
   
   ## 集合
   ### 简述一下集合主要有哪些类和接口，各自有什么特点。
+  ![2259f98c.png](:storage\\e9cc09e0-9ce3-4da2-b240-076242f280d6\\2259f98c.png)
   1. 主要有两个接口Collection和Map.
   2. Collection包括List,Set和Queue
     1)List是有序的，主要包括ArrayList，LinkedList和Vector，ArrayList底层通过数组实现，线程不安全，Vector是线程安全的ArrayList，但效率较低，LinkedList底层通过双向链表实现，与ArrayList相比增删快查询慢。
-    2)Set是唯一且无序的，主要包括HashSet，LinkedHashSet和TreeSet。HashSet底层其实就是HashMap，利用了key来保证元素的唯一性。LinkedHashSet可以按照key的操作顺序排序，TreeSet支持按照默认或指定的排序规则排序。
+    2)Set是唯一且无序的，主要包括HashSet，LinkedHashSet和TreeSet。HashSet底层其实就是HashMap，利用了key来保证元素唯一性。LinkedHashSet可以按照key的操作顺序排序，TreeSet支持按照默认或指定的排序规则排序。
     3)Queue是队列结构，主要有ArrayBlockingQueue基于数组的阻塞队列、LinkedBlockingQueue基于链表的阻塞队列等
   3. Map以key-value键值对的形式存储元素,包括：HashMap、LinkedHashMap和TreeMap。
     1)HashMap底层通过数组+链表/红黑树实现
     2)LinkedHashMap可以按照key的操作顺序对集合排序
     3)TreeMap可以按照默认或指定的排序规则对集合排序
   
-  ### HashMap是线程安全吗？
-  1.HashMap是线程不安全的，可以使用ConcurrentHashMap保证线程安全。
-  2.ConcurrentHashMap基于减小锁粒度的思想，通过使用分段锁来实现线程安全，内部细分为很多Segment数据段，默认情况下为16个，对每个Segment的数据都单独进行加锁操作，Segment的个数为锁的并发度。ConcurrentHashMap是由Segment数组和HashEntry数组组成的，Segment继承了可重入锁，HashEntry用来存储键值对数据。
-  3.Segment的结构和HashMap类似，是数组和链表结构，每个Segment里面都包含一个HashEntry数组，每个HashEntry都是一个链表结构的数据要对其进行i修改必须先获得对应的Segment锁。
-  4.多线程下只要加入的数据hashCode映射的数据段不一样就可以做到并行的线程安全。
+  ### HashMap 为什么不安全
+  [为什么HashMap线程不安全 - 简书](https://www.jianshu.com/p/e2f75c8cce01)
   
-  ### List,Set,Map有什么区别？
-  1.List是有序，可重复，有索引的集合，继承了Collection集合全部功能除了Collection的三种遍历方式外，可用索引遍历。
-  2.Set是无序，不可重复的集合，Set的实现类LinkedHashSet和TreeSet是有序的，LinkedHashSet可以按照元素插入的顺序排序，也可以按照元素操作的时间排序，TreeSet可以按照默认的比较规则或者自定义的比较规则排序。
-  [Java中的Set总结 - 简书](https://www.jianshu.com/p/d6cff3517688)
   
-  3.Map是无序，以Key-value的键值对形式存储元素的集合。键不可重复，值无需求，重复的键对应的值会覆盖之前的值。
+  ### 理解HashMap
+  #### HashMap的特点
+  1. HashMap基于Map接口实现，元素以键值对的方式存储，　
+  2. HashMap允许空键和空值（但空键只有一个，且放在第一位）
+  3. HashMap中key不允许重复。
+  4. HashMap是无序的，顺序会不定时改变。
+  5. HashMap是线程不安全的。
+  6. HashMap的初始容量为16,填充因子默认是0.75。
+  #### HashMap的实现方式
+  1. JDK1.8之前，HashMap的底层是数组加链表实现，数组中的每个元素都是一个单链表，链表中每个元素都是Entry的一个实例，其中有四个属性key,value,hash,next,HashMap在查找数据时，根据hash值可以快速定位到数组的小标，然后对链表进行遍历查找。
+  2. JDK1.8之后，HashMap底层改为数组+链表+红黑树，当链表长度超过阈值8时，将链表转换为红黑树，使得性能上进一步得到提升。
   
-  ### HashSet是如何去重的？
-  1.对于基本类型的包装类，可以直接按值进行比较。
-  2.对于引用数据类型，会先比较HashCode()返回值是否相同，如果不同则代表不是同一个对象。如果相同继续比较equals（） 方法返回值是否相同，都相同说明是同一个对象。
-  3.如果希望内容相同的对象就代表对象相同，那么除了重写equals()方法还要重写hashCode()方法，因为内容相同的对象hashCode()值不一定相同，因为只有hashCode()和equals()都相同才说明是同一个对象。
+  ### HashTable的特点
+  1. HashTable实现了Map接口和Dictionary抽象类。
+  2. HashTable的key、value都不可以为null。
+  3. Hashtable初始容量为11,填充因子默认是0.75。
+  4. Hashtable线程安全。
   
-  ### HashMap和HashSet的底层是怎么实现的？
-  1.JDK1.8之前，HashMap的底层是数组加链表实现。数组中的每个元素都是一个单链表，链表中的每个元素都是Entry的实现类Node的一个实例，Node包括4个属性：key,value,hash值和用于指向单链表下一个元素的next.
-  2.HashMap在查找数据时，根据hash值可以快速定位到数组的具体下标，然后对链表进行遍历查找数据的时间复杂度为O(n)
-  3.JDK1.8之后， HashMap底层改为数组+链表或红黑树，当链表中的元素超过8个之后，HashMap会将链表结构转换未红黑树以提高查询效率，时间复杂度为O(logn)。
-  4.HashSet的底层是基于HashMap实现的，HashSet中的元素只是存放在了底层HashMap的key上， 而value使用一个static final的Object对象标识。因此HashSet 的实现比较简单，相关操作基本上都是直接调用底层HashMap的相关方法来完成的。
+  ### HashSet的特点
+  1. 向Hashset中添加元素, 实际上是把这个元素作为键添加到底层的HashMap中.
+  2. HashSet实际上就是底层HashMap的键的集合.
+  3. HashSet底层是HashMap.
+  
+  ### ConcurrentHashMap的特点
+  1. HashMap功能基本一致，主要是为了解决HashMap线程不安全问题；
+  2. 不允许空值和空键
+  3. java7中的ConcurrentHashMap通过使用分段锁来实现线程安全，内部细分为很多Segment数据段，每个Segment的数据段单独进行加锁操作，这样多个线程对多个不同的段的操作是不会相互影响的。Segment是数组和链表结构，每个Segment里面都包含一个HashEntry数组，每个HashEntry都是一个链表结构的数据，若进行修改必须先获得对应的Segment锁，若发生hash冲突采用链表存储。
+  4. java8中的ConcurrentHashMap将Segment块换成了Node，每个Node有自己的锁，每个Node里面包含一个HashEntry数组。若发生hash冲突，先使用链表存储，后面当链表长度超过8后会转换为红黑树来优化。
+  
+  ![71728073.png](:storage\\e9cc09e0-9ce3-4da2-b240-076242f280d6\\71728073.png)
+  
   
   ### Collection和Collections有什么区别
   1.Collection是一个集合接口，它包括List有序结合，Set无序集合，Queue队列等。
@@ -256,6 +269,12 @@ content: '''
   ### List和Vector比较
   Vector是多线程安全的，线程安全就是说多线程访问同一代码，不会产生不确定的结果。而ArrayList不是，这个可以从源码中看出，Vector类中的方法很多有synchronized进行修饰，这样就导致了Vector在效率上无法与ArrayList相比；
   两个都是采用的线性连续空间存储元素，但是当空间不足的时候，两个类的增加方式是不同，Vector可以设置增长因子，而ArrayList不可以。
+  
+  ### List,Set,Map有什么区别？
+  1.List是有序，可重复，有索引的集合，继承了Collection集合全部功能除了Collection的三种遍历方式外，可用索引遍历。
+  2.Set是无序，不可重复的集合，Set的实现类LinkedHashSet和TreeSet是有序的，LinkedHashSet可以按照元素插入的顺序排序，也可以按照元素操作的时间排序，TreeSet可以按照默认的比较规则或者自定义的比较规则排序。
+  3.Map是无序，以Key-value的键值对形式存储元素的集合。键不可重复，值无需求，重复的键对应的值会覆盖之前的值。
+  [Java中的Set总结 - 简书](https://www.jianshu.com/p/d6cff3517688)
   
   ## 多线程
   ### 创建线程有哪几种实现方式？分别有什么优缺点？
@@ -1092,9 +1111,10 @@ content: '''
 '''
 linesHighlighted: [
   164
-  460
   172
-  902
+  201
+  467
+  909
 ]
 isStarred: false
 isTrashed: false
