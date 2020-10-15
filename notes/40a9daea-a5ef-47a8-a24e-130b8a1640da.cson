@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-10-15T10:11:45.157Z"
+updatedAt: "2020-10-15T16:43:21.848Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -3187,6 +3187,34 @@ content: '''
   ### 17.3 非静态内部类导致内存泄露
   [内存泄漏的场景_wanghong940821的博客-CSDN博客](https://blog.csdn.net/wanghong940821/article/details/79439569?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~all~sobaiduend~default-2-79439569.nonecase&utm_term=oom%20%E5%87%BA%E7%8E%B0%E7%9A%84%E6%9C%89%E5%93%AA%E4%BA%9B%E5%9C%BA%E6%99%AF&spm=1000.2123.3001.4430)
   
+  ## 18 ANR的场景
+  
+  ### 18.1 发生ANR的原因
+  Android系统中，ActivityManagerService(简称AMS)和WindowManagerService(简称WMS)会检测App的响应时间，如果App在特定时间无法相应屏幕触摸或键盘输入时间，或在主线程(UI线程)里面做了太多的阻塞耗时操作, 例如文件读写, 数据库读写, 网络查询等等就会出现ANR。
+  
+  ### 18.2 AND的条件
+  InputDispatching Timeout：5秒内无法响应屏幕触摸事件或键盘输入事件
+  BroadcastQueue Timeout ：在执行前台广播（BroadcastReceiver）的onReceive()函数时10秒没有处理完成，后台为60秒。
+  Service Timeout ：前台服务20秒内，后台服务在200秒内没有执行完毕。
+  ContentProvider Timeout ：ContentProvider执行超时，20s
+  
+  ### 18.3 ANR分析办法
+  
+  #### 18.3.1 通过logcat 查看
+  1. 通过logcat查看记录了ANR发生的时间，以及线程的tid，而且log可以看出ANR的类型，CPU的使用情况。如果CPU使用量接近100%,说明当前设备很忙，有可能是CUP饥饿导致ANR，如果CPU使用量很少，可能主线程被Block,如果IOwait很高说明ANR有可能是主线程在进行I/O操作造成的。
+  
+  #### 18.3.2 通过traces文件 查看
+  2. 通过ADB将记录AND的log,traces.txt文档导出，可以查看ANR的原因，进程id，包名，以及具体行数,
+  
+  #### 18.3.3 通过DDMS Update Thread工具查看
+  3. 通过DDMS Update Threads工具查看该进程下的所有线程状态。需要注意的是main线程中的调用栈信息，以及线程状态，正常情况下main线程应当是处于空闲等待状态，如果长时间处于处理某一个任务时就会导致其他被发送到主线程的事件无法被及时处理，导致ANR,如果线程状态是MONITOR状态，就可能是ANR。(JVM中10种线程状态)。
+  
+  
+  ### 参考文献
+  [Android App优化之ANR详解 - 简书](https://www.jianshu.com/p/6d855e984b99)
+  [Android应用ANR分析 - 简书](https://www.jianshu.com/p/30c1a5ad63a3)
+  [理解Android ANR的触发原理 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/07/02/android-anr/)
+  
   ## Activity,PhoneWindow和DecorView 的关系
   ![16bff4353cd98658.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\37ed51f2.png)
   
@@ -3225,8 +3253,11 @@ linesHighlighted: [
   23
   2764
   2846
-  3389
-  3316
+  2
+  2176
+  3180
+  3338
+  3411
 ]
 isStarred: false
 isTrashed: false
