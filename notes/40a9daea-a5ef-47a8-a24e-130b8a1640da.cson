@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-10-15T16:43:21.848Z"
+updatedAt: "2020-10-18T14:36:41.722Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -2423,6 +2423,12 @@ content: '''
   
   ## 12、HandleThread 使用与源码解析
   
+  ### 12.1 HandleThread 的特点
+  - HandlerThread本质上是一个线程类，它继承了Thread；
+  - HandlerThread有自己的内部Looper对象，可以进行looper循环；
+  - 通过获取HandlerThread的looper对象传递给Handler对象，然后在handleMessage方法中执行异步任务。
+  - 创建HandlerThread后必须先调用HandlerThread.start()方法，Thread会先调用run方法，创建Looper对象。
+  
   ### 12.1 HandleThread 使用
   1. 创建实例对象
   ```
@@ -2450,15 +2456,87 @@ content: '''
   ```
   Handler childHandler = new Handler(handlerThread.getLooper(),new ChildCallback());
   ```
+  ### 12.2 HandlerThread的使用案例
+  ```
+  public class HandlerThreadActivity extends Activity {
+      /**
+       * 图片地址集合
+       */
+      private String url[]={
+              "https://img-blog.csdn.net/20160903083245762",
+              "https://img-blog.csdn.net/20160903083252184",
+              "https://img-blog.csdn.net/20160903083257871",
+              "https://img-blog.csdn.net/20160903083257871",
+              "https://img-blog.csdn.net/20160903083311972",
+              "https://img-blog.csdn.net/20160903083319668",
+              "https://img-blog.csdn.net/20160903083326871"
+      };
+      private ImageView imageView;
+      private Handler mUIHandler = new Handler(){
+          @Override
+          public void handleMessage(Message msg) {
+              LogUtils.e("次数:"+msg.what);
+              ImageModel model = (ImageModel) msg.obj;
+              imageView.setImageBitmap(model.bitmap);
+          }
+      };
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+          super.onCreate(savedInstanceState);
+          setContentView(R.layout.activity_handler_thread);
+          imageView= (ImageView) findViewById(R.id.image);
+          //创建异步HandlerThread
+          HandlerThread handlerThread = new HandlerThread("downloadImage");
+          //必须先开启线程
+          handlerThread.start();
+          //子线程Handler
+          Handler childHandler = new Handler(handlerThread.getLooper(),new ChildCallback());
+          for(int i=0;i<7;i++){
+              //每个1秒去更新图片
+              childHandler.sendEmptyMessageDelayed(i,1000*i);
+          }
+      }
+      /**
+       * 该callback运行于子线程
+       */
+      class ChildCallback implements Handler.Callback {
+          @Override
+          public boolean handleMessage(Message msg) {
+              //在子线程中进行网络请求
+              Bitmap bitmap=downloadUrlBitmap(url[msg.what]);
+              ImageModel imageModel=new ImageModel();
+              imageModel.bitmap=bitmap;
+              imageModel.url=url[msg.what];
+              Message msg1 = new Message();
+              msg1.what = msg.what;
+              msg1.obj =imageModel;
+              //通知主线程去更新UI
+              mUIHandler.sendMessage(msg1);
+              return false;
+          }
+      }
+      private Bitmap downloadUrlBitmap(String urlString) {
+          HttpURLConnection urlConnection = null;
+          BufferedInputStream in = null;
+          Bitmap bitmap=null;
+          ---省略图片处理逻辑----
+          return bitmap;
+      }
+  }
+  ```
   
-  ### 12.2 源码解析
+  ### 12.3 源码解析
   - HandleThread 继承于Thread
   - 在创建HandlerThread对象后，调用start方法后执行HandleThread类中的run方法，由于run方法中有Looper.parpare(),会使当前线程变为异步线程，这样能保证传给handler对象是Looper对象。进而确保Handler对象中的handleMessage方法是在异步线程执行的
-  - Looper对象创建后将其赋值给HandlerThread的内部变量mLooper，并通过notifyAll()方法去唤醒等待线程，最后执行Looper.loop();代码，开启looper循环语句，这里利用notifyAll的目的是因为Looper的创建是在子线程中执行的，而调用getLooper方法则是在主线程进行的，这样我们就无法保障在调用getLooper方法时Looper已经被创建，只有当线程创建成功并且Looper对象也创建成功之后才能获得mLooper的值，HandlerThread内部则通过等待唤醒机制解决了同步问题。
+  - Looper对象创建后将其赋值给HandlerThread的内部变量mLooper，并通过notifyAll()方法去唤醒等待线程，最后执行Looper.loop()代码，开启looper循环语句，这里利用notifyAll的目的是因为Looper的创建是在子线程中执行的，而调用getLooper方法则是在主线程进行的，这样我们就无法保障在调用getLooper方法时Looper已经被创建，只有当线程创建成功并且Looper对象也创建成功之后才能获得mLooper的值，HandlerThread内部则通过等待唤醒机制解决了同步问题。
   
-  ### 12.3 参考文献
+  ### 12.4 Handle,HandleThread,Thread 的区别
+  1. Handler：在android中负责发送和处理消息，通过它可以实现其他支线线程与主线程之间的消息通讯。
+  2. Thread：Java进程中执行运算的最小单位，亦即执行处理机调度的基本单位。某一进程中一路单独运行的程序。
+  3. HandlerThread：一个继承自Thread的类HandlerThread，Android中没有对Java中的Thread进行任何封装，而是提供了一个继承自Thread的类HandlerThread类，这个类对Java的Thread做了很多便利的封装。
+  
+  ### 12.5 参考文献
   [Android 多线程之HandlerThread 完全详解_zejian的博客-CSDN博客_handlerthread](https://blog.csdn.net/javazejian/article/details/52426353)
-  [Handler机制-Looper源码解析_yumodev-CSDN博客_handler looper](https://blog.csdn.net/wangkaishou/article/details/90302304)
   [Handler机制-Looper源码解析_yumodev-CSDN博客_handler looper](https://blog.csdn.net/wangkaishou/article/details/90302304)
    
   ## 13、AsyncTask
@@ -3093,12 +3171,12 @@ content: '''
   ### 16.5 参考文献
   [深入Android的消息机制源码详解～Handler,MessageQueue与Looper关系_zejian的博客-CSDN博客](https://blog.csdn.net/javazejian/article/details/50791598)
   
-  ## 17 OOM的场景
+  ## 17 OOM的场景(★★★★)
   
-  ### 17.1 Handler 内存泄露的问题
+  ### 17.1 非静态内部类导致内存泄露（Handler泄漏）
   
   #### 17.1.1 发生原因
-  当使用内部类（包括匿名类）来创建Handler的时候，Handler对象会**隐式**地持有一个外部类对象（通常是一个Activity）的引用，而Handler通常会伴随着一个耗时的后台线程（例如从网络拉取图片）一起出现，这个后台线程在任务执行完毕之后，通过消息机制通知Handler，然后Handler把图片更新到UI界面。然而，如果用户在网络请求过程中关闭了Activity，正常情况下，Activity不再被使用，它就会在GC检查时被回收掉，但由于这时线程尚未执行完，而该线程持有Handler的引用，这个Handler又持有Activity的引用，就导致该Activity无法被回收，导致内存泄漏。
+  当使用内部类（包括匿名类）来创建Handler的时候，Handler对象会**隐式**地持有一个外部类对象（通常是一个Activity）的引用，而Handler通常会伴随着一个耗时的后台线程（例如从网络拉取图片）一起出现，这个后台线程在任务执行完毕之后，通过消息机制通知Handler，然后Handler把图片更新到UI界面。然而，如果用户在网络请求过程中关闭了Activity，GC在检查时，由于这时线程尚未执行完，而该线程持有Handler的引用，Handler又持有Activity的引用，就导致该Activity无法被回收，导致内存泄漏。
   
   #### 17.1.2 应用场景
   ```
@@ -3184,10 +3262,13 @@ content: '''
       this.mContext = context.getApplicationContext();
   }
   ```
-  ### 17.3 非静态内部类导致内存泄露
+  ### 17.3 BroadcastReceiver对象没有unregister导致内存泄露
+  acticity中创建了BroadcastReceiver对象,由于在activity生命周期结束后调用unregister()方法导致内存泄漏。
+  
+  ### 17.  参考文献
   [内存泄漏的场景_wanghong940821的博客-CSDN博客](https://blog.csdn.net/wanghong940821/article/details/79439569?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~all~sobaiduend~default-2-79439569.nonecase&utm_term=oom%20%E5%87%BA%E7%8E%B0%E7%9A%84%E6%9C%89%E5%93%AA%E4%BA%9B%E5%9C%BA%E6%99%AF&spm=1000.2123.3001.4430)
   
-  ## 18 ANR的场景
+  ## 18 ANR的场景(★★★★)
   
   ### 18.1 发生ANR的原因
   Android系统中，ActivityManagerService(简称AMS)和WindowManagerService(简称WMS)会检测App的响应时间，如果App在特定时间无法相应屏幕触摸或键盘输入时间，或在主线程(UI线程)里面做了太多的阻塞耗时操作, 例如文件读写, 数据库读写, 网络查询等等就会出现ANR。
@@ -3201,39 +3282,63 @@ content: '''
   ### 18.3 ANR分析办法
   
   #### 18.3.1 通过logcat 查看
-  1. 通过logcat查看记录了ANR发生的时间，以及线程的tid，而且log可以看出ANR的类型，CPU的使用情况。如果CPU使用量接近100%,说明当前设备很忙，有可能是CUP饥饿导致ANR，如果CPU使用量很少，可能主线程被Block,如果IOwait很高说明ANR有可能是主线程在进行I/O操作造成的。
+  通过logcat查看记录了ANR发生的时间，以及线程的tid，而且log可以看出ANR的类型，CPU的使用情况。如果CPU使用量接近100%,说明当前设备很忙，有可能是CUP饥饿导致ANR，如果CPU使用量很少，可能主线程被Block,如果IOwait很高说明ANR有可能是主线程在进行I/O操作造成的。
   
   #### 18.3.2 通过traces文件 查看
-  2. 通过ADB将记录AND的log,traces.txt文档导出，可以查看ANR的原因，进程id，包名，以及具体行数,
+  通过ADB将记录AND的log,traces.txt文档导出，可以查看ANR的原因，进程id，包名，以及具体行数,
   
   #### 18.3.3 通过DDMS Update Thread工具查看
-  3. 通过DDMS Update Threads工具查看该进程下的所有线程状态。需要注意的是main线程中的调用栈信息，以及线程状态，正常情况下main线程应当是处于空闲等待状态，如果长时间处于处理某一个任务时就会导致其他被发送到主线程的事件无法被及时处理，导致ANR,如果线程状态是MONITOR状态，就可能是ANR。(JVM中10种线程状态)。
+  通过DDMS Update Threads工具查看该进程下的所有线程状态。需要注意的是main线程中的调用栈信息，以及线程状态，正常情况下main线程应当是处于空闲等待状态，如果长时间处于处理某一个任务时就会导致其他被发送到主线程的事件无法被及时处理，导致ANR,如果线程状态是MONITOR状态，就可能是ANR。(JVM中10种线程状态)。
   
+  ### 18.4 ANR的处理
+  #### 18.4.1 Thread方式
+  开辟单独的子线程来处理耗时阻塞事务，通过继承Thread或实现Runnable接口。
+  #### 18.4.2 使用AsyncTask
+  通过AsyncTask异步执行。继承AsyncTask,在doInBackground中实现耗时操作，然后在onProgressUpdate或onPostExecute回调方法中实现接收结果，最后通过执行execute执行AsyncTask。
+  #### 18.4.3 使用Handler,HandlerThread
+  通过Handler,HandlerThread来对UI进行更新。
   
-  ### 参考文献
+  ### 18.5 参考文献
   [Android App优化之ANR详解 - 简书](https://www.jianshu.com/p/6d855e984b99)
   [Android应用ANR分析 - 简书](https://www.jianshu.com/p/30c1a5ad63a3)
   [理解Android ANR的触发原理 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/07/02/android-anr/)
   
-  ## Activity,PhoneWindow和DecorView 的关系
-  ![16bff4353cd98658.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\37ed51f2.png)
+  ## 19 ListView 与 RecycleView 学习 
   
-  ###  DecorView 浅析
-  ![16bff4356573308b.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\03572325.png)
-  如图所示，DecorView为整个Window界面的最顶层View，它只有一个子元素LinearLayout。代表整个Window界面，包含通知栏、标题栏、内容显示栏三块区域。其中LinearLayout中有两个FrameLayout子元素。
+  ### 19.1 ListView 学习
   
-  ### DecorView 的作用
-  DecorVuew是顶级View,本质是一个FrameLayout它包含两部分，标题栏和内容栏，都是FrameLayout,内容栏id是content,也就是Activity中设置setContentView的部分,最终将布局添加到id为content的FrameLayout中。获取content:
-  ViewGroup content=findViewByld(android.id.content)获取设置的View :getChildAt(0);
+  ### 19.2 RecycleView 学习
   
-  使用总结
+  ### 19.3 RecyclerView 和ListView对比
   
-  每个Activity都包含一个Window对象，Window对象通常是由PhoneWindow实现的。
-  PhoneWindow:将DecorView设置为整个应用窗口的根View,是Window的实现类。它是Android中的基本的窗口系统，每个Activity均会创建一个PhoneWindow对象，是Activity和整个View系统交互的接口。
-  DecorView:是顶层视图，将要呈现的具体内容呈现在PhoneWindow上，DecorView是当前Activity所有View的祖先，它并不会向用户呈现任何东西。
+  #### 19.3.1 缓存机制对比
   
+  ListView是两级缓存，RecyclerView是四级缓存，可以提出一下问题：
   
-  ## 参考文献
+  1. RecyclerView比ListView多两级缓存的作用？
+  mViewCacheExtension(安慰卡式疑似探身)：开发者可自定义缓存，是虚拟类ViewCacheExtension的一个实例，开发者可以实现.知道怎么使用的联系回复我。
+  mRecyclerPool(瑞瑟呸破)：默认缓存5个viewholder。当mCachedViews2个缓存已经满了，就移除一个出来到RecyclerViewPool中去。而且通过RecyclerPool取出来的数据是光溜溜的，需要重新bind上数据。
+  
+  2. 是不是意味着RecyclerView比ListView开销更大？
+  从表面的缓存数量来看，确实RecyclerView的缓存数量更多，但是可以减少view的重新创建。
+  
+  3. RecyclerView和ListView使用场景？
+  
+  RecycleView缓存：RecyclerView.ViewHolder = View + ViewHolder
+  ListView缓存：View
+  
+  ListView优点：添加头部尾部、点击事件、设置分割线方便。
+  ReyclerView优点：动画、频繁刷新、局部刷新、逻辑复杂、数据量大。
+  简单列表用ListView
+  复杂列表用RecyclerView
+  
+  ### 19. 参考文献
+  [Android RecyclerView从入门到玩坏 - 简书](https://www.jianshu.com/p/4402327317bb)
+  [关于RecyclerView你知道的不知道的都在这了（上） - 简书](https://www.jianshu.com/p/aff499a5953c)
+  [关于RecyclerView你知道的不知道的都在这了（下） - 简书](https://www.jianshu.com/p/311df8be8633)
+  [基于滑动场景解析RecyclerView的回收复用机制原理 - 简书](https://www.jianshu.com/p/9306b365da57)
+  
+  ## 面试题参考文献
   
   [jeanboy_jeanboydev_CSDN博客-Android进阶,Java基础,Android进阶领域博主](https://blog.csdn.net/freekiteyu/article/list/1)
   [成功入职字节跳动的小姐姐告诉你，Android面试吃透这一篇就没有拿不到的offer！ - 知乎](https://zhuanlan.zhihu.com/p/136796040)
@@ -3251,13 +3356,13 @@ linesHighlighted: [
   1772
   1623
   23
-  2764
-  2846
   2
   2176
-  3180
-  3338
-  3411
+  13
+  2842
+  2924
+  3497
+  3570
 ]
 isStarred: false
 isTrashed: false

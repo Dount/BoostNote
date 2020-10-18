@@ -1,5 +1,5 @@
 createdAt: "2020-06-21T08:23:29.768Z"
-updatedAt: "2020-06-21T10:31:15.014Z"
+updatedAt: "2020-10-17T08:17:46.313Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "Android开发中的MVC_MVP_MVVM"
@@ -48,7 +48,7 @@ content: '''
   MVVM是Model-View-ViewModel的简写，MVVM在MVP的基础上实现了数据视图的绑定（DataBinding）,当数据变化时，视图会自动更新;反之，当视图发生变化时，数据也会自动更新。
   1.减少了接口数量
   2.告别繁琐findViewByld操作
-  ![bdc216ba.png](:storage\\3415d728-a5e7-466a-9786-6ac81ca462b4\\a1c26d29.png)
+  ![21e074e4.png](:storage\\3415d728-a5e7-466a-9786-6ac81ca462b4\\21e074e4.png)
   
   ## DataBinding是什么？
   DataBinding 是谷歌官方发布的一个实现数据绑定的框架（实现数据与视图的双向绑定），DataBingding可以帮助我们在安卓中更好的实现MVVM模式。
@@ -79,6 +79,8 @@ content: '''
   
   
 '''
-linesHighlighted: []
+linesHighlighted: [
+  40
+]
 isStarred: false
 isTrashed: false

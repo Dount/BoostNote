@@ -1,47 +1,10 @@
 createdAt: "2019-09-20T08:59:04.127Z"
-updatedAt: "2019-09-23T03:48:38.191Z"
+updatedAt: "2020-10-17T08:21:40.774Z"
 type: "MARKDOWN_NOTE"
 folder: "a829d630b1a42b272c49"
-title: "RecycleView 学习"
+title: ""
 tags: []
-content: '''
-  ## RecycleView 学习
-  
-  [Android RecyclerView从入门到玩坏 - 简书](https://www.jianshu.com/p/4402327317bb)
-  
-  [关于RecyclerView你知道的不知道的都在这了（上） - 简书](https://www.jianshu.com/p/aff499a5953c)
-  
-  [关于RecyclerView你知道的不知道的都在这了（下） - 简书](https://www.jianshu.com/p/311df8be8633)
-  
-  [基于滑动场景解析RecyclerView的回收复用机制原理 - 简书](https://www.jianshu.com/p/9306b365da57)
-  
-  ### RecyclerView 和ListView对比
-  
-  #### 简述
-  RecyclerView大家并不陌生，Android5.0推出v7包新组件，替代Listview.
-  真的替代了吗？我们拭目以待。
-  
-  #### 缓存机制对比
-  [RecyclerView与ListView 对比浅析：缓存机制 - 安卓笔记侠 - 博客园](https://www.cnblogs.com/ganchuanpu/p/8258459.html)
-  ListView是两级缓存，RecyclerView是四级缓存，可以提出一下问题：
-  
-  1. RecyclerView比ListView多两级缓存的作用？
-  mViewCacheExtension(安慰卡式疑似探身)：开发者可自定义缓存，是虚拟类ViewCacheExtension的一个实例，开发者可以实现.知道怎么使用的联系回复我。
-  mRecyclerPool(瑞瑟呸破)：默认缓存5个viewholder。当mCachedViews2个缓存已经满了，就移除一个出来到RecyclerViewPool中去。而且通过RecyclerPool取出来的数据是光溜溜的，需要重新bind上数据。
-  
-  2. 是不是意味着RecyclerView比ListView开销更大？
-  从表面的缓存数量来看，确实RecyclerView的缓存数量更多，但是可以减少view的重新创建。
-  
-  3. RecyclerView和ListView使用场景？
-  [Android RecyclerView的使用及和ListView比较的优缺点](https://blog.csdn.net/baidu_17619859/article/details/85069685)
-  RecycleView缓存：RecyclerView.ViewHolder = View + ViewHolder
-  ListView缓存：View
-  
-  ListView优点：添加头部尾部、点击事件、设置分割线方便。
-  ReyclerView优点：动画、频繁刷新、局部刷新、逻辑复杂、数据量大。
-  简单列表用ListView
-  复杂列表用RecyclerView 
-'''
+content: " "
 linesHighlighted: []
 isStarred: false
-isTrashed: false
+isTrashed: true
