@@ -1,5 +1,5 @@
 createdAt: "2019-10-16T02:39:38.018Z"
-updatedAt: "2020-10-16T12:07:13.298Z"
+updatedAt: "2020-10-19T14:34:34.382Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Java面试题"
@@ -1108,6 +1108,7 @@ content: '''
   [单例模式-双重检查加锁 - Michael2397 - 博客园](https://www.cnblogs.com/Michael2397/p/7599073.html)
   
   [设计模式六大原则：开闭原则 - 酷学大叔 - 博客园](https://www.cnblogs.com/az4215/p/11489712.html)
+  
 '''
 linesHighlighted: [
   164
@@ -1118,6 +1119,8 @@ linesHighlighted: [
   21
   20
   2
+  1086
+  1042
 ]
 isStarred: false
 isTrashed: false

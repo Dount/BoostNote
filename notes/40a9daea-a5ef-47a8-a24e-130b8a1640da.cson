@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-10-18T14:36:41.722Z"
+updatedAt: "2020-10-19T16:14:27.775Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -2081,6 +2081,11 @@ content: '''
   ### 6.8 多个进程同时调用一个ContentProvider的query获取数据，ContentPrvoider是如何反应的呢？
   一个content provider可以接受来自另外一个进程的数据请求。尽管ContentResolver与ContentProvider类隐藏了实现细节，但是ContentProvider所提供的query()，insert()，delete()，update()都是在ContentProvider进程的线程池中被调用执行的，而不是进程的主线程中。这个线程池是有Binder创建和维护的，其实使用的就是每个应用进程中的Binder线程池。
   
+  ### 6.9 Sqlite数据库的使用
+  Step1 创建一个子类继承SQLiteOpenHelper类（复写onCreat()、onUpgrade()）,onCreate用来创建数据库，onUpgrade用来更新数据库。
+  Step2 实现子类，并通过构造方法初始化数据库。
+  Step3 通过子类调用getWritableDatabase(),getReadableDatabase()读写方法，并获取SQLiteDatabase的对象。
+  Step4 通过SQLiteDatabase 对象可以调用数据库的增，删，改，查的方法。
   
   ### 6.9 文献
   [Android：关于ContentProvider的知识都在这里了！ - 简书](https://www.jianshu.com/p/ea8bc4aaf057)
@@ -3265,8 +3270,47 @@ content: '''
   ### 17.3 BroadcastReceiver对象没有unregister导致内存泄露
   acticity中创建了BroadcastReceiver对象,由于在activity生命周期结束后调用unregister()方法导致内存泄漏。
   
+  ### 17.4 Adapter 持有 Activity的对象导致内存泄漏
+  
+  #### 17.4.1 发生原因
+  如果建立一个专门存放Adapter类的Package包,首先在初始adapter的时候会传入context,这时adapter就持有了Activity引用，如果我们在adapter中进行耗时操作（比如加载图片之类的），并且finish Activity，虽然此时Activity销毁了，但是GC是无法回收activity的，这样就发生了内存泄漏。
+  #### 17.4.2 应用场景
+  ```
+  //外面的Adapter类
+  public class ExampleAdapter extends BaseAdapter {
+      private Context mContext;
+      public ExampleAdapter(Context context) {
+          this.mContext = context;
+      }
+  
+      @Override
+      public View getView(int position, View convertView, ViewGroup parent) {
+          if (convertView == null) {
+              //这里也用到了activity的引用
+              convertView = LayoutInflater.from(mContext).inflate(R.layout.list_item, null);
+          }
+          return convertView;
+  }
+  
+  //MainActivity代码展示
+  public class MainActivity extends Activity {
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+          super.onCreate(savedInstanceState);
+          setContentView(R.layout.activity_main);
+          ListView listView = (ListView) findViewById(R.id.listView);
+          //这里将activity对象传入adapter
+          ExampleAdapter adapter = new ExampleAdapter(this);
+          listView.setAdapter(adapter);
+      }
+  }
+  ```
+  #### 17.4.3 解决方法
+  将Adapter写成静态内部类写在Activity里面。
+  
   ### 17.  参考文献
   [内存泄漏的场景_wanghong940821的博客-CSDN博客](https://blog.csdn.net/wanghong940821/article/details/79439569?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~all~sobaiduend~default-2-79439569.nonecase&utm_term=oom%20%E5%87%BA%E7%8E%B0%E7%9A%84%E6%9C%89%E5%93%AA%E4%BA%9B%E5%9C%BA%E6%99%AF&spm=1000.2123.3001.4430)
+  [Android开发——告诉你Adapter应该写在Activity里面还是外面 - 齐天大猴子 - 博客园](https://www.cnblogs.com/qitian1/p/6461501.html)
   
   ## 18 ANR的场景(★★★★)
   
@@ -3307,6 +3351,28 @@ content: '''
   
   ### 19.1 ListView 学习
   
+  #### 19.1.1 ListView的职责
+  1. 将数据填充到布局。
+  2. 处理用户的选择点击等操作。
+  
+  #### 19.1.2 为什么要用Adapter
+  Adapter在listView和数据源之间起到了一个桥梁的作用，ListView并不会直接和数据源打交道，而是会借助Adapter这个桥梁去访问真正的数据源。Adapter其实是一个统一的接口。
+  
+  #### 19.1.3 ListView的复用机制
+  ![434e6a29.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\434e6a29.png)
+  **该机制是由ListView的父类AbsListView中的内部类RecycleBin来完成**
+  RecycleBin是实现复用的关键类，首先当我们在屏幕上滑动视图，滑动的View会通过RecycleBin存储到，
+  mActivityView的数组中，当滑动listView的时候，有些View被滑动到屏幕之外,已经无法与用户进行交互了，
+  成了废弃的View,将会被RecycleBin存储到mScrapView数组中，**但是没有销毁**,目的是为了再次复用。
+  当新的View需要显示的时候，先判断mActivityView中是否存在，如果存在直接取出，如果不存在从mScrapView数组中进行判断，
+  如果存在，就二次复用当前的视图，如果还不存在，表示没有复用的数据，需要重新inflater数据。
+  
+  #### 19.1.4 ListView的性能优化
+  1. 在ListView的Adapter中复用getView方法中的convertView.
+  2. 使用静态内部类ViewHolder,持有Item中控件的引用，从而减少findViewByld的调用次数。
+  3. getView中尽量少使用逻辑。
+  4. 如果是网络加载图片的话，通过监听listView的滑动状态来判断是否记载。
+  
   ### 19.2 RecycleView 学习
   
   ### 19.3 RecyclerView 和ListView对比
@@ -3333,10 +3399,10 @@ content: '''
   复杂列表用RecyclerView
   
   ### 19. 参考文献
-  [Android RecyclerView从入门到玩坏 - 简书](https://www.jianshu.com/p/4402327317bb)
+  [Android学习笔记之ListView复用机制 - 代码丶如风 - 博客园](https://www.cnblogs.com/RGogoing/p/5554086.html)
   [关于RecyclerView你知道的不知道的都在这了（上） - 简书](https://www.jianshu.com/p/aff499a5953c)
   [关于RecyclerView你知道的不知道的都在这了（下） - 简书](https://www.jianshu.com/p/311df8be8633)
-  [基于滑动场景解析RecyclerView的回收复用机制原理 - 简书](https://www.jianshu.com/p/9306b365da57)
+  [Android ListView_Android中高级开发 - SegmentFault 思否](https://segmentfault.com/a/1190000013260044)
   
   ## 面试题参考文献
   
@@ -3351,18 +3417,19 @@ linesHighlighted: [
   1225
   1487
   1490
-  2327
-  2315
   1772
   1623
   23
   2
-  2176
   13
-  2842
-  2924
-  3497
-  3570
+  3
+  2929
+  2847
+  2181
+  2320
+  2332
+  3619
+  3546
 ]
 isStarred: false
 isTrashed: false
