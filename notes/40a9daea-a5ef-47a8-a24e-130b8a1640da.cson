@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-10-19T16:14:27.775Z"
+updatedAt: "2020-10-20T16:38:12.271Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -3351,9 +3351,8 @@ content: '''
   
   ### 19.1 ListView 学习
   
-  #### 19.1.1 ListView的职责
-  1. 将数据填充到布局。
-  2. 处理用户的选择点击等操作。
+  #### 19.1.1 什么是ListView
+  ListView是一个可以将数据以动态滚动的方式展示给用户的一种View
   
   #### 19.1.2 为什么要用Adapter
   Adapter在listView和数据源之间起到了一个桥梁的作用，ListView并不会直接和数据源打交道，而是会借助Adapter这个桥梁去访问真正的数据源。Adapter其实是一个统一的接口。
@@ -3375,34 +3374,20 @@ content: '''
   
   ### 19.2 RecycleView 学习
   
-  ### 19.3 RecyclerView 和ListView对比
+  #### 19.2.1 什么是RecycleView 
+  RecycleView是Android5.0后谷歌推出的一个用于在有限的窗口中展示大量数据集的控件，可以实现与ListView和GridView一样的效果，而且还提供针三种自定样式的功能接口，LayoutManager(布局管理)，ItemDecoration(自定义分割线),ItemAnimator(item动画效果)
   
-  #### 19.3.1 缓存机制对比
+  #### 19.2.2 RecycleView的adapter的使用
+  首先继承RecycleView.Adapter,并传入一个继承自Recycle.viewHolder的静态内部类，这个内部类的作用初始化item布局中的子控件。
+  然后实现，onCreateViewHolder，onBindViewHolder，getItemCount三个方法。
   
-  ListView是两级缓存，RecyclerView是四级缓存，可以提出一下问题：
+  #### 19.2.3 RecycleView的缓存机制
   
-  1. RecyclerView比ListView多两级缓存的作用？
-  mViewCacheExtension(安慰卡式疑似探身)：开发者可自定义缓存，是虚拟类ViewCacheExtension的一个实例，开发者可以实现.知道怎么使用的联系回复我。
-  mRecyclerPool(瑞瑟呸破)：默认缓存5个viewholder。当mCachedViews2个缓存已经满了，就移除一个出来到RecyclerViewPool中去。而且通过RecyclerPool取出来的数据是光溜溜的，需要重新bind上数据。
-  
-  2. 是不是意味着RecyclerView比ListView开销更大？
-  从表面的缓存数量来看，确实RecyclerView的缓存数量更多，但是可以减少view的重新创建。
-  
-  3. RecyclerView和ListView使用场景？
-  
-  RecycleView缓存：RecyclerView.ViewHolder = View + ViewHolder
-  ListView缓存：View
-  
-  ListView优点：添加头部尾部、点击事件、设置分割线方便。
-  ReyclerView优点：动画、频繁刷新、局部刷新、逻辑复杂、数据量大。
-  简单列表用ListView
-  复杂列表用RecyclerView
   
   ### 19. 参考文献
   [Android学习笔记之ListView复用机制 - 代码丶如风 - 博客园](https://www.cnblogs.com/RGogoing/p/5554086.html)
-  [关于RecyclerView你知道的不知道的都在这了（上） - 简书](https://www.jianshu.com/p/aff499a5953c)
-  [关于RecyclerView你知道的不知道的都在这了（下） - 简书](https://www.jianshu.com/p/311df8be8633)
   [Android ListView_Android中高级开发 - SegmentFault 思否](https://segmentfault.com/a/1190000013260044)
+  [Android控件RecyclerView的基本用法 - 中国人醒来了 - 博客园](https://www.cnblogs.com/it-tsz/p/11371336.html)
   
   ## 面试题参考文献
   
@@ -3428,8 +3413,8 @@ linesHighlighted: [
   2181
   2320
   2332
-  3619
-  3546
+  3531
+  3604
 ]
 isStarred: false
 isTrashed: false
