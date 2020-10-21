@@ -1,5 +1,5 @@
 createdAt: "2019-10-16T02:39:38.018Z"
-updatedAt: "2020-10-19T14:34:34.382Z"
+updatedAt: "2020-10-21T14:38:37.808Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Java面试题"
@@ -203,7 +203,7 @@ content: '''
   [为什么HashMap线程不安全 - 简书](https://www.jianshu.com/p/e2f75c8cce01)
   
   
-  ### 理解HashMap (★)
+  ### 理解HashMap (★★★★)
   #### HashMap的特点
   1. HashMap基于Map接口实现，元素以键值对的方式存储，　
   2. HashMap允许空键和空值（但空键只有一个，且放在第一位）
@@ -1121,6 +1121,10 @@ linesHighlighted: [
   2
   1086
   1042
+  19
+  18
+  5
+  207
 ]
 isStarred: false
 isTrashed: false

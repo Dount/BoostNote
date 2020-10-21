@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-10-20T16:38:12.271Z"
+updatedAt: "2020-10-21T15:32:26.415Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -501,7 +501,7 @@ content: '''
   
    通过Log可知，当我们第一次点击绑定服务时，LocalService服务端的onCreate()、onBind方法会依次被调用，此时客户端的ServiceConnection中onServiceConnected()被调用并返回LocalBinder对象，接着调用LocalBinder#getService方法返回LocalService实例对象，此时客户端便持有了LocalService的实例对象，也就可以任意调用LocalService类中的声明公共方法了。**更值得注意的是，我们多次调用bindService方法绑定LocalService服务端，而LocalService得onBind方法只调用了一次，那就是在第一次调用bindService时才会回调onBind方法。**接着我们点击获取服务端的数据，从Log中看出我们点击了3次通过getCount()获取了服务端的3个不同数据，最后点击解除绑定，此时LocalService的onUnBind、onDestroy方法依次被回调，并且多次绑定只需一次解绑即可。此情景也就说明了绑定状态下的Service生命周期方法的调用依次为onCreate()、onBind、onUnBind、onDestroy。
   
-  ### Bind使用总结
+  #### 2.8.1 Bind使用总结
   - onBind只会调用一次.
   - onServiceDisconnected,系统在与服务的连接意外中断时调用该方法。注意:当客户端取消绑定时，系统“绝对不会”调用该方法。
   - BinderService会随着宿主的销毁而销毁。
@@ -1647,11 +1647,11 @@ content: '''
   Intent intent = new Intent(Intent.ACTION_VIEW, uri);
   startActivity(intent);
   ```
-  #### 网页调用
+  #### 4.6.5 网页调用
   ```
   <a href="aa://bb:1024/from?type=jeanboy">打开 App</a>
   ```
-  #### 在Activity中处理Scheme跳转
+  #### 4.6.6 在Activity中处理Scheme跳转
   ```
   public class SchemeActivity extends AppCompatActivity {
   
@@ -1674,6 +1674,51 @@ content: '''
       }
   }
   ```
+  
+  ### 4.7 Android横竖瓶切换Activity生命周期
+  关于Android横竖屏切换Activity是否会销毁重建，这个由Activity的configChanges属性控制。当一个配置改变时Activity默认会销毁重建，但是如果这个属性声明了此项配置后，Activit就不会销毁重建，而是回调Activity的onConfigurationChanged方法。
+  
+  configChanges的可配置属性如下：
+  | 值 | 描述 | 
+  | :-----: | :------- | 
+  | mcc | 默认值，系统自动选择屏幕方向  | 
+  | mnc | 跟activity堆栈中的下面一个activity的方向一致  |  
+  | locale | 横屏方向，显示的宽比高长  |
+  | keyboard | 竖屏方向，显示的高比宽长  | 
+  | keyboardHidden |  由设备的屋里方向传感器决定，如果用户旋转设备，屏幕就会横竖屏切换  |
+  | screenLayout |  忽略物理方向传感器，这样就不会随着用户旋转设备而横竖屏切换了（"unspecified"设置除外）|
+  | orientation | 用户当前首选的方向|
+  | screenSize |API 9 以上，反向横屏|
+  | smallestScreenSize |API 9 以上，反向竖屏|
+  | layoutDirection |API 9以上，横屏，但是可以根据物理方向传感器来切换正反向横屏|
+  
+  #### 4.7.1 横竖屏切换-Activity销毁重建
+  对于android3.2（API13）及以后的系统，以下任意一种配置，横竖屏切换Activity的生命周期都会重新执行一次
+  - 不配置configChanges属性
+  - 设置android:configChanges="orientation"
+  - 设置android:configChanges="orientation|keyboardHidden"(3.2系统之前的系统不会执行生命周期方法了)
+  ![7a414398.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\7a414398.png)
+  以上三种配置，横竖屏切换时Activity均会销毁重建，Activity的生命周期都会重新执行一次
+  
+  #### 4.7.2 横竖屏切换-Activity不销毁重建
+  配置android:configChanges="orientation|keyboardHidden|screenSize" 可以控制Activity在横竖屏切换时不销毁重建。
+  ```
+   @Override
+      public void onConfigurationChanged(Configuration newConfig) {
+          super.onConfigurationChanged(newConfig);
+          int orientation = newConfig.orientation;
+          if (orientation == ORIENTATION_LANDSCAPE){
+              Log.i(TAG, "-------------横屏-------------");
+          }else {
+              Log.i(TAG, "-------------竖屏-------------");
+          }
+          Log.i(TAG, "onConfigurationChanged: "+orientation);
+      }
+  ```
+  ![8f13ec79.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\8f13ec79.png)
+  可见配置了android:configChanges="orientation|keyboardHidden|screenSize"横竖屏切换时Activity不会销毁重建，而是会回调Activity的onConfigurationChanged方法。这里需要注意的是，第一次切换时onConfigurationChanged方法会回调两次
+  
+  总结：在遇到Android横竖屏切换的问题时，我们需要解决的问题主要有两个，布局的变化和数据的存储恢复。可以综合以上的属性设置达到最终自己想要的效果。
   
   ## 5、Broadcast
   ### 5.1 简介
@@ -3381,7 +3426,31 @@ content: '''
   首先继承RecycleView.Adapter,并传入一个继承自Recycle.viewHolder的静态内部类，这个内部类的作用初始化item布局中的子控件。
   然后实现，onCreateViewHolder，onBindViewHolder，getItemCount三个方法。
   
-  #### 19.2.3 RecycleView的缓存机制
+  #### 19.2.3 RecycleView的四级缓存
+  | 缓存级别 | 实际变量                      |
+  | -------- | ----------------------------- |
+  | 一级缓存 | mAttachedScrap和mChangedScrap |
+  | 二级缓存 | mCachedViews                  |
+  | 三级缓存 | ViewCacheExtension            |
+  | 四级缓存 | 根据ViewType来缓存ViewHolder  |
+  
+  mAttachedScrap和mChangedScrap：
+  RecycleView在获取ViewHolder时，优先会到这两个缓存来找。
+  mAttachedScrap**存储的是从屏幕上分离出来，但又即将添加到屏幕上去的ViewHolder**(RecyclerView上下滑动，滑出一个新的Item,此时会重新调用LayoutManager的onLayoutChildren方法，从而会将屏幕上所有的ViewHolder先舍弃掉，添加到mAttachedScrap里面去，然后在重新布局每个ItemView时，会从优先mAttachedScrap里面获取。)
+  mChangedScrap**存储的是数据被更新的ViewHolder**,比如说调用了Adapter的notifyItemChanged方法，
+  
+  mCachedViews: 
+  存储预加载的ViewHolder,也会存储回收时的ViewHolder.默认大小为2，通常是3，3由默认的大小2+预取的个数1。
+  
+  ViewCacheExtension：
+  自定义缓存,通常用不到。
+  
+  RecycleViewPool：
+  根据ViewType来缓存ViewHolder,每个ViewType的数组大小为5，可以动态的改变。
+  
+  
+  
+  #### 19.2.4 
   
   
   ### 19. 参考文献
@@ -3389,10 +3458,14 @@ content: '''
   [Android ListView_Android中高级开发 - SegmentFault 思否](https://segmentfault.com/a/1190000013260044)
   [Android控件RecyclerView的基本用法 - 中国人醒来了 - 博客园](https://www.cnblogs.com/it-tsz/p/11371336.html)
   
+  
+  ### 20. Systrace 学习
+  
+  
   ## 面试题参考文献
   
   [jeanboy_jeanboydev_CSDN博客-Android进阶,Java基础,Android进阶领域博主](https://blog.csdn.net/freekiteyu/article/list/1)
-  [成功入职字节跳动的小姐姐告诉你，Android面试吃透这一篇就没有拿不到的offer！ - 知乎](https://zhuanlan.zhihu.com/p/136796040)
+  [成功入职字节跳动的小姐姐告诉你，Android面试吃透这一篇就没有拿不到的offer！_Stay Hungry Stay Foolish-CSDN博客](https://blog.csdn.net/qq_29966203/article/details/105455615)
   
   
   
@@ -3402,19 +3475,21 @@ linesHighlighted: [
   1225
   1487
   1490
-  1772
   1623
   23
   2
   13
   3
-  2929
-  2847
-  2181
-  2320
-  2332
-  3531
-  3604
+  12
+  9
+  1817
+  2974
+  2892
+  2226
+  2365
+  2377
+  3598
+  3671
 ]
 isStarred: false
 isTrashed: false
