@@ -1,5 +1,5 @@
 createdAt: "2019-08-22T02:26:48.080Z"
-updatedAt: "2020-08-17T14:08:19.539Z"
+updatedAt: "2020-10-22T10:13:06.474Z"
 type: "MARKDOWN_NOTE"
 folder: "8b201a0d43bb3b317af3"
 title: "12.自定义View进阶——事件分发机制原理"
@@ -139,23 +139,7 @@ content: '''
   
   **这种设计是非常精巧的，上层View既可以直接拦截该事件，自己处理，也可以先询问(分发给)子View，如果子View需要就交给子View处理，如果子View不需要还能继续交给上层View处理。既保证了事件的有序性，又非常的灵活。在我第一次将这个逻辑弄清楚的时候，看着这样精妙的设计，简直想欢呼庆贺一下。**
   
-  其实关于事件传递机制，吴小龙的 [Android事件传递机制分析](http://wuxiaolong.me/2015/12/19/MotionEvent/) 一文中的比喻非常有趣，本文也会借鉴一些其中的内容。
-  
-  先确定几个角色：
-  
-  > Activity － 公司大老板
-  >
-  > RootView － 项目经理
-  >
-  > ViewGroupA － 技术小组长
-  >
-  > View1 － 码农小王(公司里唯一的码农)
-  >
-  > View2 － 跑龙套的路人甲，无视即可
-  
-  **PS：由于 PhoneWindow 和 DecorView 我们无法直接操作，以下所有示例均省略了 PhoneWindow 和 DecorView。**
-  
-  
+  ![9f680f16.png](:storage\\e69e8daf-5cd4-4c12-997d-6bdeac6d1aca\\9f680f16.png)
   
   ### 1.点击 View1 区域但没有任何 View 消费事件
   

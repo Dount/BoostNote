@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-10-21T15:32:26.415Z"
+updatedAt: "2020-10-22T07:48:13.860Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -3448,18 +3448,13 @@ content: '''
   RecycleViewPool：
   根据ViewType来缓存ViewHolder,每个ViewType的数组大小为5，可以动态的改变。
   
-  
-  
-  #### 19.2.4 
-  
-  
   ### 19. 参考文献
   [Android学习笔记之ListView复用机制 - 代码丶如风 - 博客园](https://www.cnblogs.com/RGogoing/p/5554086.html)
   [Android ListView_Android中高级开发 - SegmentFault 思否](https://segmentfault.com/a/1190000013260044)
   [Android控件RecyclerView的基本用法 - 中国人醒来了 - 博客园](https://www.cnblogs.com/it-tsz/p/11371336.html)
   
   
-  ### 20. Systrace 学习
+  ### 20. Systrace 学习使用
   
   
   ## 面试题参考文献
@@ -3488,8 +3483,8 @@ linesHighlighted: [
   2226
   2365
   2377
-  3598
-  3671
+  3666
+  3593
 ]
 isStarred: false
 isTrashed: false
