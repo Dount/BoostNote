@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-10-22T07:48:13.860Z"
+updatedAt: "2020-10-23T02:29:46.980Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -1489,6 +1489,8 @@ content: '''
   #### 4.3.2 singleTop
   ![20160723155025823.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\ec26731d.png)
   栈顶复用模式,在这种模式下，如果有新的Activity已经存在任务栈的栈顶，那么此Activity就不会被重新创建新实例，而是复用已存在任务栈栈顶的Activity。此时Activity的onCreate、onStart方法不会被调用，会调用onNewIntent方法因为Activity并没有被重建。
+  调用onNewIntent的生命周期：
+  onCreate--->onStart--->onResume---onPause--->onNewIntent--->onResume
   
   ![20160723155032885.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\5b936102.png)
   如果新的Activity的实例已存在但没有位于栈顶，那么新的Activity仍然会被重建。
@@ -1508,6 +1510,8 @@ content: '''
   解决方法是：在ActivityB定义一个全局变量，在onCreate方法将returnActivityB=true;
   然后在ActivityA界面onStart方法里判断returnActivityB是否为true，是的话就跳转到ActivityB，同时将returnActivityB=false;
   
+  调用onNewIntent的生命周期：
+  onPause--->跳转其它页面--->onCreate--->onStart--->onResume---onPause--->跳转A--->onNewIntent--->onRestart--->onStart--->onResume
   
   
   #### 4.3.5 启动模式参考文献
@@ -3468,23 +3472,23 @@ content: '''
 linesHighlighted: [
   1192
   1225
-  1487
-  1490
-  1623
   23
   2
   13
   3
   12
   9
-  1817
-  2974
-  2892
-  2226
-  2365
-  2377
-  3666
-  3593
+  1489
+  1492
+  1627
+  1821
+  2978
+  2896
+  2230
+  2369
+  2381
+  3670
+  3597
 ]
 isStarred: false
 isTrashed: false

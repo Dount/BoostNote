@@ -1,0 +1,249 @@
+createdAt: "2020-10-23T02:47:00.994Z"
+updatedAt: "2020-10-23T04:17:07.364Z"
+type: "MARKDOWN_NOTE"
+folder: "537068cf3ce988a4b28a"
+title: "Android 设计模式学习"
+tags: []
+content: '''
+  # Android 设计模式学习
+  [TOC]
+  ## 设计模式 （★）
+  
+  ### 1 设计模式是什么？
+  设计模式是经过高度抽象化的在编程中可以被反复使用的代码设计经验的总结。正确使用设计模式能提高代码的可读性、可重用性和可靠性，编写符合设计模式规范的代码不但有利于自身系统的稳定、可靠，还有利于外部系统的对接。在使用了良好设计模式的系统工程中，无论是对满足当前的需求还是对适应未来的需求，无论是对自身系统间模块的对接还是对外部系统的对接，都有很大帮助。
+  
+  ### 2 设计模式有哪些原则？
+  1.单一职责原则：单一职责原则又称单一功能原则，它规定一个类只有一个职责。如果有多个职责（功能）设计在一个类中，这个类就违反了单一职责原则。
+  [设计模式六大原则：单一职责原则 - 酷学大叔 - 博客园](https://www.cnblogs.com/az4215/p/11462818.html)
+  
+  2.开闭原则：开闭原则规定软件中的对象（类、模块、函数等）对扩展开放，对修改封闭，这意味着一个实体允许在不改变其源代码的前提下改变其行为，该特性在产品化的环境下是特别有价值的，在这种环境下，改变源代码需要经过代码审查，单元测试等过程以确保产品的使用质量。遵循这个原则的代码在扩展时并不发生改变，因此不需要经历上述过程。[设计模式六大原则：开闭原则 - 酷学大叔 - 博客园](https://www.cnblogs.com/az4215/p/11489712.html)
+  
+  3.里氏代换原则：里氏代换原则是对开闭原则的补充，规定了在任意父类可以出现的地方，子类都一定可以出现。实现开闭原则的关键就是抽象化，父类与子类的继承关系就是抽象化的具体表现，所以里氏代换原则是对实现抽象化的具体步骤的规范。
+  [设计模式六大原则：里氏替换原则 - 酷学大叔 - 博客园](https://www.cnblogs.com/az4215/p/11462828.html)
+  
+  4.依赖倒转原则：依赖倒转原则指程序要依赖于抽象（Java中的抽象类和接口），而不依赖于具体的实现（Java中的实现类）。简单地说，就是要求对抽象进行编程，不要求对实现进行编程，这就降低了用户与实现模块之间的耦合度。
+  [设计模式六大原则：依赖倒置原则 - 酷学大叔 - 博客园](https://www.cnblogs.com/az4215/p/11462878.html)
+  
+  5.接口隔离原则：接口隔离原则是指通过将不同的功能定义在不同的接口中来实现接口的隔离，这样就避免了其他类在依赖该接口（接口上定义的功能）时依赖其不需要的接口，可减少接口之间依赖的冗余性和复杂性。
+  [设计模式六大原则：接口隔离原则 - 酷学大叔 - 博客园](https://www.cnblogs.com/az4215/p/11481076.html)
+  
+  6.迪米特法则：迪米特法则指一个对象尽可能少地与其他对象发生相互作用，即一个对象对其他对象应该有尽可能少的了解或依赖。其核心思想在于降低模块之间的耦合度，提高模块的内聚性。迪米特法则规定每个模块对其它模块都要有尽可能少的了解和依赖，因此很容易使系统模块之间的功能独立，这使得各个模块的独立运行变得更加简单，同时使得各个模块之间的组合变得更加容易。
+  [设计模式六大原则：迪米特法则 - 酷学大叔 - 博客园](https://www.cnblogs.com/az4215/p/11489748.html)
+  
+  ### 3 设计模式分类？
+  1.创建者模式:提供了多种优雅创建对象的方法
+  工厂模式，抽象工厂模式，单例模式，建造者模式，原型模式
+  
+  2.结构型模式:通过类和接口之间的继承和引用实现创建复杂结构对象的功能
+  适配器模式，桥接模式，组合模式，装饰器模式，外观模式，享元模式，代理模式
+  
+  3.行为型模式:
+  行为型模式：通过类之间不同的通信方式实现不同的行为方式，
+  责任链模式，命令模式，解释器模式，迭代器模式，中介老模式，备忘录模式，观察者模式，状态模式，策略模式，模板模式，访问者模式。
+  
+  ### 4 单例模式 (★★★★★)
+  1.单例模式是保证系统实例唯一性的重要手段。单例模式首先通过将类的实例化方法私有化来防止程序通过其他方式创建该类的实例，然后通过提供一个全局唯一获取该类实例的方法帮助用户获取类的实例，用户只需也只能通过调用该方法获取类的实例。
+  2.单例模式的设计保证了一个类在整个系统中同一时刻只有一个实例存在，主要被用于一个全局类的对象在多个地方被使用并且对象的状态是全局变化的场景下。同时单例模式为系统资源的优化提供了很好的思路，频繁创建或销毁对象都会增加系统的资源消耗，而单例模式保障了整个系统只有一个对象能被使用，很好地节约了资源。
+  3.单例模式的实现很简单，每次在获取对象前都判断系统是否已经有这个单例对象，有则返回，无则创建。需要注意的是，单例模型的类构造器是私有的，只能由自身创建和销毁对象，不允许除了该类的其他程序使用new关键字创建对象及破坏单例模式。
+  
+  #### 4.1 单例模式-懒汉模式(线程不安全)实现
+  最基本的实现方式，这种实现最大的问题就是不支持多线程。因为没有加锁 synchronized，所以严格意义上它并不算单例模式。···
+  ```
+  public class Singleton {  
+      private static Singleton instance;  
+      private Singleton (){}  
+    
+      public static Singleton getInstance() {  
+      if (instance == null) {  
+          instance = new Singleton();  
+      }  
+      return instance;  
+      }  
+  }
+  ```
+  
+  
+  #### 4.2 单例模式-懒汉模式(线程安全)实现
+  描述：这种方式具备很好的 lazy loading，能够在多线程中很好的工作，但是，效率很低，99% 情况下不需要同步。
+  优点：第一次调用才初始化，避免内存浪费。
+  缺点：必须加锁 synchronized 才能保证单例，但加锁会影响效率。
+  ```
+  public class Singleton {  
+      private static Singleton instance;  
+      private Singleton (){}  
+      public static synchronized Singleton getInstance() {  
+      if (instance == null) {  
+          instance = new Singleton();  
+      }  
+      return instance;  
+      }  
+  }
+  ```
+  
+  #### 4.3 单例模式-饿汉模式实现
+  描述：这种方式比较常用，但容易产生垃圾对象。
+  优点：没有加锁，执行效率会提高。
+  缺点：类加载时就初始化，浪费内存。
+  它基于 classloader 机制避免了多线程的同步问题，不过，instance 在类装载时就实例化，虽然导致类装载的原因有很多种，在单例模式中大多数都是调用 getInstance 方法， 但是也不能确定有其他的方式（或者其他的静态方法）导致类装载，这时候初始化 instance 显然没有达到 lazy loading 的效果。
+  ```
+  public class SingleTone2{
+      private SingleTone2(){
+      }
+      private static final SingleTone2 st = new SingleTone2();
+      public static SingleTone2 getSingle(){
+          return st;
+      }
+      public void getMsg(){
+        System.out.println("SingleTone2");
+      }
+  }
+  ```
+  #### 4.4 单例模式-双重检查加锁方式实现
+  ```
+  public class SingleTon3 {
+  
+           private SingleTon3(){};             //私有化构造方法
+  
+           private static volatile SingleTon3 singleTon=null;
+  
+           public static SingleTon3 getInstance(){
+  
+                    //第一次校验
+                   if(singleTon==null){     
+  
+                  synchronized(SingleTon3.class){
+  
+                             //第二次校验
+  
+                          if(singleTon==null){     
+                           singleTon=new SingleTon3();
+                           }
+                  }
+       }
+       return singleTon;
+  }
+  
+  ```
+  为什么需要两次校验 if(singleTon==null)
+  第一次
+  由于单例模式只需要创建一次实例，如果后面再次调用getinstance方法时，则直接返回之前创建的实例，因此大部分时间不需要执行同步方法里面的代码，大大提高了性能。如果不加第一次校验的话，那跟上面的懒汉模式没什么区别，每次都要去竞争锁。
+  第二次
+  如果没有第二次校验，假设线程t1执行了第一次校验后，判断为null，这时t2也获取了CPU执行权，也执行了第一次校验，判断也为null。接下来t2获得锁，创建实例。这时t1又获得CPU执行权，由于之前已经进行了第一次校验，结果为null（不会再次判断），获得锁后，直接创建实例。结果就会导致创建多个实例。所以需要在同步代码里面进行第二次校验，如果实例为空，则进行创建。
+  #### 4.5 **需要注意**
+  private static volatile SingleTon3 singleTon=null;需要加volatile关键字，否则会出现错误。问题的原因在于JVM指令重排优化的存在。在某个线程创建单例对象时，在构造方法被调用之前，就为该对象分配了内存空间并将对象的字段设置为默认值。此时就可以将分配的内存地址赋值给instance字段了，然而该对象可能还没有初始化。若紧接着另外一个线程来调用getInstance，取到的就是状态不正确的对象，程序就会出错。
+  
+  #### 4.6 单例模式-枚举方式实现
+  描述：这种实现方式还没有被广泛采用，但这是实现单例模式的最佳方法。它更简洁，自动支持序列化机制，绝对防止多次实例化。
+  这种方式是 Effective Java 作者 Josh Bloch 提倡的方式，它不仅能避免多线程同步问题，而且还自动支持序列化机制，防止反序列化重新创建新的对象，绝对防止多次实例化。不过，由于 JDK1.5 之后才加入 enum 特性，用这种方式写不免让人感觉生疏，在实际工作中，也很少用。
+  不能通过 reflection attack 来调用私有构造方法。
+  ```
+  public enum Singleton {  
+      INSTANCE;  
+      public void whateverMethod() {  
+      }  
+  }
+  ```
+  
+  ### 5 Builder模式
+  将一个复杂对象的构建与对象的参数或部件的创建分离，使得同样的创建过程可以有不同的结果。
+  
+  #### 5.1 Builder的使用
+  ```
+  public class Car  {
+      Color color;
+      double price;
+      String brand;
+      String displacement;
+  
+      public Color getColor() {
+          return color;
+      }
+  
+      public void setColor(Color color) {
+          this.color = color;
+      }
+  
+      public double getPrice() {
+          return price;
+      }
+  
+      public void setPrice(double price) {
+          this.price = price;
+      }
+  
+      public String getBrand() {
+          return brand;
+      }
+  
+      public void setBrand(String brand) {
+          this.brand = brand;
+      }
+  
+      public String getDisplacement() {
+          return displacement;
+      }
+  
+      public void setDisplacement(String displacement) {
+          this.displacement = displacement;
+      }
+  
+      private Car(Builder builder) {
+   this.color = builder.color;
+   this.price = builder.price;
+   this.brand = builder.brand;
+   this. displacement = builder.displacement;
+      }
+      public static class Builder {
+      Color color;
+      double price;
+      String brand;
+      String displacement;
+          
+          public  Builder color(Color color){
+              this.color=color;
+              return  this;
+          }
+          public  Builder price(double price){
+              this.price=price;
+              return  this;
+          }
+          public  Builder brand(String brand){
+              this.brand=brand;
+              return  this;
+          }
+          public  Builder displacement(String displacement){
+              this.displacement=displacement;
+              return  this;
+          }
+  
+  
+          public Car build() {
+              return new Car(this);
+          }
+      }
+  }
+  ```
+  #### 5.2 Builder的要点
+  ```
+  1. 定义一个静态内部类Builder，内部的成员变量和外部类一样。
+  2. Builder类通过一系列的方法用于成员变量的赋值，并返回当前对象本身（this）。
+  3. Builder类提供一个外部类的创建方法（build、create……），该方法内部调用了外部类的一个私有构造函数，入参就是内部类Builder
+  4. 外部类提供一个私有构造函数供内部类调用，在该构造函数中完成成员变量的赋值，取值为Builder对象中对应的成变量的值
+  
+  ```
+  
+  ### 6. 责任链模式
+  一个请求发送到接收者，接收者成连式结构，沿着链式结构传递请求，直到有对象处理请求。
+  
+  #### 6.1 责任链模式使用（参考事件分发）
+  ![2a4f5eab.png](:storage\\e5ce5632-6e08-4400-95fa-7d3af47170d3\\2a4f5eab.png)
+  
+  #### 6.2 责任链模式要点
+  优点：请求者和处理者关系解耦，提高代码灵活性
+  缺点：对处理着遍历，弱处理者太多，会影响性能，特别在递归处理中尤其需要注意。
+'''
+linesHighlighted: [
+  8
+]
+isStarred: false
+isTrashed: false
