@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-10-23T02:29:46.980Z"
+updatedAt: "2020-10-24T14:54:56.814Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -74,6 +74,12 @@ content: '''
   
   }
   ```
+  ### 1.3 Android中什么是Context（★★★）
+  Context字面意思是上下文，在Android中一个Activity就是一个Context,一个Service也是一个Context,可以Context抽象为**场景**，认为用户和操作系统的每一次交互都是一个场景，比如打电话、发短信，这些都是一个有界面的场景，还有一些没有界面的场景，比如后台运行的服务（Service）。
+  ![a3592b88.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\efd63e31.png)
+  在应用程序中Context的具体实现子类就是：Activity，Service，Applicatio
+  **Context数量=Activity数量+Service数量+1**。
+  
   
   ## 2、Service
   
@@ -2630,7 +2636,6 @@ content: '''
   - 不能在doInBackground(Params… params)中更新UI。
   - 一个AsyncTask对象只能被执行一次，也就是execute方法只能调用一次，否则多次调用时将会抛出异常。
   
-  
   ### 13.4 AsyncTask原理
   ![20160907201617633.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\b7ec1796.png)
   
@@ -3452,13 +3457,12 @@ content: '''
   RecycleViewPool：
   根据ViewType来缓存ViewHolder,每个ViewType的数组大小为5，可以动态的改变。
   
-  ### 19. 参考文献
+  ### 19.3 参考文献
   [Android学习笔记之ListView复用机制 - 代码丶如风 - 博客园](https://www.cnblogs.com/RGogoing/p/5554086.html)
   [Android ListView_Android中高级开发 - SegmentFault 思否](https://segmentfault.com/a/1190000013260044)
   [Android控件RecyclerView的基本用法 - 中国人醒来了 - 博客园](https://www.cnblogs.com/it-tsz/p/11371336.html)
   
-  
-  ### 20. Systrace 学习使用
+  ## 20. Systrace 学习使用
   
   
   ## 面试题参考文献
@@ -3470,25 +3474,19 @@ content: '''
   
 '''
 linesHighlighted: [
-  1192
-  1225
-  23
-  2
-  13
-  3
-  12
-  9
-  1489
-  1492
-  1627
-  1821
-  2978
-  2896
-  2230
-  2369
-  2381
-  3670
-  3597
+  2387
+  2375
+  2236
+  1827
+  1633
+  1498
+  1495
+  1231
+  1198
+  2983
+  2901
+  3611
+  3684
 ]
 isStarred: false
 isTrashed: false

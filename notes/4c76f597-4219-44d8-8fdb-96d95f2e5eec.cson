@@ -1,0 +1,301 @@
+createdAt: "2020-10-22T14:35:24.656Z"
+updatedAt: "2020-10-25T14:26:18.631Z"
+type: "MARKDOWN_NOTE"
+folder: "bfd1eca2e356e7181dfa"
+title: "kotlin 零基础到进阶"
+tags: []
+content: '''
+  # kotlin 零基础到进阶
+  
+  ## 1 KotLin是什么
+  使用Kotlin语言让Java程序员的工作变得更轻松，Java语言中的那些空指针错误、浪费时间的冗长的样板代码、啰嗦的语法限制等，在Kotlin语言中统统消失。Kotlin语言简单、务实，语法简洁而强大，安全且表达力强，极富生产力。
+  
+  ## 1.1 初始Kotlin
+  Kotlin程序的入口点是一个名为main()的函数，它传递一个包含任何命令行参数的数组。
+  ```
+  fun main(args:Array<String>){
+     val name = "World"
+     println("Hello,$name!")
+  }
+  ```
+  - Kotlin中使用fun关键字声明函数。
+  - Kotlin中的打印函数是Println()
+  
+  ## 1.2 语言特性
+  1. 实用主义
+  Kotlin是一门偏重工程实践、编程上有极简风格的语言。
+  2. 极简主义
+  Kotlin语法简洁优雅不啰嗦，类型系统中一切皆是引用
+  3. 空安全
+  Kotlin中有一个简单完备的类型系统来支持空安全。
+  4. 多范式
+  Kotlin同时支持OOP与FP编程范式。各种编程风格的组合可以让我们更加直接地表达算法思想和解决问题的方案，可以赋予我们在思考上
+  有更大的自由度和灵活性。
+  5. 可扩展
+  Kotlin可直接扩展类的函数与属性这与我们在Java中经常写的util类是完全不一样的体验！Kotlin是一种非常注重用户体验的语言。
+  6. 高阶函数与闭包
+  Kotlin的类型中，函数类型也是一等类型。在Kotlin中可以把函数当成值进行传递，这直接赋予了Kotlin函数式编程的特性，使用Kotlin可以写出一些非常“优雅”的代码。
+  7. 支持快速实现DSL
+  有了扩展函数、闭包等特性的支持，使用Kotlin实现一个领域特定语言(DSL)将会相当简单、方便。
+  
+  ### 1.2.1 扩展函数与扩展属性(★)
+  Kotlin可以在不修改原来类的条件下自定义函数和属性，使它们表现得就像属于这个类一样。
+  ```
+  fun String.firshChar():String{ //给String类扩展一个firstChar()函数
+     if (this.length == 0){   //这里的this代表调用者对象
+        return ""
+     }
+     return this[0].toString() //返回下标为0的字符并转成String类型
+  }
+  
+  fun main(args:Array<String>){
+     val name = "World"
+     println("Hello,${name.firshChar()}") //调用自定义的扩展函数
+  }
+  ```
+  
+  ### 1.2.2 不可空类型与空安全(★)
+  Kotlin中引入了不可空类型与可空类型来明确声明一个变量是否可能为null，同时在编译期通过类型是否匹配来检查空指针异
+  常，大大降低了空指针异常出现的概率。
+  ```
+  fun main(args:Array<String>){
+     var a ="abc"// 声明一个字符串，编译器会默认推断变量a的类型为不可空的String
+     //a = null 不可空类型不能赋值为null
+     var b:String? = "abc" //声明一个可空的String?类型
+     //b.length 可空类型不能直接调用方法，需要使用安全调用符?.或者断言调用!!.
+     println(b?.length)
+     b=null
+     println(b?.length)
+  }
+  ```
+  注意：调用可空类型不能直接调用方法，需要使用?
+  
+  ### 1.2.3 智能类型推断
+  在声明变量的时候可以不指定类型，Kotlin编译器会自动推断出其类型。
+  
+  ## 2 Kotlin语法基础
+  
+  ### 2.1 变量
+  在Kotlin中，所有的变量类型都是引用类型。Kotlin的变量分为val(不可变)和var(可变的)
+  - val是只读的，仅能一次赋值，后面就不能被重新赋值。
+  - var是可写的，在它生命周期中可以被多次赋值。
+  ```
+  fun main(args:Array<String>){
+    val a:Int =1  //声明一个不可变的Int类型的变量a
+     println(a)
+     val b =2 //声明一个不可变不带类型的变量b
+     println(b)
+     //a++ 不可变的对象不能进行重新赋值
+     var c:Int =3 //声明一个可变的Int类型的变量c
+     println(c)
+     var d =4 //声明一个可变不带类型的变量d
+     println(d)
+     println(++d) //可变变量可以重新赋值。
+  }
+  ```
+  注意：1.val声明的变量不能对其赋值，2.变量类型可带可不带。3.变量名区分大小写
+  
+  ### 2.2 关键字
+  Kotlin中的类修饰符
+  | 类修饰符   | 说明              |
+  | ---------- | ----------------- |
+  | abstract   | 抽象类            |
+  | final      | 不可被继承final类 |
+  | enum       | 枚举类            |
+  | open       | 可继承open类      |
+  | annotation | 注解类            |
+  | scaled     | 密封类            |
+  | data       | 数据类            |
+  
+  Kotlin中的成员修饰符
+  | 成员修饰符 | 说明               |
+  | ---------- | ------------------ |
+  | override   | 重写函数(方法)     |
+  | open       | 声明函数可被重写   |
+  | final      | 声明函数不可被重写 |
+  | abstract   | 声明函数为抽象函数 |
+  | lateinit   | 延迟初始化         |
+  |            |                    |
+  
+  Kotlin中的访问权限修饰符
+  | 访问权限修饰符 | 说明                       |
+  | -------------- | -------------------------- |
+  | private        | 私有，仅当前类可访问       |
+  | protected      | 当前类以及继承该类的可访问 |
+  | public         | 默认值，对外可访问         |
+  | internal       | 整个模块内可访问           |
+  
+  Kotlin中的协变逆变修饰符
+  | 协变逆变 | 说明                                    |
+  | -------- | --------------------------------------- |
+  | in       | 消费者类型修饰符,out T等价于？extends T |
+  | out      | 生产者类型修饰符,in T等价于？ super T    |
+  
+  Kotlin中的函数修饰符
+  | 函数修饰符 | 说明           |
+  | ---------- | -------------- |
+  | tailrec    | 尾递归         |
+  | operator   | 运算符重载函数 |
+  | infix      | 中缀函数       |
+  | inline     | 内联函数       |
+  | external   | 外部函数       |
+  | suspend    | 挂起协程函数   |
+  
+  Kotlin中的属性修饰符
+  | 属性修饰符  | 说明                                                                                                                |
+  | ----------- | ------------------------------------------------------------------------------------------------------------------- |
+  | const       | 常量修饰符                                                                                                          |
+  | vararg      | 变长参数修饰符                                                                                                      |
+  | noinline    | 不内联参数修饰符，有时，只需要将内联函数的部分参数使用内联Lambda,其他的参数不需要内联，可以使用noinline关键字修饰。 |
+  | crossinline | crossinline限制Lambda表达式直接非局部return返回。                                                                   |
+  
+  Kotlin中的具体化类型修饰符
+  | 具体化类型修饰符 | 说明           |
+  | ---------------- | -------------- |
+  | reified          | 具体化类型参数 |
+  
+  ### 2.3 流程控制语句
+  
+  #### 2.3.1 if 语句
+  在Kotlin中，if是一个表达式，即它会返回一个值。
+  
+  ```
+  fun max(a:Int,b:Int):Int{
+    val max = if(a>b) a else b //if 表达式
+    return max
+  }
+  fun max2(a:Int,b:Int):Int{
+      val max = if(a>b){
+          println("Max is a") //if的分支可以是代码块
+          a                   //最后的表达式作为该代码块的返回值
+      } else{
+          println("Max is b")
+          b
+      }
+      return max
+  }
+  fun main(args:Array<String>){
+     println(max(1,2))
+      println(max2(2,3))
+  }
+  ```
+  注意：if后的括号不能省略，括号里表达式的值必须是布尔型。
+  
+  #### 2.3.2 when 表达式
+  when表达式类似于switch…case表达式。when会对所有的分支进行检查直到有一个条件被满足。
+  ```
+  fun caseWhen(obj:Any?){
+      when(obj){
+          0,1,2,3,4,5,6,7,8,9 -> println("${obj}=>0~9之间的数字") //多个分支可以用逗号分隔。
+          "hello" -> println("${obj}=>这个是字符串hello") //字符串
+          is Char -> println("${obj}=>这是一个Char类型数据") //is类型判断
+          else -> println("${obj}=>相当于java switch中的default")
+      }
+  }
+  
+  fun main(args:Array<String>){
+      caseWhen(1)
+      caseWhen("hello")
+      caseWhen("x")
+      caseWhen(null)
+  }
+  ```
+  用when语句实现递归
+  ```
+  fun fact(n:Int):Int{
+      var result =1
+      when (n){
+          0,1 ->result = 1
+          else ->result = n* fact(n-1)
+      }
+      return  result
+  }
+  fun main(args:Array<String>){
+      println(fact(10))
+  }
+  ```
+  
+  
+  注意: 
+  1. 如果其他分支都不满足条件会到else分支，
+  2. 如果有多个分支需要用相同处理方式，可以把多个分支放在一起。用逗号隔开。
+  
+  #### 2.3.3 for循环
+  for循环可以对任何提供迭代器(iterator)的对象进行遍历。
+  ```
+  fun array1(){
+      for (item in 0..3){
+          println("item=$item")
+      }
+  }
+  
+  fun array2(){
+      for (item in 4 until 6){
+          println("item=$item")
+      }
+  }
+  
+  fun main(args:Array<String>){
+      array1()
+      array2()
+  }
+  ```
+  #### 2.3.4 while循环
+  while语句与Java中的一致
+  ```
+  fun array(){
+      var x = 5;
+      while (x>1){
+          println(x)
+          --x
+      }
+  }
+  fun main(args:Array<String>){
+      array()
+  }
+  ```
+  
+  #### 2.3.5 标签(label)
+  在Kotlin中任何表达式都可以用标签来标记。标签的格式为标识符后跟@符号，可以用Label标签来控制return,break或continue语句的跳转行为.
+  ```
+  fun array(){
+      val intArray = intArrayOf(1,2,3,4,5)
+      intArray.forEach here@{
+          if(it==3) return@here
+          println(it)
+      }
+  }
+  fun main(args:Array<String>){
+      array()
+  }
+  ```
+  #### 2.3.6 throw表达式
+  在Kotlin中throw是表达式，它的类型是特殊类型Nothing,该类型没有值。
+  ```
+  fun fail2(msg: String):Nothing{
+      throw IllegalAccessException(msg)
+  }
+  
+  fun main(args:Array<String>){
+      fail2("xxxxx")
+  }
+  ```
+  如果把一个throw表达式的值赋给一个变量，需要显式声明类型为Nothing
+  ```
+  fun main(args:Array<String>){
+      //val ex =throw Exception("xxxxxxx") 需要显示声明类型为Nothing
+      val ex :Nothing = throw Exception("xxxxxxxx")
+  }
+  ```
+  #### 2.3.7 Unit与Nothing的区别
+  Kotlin里没有Void,所有函数都有返回类型,即在没有返回值的情况下会返回Unit类型。
+  Nothing 是一个空类型，即在执行失败的场合下使用。
+  
+  ### 2.4 操作符
+  ![dbdb4ef5.png](:storage\\4c76f597-4219-44d8-8fdb-96d95f2e5eec\\dbdb4ef5.png)
+  
+  ## 3 类型系统与可空类型
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false
