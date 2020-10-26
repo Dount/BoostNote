@@ -1,5 +1,5 @@
 createdAt: "2020-10-22T14:35:24.656Z"
-updatedAt: "2020-10-25T14:26:18.631Z"
+updatedAt: "2020-10-26T15:55:05.364Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "kotlin 零基础到进阶"
@@ -240,6 +240,8 @@ content: '''
       array2()
   }
   ```
+  注意：1. until不包含末尾元素的区间 2. 使用..包含头和尾元素
+  
   #### 2.3.4 while循环
   while语句与Java中的一致
   ```
@@ -295,6 +297,38 @@ content: '''
   ![dbdb4ef5.png](:storage\\4c76f597-4219-44d8-8fdb-96d95f2e5eec\\dbdb4ef5.png)
   
   ## 3 类型系统与可空类型
+  
+  ### 3.1 Kotlin的类型系统
+  在java中原始类型有：boolean,char,byte,short,int,long,float,double.
+  相应的包装类型:Boolean,Character,Byte,Short,Integer,Long,Float,Double.
+  
+  在Kotlin中去掉了原始类型，只有包装类型，**编译器在编译代码的时候，会自动优化性能，把对应的包装类型拆箱为原始类型。**
+  Kotlin系统类型分为可空类型和不可空类型。Kotlin中引入了可空类型，把有可能为null的值单独用可空类型来表示。
+  ![80724d23.png](:storage\\4c76f597-4219-44d8-8fdb-96d95f2e5eec\\80724d23.png)
+  通过这样显式地使用可空类型，并在编译期作类型检查，大大降低了出现空指针异常的概率。
+  
+  在Kotlin中的数字类型，不可空类型与Java中原始的数字类型对应。如图所示：
+  ![027e14fb.png](:storage\\4c76f597-4219-44d8-8fdb-96d95f2e5eec\\027e14fb.png)
+  
+  在Kotlin中的对应的可空数字类型就相当于Java中的装箱数字类型。如图所示:
+  ![1b4e7fe6.png](:storage\\4c76f597-4219-44d8-8fdb-96d95f2e5eec\\1b4e7fe6.png)
+  
+  在Kotlin中等于号使用的说明：
+  ![25ab2db6.png](:storage\\4c76f597-4219-44d8-8fdb-96d95f2e5eec\\25ab2db6.png)
+  
+  在Kotlin中对于数组的定义不在使用T[]的语法，而是直接使用Array类型代表数组类型，其中包括get,set,size方法。
+  如下是8中新数组类型的定义：
+  ```
+  val square1 :BooleanArray = booleanArrayOf(true,false)
+      val square2 :ByteArray = byteArrayOf(0x1,0x2,0x3)
+      val square3 :CharArray = charArrayOf('1','2','3')
+      val square4 :DoubleArray = doubleArrayOf(1.1,1.2,1.3)
+      val square5 :FloatArray = floatArrayOf(1.1f,1.2f,1.3f)
+      val square6 :IntArray = intArrayOf(1,2,3,4,5,6)
+      val square7 :LongArray = longArrayOf(1,2,3,4,5,6,7)
+      val square8 :ShortArray = shortArrayOf(1,2,3,4,5,6,7,8)
+  ```
+  ### 3.2 可空类型
 '''
 linesHighlighted: []
 isStarred: false
