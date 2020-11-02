@@ -1,5 +1,5 @@
 createdAt: "2020-10-22T14:35:24.656Z"
-updatedAt: "2020-10-26T15:55:05.364Z"
+updatedAt: "2020-10-29T15:59:25.557Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "kotlin 零基础到进阶"
@@ -289,9 +289,6 @@ content: '''
       val ex :Nothing = throw Exception("xxxxxxxx")
   }
   ```
-  #### 2.3.7 Unit与Nothing的区别
-  Kotlin里没有Void,所有函数都有返回类型,即在没有返回值的情况下会返回Unit类型。
-  Nothing 是一个空类型，即在执行失败的场合下使用。
   
   ### 2.4 操作符
   ![dbdb4ef5.png](:storage\\4c76f597-4219-44d8-8fdb-96d95f2e5eec\\dbdb4ef5.png)
@@ -304,17 +301,17 @@ content: '''
   
   在Kotlin中去掉了原始类型，只有包装类型，**编译器在编译代码的时候，会自动优化性能，把对应的包装类型拆箱为原始类型。**
   Kotlin系统类型分为可空类型和不可空类型。Kotlin中引入了可空类型，把有可能为null的值单独用可空类型来表示。
-  ![80724d23.png](:storage\\4c76f597-4219-44d8-8fdb-96d95f2e5eec\\80724d23.png)
+  ![a030be1e.png](:storage\\4c76f597-4219-44d8-8fdb-96d95f2e5eec\\a030be1e.png)
   通过这样显式地使用可空类型，并在编译期作类型检查，大大降低了出现空指针异常的概率。
   
   在Kotlin中的数字类型，不可空类型与Java中原始的数字类型对应。如图所示：
-  ![027e14fb.png](:storage\\4c76f597-4219-44d8-8fdb-96d95f2e5eec\\027e14fb.png)
+  ![6852b611.png](:storage\\4c76f597-4219-44d8-8fdb-96d95f2e5eec\\6852b611.png)
   
   在Kotlin中的对应的可空数字类型就相当于Java中的装箱数字类型。如图所示:
   ![1b4e7fe6.png](:storage\\4c76f597-4219-44d8-8fdb-96d95f2e5eec\\1b4e7fe6.png)
   
   在Kotlin中等于号使用的说明：
-  ![25ab2db6.png](:storage\\4c76f597-4219-44d8-8fdb-96d95f2e5eec\\25ab2db6.png)
+  ![381afe22.png](:storage\\4c76f597-4219-44d8-8fdb-96d95f2e5eec\\381afe22.png)
   
   在Kotlin中对于数组的定义不在使用T[]的语法，而是直接使用Array类型代表数组类型，其中包括get,set,size方法。
   如下是8中新数组类型的定义：
@@ -328,8 +325,157 @@ content: '''
       val square7 :LongArray = longArrayOf(1,2,3,4,5,6,7)
       val square8 :ShortArray = shortArrayOf(1,2,3,4,5,6,7,8)
   ```
-  ### 3.2 可空类型
+  ### 3.2 安全操作符
+  Kotlin正如很多现代编程语言一样是空安全的。因为我们需要通过，一个可空类型符号“T?”来明确地指定一个对象类型T是否能为空。
+  
+  #### 3.3 安全调用符"?"
+  在Kotlin中我们不能直接使用可空的变量/方法来调用其属性或者方法。
+  ```
+   var nullable :String?= null
+      println(nullable?.length)
+      nullable = "abc"
+      println( nullable?.length)
+  ```
+  #### 3.4 非空断言"!!"
+  Kotlin中提供了断言操作符“!!”,使得可空类型对象可以调用成员方法或者属性。
+  ```
+   var nullableStr :String ?= null
+      println(nullableStr!!.length)
+  ```
+  注意：如果遇到空指针会直接抛出异常
+  
+  #### 3.5 Elvis运算符"?:"
+  使用Elvis操作符“?:”来给定一个在null情况下的替代值：
+  ```
+  var nullableStr :String ?= null
+  println(nullableStr?:"abc")
+  ```
+  
+  ### 3.3 特殊类型
+  Kotlin中的特殊类型有Unit,Nothing,Any及其对应的可空类型Unit?,Nothing?,Any?
+  
+  #### 3.3.1 Unit类型
+  Kotlin里没有Void,所有函数都有返回类型,即在没有返回值的情况下会返回Unit类型,以下是返回Unit的写法：
+  ![4582411f.png](:storage\\4c76f597-4219-44d8-8fdb-96d95f2e5eec\\4582411f.png)
+  Unit的父类是Any,如果是一个可空的Unit?,那么父类型是Any?.
+  ![f32a3c1c.png](:storage\\4c76f597-4219-44d8-8fdb-96d95f2e5eec\\f32a3c1c.png)
+  
+  #### 3.3.2 Nothing与Nothing?类型
+  Kotlin中Nothing类型的表达式计算结果永远不会返回，相当于Java中的void，而Unit类型表达式计算结果的返回类型是Unit.
+  Nothing?类型的表达式只能赋值为null,可被用作任何可空类型的空引用。
+  
+  #### 3.3.3 Any与Any?类型
+  Any?是可空类型层次的根,Any?是Any的超集,Any?是Kotlin类型层次结构的最顶端，
+  ![9b24d879.png](:storage\\4c76f597-4219-44d8-8fdb-96d95f2e5eec\\9b24d879.png)
+  
+  注意：1.Any是所有非空类型的根类型,2.Any?才是所有类型（可空和非空类型）的根类型。
+  
+  ### 3.4 类型检测与类型转换
+  Kotlin在运行时通过使用is操作符或其否定形式!is来检查对象是否符合给定类型。
+  
+  #### 3.4.1 is运算符
+  is运算符可以检查对象A是否与特定的类型X兼容，还可以用来检查一个对象是否属于某数据类型。
+  ```
+  println("abc" is String)
+  println("abc" !is String)
+  ```
+  ### 3.4 as运算符
+  as运算符用于执行引用类型的显示类型转换，如果要转换的类型与指定的类型兼容，转换就会成功进行;
+  如果类型不兼容，使用as?运算符就会返回null
+  
+  注意：在Kotlin中，父类是禁止转换为子类型的。
+  
+  ## 4. 类与面向对象编程
+  ![7cbb4cae.png](:storage\\4c76f597-4219-44d8-8fdb-96d95f2e5eec\\7cbb4cae.png)
+  ### 4.1 声明类
+  #### 4.1.1 空类型
+  使用class关键字声明类，我们可以声明一个什么都不干的类。
+  ```
+  class AnEmptyClass
+  fun main(args:Array<String>){
+      val anEmptyClass = AnEmptyClass()
+      println(anEmptyClass)
+      println(anEmptyClass is AnEmptyClass)
+      println(anEmptyClass::class)
+  }
+  ```
+  #### 4.1.2 声明类和构造函数
+  在Kotlin中,我们可以在声明类的时候同时声明构造函数，语法格式是在类的后面使用括号包含构造函数的参数列表
+  ```
+  class Person(var name:String,var age:Int,var sex:String){
+      override fun toString(): String {
+          return "Person(name='$name,age=$age,sex='$sex')"
+      }
+  }
+  
+  fun main(args:Array<String>){
+      val person = Person("jack",29,"M")
+      println("person=${person}")
+  }
+  ```
+  通过使用lateinit关键字对，等构造实例对象的时候再去初始化属性值;
+  ```
+  class Person(){
+      lateinit var name :String
+      var age:Int =0;
+      lateinit var sex:String
+      override fun toString(): String {
+          return "Person(name='$name',age=$age,sex='$sex')"
+      }
+  }
+  
+  fun main(args:Array<String>){
+      val person = Person()
+      person.name="Jack"
+      person.age = 29
+      person.sex = "M"
+      println("person = ${person}")
+  }
+  ```
+  如果声明一个具有多种构造方式的类，可以使用constructor关键字声明构造函数。
+  ```
+  class Person(){
+      lateinit var name :String
+      var age:Int =0;
+      lateinit var sex:String
+  
+      constructor(name:String):this(){
+          this.name=name
+      }
+      constructor(name: String,age:Int):this(){
+          this.name=name
+          this.age = age
+      }
+      constructor(name:String,age:Int,sex:String):this(){
+          this.name = name
+          this.age = age
+          this.sex = sex
+      }
+      override fun toString(): String {
+          return "Person(name='$name',age=$age,sex='$sex')"
+      }
+  }
+  
+  fun main(args:Array<String>){
+      val person1 = Person("Jack")
+      person1.sex="man"
+      println("person1 = ${person1}")
+  
+      val person2 = Person("mary",16)
+      person2.sex="girl"
+      println("person2= ${person2}")
+  
+      val person3 = Person("kang",18,"girl")
+      println("person3=${person3}")
+  }
+  ```
+  注意：lateinit关键字不能原始类型。
+  
+  ### 4.2 抽象类与接口
+  
 '''
-linesHighlighted: []
+linesHighlighted: [
+  23
+]
 isStarred: false
 isTrashed: false

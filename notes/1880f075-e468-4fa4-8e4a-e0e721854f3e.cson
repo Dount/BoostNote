@@ -1,5 +1,5 @@
 createdAt: "2019-08-01T07:38:38.082Z"
-updatedAt: "2019-08-01T07:42:37.018Z"
+updatedAt: "2020-10-27T13:46:31.305Z"
 type: "MARKDOWN_NOTE"
 folder: "a829d630b1a42b272c49"
 title: "ListView 的使用"
@@ -15,4 +15,4 @@ content: '''
 '''
 linesHighlighted: []
 isStarred: false
-isTrashed: false
+isTrashed: true

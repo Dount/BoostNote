@@ -1,5 +1,5 @@
 createdAt: "2019-10-16T02:39:38.018Z"
-updatedAt: "2020-10-24T14:42:56.120Z"
+updatedAt: "2020-11-02T15:21:12.814Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Java面试题"
@@ -11,7 +11,7 @@ content: '''
   
   ### 字符串拼接的方式以及效率
   1. 使用+直接拼接，String 是final对象，不会被修改，每次使用+进行拼接都会创建新的对象，而不是改变原来的对象，效率低，是线程安全的。
-  2. 使用StringBuffer可变字符串，是线程安装的（StringBuffer的方式使用了Synchronized关键字进行修饰）。
+  2. 使用StringBuffer可变字符串，是线程安全的（StringBuffer的方式使用了Synchronized关键字进行修饰）。
   3. 使用StringBuilder可变字符串，效率最高，但是线程不安全。
   
   ### 简述final,finally和finalize区别
@@ -217,21 +217,42 @@ content: '''
   如果调用 f(2)，返回值将是0，因为finally语句的返回值覆盖了try语句块的返回值。
   
   ## 集合
+  
   ### 简述一下集合主要有哪些类和接口，各自有什么特点。
   ![2259f98c.png](:storage\\e9cc09e0-9ce3-4da2-b240-076242f280d6\\2259f98c.png)
   1. 主要有两个接口Collection和Map.
   2. Collection包括List,Set和Queue
-    1)List是有序的，主要包括ArrayList，LinkedList和Vector，ArrayList底层通过数组实现，线程不安全，Vector是线程安全的ArrayList，但效率较低，LinkedList底层通过双向链表实现，与ArrayList相比增删快查询慢。
-    2)Set是唯一且无序的，主要包括HashSet，LinkedHashSet和TreeSet。HashSet底层其实就是HashMap，利用了key来保证元素唯一性。LinkedHashSet可以按照key的操作顺序排序，TreeSet支持按照默认或指定的排序规则排序。
-    3)Queue是队列结构，主要有ArrayBlockingQueue基于数组的阻塞队列、LinkedBlockingQueue基于链表的阻塞队列等
   3. Map以key-value键值对的形式存储元素,包括：HashMap、LinkedHashMap和TreeMap。
-    1)HashMap底层通过数组+链表/红黑树实现
-    2)LinkedHashMap可以按照key的操作顺序对集合排序
-    3)TreeMap可以按照默认或指定的排序规则对集合排序
   
-  ### HashMap 为什么不安全
-  [为什么HashMap线程不安全 - 简书](https://www.jianshu.com/p/e2f75c8cce01)
+  ### Collection和Collections有什么区别
+  1.Collection是一个集合接口，它包括List有序结合，Set无序集合，Queue队列等。
+  2.Collections则是Collection的一个工具类，为Collection类型的对象提供了很多方便的方法，例如addAll 可以直接对Collection集合批量的添加元素，shuffle可以随机打乱List集合的元素顺序，sort可以对List集合进行默认或按比较器进行排序。
   
+  ### List和Set比较（★★★★）
+  List,Set都是继承自Collection接口,两者最重要的区别在于List中允许插入重复元素，Set中允许插入重复元素。
+  List特点：元素有顺序，元素可重复; 
+  - ArrayList底层通过数组实现，线程不安全，插入移除元素慢，随机访问快。
+  - Vector是线程安全的ArrayList，但效率较低。
+  - LinkedList底层通过双向链表实现，插入移除元素快，随机访问慢，顺序访问快。
+  - Stack继承自Vector，实现一个后进先出的堆栈。
+  
+  Set特点：元素无顺序(HashSet)，元素不可重复，重复元素会覆盖掉，
+  - HashSet底层其实就是HashMap，利用了key来保证元素唯一性，(无顺序)
+  - LinkedHashSet可以按照key的操作顺序排序,即保证元素添加的自然顺序。
+  - TreeSet支持按照默认或指定的排序规则排序,即保证元素的自然顺序。
+  
+  ### List和Vector比较
+  Vector和ArrayList一样，都是通过数组实现的，但是Vector是线程安全的。和ArrayList相比，其中的很多方法都通过同步（synchronized）处理来保证线程安全，但是这样就导致了Vector在效率上无法与ArrayList相比。
+  两个都是采用的线性连续空间存储元素，但是当空间不足的时候，两个类的增加方式是不同，Vector可以设置增长因子，而ArrayList不可以。
+  
+  ### List,Set,Map有什么区别？
+  1.List是有序，可重复，有索引的集合，继承了Collection集合全部功能除了Collection的三种遍历方式外，可用索引遍历。
+  2.Set是无序，不可重复的集合，Set的实现类LinkedHashSet和TreeSet是有序的，LinkedHashSet可以按照元素插入的顺序排序，也可以按照元素操作的时间排序，TreeSet可以按照默认的比较规则或者自定义的比较规则排序。
+  3.Map是无序，以Key-value的键值对形式存储元素的集合。键不可重复，值无需求，重复的键对应的值会覆盖之前的值。
+  [Java中的Set总结 - 简书](https://www.jianshu.com/p/d6cff3517688)
+  [Java中的List总结 - 简书](https://www.jianshu.com/p/1149f1bf1736)
+  [Java中的Map总结 - 简书](https://www.jianshu.com/p/27577315af0c)
+  [java中List 和 Set 的区别 - 晓乎 - 博客园](https://www.cnblogs.com/helloworldcode/p/12122072.html)
   
   ### 理解HashMap (★★★★)
   #### HashMap的特点
@@ -246,12 +267,26 @@ content: '''
   2. JDK1.8之后，HashMap底层改为数组+链表+红黑树，当链表长度超过阈值8时，将链表转换为红黑树，使得性能上进一步得到提升。
   
   #### HashMap的哈希冲突(★)
-  哈希冲突是当某个元素进行哈希运算，得到一个存储地址，在插入时发现内容地址已经被占用，从而发生了哈希冲突。
+  HashMap的实现使用一个数组，每个数组项里面有一个链表的方式来实现，因为HashMap使用key的hashCode来寻找存储位置，不同的key可能具有相同的hashCode.如果在插入时发现存储地址已经被相同的hashCode占用，则导致了哈希冲突。
   
   #### HashMap的哈希冲突解决(★★)
-  HashMap由数组+链表组成的，数组是HashMap的主体，**链表则是主要为了解决哈希冲突而存在的**。中源码resize()方法负责扩容，
-  在JDK8之前首先会新建一个newTable的容器，起容量是oldTable的2倍。然后遍历oldTable，将oldtable的值赋值到newtable中。
-  在JDK8之后
+  1.8之前
+  HashMap采用链地址法的方式，即，将相同hashcode值的对象组成一个链表，放在数组的某一项中。
+  1.8之后
+  HashMap同样采用链地址法的方式解决冲突，不同点在于如果链表长度大于8，会将链表转换为红黑树的形式。
+  
+  #### 负载因子为什么是0.75(★)
+  负载因子代表着HashMap的填充成都，负载因子越大，填充的元素就越多，空间利用率就越高。但是发生碰撞冲突的机会就越大，链表的长度越来越长，查找的效率就会降低。加载因子越小，填充的元素就越少，发生碰撞冲突的机会就越少。因此0.75属于时间和空间成本上一种折衷的设定。
+  
+  #### 什么是resize机制(★)
+  HashMap的扩容机制就是重新申请一个容量是当前的2倍的新数组，然后将原先的记录逐个重新映射到新的数组里面，然后将原先的数组逐个置为null使得引用失效。
+  
+  #### HashMap为什么不安全？
+  场景1：在put的时候导致多线程数据不一致。
+  有两个线程A和B，如果A插入的位置与B一样，如果当B成功插入后，A再进行插入的话会覆盖线程B插入的记录，造成了数据不一致的行为。
+  
+  场景2：HashMap的get操作可能因为resize而引起死循环
+  
   ### HashTable的特点
   1. HashTable实现了Map接口和Dictionary抽象类。
   2. HashTable的key、value都不可以为null。
@@ -272,46 +307,17 @@ content: '''
   
   ![71728073.png](:storage\\e9cc09e0-9ce3-4da2-b240-076242f280d6\\71728073.png)
   
-  ### Collection和Collections有什么区别
-  1.Collection是一个集合接口，它包括List有序结合，Set无序集合，Queue队列等。
-  2.Collections则是Collection的一个工具类，为Collection类型的对象提供了很多方便的方法，例如addAll 可以直接对Collection集合批量的添加元素，shuffle可以随机打乱List集合的元素顺序，sort可以对List集合进行默认或按比较器进行排序。
-  
-  ### 迭代器是什么？
+  ### 迭代器是什么?(★)
   1.迭代器实现了iterator接口，是用于遍历Collection集合元素的一个指针。
   2.主要有三个方法
     1）通过iterator()获得集合的迭代器
     2）通过hasNext()判断集合当中是否还有元素，如果有返回true,没有则返回false. 初始化迭代器位于第一个元素之前。
     3）通过next()获取集合的下一个元素，并向后移动一个元素的单位。
   
-  ### Queue接口中add()/offer(),remove()/poll(),element()/peek()方法有什么区别？
-  1.add()和offer()都是向队列尾部插入一个元素，区别是当超出队列界限时，add方法会抛出异常，而offer会返回false.
-  2.remove()和poll都是从队列头部移除一个元素并返回，区别是队列为空时remove()方法抛出异常，poll()方法则是返回null值。
-  3.element()和peek()都是用于查询队列头部的元素，区别是队列为空时，element抛出一个异常，而peek返回null.
-  
   ### 有哪些线程安全的集合类？
   1.Vector,是线程安全的ArrayList,底层用数组实现，通过synchronized修饰方法保证线程安全。
   2.HashTable是线程安全的HashMap,继承自Dictionary,通过synchronized修饰方法保证线程安全。性能较差
   3.ConcurentHashMap,线程安全的HashMap,通过分段锁实现线程安全，性能较好。
-  
-  ## 集合（补充）
-  Java集合类主要由两个接口派生出：Collection和Map，这两个接口是Java集合的根接口。
-  
-  Collection接口是集合类的根接口，Java中没有提供这个接口的直接的实现类。但是却让其被继承产生了两个接口，就是 Set和List。Set中不能包含重复的元素。List是一个有序的集合，可以包含重复的元素，提供了按索引访问的方式。
-  
-  Map是Java.util包中的另一个接口，它和Collection接口没有关系，是相互独立的，但是都属于集合类的一部分。Map包含了key-value对。Map不能包含重复的key，但是可以包含相同的value。
-  
-  ### List和Set比较
-  List,Set都是继承自Collection接口，Map则不是; List特点：元素有放入顺序，元素可重复; Set特点：元素无放入顺序，元素不可重复，重复元素会覆盖掉，（注意：元素虽然无放入顺序，但是元素在set中的位置是有该元素的HashCode决定的，其位置其实是固定的，加入Set 的Object必须定义equals()方法; 
-  
-  ### List和Vector比较
-  Vector是多线程安全的，线程安全就是说多线程访问同一代码，不会产生不确定的结果。而ArrayList不是，这个可以从源码中看出，Vector类中的方法很多有synchronized进行修饰，这样就导致了Vector在效率上无法与ArrayList相比；
-  两个都是采用的线性连续空间存储元素，但是当空间不足的时候，两个类的增加方式是不同，Vector可以设置增长因子，而ArrayList不可以。
-  
-  ### List,Set,Map有什么区别？
-  1.List是有序，可重复，有索引的集合，继承了Collection集合全部功能除了Collection的三种遍历方式外，可用索引遍历。
-  2.Set是无序，不可重复的集合，Set的实现类LinkedHashSet和TreeSet是有序的，LinkedHashSet可以按照元素插入的顺序排序，也可以按照元素操作的时间排序，TreeSet可以按照默认的比较规则或者自定义的比较规则排序。
-  3.Map是无序，以Key-value的键值对形式存储元素的集合。键不可重复，值无需求，重复的键对应的值会覆盖之前的值。
-  [Java中的Set总结 - 简书](https://www.jianshu.com/p/d6cff3517688)
   
   ## 多线程（★）
   ### 创建线程有哪几种实现方式？分别有什么优缺点？
@@ -333,12 +339,6 @@ content: '''
   4.Waiting:等待其他线程唤醒时进入等待状态。
   5.Timed Waiting:计时等待，带超时参数的方法，例如Sleep(Long time)
   6.Terminated:终止状态，线程正常运行完毕或未捕获异常终止。
-  
-  ### 多线程不可见问题的原因和解决方式？
-  1.不可见的原因是每个线程有自己的工作内存，线程都是从主内存拷贝共享变量的副本值。每个线程都是在自己的工作内存操作共享变量的。
-  2.解决方式：
-    1）加锁:获得锁后线程会清空工作内存，从主内存拷贝共享变量最新的值成为副本，修改后刷新会主内存，再释放锁。
-    2）使用volatile关键字：被volatile 修饰的变量会通知其他线程之前读取到的值已失效，线程会加载最新值到自己的工作内存。
     
   ### 什么是线程安全问题，如何解决？
   1.线程安全问题：当多个线程共享一个全局变量，对其做写操作时，可能会受到其他线程的干扰，从而引发线程安全问题
@@ -375,8 +375,8 @@ content: '''
   3.Java中的每个对象都有一个monitor监视器对象，加锁就是在竞争monitor，对代码块加锁是通过在前后分别加上monitorenter和monitorexit指令实现的，对方是否加锁是通过一个标记位来判断的。
   
   ### volatile和synchronized的区别？ 
-  1.volatile只能修饰实例变量和类变量,而synchronized可以修饰方法以及代码块。
-  2.volatile只能保证数据的可见性，但是不保证原子性，synchronized是一种排它机制，可以保证原子性。只有在特殊情况下才适合取代synchronized：对变量的写操作不依赖于当前值（例如i++），或者是单纯的变量赋值；该变量没有被包含在具有其他变量的不等式中，不同的volatile变量不能互相依赖，只有在状态真正独立于程序内的其它内容时才能使用volatile。
+  1.volatile仅能使用在变量级别；synchronized则可以使用在变量、方法、和类级别的。
+  2.volatile仅能实现变量的修改可见性，并不能保证原子性；而synchronized则可以保证变量的修改可见性和原子性。
   3.volatile是一种轻量级的同步机制，在访问volatile修饰的变量时并不会执行加锁操作，线程不会阻塞，使用synchronized加锁会阻塞线程。
   
   ### 讲一讲ReentrantLock
@@ -591,18 +591,29 @@ content: '''
   3.shutdown方法将执行平缓的关闭过程：不再接受新的任务，同时等待已经提交的任务执行完成——包括那些还未开始执行的任务。shutdownNow方法将执行粗暴的关闭过程：它将尝试取消所有运行中的任务，并且不再启动队列中尚未开始执行的任务。在ExecutorService关闭后提交的任务将有“拒绝执行处理器REH”来处理，它会抛弃任务，或者使得execute方法抛出一个未检查的RejectedExecutionException。
   4.等所有任务都完成后，ExecutorService将转入终止状态。可以调用awaitTermination来等待ExecutorService到达终止状态，或者通过调用isTerminated来轮询ExecutorService是否已终止。通常在调用awaitTermination后会理解调用shutdown，从而产生同步地关闭ExecutorService的效果。
   
-  ### 什么是CAS?
-  1.CAS指Compare And Swap，比较并交换。CAS(V,E,N)算法包括三个参数，V表示要更新的变量的值，E表示预期的值，N表示新值。在且仅在V的值和E相等时才会将V的值设置为N，如果不同则说明已经有其他线程做了更改，当前线程就什么也不做。最后CAS返回当前V的真实值。
-  2.CAS操作采用了乐观锁的思想，有多个线程同时使用CAS操作一个共享变量时只有一个线程会成功，失败的线程不会被挂起仅会被告知失败，并且允许再次尝试，或者放弃操作。基于这样的原理虽然CAS没有使用锁，也可以及时发现其他线程的操作进行适当地并发处理。
+  ### CAS的概念
+  CAS指Compare And Swap，比较并交换。
+  - CAS的运作方式（通过比较与交换实现）。
+  - 硬件层面支持，性能不低
+  - 提供原子性，它的功能是确保原子性，从而确保线程安全。
   
-  ### CAS有什么问题？ 
+  实际使用中，CAS操作需要输入两个数值，一个旧值A（期望操作前的值）和一个新值B，在操作期间先将旧值A与实际内存中的值进行比较，如果没有发生变化，才将实际内存中的值交换成新值B，如果发生了变化则不交换。
+  
+  #### 为什么使用CAS
+  因为synchronized消耗的系统资源较多。所以有着底层硬件支持的CAS才会那么受欢迎。
+  
+  #### CAS有什么问题？ 
   1.CAS算法地实现有一个重要前提：需要取出内存中某时刻的数据，然后在下一刻进行比较、替换，但在这个时间差内数据可能已经发生了变化，导致ABA问题。
+  2.由于CAS操作的原子性来源于硬件的支撑，而硬件只支持单个变量的原子操作，因此CAS只能针对单个变量的原子操作进行操作。
   
-  ### ABA是什么问题？
-  ABA问题指线程1从内存V位置取出A，这时线程2也从内存中取出A，并将其首先修改为B，接着又修改为A，这时线程1在进行CAS操作时会发现内存中数据仍是A，然后线程1操作成功。尽管从操作角度来说线程1成功了，但是在该过程中实际上数据已发生了变化但并未被感知到，某些应用场景下可能会出现数据不一致的问题。
+  #### 什么是ABA?
+  线程1准备利用CAS修改变量值A，但是在修改之前，其他线程已经将A变成了B，然后又变成A，即A->B->A,线程1执行CAS的时候发现仍然为A，所以CAS会操作成功，但是其实目前这个A已经是其他线程修改的了，但是线程1并不知道，最终内存值变成了B，这就导致了ABA问题。
   
-  ### 如何解决ABA问题。
-  乐观锁通过版本号来解决ABA问题，具体的操作是每次执行数据修改操作时都会带上一个版本号，如果预期版本号和数据版本号一致就进行操作，并将版本号加1，否则执行失败。
+  #### 如何解决ABA问题。
+  1. 在变量前面追加版本号：每次变量更新就把版本号加1，则A-B-A就变成1A-2B-3A。
+  2. atomic包下的AtomicStampedReference类：其compareAndSet方法首先检查当前引用是否等于预期引用，并且当前标志是否等于预期标志，如果全部相等，则以原子方式将该引用的该标志的值设置为给定的更新值。
+  
+  [沉淀再出发：java中的CAS和ABA问题整理 - 精心出精品 - 博客园](https://www.cnblogs.com/zyrblog/p/9864932.html)
   
   ### 讲一讲wait、sleep、yield、join方法的区别 （★）
   1.wait是Object类的方法，调用wait方法的线程会进入WAITING状态，只有等待其他线程的通知或被中断后才会解除阻塞，调用wait方法释放锁资源。
@@ -695,13 +706,13 @@ content: '''
   
   ### JMM的承诺
   
-  #### 原子性
+  #### 原子性(★★)
   原子性指的是一个操作是不可中断的，即使是在多线程环境下，一个操作一旦开始就不会被其他线程影响。比如对于一个静态变量int x，两条线程同时对他赋值，线程A赋值为1，而线程B赋值为2，不管线程如何运行，最终x的值要么是1，要么是2，线程A和线程B间的操作是没有干扰的，这就是原子性操作，不可被中断的特点。
   
-  #### 可见性
+  #### 可见性(★★)
   **可见性指的是当一个线程修改了某个共享变量的值，其他线程是否能够马上得知这个修改的值。**对于串行程序来说，可见性是不存在的，因为我们在任何一个操作中修改了某个变量的值，后续的操作中都能读取这个变量值，并且是修改过的新值。但在多线程环境中可就不一定了，由于线程对共享变量的操作都是线程拷贝到各自的工作内存进行操作后才写回到主内存中的，这就可能存在一个线程A修改了共享变量x的值，还未写回主内存时，另外一个线程B又对主内存中同一个共享变量x进行操作，但此时A线程工作内存中共享变量x对线程B来说并不可见，这种工作内存与主内存同步延迟现象就造成了可见性问题。
   
-  #### 有序性
+  #### 有序性(★★)
   有序性是指对于单线程的执行代码，总是认为代码的执行是按顺序依次执行的，这样的理解并没有毛病，毕竟对于单线程而言确实如此，但对于多线程环境，则可能出现乱序现象，**因为程序编译成机器码指令后可能会出现指令重排现象，重排后的指令与原指令的顺序未必一致**，要明白的是，在Java程序中，倘若在本线程内，所有操作都视为有序行为，如果是多线程环境下，一个线程中观察另外一个线程，所有操作都是无序的。
   
   ### JMM提供的解决方案
@@ -1132,15 +1143,13 @@ content: '''
   [设计模式六大原则：开闭原则 - 酷学大叔 - 博客园](https://www.cnblogs.com/az4215/p/11489712.html)
   
   [全面理解Java内存模型(JMM)及volatile关键字_zejian的博客-CSDN博客](https://blog.csdn.net/javazejian/article/details/72772461)
+  
 '''
 linesHighlighted: [
-  557
-  1047
-  1082
-  1193
-  1252
-  1208
-  1251
+  1223
+  1282
+  1238
+  1281
 ]
 isStarred: false
 isTrashed: false

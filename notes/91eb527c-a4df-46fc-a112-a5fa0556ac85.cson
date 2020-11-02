@@ -1,5 +1,5 @@
 createdAt: "2019-08-01T08:19:03.915Z"
-updatedAt: "2019-08-02T07:51:54.935Z"
+updatedAt: "2020-10-27T13:46:28.614Z"
 type: "MARKDOWN_NOTE"
 folder: "a829d630b1a42b272c49"
 title: "volatile 关键字的理解"
@@ -48,4 +48,4 @@ content: '''
 '''
 linesHighlighted: []
 isStarred: false
-isTrashed: false
+isTrashed: true

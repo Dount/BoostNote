@@ -1,5 +1,5 @@
 createdAt: "2020-06-21T08:23:29.768Z"
-updatedAt: "2020-10-17T08:17:46.313Z"
+updatedAt: "2020-10-27T15:02:12.469Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "Android开发中的MVC_MVP_MVVM"
@@ -24,25 +24,23 @@ content: '''
   
   ## MVP模型简介
   MVP即Modep-View-Presenter模型
-  ![3d616409.png](:storage\\3415d728-a5e7-466a-9786-6ac81ca462b4\\f92ff249.png)
+  ![ff91fed6.png](:storage\\3415d728-a5e7-466a-9786-6ac81ca462b4\\ff91fed6.png)
   ### MVP与MVC的差别
   1.Model与View不再直接进行通信，而是通过中间层Presenter来实现。
-  2.Activity的功能被建华，不再充当控制器，主要负责View层面的工作。
+  2.Activity的功能被简化，不再充当控制器，主要负责View层面的工作。
+  
   ### 使用MVP实现需求
-  1.MVPActivity负责提供View层面的功能（采用实现接口的方式）
-  2.MVPModel负责提供数据方面的功能
-  3.Model与View不再直接通信，通过Presenter来实现。
+  1.Model:它是涉及数据管理的接口，主要用来处理数据。
+  2.View: 它是手机界面上的视图层，作用仅仅是绘制UI元素和响应UI操作。
+  3.Presenter: 主要负责与Model层和View层之间的交互。
   
   ### MVP优缺点
   优点：解决了MVC中Controller与View过度耦合的缺点，职责划分明显，更加易于维护。
   
   缺点：接口数量多，项目负责度升高。随着项目负责度的提升，Presenter层越来越臃肿。 
   
-  ### 使用MVP的建议
-  1.接口规范化（封装父类接口以减少接口使用量）
-  2.使用第三方插件自动生成MVP代码
-  3.对于一些简单的界面，可以选择不适用框架
-  4.根据项目复杂程度，部分模块可以选择不使用接口。
+  ### MVP相关文献
+  [Android MVP 实例 \\| 吴小龙同學](http://wuxiaolong.me/2015/09/23/AndroidMVPSample/)
   
   ## MVVM模型简介
   MVVM是Model-View-ViewModel的简写，MVVM在MVP的基础上实现了数据视图的绑定（DataBinding）,当数据变化时，视图会自动更新;反之，当视图发生变化时，数据也会自动更新。
@@ -80,7 +78,7 @@ content: '''
   
 '''
 linesHighlighted: [
-  40
+  37
 ]
 isStarred: false
 isTrashed: false

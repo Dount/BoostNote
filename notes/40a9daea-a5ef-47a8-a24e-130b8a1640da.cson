@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-10-24T14:54:56.814Z"
+updatedAt: "2020-10-29T03:09:02.594Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -3463,12 +3463,16 @@ content: '''
   [Android控件RecyclerView的基本用法 - 中国人醒来了 - 博客园](https://www.cnblogs.com/it-tsz/p/11371336.html)
   
   ## 20. Systrace 学习使用
+  ### 什么是Systrace 
+  是Android中自带的一种性能数据采集和分析工具，通过收集Framework部分关键模块，I/O操作，CPU负载以及内核运行信息，可以帮助
+  开发者直观的分析系统瓶颈，改进性能。
   
   
   ## 面试题参考文献
   
   [jeanboy_jeanboydev_CSDN博客-Android进阶,Java基础,Android进阶领域博主](https://blog.csdn.net/freekiteyu/article/list/1)
   [成功入职字节跳动的小姐姐告诉你，Android面试吃透这一篇就没有拿不到的offer！_Stay Hungry Stay Foolish-CSDN博客](https://blog.csdn.net/qq_29966203/article/details/105455615)
+  
   
   
   
@@ -3485,8 +3489,8 @@ linesHighlighted: [
   1198
   2983
   2901
-  3611
-  3684
+  3685
+  3612
 ]
 isStarred: false
 isTrashed: false
