@@ -1,5 +1,5 @@
 createdAt: "2020-10-22T14:35:24.656Z"
-updatedAt: "2020-10-29T15:59:25.557Z"
+updatedAt: "2020-11-04T15:01:51.395Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "kotlin 零基础到进阶"
@@ -472,6 +472,99 @@ content: '''
   注意：lateinit关键字不能原始类型。
   
   ### 4.2 抽象类与接口
+  
+  #### 4.2.1 抽象类与抽象成员
+  在Kotlin中一个类的成员包括属性和函数，抽象类的成员也必须是抽象的，需要使用abstract关键字修饰。
+  ```
+  abstract class Shape{
+      abstract var width:Double
+      abstract var heigth:Double
+      abstract var radisu:Double
+      abstract fun area():Double
+      
+          fun onClick(){  
+          println("I am Clicked!")
+      }
+  
+      open fun openOnClick(){
+          println("I am Clicked!")
+      }
+      
+  }
+  ```
+  **其中父类的onClick()函数默认是final的，不可被覆盖重写。如果想要开发给子类重新实现这个函数。
+  可以在前面加上open关键字。**
+  
+  继承Shape的方法如下：
+  ```
+  class Rectangle(override var width:Double,override var heigth:Double,
+                   override var radisu:Double):Shape(){
+      override fun area():Double{
+          return heigth*width
+      }
+  
+      override fun openOnClick() {
+          println("Rectangle 重写了openOnClick方法")
+      }
+  }
+  
+  class Circle(override var width: Double,override var heigth: Double,
+               override var radisu: Double):Shape(){
+      override fun area(): Double {
+          return heigth*width
+      }
+  
+      override fun openOnClick() {
+          println("Circle 重写了openOnClick方法")
+      }
+  }
+  
+  fun main(args:Array<String>){
+      val r = Rectangle(3.0,4.0,0.0)
+      println(r.area())
+      r.onClick()
+      r.openOnClick()
+      val c = Circle(0.0,0.0,4.0)
+      println(c.area())
+      c.onClick()
+      c.openOnClick()
+  }
+  
+  ```
+  注意：
+  1. 如果实现的是抽象类其成员也必须是抽象的，需要使用abstract关键字修饰。
+  2. 父类的函数中默认是final不能被重写的，如果需要重写则在前面加上open关键字。
+  3. 能够继承父类的public和protected成员变量。
+  4. 不能继承父类的private成员变量。
+  5. 能够继承父类的public和protected成员变量。
+  6. 对于子类可以继承的父类成员变量，如果在子类中出现了同名称的成员变量，则会发生隐藏现象，即子类的成员变量会屏蔽掉父类的同名成员变量。如果要在子类中访问父类的同名成员变量，需要使用super关键字进行引用。
+  #### 4.2.2 接口
+  Kotlin中使用interface作为接口的关键词:
+  ```
+  interface ProjectService{
+      val name:String
+      val owner:String
+      fun save(project:ProjectService)
+      fun print(){
+          println("I am project")
+      }
+  }
+  
+  class ProjectServiceImpl(override val name: String, override val owner: String) :ProjectService {
+      override fun save(project: ProjectService) {
+  
+      }
+  
+      override fun print() {
+          println("ProjectServiceImpl 重写了print方法")
+      }
+  }
+   
+  ```
+  注意：
+  1. 接口中可以对方法有具体的实现。
+  2. 与抽象类的相比，接口可以直接重写方法的具体实现。
+  3. 一个类智能存在一个父类，但是接口不同，一个类可以同时实现多个接口。
   
 '''
 linesHighlighted: [

@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-10-29T03:09:02.594Z"
+updatedAt: "2020-11-03T16:51:40.087Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -43,7 +43,7 @@ content: '''
   
       @Override
       public void onTerminate() {
-          // 程序终止的时候执行
+          //程序终止的时候执行
           //当终止应用程序对象时调用，不保证一定被调用，意思是当程序被内核终止以便为其他应用程序释放资源，那
           //么将不会提醒，并且不调用应用程序的对象的onTerminate方法而直接终止进程
           KLog.d(TAG, "onTerminate");
@@ -244,7 +244,7 @@ content: '''
   
   ![20160930094006623.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\2d4a81e4.png)
   
-  从Log可以看出，第一次调用startService方法时，onCreate方法、onStartCommand方法将依次被调用，**而多次调用startService时，只有onStartCommand方法被调用，最后我们调用stopService方法停止服务时onDestory方法被回调，这就是启动状态下Service的执行周期**。接着我们重新回过头来进一步分析onStartCommand（Intent intent, int flags, int startId），这个方法有3个传入参数，它们的含义如下：
+  从Log可以看出，第一次调用startService方法时，onCreate方法、onStartCommand方法将依次被调用，(★★)**而多次调用startService时，只有onStartCommand方法被调用，最后我们调用stopService方法停止服务时onDestory方法被回调，这就是启动状态下Service的执行周期**。接着我们重新回过头来进一步分析onStartCommand（Intent intent, int flags, int startId），这个方法有3个传入参数，它们的含义如下：
   
   ### 2.5 onStartCommand 中参数的意义
   - intent 
@@ -1035,9 +1035,23 @@ content: '''
   [](https://mp.weixin.qq.com/s/w1xiDiaOJTmxdcmQlCt0bg?)
   [【Android】Service前台服务的使用 - 简书](https://www.jianshu.com/p/5505390503fa)
   
+  ### 2.19 在Service中启动Activity（★★）
+  如果直接通过Intent的方式启动Activity，会报AndroidRuntimeException异常。
+  
+  ```
+  Intent intent = new Intent(this,MainActivity.class);
+  intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);-----重要
+  startActivity(intent);
+  ```
+  
+  [Android 在Service中启动Activity的大坑_ZhangQiang_0的博客-CSDN博客](https://blog.csdn.net/zhangqiang_0/article/details/79566873)
+  #### 2.19.1 解决这个异常后会出现问题？
+  这样带来的问题就是在最近任务列表里面会出现两个相同的应用程序，比如你是在电话本里面启动的，那么最近任务列表就会出现两个电话本；因为有两个Task嘛！
+  只要在新的Task里面的Activity里面配置android:excludeFromRecents=”true”就可以了。表示这个Activity不会显示在最近列表里面。
+  
   ## 3、Fragment
   [Android-ReadTheFuckingSourceCode/02_fragment.md at master · jeanboydev/Android-ReadTheFuckingSourceCode · GitHub](https://github.com/jeanboydev/Android-ReadTheFuckingSourceCode/blob/master/article/android/basic/02_fragment.md)
-  ### 3.1 Activity与Fragment生命周期
+  ### 3.1 Activity与Fragment生命周期（★★）
   
   ![0d0a189d.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\88518779.png)
   
@@ -2247,7 +2261,7 @@ content: '''
   反序列化
   - 将字节序列恢复为原始对象的过程
   
-  #### 9.2.2 Serializable与Parcelable的区别
+  #### 9.2.2 Serializable与Parcelable的区别(★★★)
   
   - Serializable接口是在java中的序列化抽象类，而Parcelable接口则是android中特有的序列化接口
   - Serializable使用IO读写存储在硬盘上。序列化过程使用了反射技术，并且期间产生大量临时对象,从而引起频繁的GC。
@@ -2378,7 +2392,7 @@ content: '''
   3. 客户端与服务端使用AIDL进行 IPC 的工作流程
   ![2491431-425990373820aaf6.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\4a0f8f69.png)
   
-  ## 10、Binder学习
+  ## 10、Binder学习(★★★)
   
   ### 10.1 Binder概述
   Binder是跨进程通信(IPC)的桥梁
@@ -2443,7 +2457,7 @@ content: '''
   #### 11.1.2 Android Lint工具
   Android Lint Tool 是Android Sutido种集成的一个Android代码提示工具，它可以给你布局、代码提供非常强大的帮助。硬编码会提示以级别警告，例如：在布局文件中写了三层冗余的LinearLayout布局、直接在TextView中写要显示的文字、字体大小使用dp而不是sp为单位，就会在编辑器右边看到提示。
   
-  ### 11.2 APK瘦身
+  ### 11.2 APK瘦身(★★★★)
   #### 11.2.1 安装包的组成
   assets文件夹 存放一些配置文件，资源文件，assets不会自动生成对应的ID,而是通过AssetManager类的接口获取
   
@@ -3476,21 +3490,23 @@ content: '''
   
   
   
+  
 '''
 linesHighlighted: [
-  2387
-  2375
-  2236
-  1827
-  1633
-  1498
-  1495
-  1231
-  1198
-  2983
-  2901
-  3685
-  3612
+  2403
+  2391
+  2252
+  1843
+  1649
+  1514
+  1511
+  1247
+  1214
+  2999
+  2917
+  3629
+  3702
+  1031
 ]
 isStarred: false
 isTrashed: false
