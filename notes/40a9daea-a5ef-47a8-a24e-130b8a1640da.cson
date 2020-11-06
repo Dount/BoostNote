@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-11-03T16:51:40.087Z"
+updatedAt: "2020-11-06T06:07:58.981Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android 面试题"
@@ -3376,6 +3376,20 @@ content: '''
   #### 17.4.3 解决方法
   将Adapter写成静态内部类写在Activity里面。
   
+  ### 17.5 LeakCanary学习与原理
+  #### 17.5.1 LeakCanary 简介
+  LeakCanary是一款开源的内存泄漏检查工具，在项目中，可以使用它来检测Activity与Fragment是否能够被GC及时回收。
+  
+  #### 17.5.2 LeakCanary 做不到的
+  1. 检测申请大容量内存导致的OOM问题
+  2. Bitmap内存未释放问题
+  3. Service 中的内存泄漏
+  
+  #### 
+  
+  
+  
+  
   ### 17.  参考文献
   [内存泄漏的场景_wanghong940821的博客-CSDN博客](https://blog.csdn.net/wanghong940821/article/details/79439569?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~all~sobaiduend~default-2-79439569.nonecase&utm_term=oom%20%E5%87%BA%E7%8E%B0%E7%9A%84%E6%9C%89%E5%93%AA%E4%BA%9B%E5%9C%BA%E6%99%AF&spm=1000.2123.3001.4430)
   [Android开发——告诉你Adapter应该写在Activity里面还是外面 - 齐天大猴子 - 博客园](https://www.cnblogs.com/qitian1/p/6461501.html)
@@ -3504,9 +3518,9 @@ linesHighlighted: [
   1214
   2999
   2917
-  3629
-  3702
   1031
+  3641
+  3714
 ]
 isStarred: false
 isTrashed: false
