@@ -1,12 +1,12 @@
 createdAt: "2020-06-21T08:23:29.768Z"
-updatedAt: "2020-10-27T15:02:12.469Z"
+updatedAt: "2020-11-10T15:26:08.184Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
-title: "Android开发中的MVC_MVP_MVVM"
+title: "Android 框架"
 tags: []
 content: '''
-  # Android开发中的MVC_MVP_MVVM
-  
+  # Android 框架
+  [TOC]
   ## MVC模型简介
   MVC的全名是Model View Controller ,即模型（model）-视图（View)-控制器（controller）。
   Controller:Activity ,Fragment
@@ -24,7 +24,7 @@ content: '''
   
   ## MVP模型简介
   MVP即Modep-View-Presenter模型
-  ![ff91fed6.png](:storage\\3415d728-a5e7-466a-9786-6ac81ca462b4\\ff91fed6.png)
+  ![78cf45d1.png](:storage\\3415d728-a5e7-466a-9786-6ac81ca462b4\\78cf45d1.png)
   ### MVP与MVC的差别
   1.Model与View不再直接进行通信，而是通过中间层Presenter来实现。
   2.Activity的功能被简化，不再充当控制器，主要负责View层面的工作。
@@ -48,32 +48,508 @@ content: '''
   2.告别繁琐findViewByld操作
   ![21e074e4.png](:storage\\3415d728-a5e7-466a-9786-6ac81ca462b4\\21e074e4.png)
   
-  ## DataBinding是什么？
+  ### DataBinding是什么？
   DataBinding 是谷歌官方发布的一个实现数据绑定的框架（实现数据与视图的双向绑定），DataBingding可以帮助我们在安卓中更好的实现MVVM模式。
   
-  ## DataBinding使用
+  ### DataBinding使用
   1.启用DataBinding
   2.修改布局文件为DataBinding布局
   3.数据绑定
   
-  ## 使用MVVM实现需求
+  ### 使用MVVM实现需求
   1.提供View,ViewMoel以及Model三层
   2.将布局修改为DataBinding布局
   3.View与ViewModel之间通过DataBinding进行通信
   4.获取数据并展示在界面上
   
-  ## 使用LiveData+ViewModel 实现MVVM
+  ### 使用LiveData+ViewModel 实现MVVM
   1.LiveData是一个可以被观察的数据持有者，它可以通过添加观察者的方式来让其他组件观察它的变更。
   2.LiveData遵从应用程序的生命周期（如果LiveData的观察者已经是销毁状态，LiveData就不会通知该观察者）.
   
-  ## MVVM优缺点
+  ### MVVM优缺点
   优点:实现了数据和视图的双向绑定，极大的简化代码
   缺点:Bug难以调试，并且dataBinding目前还存在一些编译问题
   
   MVVM（DataBinding+LiveData）
   
+  ## Room 框架学习
+  
+  ### Room简介
+  Room是一个对象关系映射(ORM)库。Room抽象了SQLite的使用，可以在充分利用SQLite的同时访问流畅的数据库。
+  
+  ### Room三要素
+  1. Database
+  2. Entity
+  3. DAO
+  
+  
+  ### Entity(实体)
+  每个Entity代表数据库中某个表的实体类。默认情况下Room会把Entity里面所有的字段对应到表上的每一列。
+  ```
+  @Entity
+  public class User {
+  
+      @PrimaryKey
+      public int id;
+  
+      public String firstName;
+      public String lastName;
+  
+      @Ignore
+      Bitmap picture;
+  }
+  ```
+  Entity的实体类都需要添加@Entity注解,而且Entity类中需要映射到表中的字段需要保证外部能访问到这些字段(把字段设置为public,或者实现get或set方法)
+  
+  @Entity 的属性如下:
+  | 属性                | 说明                             |
+  | ------------------- | -------------------------------- |
+  | tableName           | 设置表名字。默认是类的名字       |
+  | indices             | 设置索引                         |
+  | inheritSuperIndices | 父类的索引是否会自动被当前类继承 |
+  | primaryKeys         | 设置主键                         |
+  | foreignKeys         | 设置外键                         |
+  
+  注意：
+  - 如果需要制定某个字段不作为表中的一列需要添加@Ignore注解
+  
+  #### 设置表名字
+  默认情况下Entity类的名字就是表的名字(不区分大小写)。但是我们也可以通过@Entity的tableName属性来自定义表名字。
+  ```
+  @Entity(tableName = "users")
+  public class User {
+      ...
+  }
+  ```
+  
+  #### 设置列的名字
+  默认情况下Entity类中字段的名字就是表中列的名字。我们也是可以通过@ColumnInfo注解来自定义表中列的名字。
+  ```
+  @Entity(tableName = "users")
+  public class User {
+      @PrimaryKey
+      public int id;
+  
+      @ColumnInfo(name = "first_name")
+      public String firstName;
+  
+      @ColumnInfo(name = "last_name")
+      public String lastName;
+  }
+  ``` 
+  #### 设置主键
+  每个Entity都需要至少一个字段设置为主键。即使这个Entity只有一个字段也需要设置为主键。
+  ```
+  @Entity(primaryKeys = {"firstName",
+                         "lastName"})
+  public class User {
+  
+      public String firstName;
+      public String lastName;
+  }
+  ```
+  通过@Entity的primaryKeys属性来设置主键(primaryKeys是数组可以设置单个主键，也可以设置复合主键)。
+  
+  ```
+  @Entity
+  public class User {
+  
+      @PrimaryKey
+      public String firstName;
+      @PrimaryKey
+      public String lastName;
+  }
+  ```
+  通过@PrimaryKey注解来设置主键。
+  
+  #### 设置索引
+  数据库索引用于提高数据库表的数据访问速度的。数据库里面的索引有单列索引和组合索引。
+  ```
+  @Entity(indices = {@Index("firstName"),
+          @Index(value = {"last_name", "address"})})
+  public class User {
+      @PrimaryKey
+      public int id;
+  
+      public String firstName;
+      public String address;
+  
+      @ColumnInfo(name = "last_name")
+      public String lastName;
+  
+      @Ignore
+      Bitmap picture;
+  }
+  ```
+  索引也是分两种的唯一索引和非唯一索引。
+  唯一索引:表上一个或者多个字段组合建立的索引，这个或者这些字段的值组合起来在表中不可以重复。
+  非唯一索引:在表上一个或者多个字段组合建立的索引，这个或者这些字段的值组合起来在表中可以重复，不要求唯一。
+  
+  ```
+  @Entity(indices = {@Index(value = {"first_name", "last_name"},
+          unique = true)})
+  public class User {
+      @PrimaryKey
+      public int id;
+  
+      @ColumnInfo(name = "first_name")
+      public String firstName;
+  
+      @ColumnInfo(name = "last_name")
+      public String lastName;
+  
+      @Ignore
+      Bitmap picture;
+  }
+  ```
+  #### 创建嵌套对象
+  有些情况下，你会需要将多个对象组合成一个对象。对象和对象之间是有嵌套关系的。Room中你就可以使用@Embedded注解来表示嵌入。然后，您可以像查看其他单个列一样查询嵌入字段。
+  ```
+  public class Address {
+      public String street;
+      public String state;
+      public String city;
+  
+      @ColumnInfo(name = "post_code")
+      public int postCode;
+  }
+  
+  @Entity
+  public class User {
+      @PrimaryKey
+      public int id;
+  
+      public String firstName;
+  
+      @Embedded
+      public Address address;
+  }
+  ```
+  
+  
+  ### DAO(数据访问对象)
+  包含用于访问数据库的方法。
+  
+  #### Insert(插入)
+  当DAO里面的某个方法添加了@Insert注解。Room会生成一个实现，将所有参数插入到数据库中的一个列表中。
+  @Insert注解可以设置一个属性是onConflict。
+  | 参数                        | 说明                             |
+  | --------------------------- | -------------------------------- |
+  | OnConflictStrategy.REPLACE  | 取代旧数据同时继续事务 |
+  | OnConflictStrategy.ROLLBACK | 回滚事务               |
+  | OnConflictStrategy.ABORT    | 终止事务               |
+  | OnConflictStrategy.FAIL     | 事务失败               |
+  | OnConflictStrategy.IGNORE   | 忽略冲突               |
+  
+  ```
+  @Dao
+  public interface UserDao {
+  
+      @Insert(onConflict = OnConflictStrategy.REPLACE)
+      void insertUsers(User... users);
+  
+  }
+  ```
+  注意：当@Insert注解的方法只有一个参数的时候，这个方法也可以返回一个long类型，当@Insert注解的方法有多个参数的时候则可以返回long数组或List类型。
+  
+  #### Update(更新)
+  当DAO里面的某个方法添加了@Update注解。Room会把对应的参数信息更新到数据库里面去(会根据参数里面的primary key做更新操作)。
+  @Update和@Insert一样也是可以设置onConflict来表明冲突的时候的解决办法。
+  ```
+  @Dao
+  public interface UserDao {
+  
+      @Update(onConflict = OnConflictStrategy.REPLACE)
+      int updateUsers(User... users);
+  
+  }
+  ```
+  注意：@Update注解的方法也可以返回int变量。表示更新了多少行。
+  
+  
+  #### Delete(删除)
+  当DAO里面的某个方法添加了@Delete注解。Room会把对应的参数信息指定的行删除掉(通过参数里面的primary key找到要删除的行)。
+  @Delete也是可以设置onConflict来表明冲突的时候的解决办法。
+  ```
+  @Dao
+  public interface UserDao {
+  
+      @Delete
+      void deleteUsers(User... users);
+  
+  }
+  ```
+  注意： @Delete对应的方法也是可以设置int返回值来表示删除了多少行。
+  
+  #### Query(查询)
+  @Query注解是DAO类中使用的主要注释。它允许您对数据库执行读/写操作，并且还会验证的返回值。
+  如果返回对象中的字段名称与查询响应中的相应列名称不匹配的时候，Room会通过以下两种方式之一提醒：
+  - 如果只有一些字段名称匹配，它会发出警告。
+  - 如果没有字段名称匹配，它会发生错误。
+  
+  ##### 简单查询
+  ```
+  @Dao
+  public interface UserDao {
+  
+      @Query("SELECT * FROM user")
+      User[] loadAllUsers();
+  
+  }
+  ```
+  注意：返回结果可以是数组，也可以是List。
+  
+  ##### 带参数的查询
+  特定的查询条件
+  ```
+  @Dao
+  public interface UserDao {
+  
+      @Query("SELECT * FROM user WHERE firstName == :name")
+      User[] loadAllUsersByFirstName(String name);
+  
+  }
+  ```
+  多个参数查询
+  ```
+  @Dao
+  public interface UserDao {
+  
+      @Query("SELECT * FROM user WHERE age BETWEEN :minAge AND :maxAge")
+      User[] loadAllUsersBetweenAges(int minAge, int maxAge);
+  
+      @Query("SELECT * FROM user WHERE firstName LIKE :search " + "OR lastName LIKE :search")
+      List<User> findUserWithName(String search);
+  
+  }
+  ```
+  
+  ##### 查询特定的字段
+  ```
+  @Entity
+  public class User {
+  
+      @PrimaryKey
+      public String firstName;
+      @PrimaryKey
+      public String lastName;
+      public int    age;
+  }
+  
+  public class NameTuple {
+  
+      private String firstName;
+      private String lastName;
+  
+      public String getFirstName() {
+          return firstName;
+      }
+  
+      public void setFirstName(String firstName) {
+          this.firstName = firstName;
+      }
+  
+      public String getLastName() {
+          return lastName;
+      }
+  
+      public void setLastName(String lastName) {
+          this.lastName = lastName;
+      }
+  }
+  
+  @Dao
+  public interface UserDao {
+  
+      @Query("SELECT firstName, lastName FROM user")
+      List<NameTuple> loadFullName();
+  
+  }
+  ```
+  
+  ##### Observable的查询
+  查询到结果的时候，UI能够自动更新。Room为了实现这一效果，查询的返回值的类型为LiveData。
+  ```
+  @Dao
+  public interface UserDao {
+  
+      @Query("SELECT firstName, lastName FROM user WHERE region IN (:regions)")
+      LiveData<List<NameTuple>> loadUsersFromRegionsSync(List<String> regions);
+  
+  }
+  ```
+  
+  ##### 查询结果直接返回Cursor
+  查询结果直接返回cursor。然后通过cursor去获取具体的结果信息。
+  ```
+  @Dao
+  public interface UserDao {
+  
+      @Query("SELECT * FROM user WHERE age > :minAge LIMIT 5")
+      Cursor loadRawUsersOlderThan(int minAge);
+  
+  }
+  ```
+  
+  ##### 多表查询
+  通过多个表查询
+  ```
+  @Dao
+  public interface MyDao {
+      @Query("SELECT * FROM book "
+             + "INNER JOIN loan ON loan.book_id = book.id "
+             + "INNER JOIN user ON user.id = loan.user_id "
+             + "WHERE user.name LIKE :userName")
+     public List<Book> findBooksBorrowedByNameSync(String userName);
+  }
+  ```
+  查询指定的某些列
+  ```
+  @Dao
+  public interface MyDao {
+     @Query("SELECT user.name AS userName, pet.name AS petName "
+            + "FROM user, pet "
+            + "WHERE user.id = pet.user_id")
+     public LiveData<List<UserPet>> loadUserAndPetNames();
+  
+  
+     // You can also define this class in a separate file, as long as you add the
+     // "public" access modifier.
+     static class UserPet {
+         public String userName;
+         public String petName;
+     }
+  }
+  ```
+  ### Database
+  包含数据库持有者，并作为与应用持久关联数据的底层连接的主要访问点。
+  1. 必须是abstract类而且的extends RoomDatabase。
+  2. 必须在类头的注释中包含与数据库关联的实体列表(Entity对应的类)。
+  3. 包含一个具有0个参数的抽象方法，并返回用@Dao注解的类。
+  
+  @Database包含的属性：
+  | 属性         | 说明                                                                                            |
+  | ------------ | ----------------------------------------------------------------------------------------------- |
+  | entities     | 数据库相关的所有Entity实体类，他们会转化成数据库里面的表                                        |
+  | version      | 数据库版本                                                                                      |
+  | exportSchema | 默认true，也是建议传true，这样可以把Schema导出到一个文件夹里面。同时建议把这个文件夹上次到VCS。 |
+  
+  
+  在运行时，你可以通过调用Room.databaseBuilder()或者Room.inMemoryDatabaseBuilder()获取实例。因为每次创建Database实例都会产生比较大的开销，所以应该将Database设计成单例的，或者直接放在Application中创建。
+  1. Room.databaseBuilder()
+  生成Database对象，并且创建一个存在文件系统中的数据库。
+  2. Room.inMemoryDatabaseBuilder()
+  生成Database对象并且创建一个存在内存中的数据库。当应用退出的时候(应用进程关闭)数据库也消失。
+  
+  #### Database案例
+  定义一个abstract类AppDatabase继承RoomDatabase
+  ```
+  @Database(entities = {User.class, Book.class}, version = 3)
+  @TypeConverters({Converters.class})
+  public abstract class AppDatabase extends RoomDatabase {
+  
+      public abstract UserDao userDao();
+  
+      public abstract BookDao bookDao();
+  
+  }
+  ```
+  把RoomDatabase实例的创建放在Application里面
+  ```
+  public class AppApplication extends Application {
+  
+      private AppDatabase mAppDatabase;
+  
+      @Override
+      public void onCreate() {
+          super.onCreate();
+          mAppDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "android_room_dev.db")
+                             .allowMainThreadQueries()
+                             .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                             .build();
+      }
+  
+      public AppDatabase getAppDatabase() {
+          return mAppDatabase;
+      }
+  
+      /**
+       * 数据库版本 1->2 user表格新增了age列
+       */
+      static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+          @Override
+          public void migrate(SupportSQLiteDatabase database) {
+              database.execSQL("ALTER TABLE User ADD COLUMN age integer");
+          }
+      };
+  
+      /**
+       * 数据库版本 2->3 新增book表格
+       */
+      static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+          @Override
+          public void migrate(SupportSQLiteDatabase database) {
+              database.execSQL(
+                  "CREATE TABLE IF NOT EXISTS `book` (`uid` INTEGER PRIMARY KEY autoincrement, `name` TEXT , `userId` INTEGER, 'time' INTEGER)");
+          }
+      };
+  }
+  ```
+  RoomDatabase.Builder类里面主要方法的介绍：
+  ```
+      /**
+       * 默认值是FrameworkSQLiteOpenHelperFactory，设置数据库的factory。比如我们想改变数据库的存储路径可以通过这个函数来实现
+       */
+      public RoomDatabase.Builder<T> openHelperFactory(@Nullable SupportSQLiteOpenHelper.Factory factory);
+  
+      /**
+       * 设置数据库升级(迁移)的逻辑
+       */
+      public RoomDatabase.Builder<T> addMigrations(@NonNull Migration... migrations);
+  
+      /**
+       * 设置是否允许在主线程做查询操作
+       */
+      public RoomDatabase.Builder<T> allowMainThreadQueries();
+  
+      /**
+       * 设置数据库的日志模式
+       */
+      public RoomDatabase.Builder<T> setJournalMode(@NonNull JournalMode journalMode);
+  
+      /**
+       * 设置迁移数据库如果发生错误，将会重新创建数据库，而不是发生崩溃
+       */
+      public RoomDatabase.Builder<T> fallbackToDestructiveMigration();
+  
+      /**
+       * 设置从某个版本开始迁移数据库如果发生错误，将会重新创建数据库，而不是发生崩溃
+       */
+      public RoomDatabase.Builder<T> fallbackToDestructiveMigrationFrom(int... startVersions);
+  
+      /**
+       * 监听数据库，创建和打开的操作
+       */
+      public RoomDatabase.Builder<T> addCallback(@NonNull RoomDatabase.Callback callback);
+  ```
+   RoomDatabase除了必须添加@Database注解也可以添加@TypeConverter注解。用于提供一个把自定义类转化为一个Room能够持久化的已知类型的，
+  ```
+  public class Converters {
+  
+      @TypeConverter
+      public static Date fromTimestamp(Long value) {
+          return value == null ? null : new Date(value);
+      }
+  
+      @TypeConverter
+      public static Long dateToTimestamp(Date date) {
+          return date == null ? null : date.getTime();
+      }
+  }
+  ```
   ## 文献
   [Android 框架_不要錯過才珍惜-CSDN博客_android mmvc](https://blog.csdn.net/xjh_shin/article/details/104115997)
+  [Android Room 框架学习 - 简书](https://www.jianshu.com/p/3e358eb9ac43)
   
   
 '''

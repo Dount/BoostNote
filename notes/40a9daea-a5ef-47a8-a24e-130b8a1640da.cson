@@ -1,11 +1,11 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-11-06T06:07:58.981Z"
+updatedAt: "2020-11-10T13:55:19.007Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
-title: "Android 面试题"
+title: "Android"
 tags: []
 content: '''
-  # Android 面试题
+  # Android
   [toc]
   ## 1、Application 生命周期
   - Application和Activity,Service一样，是Android框架的一个系统组件。

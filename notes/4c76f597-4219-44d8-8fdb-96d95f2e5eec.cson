@@ -1,12 +1,12 @@
 createdAt: "2020-10-22T14:35:24.656Z"
-updatedAt: "2020-11-04T15:01:51.395Z"
+updatedAt: "2020-11-10T13:59:06.488Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "kotlin 零基础到进阶"
 tags: []
 content: '''
   # kotlin 零基础到进阶
-  
+  [TOC]
   ## 1 KotLin是什么
   使用Kotlin语言让Java程序员的工作变得更轻松，Java语言中的那些空指针错误、浪费时间的冗长的样板代码、啰嗦的语法限制等，在Kotlin语言中统统消失。Kotlin语言简单、务实，语法简洁而强大，安全且表达力强，极富生产力。
   
