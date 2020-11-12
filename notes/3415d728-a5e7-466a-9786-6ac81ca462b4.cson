@@ -1,5 +1,5 @@
 createdAt: "2020-06-21T08:23:29.768Z"
-updatedAt: "2020-11-10T15:26:08.184Z"
+updatedAt: "2020-11-12T15:29:01.395Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "Android 框架"
@@ -52,9 +52,203 @@ content: '''
   DataBinding 是谷歌官方发布的一个实现数据绑定的框架（实现数据与视图的双向绑定），DataBingding可以帮助我们在安卓中更好的实现MVVM模式。
   
   ### DataBinding使用
-  1.启用DataBinding
-  2.修改布局文件为DataBinding布局
-  3.数据绑定
+  #### DataBinding入门使用
+  首先将布局中用layout布局进行包裹。
+  然后通过data 标签声明要用到的变量以及变量类型，实现数据（Model）与 UI（View）进行绑定。
+  最后在Activity 中通过 DataBindingUtil 设置布局文件,省略原先 Activity 的 setContentView() 方法,
+  #### 单向数据绑定
+  实现数据变化自动驱动 UI 刷新的方式有三种：BaseObservable，ObservableField，ObservableCollection
+  
+  ##### BaseObservable
+  BaseObservable 提供了 notifyChange() 和 notifyPropertyChanged() 两个方法，前者会刷新所有的值域，后者则只更新对应 BR 的 flag，该 BR 的生成通过注释 @Bindable 生成，可以通过 BR notify 特定属性关联的视图。
+  ```
+  public class Modle extends BaseObservable {
+      @Bindable
+      public String name;
+      private String password;
+      public Modle(String name, String password) {
+          this.name = name;
+          this.password = password;
+      }
+      public String getName() {
+          return name;
+      }
+      public void setName(String name) {
+          this.name = name;
+          //只更新本字段
+          notifyPropertyChanged(BR.name);
+      }
+      public String getPassword() {
+          return password;
+      }
+      public void setPassword(String password) {
+          this.password = password;
+          //更新所有字段
+          notifyChange();
+      }
+  }
+  ```
+  如果针对特定的字段可以采用监听器的方式。
+  ```
+          goods.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+              @Override
+              public void onPropertyChanged(Observable sender, int propertyId) {
+                  if (propertyId == com.leavesc.databinding_demo.BR.name) {
+                      Log.e(TAG, "BR.name");
+                  } else if (propertyId == com.leavesc.databinding_demo.BR.details) {
+                      Log.e(TAG, "BR.details");
+                  } else if (propertyId == com.leavesc.databinding_demo.BR._all) {
+                      Log.e(TAG, "BR._all");
+                  } else {
+                      Log.e(TAG, "未知");
+                  }
+              }
+          });
+  ```
+  
+  注意：
+  1. 如果是 public 修饰符，则可以直接在成员变量上方加上 @Bindable 注解
+  2. 如果是 private 修饰符，则在成员变量的 get 方法上添加 @Bindable 注解
+  
+  ##### ObservableField
+  ```
+  public class ObservableFieldsUser {
+  
+      public ObservableField<String> firstName = new ObservableField<>();
+      public ObservableField<String> lastName = new ObservableField<>();
+  
+      public ObservableFieldsUser(String firstName, String lastName) {
+          this.firstName.set(firstName);
+          this.lastName.set(lastName);
+      }
+  }
+  ```
+  ```
+  public class ObservableActivity extends AppCompatActivity {
+  
+      @Override
+      protected void onCreate(@Nullable Bundle savedInstanceState) {
+          super.onCreate(savedInstanceState);
+  
+          ActivityObservableBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_observable);
+          final ObservableFieldsUser user = new ObservableFieldsUser("容华", "谢后")
+          binding.setUser(user);
+  
+          binding.setClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                  user.firstName.set("空谷");
+                  user.lastName.set("幽兰");
+          });
+      }
+  }
+  ```
+  除了ObservableField<T>，还可以使用ObservableBoolean, ObservableByte, ObservableChar, ObservableShort, ObservableInt, ObservableLong, ObservableFloat, ObservableDouble, ObservableParcelable。
+  
+  ##### Observable Collections
+  ```
+  public class ObservableActivity extends AppCompatActivity {
+  
+      @Override
+      protected void onCreate(@Nullable Bundle savedInstanceState) {
+          super.onCreate(savedInstanceState);
+  
+          ActivityObservableBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_observable);
+  
+          final ObservableArrayMap<String, String> user = new ObservableArrayMap<>();
+          user.put("firstName", "容华");
+          user.put("lastName", "谢后");
+  
+          binding.setUser(user);
+  
+          binding.setClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                  user.put("firstName", "空谷");
+                  user.put("lastName", "幽兰");
+              }
+          });
+      }
+  }
+  ```
+  
+  ```
+  <?xml version="1.0" encoding="utf-8"?>
+  <layout xmlns:android="http://schemas.android.com/apk/res/android">
+  
+      <data>
+          <import type="android.databinding.ObservableMap" />
+  
+          <variable
+              name="user"
+              type="ObservableMap<String, String>" />
+  
+          <variable
+              name="clickListener"
+              type="android.view.View.OnClickListener" />
+      </data>
+  
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_margin="10dp"
+          android:orientation="vertical">
+  
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@{user[`firstName`]}" />
+  
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@{user[`lastName`]}" />
+  
+          <Button
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="10dp"
+              android:onClick="@{clickListener}"
+              android:text="更新数据" />
+  
+      </LinearLayout>
+  
+  </layout>
+  ```
+  #### 双向绑定
+  DataBinding现在也支持双向绑定了，即UI改变的同时，数据模型中的数据也跟着改变；
+  使用@={ }表达式进行双向绑定
+  ```
+  <?xml version="1.0" encoding="utf-8"?>
+  <layout xmlns:android="http://schemas.android.com/apk/res/android">
+  
+      <data>
+  
+          <variable
+              name="user"
+              type="com.yl.databindingdemo.bean.ObservableObjectsUser" />
+      </data>
+  
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_margin="10dp"
+          android:orientation="vertical">
+  
+          <EditText
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:text="@={user.firstName}" />
+  
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@{user.firstName}" />
+  
+      </LinearLayout>
+  
+  </layout>
+  ```
   
   ### 使用MVVM实现需求
   1.提供View,ViewMoel以及Model三层
