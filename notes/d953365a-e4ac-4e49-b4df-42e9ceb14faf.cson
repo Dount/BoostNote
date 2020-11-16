@@ -1,0 +1,60 @@
+createdAt: "2020-11-16T14:18:42.347Z"
+updatedAt: "2020-11-16T14:22:40.616Z"
+type: "MARKDOWN_NOTE"
+folder: "d93d185dcf894dbad7b3"
+title: "铁路调度台项目总结"
+tags: []
+content: '''
+  # 铁路调度台项目总结
+  
+  ## 全局初始化
+  ### BaseApp.java
+  首先初始化 异常捕获线程，注册Activity生命周期监听，开启logService,开始刷新时间。
+  其次初始化 科达视讯SDK，1.设置能力集配置发送或接受视频的码率，以及使用的协议。2.将context传给媒体控制器，3.初始化网络信息，4.开始初始化各项服务。固定SIP传输方式
+  
+  ### SplashActivity
+  通过工具类判断，是否已经配置，如果已经配置直接启动MainActivity,否则启动LoginActivity.
+  
+  ### LoginActivity
+  通过DataBinding 与View进行绑定，最核心方法 调用 LoginManager.loginAPS 开始登录。
+  
+  ### LoginManage
+  loginAps方法开始注册APS，会通过BaseCallBack 收到回调信息，并转发到LoginCallback中。然后判断是否注册成功。
+  之后保存sip配置信息，平台配置信息。最后到LoginManager去注册SIP，登录会管平台，并在BaseCallBack收到回调，回传到LoginCallBack中。
+  以上当APS注册完成后，跳转到MainActivity.
+  
+  ### MainActivity
+  当第一次APS，SIP,平台已经注册成功后，下次启动直接进入MainActivity中注册。
+  初始化呼叫记录区 initRecordArea ，通过Room 去加载RecordDao表内容。
+  
+  初始化呼叫用户去 initContactArea, 通过Room 去加载ContactDao表内容，点击用户可以直接呼叫，长按用户进行删除，点击加号可以启动弹框添加数据，
+  当添加完毕后，会去调用refreshContacts 去刷新。
+  
+  初始化自定义用户区 initContactGpArea.  先去初始化Adapter,然后通过点击添加，视图来添加数据。
+  长压来删除数据。
+  
+  ## 功能介绍
+  ### 重播功能
+  只能单个重拨，并且只能重拨最近的呼出者。
+  当点击重拨的时候，会拿到list.并遍历最近的呼出(单呼)，并同时开启呼出的AudioActivity.
+  通过AudVidManager 发送请求。并在BaseCallback中收到回调，被动叫ConfInComingNtf接口,主动叫ConfCallingNtf接口，然后都回传到AudVidCallback, 
+  如果是主动叫说明isCallincoming=false。如果是被动叫说明isCallincoming = true.  并启动AudioActivity，如果点击接受，通过AudVidManager.Accept 调用SDK 开始通话，然后会收到两个回调ConfCallingNtf，P2PStartedNtf
+  然后根据三种状态来判断，如果是通话中，将CallInterimFragment的Button打开。
+  
+  ### 会议功能
+  TestMeetDialog是一个Dialog弹出框，在初始化的时候会去加载ContactDao表内容，首先会初始化ContactEditAdapter 与Recycle进行绑定，然后通过选中用户来参加会议。
+  
+  ### 拨号功能
+  DialpadDialog是一个Dialog弹出框，会弹出一个键盘，其中T185,G1365,K288,G98 需要进行转换为7位ASCII码
+  点击呼出转到mainactivity call方法中(只能单独呼叫)
+  
+  ### 添加用户组
+  AddGrouDialog是一个Dialog 弹出框，会弹出一个加载ContactDao表内容的窗口，首先会初始化与呼叫用户去一样的ContactEditAdapter，加载到弹窗中。 
+  然后通过添加用户，将数据加载到ContactGroupLocal中。
+  
+  ## 注意点
+  1. GK/SIP 注册会走同一个接口，注册成功后，可以使用应答模式以及呼叫协议。
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

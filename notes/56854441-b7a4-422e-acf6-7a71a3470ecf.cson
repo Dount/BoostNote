@@ -1,5 +1,5 @@
 createdAt: "2019-05-12T07:49:29.144Z"
-updatedAt: "2020-04-19T13:52:58.782Z"
+updatedAt: "2020-11-16T14:18:01.254Z"
 type: "MARKDOWN_NOTE"
 folder: "d93d185dcf894dbad7b3"
 title: "TestApp 项目总结"
@@ -52,16 +52,20 @@ content: '''
   
   ## 心得
   
-  1.发送APT反馈的状态
+  1. 发送APT反馈的状态
   AudioPassThru 
   按钮弹出框: retray,Cancel,Done
   response:  Success(ResultCode:unsupported_resource),aborted,rejected,retray
   error:  time out
   
-  EndAudio
+  2. EndAudio
   直接结束AudioPassThru 线程
   response: success
   error: reject
+  
+  3. 底层连接方式
+  蓝牙连接方式是通过底层封装BluetoothSocket。
+  USB连接方式是通过AOA协议。
   
   具体如下图所示:
   ![绘图1.png](:storage\\56854441-b7a4-422e-acf6-7a71a3470ecf\\68227453.png)
