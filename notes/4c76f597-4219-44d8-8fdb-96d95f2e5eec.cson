@@ -1,5 +1,5 @@
 createdAt: "2020-10-22T14:35:24.656Z"
-updatedAt: "2020-11-10T13:59:06.488Z"
+updatedAt: "2020-11-29T10:39:28.416Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "kotlin 零基础到进阶"
@@ -565,6 +565,138 @@ content: '''
   1. 接口中可以对方法有具体的实现。
   2. 与抽象类的相比，接口可以直接重写方法的具体实现。
   3. 一个类智能存在一个父类，但是接口不同，一个类可以同时实现多个接口。
+  
+  ### 4.3 object对象
+  Kotlin中没有静态属性和方法，但是可以使用关键字object声明一个object单例对象。
+  ```
+  //声明对象类型User
+  object user{
+      val username:String ="admin"
+      val password:String ="admin"
+      fun hello(){
+          println("Hello, Object !")
+      }
+  }
+  
+  //与java静态变量和方法调用方式一样。
+  fun main(args:Array<String>){
+      println(user.password)
+      println(user.username)
+      user.hello()
+  }
+  
+  ```
+  ### 4.5 数据类
+  替代java中的get/set方法。
+  使用关键字为data class创建一个只包含数据的类。
+  
+  ```
+  data class LoginUser(val username:String,val password:String)
+  
+  fun main(args:Array<String>){
+     
+      val loginUser = LoginUser("zhouwei","zhouwei")
+      val (username,password) = loginUser   //解构声明
+      println("username = ${username},password = ${password}")
+  }
+  ```
+  注意：
+  1. 主构造函数至少包含一个参数
+  2. 参数必须表示为val或者val
+  3. 不能为abstrack,open,sealed或者inner
+  4. 不能继承其他类
+  
+  ### 4.6 枚举
+  Kotlin中使用enum class关键字来声明一个枚举类。
+  ```
+  enum class Direction {
+      NORTH,SOUTH,WEST,EAST
+  }
+  ```
+  Kotlin中的枚举类可以被初始化
+  ```
+  enum class Color(val rgb:Int) { //声明一个带构造参数的枚举类
+      RED(0xFF0000),
+      GREEN(0x00FF00),
+      BLUE(0x0000FF)
+  }
+  
+  val tempColor = Color.GREEN
+      println("tempColor=${tempColor},RGB=${tempColor.rgb},name=${tempColor.name},ordinal=${tempColor.ordinal}")
+  ```
+  注意： 枚举类有两个内置的属性
+  1. public final val name:String 表示枚举对象的值
+  2. public final val ordinal:Int 表示下标位置
+  
+  ### 4.7 内部类
+  
+  #### 4.8.1 普通嵌套类
+  Kotlin中，类可以嵌套，一个类可以嵌套在其他类中，而且可以嵌套多层。
+  ```
+  class tempInnerDemo{
+      class oneInner{
+          private val zero :Int = 0
+          val one:Int =1
+          class twoInner{
+              fun getTwo()=2
+              class threeInner{
+                  val three = 3
+                  fun getFour()=4
+              }
+          }
+      }
+  }
+  fun main(args:Array<String>){
+      val one = tempInnerDemo.oneInner().one
+      val two = tempInnerDemo.oneInner.twoInner().getTwo()
+      val three = tempInnerDemo.oneInner.twoInner.threeInner().getFour()
+      println("one=${one},two=${two},three=${three}")
+  }
+  ```
+  注意：普通嵌套类没有持有外部的引用，所以是无法访问外部类变量。
+  
+  #### 4.8.2 嵌套内部类
+  如果一个类Inner想要访问外部类Outer中的成员，可以在这个类前面添加修饰符inner。
+  内部类会带有一个对外部类的对象引用。
+  ```
+  class tempInnerDemo{
+      class oneInner{
+          private val zero :Int = 0
+          val one:Int =1
+          inner class threeInner{
+              val three = 3
+              fun getFour()=4
+              fun accessOuter(){
+                  println(one)
+              }
+          }
+      }
+  }
+  fun main(args:Array<String>){
+      val one = tempInnerDemo.oneInner().one
+      val two = tempInnerDemo.oneInner().threeInner().accessOuter()
+      val three = tempInnerDemo.oneInner().threeInner().getFour()
+      println("one=${one},two=${two},three=${three}")
+  }
+  ```
+  #### 4.8.3 匿名内部类
+  匿名内部类就是没有名字的内部类。匿名内部类也可以访问外部类的变量。
+  ```
+  class NestedClassesDemo{
+      class AnoymousInnerClassDemo{
+          var isRunning = false
+          fun doRun(){
+              Thread(object :Runnable{ //匿名内部类
+                  override fun run() {
+                      TODO("Not yet implemented")
+                  }
+              }).start()
+          }
+      }
+  }
+  ```
+  ## 5 函数与函数式编程
+  ### 5.5 Kotlin中的特殊函数
   
 '''
 linesHighlighted: [
