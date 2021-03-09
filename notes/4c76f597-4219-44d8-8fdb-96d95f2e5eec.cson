@@ -1,5 +1,5 @@
 createdAt: "2020-10-22T14:35:24.656Z"
-updatedAt: "2020-11-29T10:39:28.416Z"
+updatedAt: "2020-12-29T12:03:14.076Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "kotlin 零基础到进阶"
@@ -696,7 +696,130 @@ content: '''
   }
   ```
   ## 5 函数与函数式编程
-  ### 5.5 Kotlin中的特殊函数
+  ### 5.1 声明函数
+  Kotlin中使用fun关键字来声明函数。
+  ![f0e153be.png](:storage\\4c76f597-4219-44d8-8fdb-96d95f2e5eec\\f0e153be.png)
+  在kotlin中函数也可以当做变量来使用。
+  ```
+  //sum的类型是一个函数类型的变量
+  val sum = fun(x:Int,y:Int):Int{return x+y}
+  //直接使用sum这个函数字面值来调用函数
+  sum(1,1)
+  ```
+  当然也可以直接带上函数名字来声明一个函数：
+  ```
+  fun multiply(x:Int,y:Int):Int{
+    return x*y
+  }
+  multyply(2,2)
+  ```
+  ### 5.2 高阶函数
+  
+  ### 5.3 Kotlin中的特殊函数
+  
+  ## 6 扩展函数与属性
+  在Kotlin里，可以自由扩展任何类的方法和属性。在不修改原类的情况，Kotlin能给一个类扩展新功能而无需继承该类。
+  ### 6.1 扩展函数
+  Kotlin中提供了使用非常简单的扩展函数功能。我们可以为现有的类自由添加自定义的函数。
+  
+  #### 6.1.2 给String类扩展两个函数
+  例如给String类扩展两个函数
+  ```
+  fun String.firstChar(): String {
+      if (this.length == 0) {
+          return ""
+      }
+      return this[0].toString();
+  }
+  fun String.lastChar(): String {
+      if (this.length == 0){
+          return ""
+      }
+      return this[this.length-1].toString()
+  }
+  
+  fun main() {
+      val str ="abc"
+      println(str.firstChar())
+      println(str.lastChar())
+  }
+  
+  ```
+  扩展函数的语法：
+  ![52e723fa.png](:storage\\4c76f597-4219-44d8-8fdb-96d95f2e5eec\\52e723fa.png)
+  
+  #### 6.1.2 给List类扩展一个过滤函数
+  filter()函数的签名
+  ![73bd5f08.png](:storage\\4c76f597-4219-44d8-8fdb-96d95f2e5eec\\73bd5f08.png)
+  ```
+  fun<T> List<T>.filter(predicate:(T)->Boolean):MutableList<T>{
+      val result = ArrayList<T>()
+      this.forEach {
+          if(predicate(it)){
+              result.add(it)
+          }
+      }
+      return result
+  }
+  
+  fun main() {
+      val list = mutableListOf(1,2,3,4,5,6)
+      val result = list.filter {
+          it%2==1
+      }
+      println(result)
+  }
+  ```
+  ### 6.2 扩展属性
+  Kotlin除了扩展一个类的函数，还可以扩展类属性。
+  ![38f98eae.png](:storage\\4c76f597-4219-44d8-8fdb-96d95f2e5eec\\38f98eae.png)
+  ```
+  var <T> MutableList<T>.firstElement: T
+      get() {
+          return this[0]
+      }
+      set(value) {
+          this[0] = value
+      }
+  
+  var <T> MutableList<T>.lastElement: T
+      get() {
+          return this[this.size - 1]
+      }
+      set(value) {
+          this[this.size - 1] = value
+      }
+  
+  val list = mutableListOf(1,2,3,4,5,6,7)
+      println("list =${list}")
+      println(list.firstElement)
+      println(list.lastElement)
+  
+      list.firstElement = -1
+      list.lastElement = -7
+  
+      println("list = ${list}")
+      println(list.firstElement)
+      println(list.lastElement)
+  ```
+  注意：扩展属性允许定义在类或者kotlin文件中，不允许定义在函数中。
+  
+  ### 6.3 扩展中的this关键字
+  Kotlin中使用this表达式
+  1. 在类的成员函数中，this指向这个类的当前对象实例。
+  2. 在扩展函数中，或带接收者的函数字面值中，this代表调用函数时，在点号左侧传递的接受者参数。
+  3. 如果this没有限定符，那么它指向包含当前代码的最内层范围。如果想要指向其他范围内的this,需要使用标签限定符。
+  
+  ```
+  this.forEach{
+    if(predicate(it)){
+       result.add(it)
+    }
+  }
+  ```
+  
+  ## 7 集合类
+  
   
 '''
 linesHighlighted: [

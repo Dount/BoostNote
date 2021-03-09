@@ -1,5 +1,5 @@
 createdAt: "2020-11-16T14:18:42.347Z"
-updatedAt: "2020-11-29T08:43:52.269Z"
+updatedAt: "2020-12-02T10:13:40.790Z"
 type: "MARKDOWN_NOTE"
 folder: "d93d185dcf894dbad7b3"
 title: "铁路调度台项目总结"
@@ -104,6 +104,36 @@ content: '''
   ```
   ##### 参考文献
   [Dialog/DialogFragment 设置透明度/暗度/大小属性_K_Hello的博客-CSDN博客](https://blog.csdn.net/K_Hello/article/details/99548537?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control)
+  
+  #### 实现开机自启动
+  ##### 需求
+  1. 实现在lunch后启动第三方App
+  2. 实现当Android Logo 消失后就启动第三方App
+  
+  ##### 应对方式
+  由于Android8以上版本禁止静态广播注册,因此如果8以上版本需要实现自启动，必须需要root权限，将APK导入到System/app，因此只有在此目录下的App才能收到特定系统级广播，如果是Android8以下版本，可以通过静态广播注册的方式实现。
+  
+  将第三方App设置位桌面应用，有两种方式，
+  第一种方法，可以实现系统内多个桌面应用切换，当不想用第三方应用时，可以从设置中切换回原生桌面应用
+  在AndroidMainfest.xml中修改
+  ```
+  <intent-filter>
+      <action android:name="android.intent.action.MAIN" />
+  
+      <category android:name="android.intent.category.LAUNCHER" />
+      <category android:name="android.intent.category.HOME" />
+      <category android:name="android.intent.category.DEFAULT" />
+  </intent-filter>
+  ```
+  按Home键或回退，将重启弹框，可以通过adb shell 将虚拟键隐藏。
+  adb shell am broadcast -a android.intent.action.HIDE_NAVIGATION_BAR
+  adb shell am broadcast -a android.intent.action.SHOW_NAVIGATION_BAR
+  
+  
+  第二种方式，直接把第三方应用当作系统桌面应用，但是若该应用出BUG时，桌面就不能启动，因为桌面就是该应用。
+  ```
+  
+  ```
   
   ## 注意点
   1. GK/SIP 注册会走同一个接口，注册成功后，可以使用应答模式以及呼叫协议。
