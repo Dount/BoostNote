@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2020-12-01T09:02:21.258Z"
+updatedAt: "2021-03-15T03:29:51.534Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android"
@@ -3495,15 +3495,79 @@ content: '''
   是Android中自带的一种性能数据采集和分析工具，通过收集Framework部分关键模块，I/O操作，CPU负载以及内核运行信息，可以帮助
   开发者直观的分析系统瓶颈，改进性能。
   
+  ## 21. MMKV 学习使用
+  ### 什么是MMKV
+  MMKV腾讯开发的基于mmap内存映射的Key-value组件，底层序列化/反序列化使用protobuf实现，
+  性能高，稳定性强，支持多进程。
+  
+  ### MMKV导入依赖
+  ```
+  dependencies {
+      implementation 'com.tencent:mmkv-static:1.2.7'
+      // replace "1.2.7" with any available version
+  }
+  ```
+  ### MMKV初始化操作
+  ```
+  public void onCreate() {
+      super.onCreate();
+  
+      String rootDir = MMKV.initialize(this); //初始化路径
+      System.out.println("mmkv root: " + rootDir);
+      //……
+  }
+  ```
+  ### MMKV使用
+  ```
+  import com.tencent.mmkv.MMKV; //全局的实例
+  //……
+  
+  MMKV kv = MMKV.defaultMMKV(); //普通使用方式
+  
+  kv.encode("bool", true);
+  boolean bValue = kv.decodeBool("bool");
+  
+  kv.encode("int", Integer.MIN_VALUE);
+  int iValue = kv.decodeInt("int");
+  
+  kv.encode("string", "Hello from mmkv");
+  String str = kv.decodeString("string");
+  
+  
+  MMKV kv = MMKV.mmkvWithID("MyID"); //根据不同业务绑定ID使用
+  kv.encode("bool", true);
+  
+  MMKV kv = MMKV.mmkvWithID("InterProcessKV", MMKV.MULTI_PROCESS_MODE); //多进程访问使用
+  kv.encode("bool", true);
+  
+  ```
+  ### MMKV支持的数据类型
+  - 支持Java语言基础类型:
+    boolean、int、long、float、double、byte[]
+  - 支持以下Java类和容器:
+    String、Set<string!>任何实现了Parcelable的类型
+  
+  ### MMKV原理
+  mmap是一种内存映射文件的方法，即将一个文件或者其它对象映射到进程的地址空间，实现文件磁盘地址和进程
+  虚拟地址中一端虚拟地址的一一对应关系。实现这样的映射关系后，进程就可以采用指针的方法读写操作这一端内存。
+  而系统会自动回写脏页面倒对应的文件磁盘上，即完成了对文件的操作而不必再调用read,write等系统调用函数。
+  ![2c962d8c0e03430298378a2c84779ff3_tplv-k3u1fbpfcp-watermark.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\88f45754.png)
+  虚拟空间是某个进程对分配给它的所有物理地址的重新映射。mmap的作用，在应用的一层，是把文件的某一端，当作内存一样来访问。
+  通过mmap内存映射文件，提供一段可供随时写入的内存块，App只管往里面写数据，由于操作系统负责将内存写到文件，不必担心crash导致数据丢失。
+  
+  ### MMKV解决的问题
+  - 单进程通信方面：
+  MMKV可以解决SharedPreferences不能直接跨进程通信的问题，但SharedPreferences也可以通话ContentProvider或者文件锁等方式解决问题。MMKV的主要优势，一方面SharedPreferences可能导致Activity/Service等生命周期去做waitToFinish()导致ANR问题，而MMKV不存在这个问题，另一个优势是实时写入，性能高，速度快。
+  
+  - 跨进程通信方面：
+  ContentProvider,socket,PIPE,message queue，等方式都要至少2次的内存拷贝。
+  MMKV底层使用mmap实现，采用去中心化的架构，只需要将文件mmap到每个访问进程的内存空间，加上合适的进程锁，再处理好数据的通话，就能够实现多进程并发访问。
+  
   
   ## 面试题参考文献
   
   [jeanboy_jeanboydev_CSDN博客-Android进阶,Java基础,Android进阶领域博主](https://blog.csdn.net/freekiteyu/article/list/1)
   [成功入职字节跳动的小姐姐告诉你，Android面试吃透这一篇就没有拿不到的offer！_Stay Hungry Stay Foolish-CSDN博客](https://blog.csdn.net/qq_29966203/article/details/105455615)
-  
-  
-  
-  
   
 '''
 linesHighlighted: [
@@ -3519,8 +3583,8 @@ linesHighlighted: [
   2999
   2917
   1031
-  3641
-  3714
+  3778
+  3705
 ]
 isStarred: false
 isTrashed: false
