@@ -1,5 +1,5 @@
 createdAt: "2020-06-21T08:23:29.768Z"
-updatedAt: "2020-11-12T15:29:01.395Z"
+updatedAt: "2021-03-23T08:34:22.242Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "Android 框架"
@@ -7,6 +7,55 @@ tags: []
 content: '''
   # Android 框架
   [TOC]
+  
+  ## JetPack学习
+  JetPack它不是一个新的架构，而是由多个库组成的套件，可帮助开发者遵循最佳做法，减少样板代码并编写可在各种Android版本和设备中一致运行的代码。
+  - JetPack 拥有基于生命周期感知的能力，可以减少NPE崩溃，内存泄漏。为我们开发出健壮且流畅的程序提供强力保障。
+  - JetPack可以减少样板代码，有助于提升Android开发的效率。
+  
+  ### JetPack的分类
+  ![f353913a.png](:storage\\3415d728-a5e7-466a-9786-6ac81ca462b4\\f353913a.png)
+  - 基础 - Foundation
+  - 架构 - Architecture
+  - 界面 - UI
+  - 行为 - Behavior
+  
+  #### Foundation(基础组件)
+  - AppCompat：帮助较低版本的Android系统进行兼容
+  - Android KTX：优化了供Kotlin使用的Jetpack和Android平台API，帮助开发者以更简洁、更愉悦、更惯用的方式使用Kotlin进行Android开发
+  - Multidex：为具有多个Dex文件应用提供支持
+  - Test：从AndroidStudio中快速检测基于Kotlin或Java的代码
+  
+  #### Architecture(架构组件)
+  - Data Binding：属于支持库可使用声明式将布局中的界面组件绑定到应用中的数据源
+  - Lifecycles：管理Activity和Fragment生命周期
+  - LiveData：是一个可观察的数据持有者类。与常规Observable不同，LiveData是有生命周期感知的
+  - Navigation：处理应用内导航所需的一切
+  - Paging：一次加载/按需加载 && 显示小块数据
+  - Room：帮助开发者更友好、流畅的访问SQLite数据库
+  - ViewModel：以生命周期感知的方式存储和管理与UI相关的数据
+  - WorkManager：管理Android的后台的作业，即使应用程序退出或设备重新启动也可以运行可延迟的异步任务
+  
+  ##### UI(界面组件)
+  - Animation and Transition：该框架包含用于常见效果的内置动画，并允许开发者创建自定义动画和生命周期回调
+  - Auto：开发Android Auto应用的组件，提供了适用于所有车辆的标准化界面和用户交互
+  - TV：构建可让用户在大屏幕上体验沉浸式内容的应用
+  - Wear：开发Wear应用的组件
+  - Emoji：即便用户没有更新Android系统也可以获取最新的表情符号
+  - Fragment：组件化界面的基本单位
+  - Layout：用XML中声明UI元素或者在代码中实例化UI元素
+  - Paletee：从调色板中提取出有用的信息
+  
+  ##### Behavior(行为组件)
+  - DownloadManager：可处理长时间运行的HTTP下载&&超时重连
+  - Media & playback：用于媒体播放，以及路由的向后兼容API
+  - Permissions：用于检查和请求应用权限的兼容性API
+  - Notifications：提供向后兼容的通知API，支持Wear和Auto
+  - Sharing：提供适合应用操作栏的共享操作
+  - Slices：创建可在应用外部显示应用数据的灵活界面元素
+  
+  
+  
   ## MVC模型简介
   MVC的全名是Model View Controller ,即模型（model）-视图（View)-控制器（controller）。
   Controller:Activity ,Fragment
@@ -256,15 +305,89 @@ content: '''
   3.View与ViewModel之间通过DataBinding进行通信
   4.获取数据并展示在界面上
   
-  ### 使用LiveData+ViewModel 实现MVVM
-  1.LiveData是一个可以被观察的数据持有者，它可以通过添加观察者的方式来让其他组件观察它的变更。
-  2.LiveData遵从应用程序的生命周期（如果LiveData的观察者已经是销毁状态，LiveData就不会通知该观察者）.
+  ### 学习LiveData与ViewModel
+  liveData是Jetpack组件之一，是一个可观察的数据持有者类，LiveData是生命周期感知的，当生命周期处于start或resumed状态，LiveData会通知观察者数据变化，当生命周期处于destroyed时。会自动解除对数据的订阅，从而避免内存泄露。
   
-  ### MVVM优缺点
-  优点:实现了数据和视图的双向绑定，极大的简化代码
-  缺点:Bug难以调试，并且dataBinding目前还存在一些编译问题
+  ![16d438a212202653.jpg](:storage\\3415d728-a5e7-466a-9786-6ac81ca462b4\\3aabf353.jpg)
   
-  MVVM（DataBinding+LiveData）
+  #### LiveData的使用
+  添加依赖
+  ```
+  implementation "android.arch.lifecycle:extensions:1.1.1"
+  ```
+  创建LiveData的ViewModel实例来保存特定类型的数据。
+  ```
+  public class NameViewModel extends ViewModel {
+  // Create a LiveData with a String
+  private MutableLiveData<String> currentName;
+      public MutableLiveData<String> getCurrentName() {
+          if (currentName == null) {
+              currentName = new MutableLiveData<String>();
+          }
+          return currentName;
+      }
+  // Rest of the ViewModel...
+  }
+  ```
+  创建一个观察者对象Observer,该对象定义onChanged()，该方法控制LiveData对象持有的数据更改时发生的情况，通常情况下，在onCreate()方法是开始观察LiveData对象的合适位置。
+  
+  注意：LiveData只在数据发生更改时提供更新，并且向活动观察者提供更新。一般使用observe()当数据更新后，LiveData会通知它的所有活跃的观察者。若是Destroyed状态，则不会收到通知。
+  也可以使用observeForever方法进行订阅，observeForever不会受到生命周期的影响，只要数据更新就会收到通知。
+  ```
+  public class NameActivity extends AppCompatActivity {
+  
+      private NameViewModel model;
+  
+      @Override
+      protected void onCreate(Bundle savedInstanceState) {
+          super.onCreate(savedInstanceState);
+          //创建一个持有某种数据类型的liveData
+          model = ViewModelProviders.of(this).get(NameViewModel.class);
+          //创建一个定义了onChange()方法的观察者
+          //开始订阅
+          final Observer<String> nameObserver = new Observer<String>() {
+              @Override
+              public void onChanged(@Nullable final String newName) {
+                  //更新数据
+                  nameTextView.setText(newName);
+              }
+          };
+          使用observe()方法将观察者对象与LiveData对象关联起来。
+          model.getCurrentName().observe(this, nameObserver);
+      }
+  }
+  ```
+  通过调用MutableLiveData中的setValue和postValue方法来修改存储再LiveData中的数据。setValue只能在主线程中调用，而postValue可以在子线程中调用。
+  ```
+  findViewById(R.id.tv_click).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+          count++;
+          String text;
+          switch (count%5){
+              case 1:
+                  text = "小杨真的是一个逗比么";
+                  break;
+              case 2:
+                  text = "逗比赶紧来star吧";
+                  break;
+              case 3:
+                  text = "小杨想成为大神";
+                  break;
+              case 4:
+                  text = "开始刷新数据啦";
+                  break;
+              default:
+                  text = "变化成默认的数据";
+                  break;
+          }
+          model.getCurrentText().setValue(text);
+      }
+  });
+  ```
+  
+  
+  
   
   ## Room 框架学习
   
@@ -744,11 +867,11 @@ content: '''
   ## 文献
   [Android 框架_不要錯過才珍惜-CSDN博客_android mmvc](https://blog.csdn.net/xjh_shin/article/details/104115997)
   [Android Room 框架学习 - 简书](https://www.jianshu.com/p/3e358eb9ac43)
-  
-  
+  [LiveData详细分析](https://juejin.cn/post/6844904082369413133)
+  [Android Jetpack架构组件——什么是Jetpack？](https://juejin.cn/post/6926511940676108295)
 '''
 linesHighlighted: [
-  37
+  77
 ]
 isStarred: false
 isTrashed: false
