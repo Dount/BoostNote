@@ -1,5 +1,5 @@
 createdAt: "2020-08-06T10:02:59.558Z"
-updatedAt: "2020-09-30T03:22:44.520Z"
+updatedAt: "2021-05-08T07:30:03.756Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "JNI学习"
@@ -79,7 +79,7 @@ content: '''
   3) 如果是静态方法，由于没有对应的java实例对象，因此JNI层的函数第二个参数是jclass clazz，表示调用哪一个Java 的Class的静态方法。
   
   ## 3 JNIEnv
-  JNIEnv是JNI层一个至关重要的东西。它其实是一个与线程相关的结构体，它提供了我们会经常使用到的诸多JNI系统函数。
+  JNIEnv，指代了Java本地接口环境(Java Native Interface Environment），是一个JNI接口指针，指向了本地方法的一个函数表，该函数表中的每一个成员指向了一个JNI函数，本地方法通过JNI函数来访问JVM中的数据结构，也就是通过这个JNIEnv* 指针，就可以对Java端的代码进行操作。
   
   ### 3.1 JNIEnv的获取
   
@@ -258,12 +258,72 @@ content: '''
   native层通过dlopen库将so库加载到内存后。
   再使用dlsym库将调用so库中的方法。
   
+  ### 3.6 SDK开发-----使用Cmake调用动态库
+  为了方便后续打包，需要在Android工程文件下，另新建一个Module(Android Library)
+  #### 3.6.1 准备CmakeLists文件
+  CmakeLists文件存放的位置：
+  ![8fe76bf3.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\8fe76bf3.png)
+  指定CPU架构
+  ![8acfa791.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\8acfa791.png)
+  指定CmakeLists文件路径
+  ![10a02963.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\10a02963.png)
+  新建CPP文件目录,及cpp文件
+  ![7f36b0a3.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\7f36b0a3.png)
+  点击Build > Make module "sdk"
+  
+  #### 3.6.2 CmakeLists文件内容
+  
+  注意：missing and no known rule to make it 找不到so的路径错误。
+  ${CMAKE_SOURCE_DIR}，它指向的是最顶层CMakeLists.txt所在的文件夹的路径
+  若CmakeLists文件在src目录下，需要用俩点向上进入父文件夹。
+  
+  ![561060e8.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\561060e8.png)
+  
+  ![b7099c09.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\b7099c09.png)
+  
+  ![f2c2aa74.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\f2c2aa74.png)
+  
+  ![2512d802.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\2512d802.png)
+  ### 3.7 SDK开发----- 打包jar文件并使用jar文件
+  #### 3.7.1 打包jar文件和so库
+  需要在sdk的build.gradle中添加一个task，通过这个task来打包。
+  ![f8368c50.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\f8368c50.png)
+  编译后的so库文件
+  ![90f71f63.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\90f71f63.png)
+  编译后的jar文件
+  ![310b5e23.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\310b5e23.png)
+  
+  #### 3.7.2 使用jar包和so库
+  将jar包和so库分别libs和jniLibs目录下。
+  ![9306dd36.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\9306dd36.png)
+  在build.gradle文件中添加如下内容
+  ![228908ed.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\228908ed.png)
+  ![2f5157e0.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\2f5157e0.png)
+  
   ### 3.6 参考文献
   [JNI入门介绍（Android Studio 3.4）_黑白棋的博客-CSDN博客](https://blog.csdn.net/qq_41786131/article/details/91355438)
   
   [Java JNI实现原理初探_最帅惋红曲-CSDN博客_jni原理](https://blog.csdn.net/hackooo/article/details/48395765/)
   
   [dlopen 与dlsym-好喜儿-ChinaUnix博客](http://blog.chinaunix.net/uid-26285146-id-3262288.html)
+  
+  [Android NDK开发：打包so库及jar包供他人使用_zuguorui的专栏-CSDN博客_android 打包so](https://blog.csdn.net/zuguorui/article/details/95489686)
+  
+  [Android studio关于Cmake的使用（第三章·引用第三方库文件）_黑马小杰的博客-CSDN博客](https://blog.csdn.net/ma598214297/article/details/78387847#2.1%20%E6%9E%84%E5%BB%BA%E6%94%AF%E6%8C%81C%2FC%2B%2B%E7%9A%84%E5%B7%A5%E7%A8%8B%E3%80%82)
+  
+  [Android studio关于Cmake的使用（第二章·编译库文件）_黑马小杰的博客-CSDN博客](https://blog.csdn.net/ma598214297/article/details/78312992?spm=1001.2014.3001.5501)
+  
+  [Xiongjiayo的博客_CSDN博客-Android,NDK,Git领域博主](https://blog.csdn.net/Xiongjiayo)
+  
+  [Android studio Jni调用第三方库（CMakelist）_Winmming的博客-CSDN博客](https://blog.csdn.net/qq_35532751/article/details/78667984)
+  
+  [Android NDK CMake初体验 - Channing的博客 \\| Channing Blog](https://landchanning.github.io/2016/11/10/android_touch_ndk_cmake/)
+  
+  [JNI常用类型转换](https://juejin.cn/post/6844903734070214663)
+  
+  [Android JNI开发--JNI返回Java对象](https://juejin.cn/post/6844903919882256391)
+  
+  [JNI函数语法_xice.android-CSDN博客](https://blog.csdn.net/xunice/article/details/34429285)
 '''
 linesHighlighted: [
   76
