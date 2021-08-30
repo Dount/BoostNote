@@ -1,0 +1,366 @@
+createdAt: "2021-07-07T07:56:15.679Z"
+updatedAt: "2021-07-09T08:20:54.308Z"
+type: "MARKDOWN_NOTE"
+folder: "537068cf3ce988a4b28a"
+title: "Java设计模式六大原则"
+tags: []
+content: '''
+  # Java设计模式六大原则
+  [TOC]
+  ## 单一职责原则(SRP)
+  就一个类而言，应该仅有一个引起它变化的原因，即只有一个职责。
+  如果一个类有一个以上的职责，这些职责就耦合在了一起。一个职责的变化可能会消弱或抑制这个类完成其它职责的能力。单一职责原则的核心就是解耦和增加内聚性。
+  
+  ### 为什么要遵守单一职责原则
+  1. 提高类的可维护性和可读写性 一个类的职责少了，复杂度降低了，代码就少了，可读性也就好了，可维护性自然就高了。
+  2. 提高系统的可维护性 系统是由类组成的，每个类的可维护性高，相对来讲整个系统的可维护性就高。当然，前提是系统的架构没有问题。
+  3. 降低变更的风险 一个类的职责越多，变更的可能性就越大，变更带来的风险也就越大
+  
+  ### 单一职责原则应用的范围
+  单一职责原则适用的范围有接口、方法、类。按大家的说法，接口和方法必须保证单一职责，类就不必保证，只要符合业务就行
+  
+  #### 方法层面的应用
+  现在有一个场景, 需要修改用户的用户名和密码. 就针对这个功能我们可以有多种实现. 
+  第一种:
+  ```
+  /**
+   * 操作的类型
+   */
+  public enum OperateEnum {
+      UPDATE_USERNAME,
+      UPDATE_PASSWORD;
+  }
+  
+  public interface UserOperate {
+      void updateUserInfo(OperateEnum type, UserInfo userInfo);
+  }
+  
+  public class UserOperateImpl implements UserOperate{
+      @Override
+      public void updateUserInfo(OperateEnum type, UserInfo userInfo) {
+          if (type == OperateEnum.UPDATE_PASSWORD) {
+              // 修改密码
+          } else if(type == OperateEnum.UPDATE_USERNAME) {
+              // 修改用户名
+          }
+      }
+  }
+  ```
+  第二种：
+  ```
+  public interface UserOperate {
+      void updateUserName(UserInfo userInfo);
+  
+      void updateUserPassword(UserInfo userInfo);
+  }
+  
+  public class UserOperateImpl implements UserOperate {
+      @Override
+      public void updateUserName(UserInfo userInfo) {
+          // 修改用户名逻辑
+      }
+  
+      @Override
+      public void updateUserPassword(UserInfo userInfo) {
+          // 修改密码逻辑
+      }
+  }
+  ```
+  两种实现的区别:
+  第一种实现是根据操作类型进行区分, 不同类型执行不同的逻辑. 把修改用户名和修改密码这两件事耦合在一起了. 如果客户端在操作的时候传错了类型, 那么就会发生错误.
+  第二种实现是我们推荐的实现方式. 修改用户名和修改密码逻辑分开. 各自执行各自的职责, 互不干扰. 功能清晰明了。
+  
+  #### 接口层面的应用
+  假设一个场景, 大家一起做家务, 张三扫地, 李四买菜. 李四买完菜回来还得做饭
+  ```
+  /**
+   * 做家务
+   */
+  public interface Hoursework {
+  }
+  
+  public interface Shopping extends Hoursework{
+      // 购物
+      void shopping();
+  }
+  
+  public interface SweepFloor extends Hoursework{
+      // 扫地
+      void sweepFlooring();
+  }
+  
+  public class Zhangsan implements SweepFloor{
+  
+      @Override
+      public void sweepFlooring() {
+          // 张三扫地
+      }
+  }
+  
+  public class Lisi implements Shopping{
+      @Override
+      public void shopping() {
+          // 李四购物
+      }
+  }
+  ```
+  上面做家务不是定义成一个接口, 而是将扫地和做家务分开了. 张三扫地, 那么张三就实现扫地的接口. 李四购物, 李四就实现购物的接口. 后面李四要增加一个功能做饭. 那么就新增一个做饭接口, 这次只需要李四实现做饭接口就可以了.
+  ```
+  public interface Cooking extends Hoursework{ 
+      void cooking();
+  }
+  
+  public class Lisi implements Shopping, Cooking{
+      @Override
+      public void shopping() {
+          // 李四购物
+      }
+  
+      @Override
+      public void cooking() {
+          // 李四做饭
+      }
+  }
+  ```
+  如上, 我们看到张三没有实现多余的接口, 李四也没有. 而且当新增功能的时候, 只影响了李四, 并没有影响张三. 这就是符合单一职责原则. 一个类只做一件事. 并且他的修改不会带来其他的变化.
+  #### 类层面的应用
+  从类的层面来讲, 没有办法完全按照单一职责原来来拆分. 换种说法, 类的职责可大可小, 不想接口那样可以很明确的按照单一职责原则拆分. 只要符合逻辑有道理即可.
+  比如, 我们在网站首页可以注册, 登录, 微信登录.注册登录等操作. 我们通常的做法是:
+  ```
+  public interface UserOperate {
+  
+      void login(UserInfo userInfo);
+  
+      void register(UserInfo userInfo);
+  
+      void logout(UserInfo userInfo);
+  }
+  
+  
+  public class UserOperateImpl implements UserOperate{
+      @Override
+      public void login(UserInfo userInfo) {
+          // 用户登录
+      }
+  
+      @Override
+      public void register(UserInfo userInfo) {
+          // 用户注册
+      }
+  
+      @Override
+      public void logout(UserInfo userInfo) {
+          // 用户登出
+      }
+  }
+  
+  ```
+  那如果按照单一职责原则拆分, 也可以拆分为下面的形式.
+  ```
+  
+  public interface Register {
+      void register();
+  }
+  
+  public interface Login {
+      void login();
+  }
+  
+  public interface Logout {
+      void logout();
+  }
+  
+  
+  public class RegisterImpl implements Register{
+  
+      @Override
+      public void register() {
+  
+      }
+  }
+  
+  public class LoginImpl implements Login{
+      @Override
+      public void login() {
+          // 用户登录
+      }
+  }
+  
+  public class LogoutImpl implements Logout{
+  
+      @Override
+      public void logout() {
+  
+      }
+  }
+  ```
+  ## 里式替换原则（LSP）
+  里氏替换原则是帮助我们在继承关系中进行父子类的设计。
+  里氏替换原则主要阐述了有关继承的一些原则，也就是什么时候应该使用继承，
+  什么时候不应该使用继承，以及其中蕴含的原理。
+  
+  ### 里氏替换的两种含义
+  1. 里氏替换原则是针对继承而言的，如果继承是为了实现代码重用，也就是为了共享方法，那么共享的父类方法就应该保持不变，不能被子类重新定义。子类只能通过新添加方法来扩展功能，父类和子类都可以实例化，而子类继承的方法和父类是一样的，父类调用方法的地方，子类也可以调用同一个继承得来的，逻辑和父类一致的方法，这时用子类对象将父类对象替换掉时，当然逻辑一致，相安无事。
+  
+  2. 如果继承的目的是为了多态，而多态的前提就是子类覆盖并重新定义父类的方法，为了符合LSP，我们应该将父类定义为抽象类，并定义抽象方法，让子类重新定义这些方法，当父类是抽象类时，父类就是不能实例化，所以也不存在可实例化的父类对象在程序里。也就不存在子类替换父类实例（根本不存在父类实例了）时逻辑不一致的可能。
+  
+  ### 使用里式替换原则的目的
+  采用里氏替换原则就是为了减少继承带来的缺点，增强程序的健壮性，
+  版本升级时也可以保持良好的兼容性。即使增加子类，原有的子类也可以继续运行。
+  
+  ### 使用里式替换原则与继承多态之间的关系
+  里式替换原则和继承多态有关系, 但是他俩并不是一回事. 
+  ```
+  
+  public class Cache {
+      public void set(String key, String value) {
+  
+      }
+  }
+  
+  public class Redis extends Cache {
+      @Override
+      public void set(String key, String value) {
+  
+      }
+  }
+  
+  
+  public class Memcache extends Cache {
+      @Override
+      public void set(String key, String value) {
+  
+      }
+  }
+  
+  public class CacheTest {
+      public static void main(String[] args) {
+          // 父类对象都可以接收子类对象
+          Cache cache = new Cache();
+          cache.set("key123", "key123");
+  
+          cache = new Redis();
+          cache.set("key123", "key123");
+  
+          cache = new Memcache();
+          cache.set("key123", "key123");
+      }
+  }
+  ```
+  通过上面的例子, 可以看出Cache是父类, Redis 和 Memcache是子类, 他们继承自Cache. 这是继承和多态的思想. 而且这两个子类目前为止也都符合里式替换原则.可以替换父类出现的任何位置，并且原来代码的逻辑行为不变且正确性也没有被破坏。
+  
+  但如果我们对Redis中的set方法做了长度校验
+  ```
+  public class Redis extends Cache{
+      @Override
+      public void set(String key, String value) {
+          if (key == null || key.length() < 10 || key.length() > 100) {
+              System.out.println("key的长度不符合要求");
+              throw new IllegalArgumentException(key的长度不符合要求);
+          }
+      }
+  }
+  
+  public class CacheTest {
+      public static void main(String[] args) {
+          // 父类对象都可以接收子类对象
+          Cache cache = new Cache();
+          cache.set("key123", "key123");
+  
+          cache = new Redis();
+          cache.set("key123", "key123");
+      }
+  }
+  ```
+  如果我们使用父类对象时替换成子类对象, 那么就会抛出异常. 程序的逻辑行为就发生了变化，虽然改造之后的代码仍然可以通过子类来替换父类 ，但是，从设计思路上来讲，Redis子类的设计是不符合里式替换原则的。
+  
+  ### 里氏替换的规则
+  里式替换原则的核心就是“约定”，父类与子类的约定。里氏替换原则要求子类在进行设计的时候要遵守父类的一些行为约定。这里的行为约定包括：函数所要实现的功能，对输入、输出、异常的约定，甚至包括注释中一些特殊说明等。
+  #### 前置条件不能被加强
+  前置条件即输入参数是不能被加强的，就像上面Cache的示例，Redis子类对输入参数Key的要求进行了加强，此时在调用处替换父类对象为子类对象就可能引发异常。也就是说，子类对输入的数据的校验比父类更加严格，那子类的设计就违背了里式替换原则。
+  
+  #### 后置条件不能被消弱
+  后置条件即输出，假设我们的父类方法约定输出参数要大于0，调用父类方法的程序根据约定对输出参数进行了大于0的验证。而子类在实现的时候却输出了小于等于0的值。此时子类的涉及就违背了里氏替换原则。
+  
+  #### 不能违背对异常的约定
+  在父类中，某个函数约定，只会抛出 ArgumentNullException 异常， 那子类的设计实现中只允许抛出 ArgumentNullException 异常，任何其他异常的抛出，都会导致子类违背里式替换原则。
+  
+  ### 子类必须完全实现父类的抽象方法
+  如果设计的子类不能完全实现父类的抽象方法那么你的设计就不满足里式替换原则。
+  ```
+  // 定义抽象类枪
+  public abstract class AbstractGun{
+      // 射击
+      public abstract void shoot();
+      // 杀人
+      public abstract void kill();
+  }
+  ```
+  比如定义了一个抽象的枪类，可以射击和杀人。无论是步枪还是手枪都可以射击和杀人，可以定义子类来继承父类
+  ```
+  // 定义手枪，步枪，机枪
+  public class Handgun extends AbstractGun{   
+      public void shoot(){  
+           // 手枪射击
+      }
+      public void kill(){    
+          // 手枪杀人
+      }
+  }
+  public class Rifle extends AbstractGun{
+      public void shoot(){
+           // 步枪射击
+      }  
+      public void kill(){    
+           // 步枪杀人
+      }
+  }
+  ```
+  但是如果我们在这个继承体系内加入一个玩具枪，就会有问题了，因为玩具枪只能射击，不能杀人。
+  ```
+  public class ToyGun extends AbstractGun{
+      public void shoot(){
+          // 玩具枪射击
+      }
+      public void kill(){ 
+          // 因为玩具枪不能杀人，就返回空，或者直接throw一个异常出去
+          throw new Exception("我是个玩具枪，惊不惊喜，意不意外，刺不刺激？");
+      }
+  }
+  ```
+  这时，我们如果把使用父类对象的地方替换为子类对象，显然是会有问题的。不能满足里氏替换原则
+  
+  ### 里氏替换原则的实现方法
+  1. 子类可以实现父类的抽象方法，但不能覆盖父类的非抽象方法
+  2. 子类中可以增加自己特有的方法
+  3. 当子类的方法重载父类的方法时，方法的前置条件要比父类的方法更宽松
+  4. 当子类的方法实现父类的方法时，方法的后置条件要比父类的方法更严格或相等
+  
+  ## 依赖倒置原则(DIP)
+  1. 高层模块不应该依赖低层模块，两者都应该依赖其抽象
+  2. 抽象不应该依赖细节，细节应该依赖于抽象
+  3. 要针对接口贬称，不要针对实现编程
+  
+  ### 什么是依赖
+  ![52153aac.png](:storage\\a3b6398e-569b-4879-96b9-b1ff03e3a644\\52153aac.png)
+  类A中的方法a()里面用到了类B, 其实这就是依赖关系, A依赖了B. 需要注意的是: 并不是说A中声明了B就叫依赖, 如果引用了但是没有真实调用方法, 那么叫做零耦合关系。
+  ![81a3de7a.png](:storage\\a3b6398e-569b-4879-96b9-b1ff03e3a644\\81a3de7a.png)
+  ### 依赖的关系种类
+  1. 零耦合关系：如果两个类之间没有耦合关系，称之为零耦合
+  ![2ff2953b.png](:storage\\a3b6398e-569b-4879-96b9-b1ff03e3a644\\2ff2953b.png)
+  
+  2. 直接耦合关系: 具体耦合发生在两个具体类之间，经由一个类对另一个类的直接引用造成。
+  ![a9c00963.png](:storage\\a3b6398e-569b-4879-96b9-b1ff03e3a644\\a9c00963.png)
+  
+  3. 抽象耦合关系：抽象耦合关系发生在一个具体类和一个抽象类之间，使两个必须发生关系的类之间存在最大的灵活性。
+  ![3699fcfd.png](:storage\\a3b6398e-569b-4879-96b9-b1ff03e3a644\\3699fcfd.png)
+  
+  
+  ## 文献
+  [设计模式六大原则(一)----单一职责原则](https://juejin.cn/post/6967279849597566984/)
+  [设计模式六大原则(二)----里式替换原则](https://juejin.cn/post/6967281624044011551/)
+  [设计模式六大原则(三)----依赖倒置原则](https://juejin.cn/post/6967281629085564941/#heading-3)
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false
