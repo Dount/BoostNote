@@ -1,5 +1,5 @@
 createdAt: "2019-10-16T02:39:38.018Z"
-updatedAt: "2021-06-29T02:49:01.785Z"
+updatedAt: "2021-09-01T02:08:57.306Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Java"
@@ -370,8 +370,32 @@ content: '''
   3.实现Callable接口，重写Call()方法，并包装成FutureTask对象，再作为参数传入Thread构造器。
     优点:是相比方式二可以获取返回值。
     缺点：实现复杂。
-  4.通过线程池创建。
+  ```
+  import java.util.concurrent.Callable;
+  import java.util.concurrent.ExecutionException;
+  import java.util.concurrent.FutureTask;
+  class CallableThread implements Callable<String> {
+      @Override
+      public String call() throws Exception {
+          for (int i = 0; i < 10; i++) {
+              System.out.println("线程执行 x = "+i);
+          }
+          return "xbhog";
+      }
+  }
   
+  public class Callable接口实现多线程 {
+      public static void main(String[] args) throws ExecutionException, InterruptedException {
+          //将Callable实例化包装在FutureTask类中，这样就可以与Runnable接口关联
+          FutureTask<String> task = new FutureTask<String>(new CallableThread());
+          //线程启动
+          new Thread(task).start();
+          //获取call()的返回值
+          System.out.println("【线程返回数据】："+task.get());
+      }
+  }
+  ```
+  4.通过线程池创建。
   ### 线程有哪些状态
   1.New:用new操作创建一个新线程，此时程序还未开始运行线程中的代码
   2.Runnable: 调用start()方法后进入可运行状态。
@@ -381,6 +405,9 @@ content: '''
   6.Terminated:终止状态，线程正常运行完毕或未捕获异常终止。
     
   ### 什么是线程安全问题，如何解决？
+  线程同步概念：是指若干个线程对象并行进行资源的访问时实现的资源处理保护操作。
+  线程死锁概念：是指两个线程都在等待对方先完成，造成程序的停止的状态；
+  
   1.线程安全问题：当多个线程共享一个全局变量，对其做写操作时，可能会受到其他线程的干扰，从而引发线程安全问题
   2.解决方法：
     1）使用内部锁synchronized，可以使用同步代码块，如果是实例方法可用this作为锁对象，如果是静态方法，可以用类.class作为锁，或者使用同步方法底层和同步代码块一样，如果是实例方法默认用this作为锁，如果是静态方法默认使用类.class。
@@ -1192,11 +1219,11 @@ content: '''
   
 '''
 linesHighlighted: [
-  1168
-  1270
-  1329
-  1285
-  1328
+  1356
+  1313
+  1357
+  1298
+  1196
 ]
 isStarred: false
 isTrashed: false
