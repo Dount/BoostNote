@@ -1,0 +1,476 @@
+createdAt: "2021-11-12T06:44:41.788Z"
+updatedAt: "2021-11-22T08:24:08.978Z"
+type: "MARKDOWN_NOTE"
+folder: "bfd1eca2e356e7181dfa"
+title: "IOS学习"
+tags: []
+content: '''
+  # IOS学习
+  [TOC]
+  
+  ## 1.苹果开发人员计划
+  1. ios开发的App如果需要发布到App Store上进行销售，需要申请开发人员账户。
+  2. 个人开发者账户：个人开发者只能通过App Store进行发布。
+  3. 企业开发者账户：可以开发私有App,但不能通过App Store分发。
+  
+  ## 2.第一个iOS应用
+  ## 2.1 项目结构
+  AppDelegate:是应用程序代理类，用来处理应用程序生命周期的各个事件响应。
+  ViewController:是主界面的视图控制器。
+  Main.storyboard:主界面可视化界面。
+  LaunchScreen.storyboard:启动界面的可视化界面。
+  Asset.xcasset：是用来存放图片的地方，可以把App的图标和启动画面根据一定的规格集中在这里指定和存放。
+  info.plist：是一个键值对文件，指定该App的很多属性。
+  
+  ## 3. Cocoa Touch 框架的运行机制和开发流程
+  ## 3.1 用户操作，硬件中断与消息处理
+  用户操作时，硬件会产生一个中断，此时操作系统将陷入中断处理状态，此时会调用应用程序注册好的回调响应方法来响应该中断。
+  App通过向操作系统注册回调方法，就能轻松实现某输入事件发生后自己定义的回调方法按预期被调用。
+  ## 3.2 iOS的消息处理机制
+  视图控制器UIViewController管理着视图的生命周期，事件如下：
+  1）视图加载完毕；2）视图将显示；3）视图已显示；4）视图将消失；5）视图已消失
+  每一个事件都对应一个事件响应方法，开发要做的事就是覆盖默认的响应方法，视图本身也可以响应事件处理。
+  ### 3.2.1 协议与代理
+  协议与代理是Objective C语言的概念。
+  协议可以看作Java等语言中的接口，或者抽象类，即只有方法定义，却不实现方法。
+  代理是实现了协议的对象，可以看作Java等语言中实现了某接口或抽象类的对象。
+  ### 3.2.2 target与selector
+  target用来指定事件由哪个对象来处理。
+  selector即指定某方法来具体执行响应事件。
+  ### 3.2.3 消息中心NSNotification
+  有一些事件，不是由硬件中断产生。比如键盘收起事件，输入框文字改变事件等。这些事件一般通过Cocoa的通知中心机制来广播。
+  可以通过NSNotification类获得默认的通知中心，从中注册感兴趣的消息以及指定响应的对象及方法，当某对象不再需要响应某消息时，
+  必须要从通知中心注销，注销后通知中心将不会再发送给该对象该消息。
+  ## 3.3 iOS程序开发流程简介
+  开发者所要做的是编写界面以及编写事件响应方法而已。
+  ### 3.3.1 创建窗口和控件
+  苹果提供了UIViewController类，该类定义了一个页面，做好了所有的基础框架工作。开发所要做的，只需编写UIViewController的子类来实现某个界面及其事件响应方法，在其中的viewDidLoad方法中创建视图、控件，以及指定响应方法。除了UIViewController类，还有一些特殊用途的基础控制器类，比如UITable,ViewController,UIActivityViewController等。
+  ### 3.3.2 视图与控件事件绑定
+  视图的基础类为UIView，该类没有事件绑定，但是可以定义手势对象加在其上，令其能够响应手势操作。
+  一般的收拾有捏拉缩放，轻拍，连拍，滑动，轻扫。
+  控件的基础类为UIControl(该类也是UIView的子类)，是能够操作的视图类，比如开关控制，按钮控制等。同时提供了一个方法addTarget:action:forControlEvents:,可方便地为某个事件添加相应的响应方法。
+  
+  ## 4 iOS开发命名习惯与约定
+  ### 4.1.1命名方式
+  变量或方法命名，第一个字母小写，而后每一个单词的首字母大写。如：textLabel,datailLabel.
+  类和枚举的命名，加上大写前缀，而后的每个单词都首字母大写。如：UIView,UIScrollView,UITableView.
+  
+  ## 5 iOS用户界面元素之UIView与控件
+  ### 5.1 UIView家族
+  UIView是所有视图类的根类，由其衍生出来众多的子类以及控件类。值得注意的是，UIView的父类是UIResponder,
+  凡是继承于UIResponder类的对象，都能收到用户触摸的事件以及消息。
+  ![60131160.png](:storage\\05d16d8d-e897-4494-83d1-17e51deed363\\60131160.png)
+  
+  ### 5.1.2 UIView基本属性
+  frame:用来规定视图大小。
+  bounds:用来规定视图位置。
+  center:定义视图中心点在父视图的坐标，CGPoint类型。
+  transform:定义视图的变幻。
+  subviews:子视图集合。
+  superview:父视图。
+  window:视图所属的窗口，UIWindows类型；
+  alpha:视图透明度,0到1;
+  backgroundColor:视图背景色，UIColor类型；
+  clipsToBounds:子视图超过视图边界的部分，是否剪切掉，BOOL类型。
+  hidden:是否隐藏视图，BOOL类型。
+  tintColor:影响默认的一些颜色。
+  layer:视图真正的显示层。CALayer类型，常用来定义视图的边框和圆角。
+  tag:视图的额外编号，整数类型，用的不多，定义了tag，便可使用整个tag从其父视图搜索到这个视图。
+  #### 5.1.3 视图层次体系
+  ![67f02917.png](:storage\\05d16d8d-e897-4494-83d1-17e51deed363\\67f02917.png)
+  
+  ![93524e3b.png](:storage\\05d16d8d-e897-4494-83d1-17e51deed363\\93524e3b.png)
+  每个View在其父view中的位置以及大小，主要由3个相关的属性来定义或改变，分别为frame、bounds,以及center,其中center表示view的中心点坐标。frame与bounds都是CGRect类型的结构体，包含2个结构体，分别是CGPoint和CGSize类型。CGPoint结构体表述左上角坐标，CGSize描述宽与高。可用CGRectMake方法来构造一个CGRect结构体。
+  ![c5e13ff6.png](:storage\\05d16d8d-e897-4494-83d1-17e51deed363\\c5e13ff6.png)
+  bounds属性表示的视图左上角的坐标永远都是(0,0)。而frame属性表示的属性左上角坐标，则是该视图相对于父view的相对位置的坐标。center则是表示视图的中心点。
+  
+  ## 5.2 UIControl类
+  UIControl类默认可以接受触摸事件，并且对接受的触摸事件做了很详细的区分，可以很方便地定制需要响应的事件。
+  UIControl类是所有控件类的父类，所谓控件，就是能够接受用户的触摸操作，并对其做出响应的UI组件。
+  ```
+  UIControl *c = [UIControl new];
+  [c addTarget:<#(nullable id)#> action:(nonnull SEL) forControlEvents:<#(UIControlEvents)#>]
+  ```
+  ## 5.3 UILabel类
+  ```
+  UILabel *detailLabel = [UILabel new];
+  detailLabel.frame = CGRectMake(200, 0, 200, 0);
+  detailLabel.textAlignment = NSTextAlignmentRight;
+  detailLabel.font = [UIFont fontWithName:detailLabel.font.fontName size:15.0];
+  detailLabel.text = @"你好";
+  ```
+  ## 5.4 UIButton类
+  初始化一个UIButton
+  ```
+  UIButton *btn = [UIButton buttonWithType:UIButtonTypeRounderRect]
+  ```
+  buttonWithType的类型：
+  buttonWithType = 0 表示没有类型
+  buttonWithType = UIButtonTypeSystem 表示系统类型
+  
+  添加点击事件
+  ```
+  [btn[i] addTarget:self action:@selector(onPress:) forControlEvents:UIControlEventTouchUpInside]; 
+  ```
+  UIControlEventTouchDown:按下
+  UIControlEventTouchUpInside：在按钮内部松开
+  UIControlEventTouchUpOutsize：在按钮外部松开
+  UIControlEventTouchDragExit：按下不放移动手指知道手指离开按钮边界
+  
+  事件的创建
+  ```
+  -(void)onPress:(UIButton *)button
+  ```
+  需要根据每个button的tag来判定当前点击事件属于哪个button.
+  
+  ## 5.5 开关控件，滑块控件与分段控件
+  CGRectMake 指定长宽和位置
+  CGPoint 指定位置
+  ### 5.5.1 开关控件
+  初始化一个switch，并添加监听事件
+  ```
+  UISwitch *swi = [[UISwitch alloc]init];
+  [swi sizeToFit]; //自动适配最合适大小
+  swi.center = CGPointMake(100,200);
+  [swi addTarget:self action:@selector(onSwitch:)forControlEvents:UIControlEventValueChanged];[self.view addSubview:swi];
+  
+  - (void)onSwitch:(UISwitch *)swi{}
+  
+  ```
+  ### 5.5.2 滑块控件
+  初始化一个Slider，并添加监听事件
+  ```
+  UISlider *sli = [[UISlider alloc]initWithFrame:CGRectMake(left, 100, self.view.frame.size.width-left*2,44)];
+  [sli addTarget:self action:@selector(onSlider:) forControlEvents:UIControlEventValueChanged];
+  [self.view addSubview:sli];
+  
+  - (void)onSlider:(UISlider *)sli{}
+  
+  ```
+  ### 5.5.3 分段控件
+  初始化一个分段控件，并添加监听事件
+  ```
+  UISegmentedControl *segs = [[UISegmentedControl alloc]initWithItems:@[@"第一段",@"第二段",@"第三段"]];
+  segs.frame = CGRectMake(30,25,self.view.frame.size.width-60,34);
+  segs.selectedSegmentIndex = 0;
+  [segs addTarget:self action:@selector(onSegChange:) forControlEvents:UIControlEventValueChanged];
+  [self.view addSubview:segs];
+  
+  - (void)onSegChange:(id)sender{}
+  ```
+  ### 5.5.4 Alert的使用
+  初始化一个alert,并添加确定和取消监听事件
+  ```
+  UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"温馨提示" message:[NSString stringWithFormat:@"您点击了第%ld段",(long)seg.selectedSegmentIndex + 1] preferredStyle:UIAlertControllerStyleAlert];
+  [alert addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+     确定点击事件
+  }]];
+  [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+     取消点击事件        
+  }]];
+  [self presentViewController:alert animated:true completion:nil];
+  ```
+  
+  ## 5.6 输入控件
+  
+  UITextField,UITextView,采用协议的情况下。
+  ViewController 需要给控制器增加 <UITextViewDelegate,UITextFieldDelegate>协议
+  并在delegate属性中指定为self
+  
+  ### 5.6.1 UITextField
+  初始化一个TextField
+  ```
+  UITextField tf = [[UITextField alloc]initWithFrame:CGRectMake(rightLeft, top+5, rightWidth, 34)];
+  tf.text = @"站位文字";
+  tf.borderStyle = UITextBorderStyleRoundedRect;
+  
+  ```
+  控制其输入过程中的事件.
+  ```
+  是否允许开始编辑
+  - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField{
+    return YES;
+  }
+  开始编辑时调用(弹出键盘)became first responder
+  - (void)textFieldDidBeginEditing:(UITextField *)textField{
+      NSLog(@"弹出键盘"); 
+  }
+  是否允许结束编辑.
+  - (BOOL)textFieldShouldEndEditing:(UITextField *)textField{
+      return YES;
+   }
+  结束编辑时调用.
+  - (void)textFieldDidEndEditing:(UITextField *)textField{
+      NSLog(@"结束编辑时调用.");
+   }
+  是否允许文字改变.拦截用户输入.
+  - (BOOL)textField:(UITextField *)textFieldshouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
+      return NO;
+   }
+  ```
+  
+  ### 5.6.2 UITextView
+  初始化一个TextView
+  ```
+  UITextView tv = [[UITextView alloc] initWithFrame:CGRectMake(rightLeft, top+5, rightWidth, 44 * 3)];
+  tv.delegate = self;
+  tv.font = tf.font;
+  tv.layer.borderWidth = 0.5;
+  tv.layer.borderColor = [UIColor colorWithWhite:0.8 alpha:1.0].CGColor;
+  tv.layer.cornerRadius = 4;
+  ```
+  控制其输入过程中的事件.
+  ```
+  //将要进入编辑模式
+  - (BOOL)textViewShouldBeginEditing:(UITextView *)textView {return YES;}
+  //已经进入编辑模式
+  - (void)textViewDidBeginEditing:(UITextView *)textView {}
+  //将要结束/退出编辑模式
+  - (BOOL)textViewShouldEndEditing:(UITextView *)textView {return YES;}
+  //已经结束/退出编辑模式
+  - (void)textViewDidEndEditing:(UITextView *)textView {}
+  //当textView的内容发生改变的时候调用
+  - (void)textViewDidChange:(UITextView *)textView {}
+  //选中textView 或者输入内容的时候调用
+  - (void)textViewDidChangeSelection:(UITextView *)textView {}
+  //从键盘上将要输入到textView 的时候调用
+  //rangge  光标的位置
+  //text  将要输入的内容
+  //返回YES 可以输入到textView中  NO不能
+  - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {return YES;}
+  ```
+  ## 5.7 日期选择器
+  初始化日期选择器,并将值赋给UITextField
+  ```
+  UIDatePicker *datePicker = [[UIDatePicker alloc]initWithFrame:CGRectZero];
+  [datePicker sizeToFit];
+  datePicker.datePickerMode = UIDatePickerModeDate;
+  [datePicker addTarget:self action:@selector(dataChange:) forControlEvents:UIControlEventValueChanged];
+  
+  UITextField *tf = [[UITextField alloc]initWithFrame:CGRectMake(20, 150, self.view.frame.size.width-40,44 )];
+  tf.layer.borderWidth = 0.5;
+  tf.layer.cornerRadius = 4;
+  tf.inputView = datePicker;
+  [self.view addSubview:tf];
+  
+  ```
+  设置dataChange的监听事件,需要对日期格式化。
+  ```
+  -(void)dataChange:(UIDatePicker *)datePicker{ 
+      NSDate *date = datePicker.date;
+      NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
+      [dateFormatter setDateFormat:@"yyyy年MM月dd日"];
+      NSString *string = [[NSString alloc]init];
+      string = [dateFormatter stringFromDate:date];
+      tf.text = string;  
+  }
+  ```
+  ## 5.8 自定义选择器UIPickerView
+  UIPickerView的代理有2个，分别为dataSource与delegate,其对应的协议分别为
+  UIPickerViewDataSource与UIPickerViewDelegate协议。
+  UIPickerViewDataSource用以提供显示的内容。
+  UIPickerViewDelegate用以处理选择器的事件。
+  初始化一个UIPickerView,以及用以显示的UITextField
+  ```
+  UIPickerView *pickerView = [[UIPickerView alloc]initWithFrame:CGRectZero];
+  [pickerView sizeToFit];
+  pickerView.dataSource = self;
+  pickerView.delegate = self;
+      
+  UITextField *tf = [[UITextField alloc] initWithFrame:CGRectMake(20, 202, self.view.frame.size.width-40, 44)];
+  tf.text = @"点击选择省份地址等";
+  tf.layer.borderWidth = 0.5;
+  tf.layer.cornerRadius = 4;
+  tf.inputView = pickerView;
+  [self.view addSubview:tf];
+  ```
+  选择器内容实现
+  ```
+  provinces = @[@"湖南", @"广东"];
+      cities = @[
+                 @[@"长沙",@"株洲",@"湘潭"],
+                 @[@"广州",@"韶关",@"深圳"],
+                 ];
+      areas = @[
+                @[
+                    @[@"开福区",@"岳麓区"],
+                    @[@"天元区",@"石峰区"],
+                    @[@"雨花区",@"河西区"]
+                    ],
+                @[
+                    @[@"天河区",@"某某区"],
+                    @[@"某1区",@"某2区"],
+                    @[@"龙岗区",@"高新区"]
+                    ]
+                ];
+  }
+  //用以知道需要显示多少列 -UIPickerViewDataSource
+  -(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView{
+      return 3;
+  }
+  
+  //用以知道第某列需要显示多少行 -UIPickerViewDelegate
+  - (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
+  {
+      if (component == 0) {
+          return provinces.count;
+      }else if (component == 1){
+          return [cities[curProvince] count];
+      }else{
+          return [areas[curProvince][curCity] count];
+      }
+  }
+  
+  //显示每一项的文字 - UIPickerView Delegate
+  - (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
+  {
+      if (component == 0) {
+          return provinces[row];
+      }else if (component == 1){
+          return cities[curProvince][row];
+      }else{
+          return areas[curProvince][curCity][row];
+      }
+  }
+  
+  //当选中某一项时的事件处理方法。-UIPickerView Delegate
+  -(void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component{
+      if(component == 0){
+          curProvince = row;
+      }else if(component == 1){
+          curCity = row;
+      }else {
+          curArea = row;
+      }
+      [pickerView reloadAllComponents];
+  }
+  ```
+  ## 5.9 键盘开启与关闭
+  键盘开启
+  ```
+  [tf becomeFirstResponder];
+  ```
+  键盘关闭
+  ```
+  [tf resignFirstResponder];
+  ```
+  ## 
+  
+  ## 5.10 网页控件WKWebView(IOS9已弃用UIWebView)
+  WKWebView有两个代理,<WKUIDelegate,WKNavigationDelegate>
+  WKNavigationDelegate主要处理一些跳转、加载处理操作，
+  WKUIDelegate主要处理JS脚本，确认框，警告框等。因此WKNavigationDelegate更加常用。
+  初始化WKWebView
+  ```
+  需要引入头文件 webKit/WebKit.h
+  
+  WKWebView web = [[WKWebView alloc] initWithFrame:rect];
+  web.UIDelegate = self;
+  web.navigationDelegate = self;
+  [self.view addSubview:web];
+  ```
+  WKNavigationDelegate 代理
+  ```
+  // 页面开始加载时调用
+  - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation{
+  
+  }
+  // 当内容开始返回时调用
+  - (void)webView:(WKWebView *)webView didCommitNavigation:(WKNavigation *)navigation{
+  
+  }
+  // 页面加载完成之后调用
+  - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation{
+  
+  }
+  // 页面加载失败时调用
+  - (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation{
+  
+  }
+  // 接收到服务器跳转请求之后调用
+  - (void)webView:(WKWebView *)webView didReceiveServerRedirectForProvisionalNavigation:(WKNavigation *)navigation{
+  
+  }
+  // 在收到响应后，决定是否跳转
+  - (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler{
+  
+      NSLog(@"%@",navigationResponse.response.URL.absoluteString);
+      //允许跳转
+      decisionHandler(WKNavigationResponsePolicyAllow);
+      //不允许跳转
+      //decisionHandler(WKNavigationResponsePolicyCancel);
+  }
+  // 在发送请求之前，决定是否跳转
+  - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler{
+  
+       NSLog(@"%@",navigationAction.request.URL.absoluteString);
+      //允许跳转
+      decisionHandler(WKNavigationActionPolicyAllow);
+      //不允许跳转
+      //decisionHandler(WKNavigationActionPolicyCancel);
+  }
+  ```
+  WKUIDelegate 代理
+  ```
+  // 创建一个新的WebView
+  - (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures{
+      return [[WKWebView alloc]init];
+  }
+  // 输入框
+  - (void)webView:(WKWebView *)webView runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt defaultText:(nullable NSString *)defaultText initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSString * __nullable result))completionHandler{
+      completionHandler(@"http");
+  }
+  // 确认框
+  - (void)webView:(WKWebView *)webView runJavaScriptConfirmPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(BOOL result))completionHandler{
+      completionHandler(YES);
+  }
+  // 警告框
+  - (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(void))completionHandler{
+      NSLog(@"%@",message);
+      completionHandler();
+  }
+  ```
+  
+  ## 5.11 工具栏与导航栏
+  工具栏初始化
+  ```
+  UIToolbar toolBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height-44,self.view.frame.size.width ,44)];
+      
+  UIBarButtonItem *item1 = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(onClick:)];
+      
+  UIBarButtonItem *item2 = [[UIBarButtonItem alloc] initWithTitle:@"示范" style:UIBarButtonItemStylePlain target:self	 action:@selector(onClick:)];
+      
+  UIBarButtonItem *item3 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(onClick:)];
+      
+  UIBarButtonItem *space = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+  
+  toolBar.items = @[item1,space,item2,space,item3];
+  ```
+  导航栏的初始化
+  导航栏用UINavigationController控制。
+  在AppDelegate.m文件，将原本ViewController对象作为自己的根对象。
+  然后将UINavigationController对象作为_window的根控制器。
+  ```
+  ViewController *con = [[ViewController alloc]init];
+  UINavigationController *nav = [[UINavigationController alloc]initWithRootViewController:con];
+  _window.rootViewController = nav;
+  ```
+  界面中使用
+  ```
+  self.title = @"导航栏与工具栏示例";
+  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(onClick:)];
+  ```
+  5.12 UIView动画
+  
+  
+  
+  ## 参考文献
+  [IOS进阶之WKWebView - 简书](https://www.jianshu.com/p/4fa8c4eb1316)
+  [教你使用 WKWebView 的正确姿势_一头雾水的Blog-CSDN博客_wkwebview](https://blog.csdn.net/guojin08/article/details/78895695)
+  [IOS进阶之WKWebView - 简书](https://www.jianshu.com/p/4fa8c4eb1316)
+'''
+linesHighlighted: [
+  46
+]
+isStarred: false
+isTrashed: false

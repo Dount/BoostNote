@@ -1,0 +1,155 @@
+createdAt: "2021-10-13T09:08:11.549Z"
+updatedAt: "2021-11-19T02:25:43.776Z"
+type: "MARKDOWN_NOTE"
+folder: "bfd1eca2e356e7181dfa"
+title: "50个KotlinDemo学习"
+tags: []
+content: '''
+  # 50个KotlinDemo学习
+  [TOC]
+  
+  ## 15.DataBase with Room
+  1. 学习初始化创建Room
+  2. 学习通过Room进行增删
+  3. 学习使用Anke,中AnkoLogger，info
+  4. lateinit 只用于变量 var，而 lazy 只用于常量 val
+  5. vararg 可变参数的使用，在 Kotlin 中如果想将数组类型传入到可变参数，需要使用特定符号 * ：
+  
+  ## 16.Self Adaption
+  1. 横竖平切换，需要创建layout-land的布局，当切换屏幕时模拟器会自动寻找layout。
+  2. Activity-fragment中如果嵌套recycleView,其onCreateViewHolder加载要等Activity加载完毕后。
+  3. repate循环语法，取代for循环语法
+  
+  ## 17.Simple Broadcast Receiver
+  1. 学习使用EventBus
+  2. 学习使用动态广播
+  3. 通过注册广播来监听wifi当前的状态。
+  
+  ## 18.Basic File Operation
+  1. 学习使用sharePreferences 的创建和使用
+  2. 使用openFileInput和openFileOutput
+  
+  ## 19.DownLoader With Notifications
+  1. 利用RandomAccessFile，是Java输入/输出流体系中功能丰富的文件内容访问类，它提供了众多的方法来访问文件内容，它既可以读取文件内容，也可以向文件输出数据，程序可以直接跳转到文件的任意地方来读写数据。
+  2. 学习使用doAsync和uiThread
+  3. 使用okhttp3进行网络请求下载。
+  
+  ## 20.Simple Search Web View
+  1. 认识CollapsingToolbarLayout的使用，可以用其实现一个可折叠的标题栏
+  2. 认识CoordinatorLayout，搭配其他控件可以实现比较复杂的动画和布局效果，作为顶级布局的Viewgroup，是一个加强版的framlayout,既然说了是framlayout
+  3. 认识CoordinatorLayout，AppBarLayout，CollapsingToolbarLayout层次关系
+  ![69e2f6ae.png](:storage\\9e747228-7e39-49d5-9e2e-0e4776fa7cee\\69e2f6ae.png)
+  4. 认识NestedScrollView的使用，即支持嵌套滑动的ScrollView。
+  5. 认识WebViewClient，WebViewClient主要帮助WebView处理各种通知、请求事件的，
+  6. 认识WebChromeClient，WebChromeClient主要辅助WebView处理Javascript的对话框、网站图标、网站title、加载进度
+  7. 学习通过Sequence方式来遍历List,this.dataList.asSequence().firstOrNull{ it.url == url } != null
+  8. 学习let的使用，let这个对象作为闭包的it参数，返回值是函数里面最后一行，或者指定return
+  9. 学习apply这个对象作为闭包this参数，调用该对象的任意方法，并在最后返回该对象。
+  
+  ## 21.The Floating Window
+  1. 认识使用Anko来写XML的布局
+  2. 认识使用WindowsManager 实现悬浮框拖动效果
+  
+  ## 22.Simple view Pager
+  1. 认识使用reified function，来实现StartActivity另一种方式
+  ```
+  常规做法
+  val adapter = ForecastListAdapter(result) {
+   val intent = Intent(MainActivity@this, javaClass<DetailActivity>())
+   intent.putExtra(DetailActivity.ID, it.id)
+   intent.putExtra(DetailActivity.CITY_NAME, result.city)
+   startActivity(intent)
+  }
+  通过reified function实现
+  val adapter = ForecastListAdapter(result) {
+   startActivity<DetailActivity>(DetailActivity.ID to it.id,
+   DetailActivity.CITY_NAME to result.city)
+  }
+  
+  ``` 
+  2. 学习使用，ViewPage与TabLayout的使用，以及ViewPageradapter的初始化。
+  
+  ## 23. Parcelable Data Objects
+  1. 学习使用，Room的初始化。
+  2. 学习如何将Room中的数据对象改造成序列化对象(Parcelable)
+  3. 学习使用Parcelable对象在activity之间传递。
+  
+  ## 24. Photo wall
+  1. 学习使用，通过网络获取图片，解码流并显示
+  2. 认识LRUCache缓存使用。
+  3. 学习使用，通过doAsync异步的方式从数据库取数据，并通过uiThread显示。
+  
+  ## 25. Image Uploader(没有远端请求环境)
+  
+  ## 26. Better Practice Fragment (Part.1)
+  1. 学习使用，layout_scrollFlags，其值可以控制滑动时视图效果
+  2. 学习使用，layout_behavior,将当前view与绑定了layout_scrollFlags相关联，一起滚动。
+  3. 学习使用，layout_anchor,连同layout_anchorGravity 一起，可以用来放置与其他视图关联在一起的悬浮视图
+  4. 学习使用，activity 与fragment的嵌套。
+  5. 学习使用，recycleView中的tiem添加动画效果。
+  6. 学习使用，Anko创建Alert的方式
+  
+  ## 27.Play With Audio Assets
+  1. 学习使用，SoundPool的构建和使用。
+  2. 学习使用，AssetManager
+  3. 学习使用，run方法，只接收一个lambda函数为参数，以闭包形式返回，返回值为最后一行的值或者指定的return的表达式。
+  4. 认识removeSuffix的使用，用于划分字符串，属于String的扩展函数
+  
+  ## 28. Custom View The Switch (自定义view)
+  1. 学习使用，alse方法，also函数的结构实际上和let很像唯一的区别就是返回值的不一样，let是以闭包的形式返回，返回函数体内最后一行的值，如果最后一行为空就返回一个Unit类型的默认值。而also函数返回的则是传入对象的本身。
+  2. 学习使用，get,set方法。
+  
+  ## 29. A Map Demo
+  1. 学习使用，AutoComleteTextView(自动完成文本框)
+  
+  ## 30. A Simple Custom View Group(自定义ViewGroup)
+  1. 学习什么是Kotlin中的委托以及属性委托
+  2. 学习Delegates.observable()方法使用委托属性对属性的修改进行监听
+  3. 学习什么是Scroller,Scroller本身不会去移动View，它只是一个移动计算辅助类，用于跟踪控件滑动的轨迹，只相当于一个滚动轨迹记录工具，最终还是通过View的scrollTo、scrollBy方法完成View的移动的。
+  4. 学习自定义ViewGroup
+  
+  ## 31. Retrofit And RxAndroid
+  1. 学习创建Retrofit的初始化
+  2. 学习使用Retrofit
+  3. 学习使用点击item,并将item对象映射到dialog对应的view中。
+  4. 可以单独定义一个model类来管理。
+  5. 学习利用fragment初始化recycle并加载.
+  
+  ## 32. Basic Android MVP
+  1. 了解Anko，constraintLayout中利用applyConstraintSet来约束布局
+  2. 了解通过Rxjava+Retrofit请求网络服务，并通过回调返回结果。
+  3. 了解Kotlin中接口的使用
+  4. 了解通过KotlinAndroidViewBindings开源库，使接口中的字段名与视图中的viewID绑定在一起。
+  5. 了解Kotlin中()->Unit 、(T) -> Unit 、()->Unit的区别。
+  6. 了解ViewPage,TabLayout进行联动。
+  
+  ## 33. ObjectBox And Coroutines
+  
+  
+  ## 34. Basic Material Animation
+  
+  
+  ## 参考文献
+  
+  [Demo GitHub地址](https://github.com/spkingr/50-android-kotlin-projects-in-100-days)
+  [WebView的介绍_余杭探险家-CSDN博客](https://blog.csdn.net/l540675759/article/details/54709676)
+  [Kotlin Anko 使用相对布局 RelativeLayout - 简书](https://www.jianshu.com/p/848386be4b95)
+  [Kotlin reified - 关键字 - 简书](https://www.jianshu.com/p/e59fda556464)
+  [Kotlin学习笔记——Fragment - 简书](https://www.jianshu.com/p/3404159e55c4)
+  [Android 详细分析AppBarLayout的七种ScrollFlags_willwaywang6-CSDN博客](https://blog.csdn.net/willway_wang/article/details/96720903)
+  [Android《CoordinatorLayout》 - 简书](https://www.jianshu.com/p/3b6f774f270a)
+  [CoordinatorLayout与Behavior的实际使用(一) - 简书](https://www.jianshu.com/p/6748f8f37e01)
+  [Android SoundPool 的使用_pecuyu-CSDN博客](https://blog.csdn.net/qq_28261343/article/details/82818868)
+  [Kotlin系列之let、with、run、apply、also函数的使用_Mikyou的专栏-CSDN博客](https://blog.csdn.net/u013064109/article/details/78786646)
+  [KOTLIN新手入门 关于内部类的属性set get方法_慕课猿问](https://www.imooc.com/wenda/detail/415471)
+  [Kotlin知识归纳（十） —— 委托 - 简书](https://www.jianshu.com/p/b1158cb23555)
+  [Android Scroller详解_hehe_heh的博客-CSDN博客_android scroller](https://blog.csdn.net/hehe_heh/article/details/80255289)
+  [【Android】android中Invalidate和postInvalidate的区别 - Rex.. - 博客园](https://www.cnblogs.com/rayray/p/3437048.html)
+  [Kotlin中T.()-＞Unit 、(T) -＞ Unit 、()-＞Unit傻傻分不清_0你太猖狂0的博客-CSDN博客](https://blog.csdn.net/qq_27753689/article/details/119848381)
+  [Kotlin (一) 复合符号( '?.' '?:' '!!' 'as?' '?' )_大于弱智的博客-CSDN博客](https://blog.csdn.net/lckj686/article/details/80448471)
+'''
+linesHighlighted: [
+  96
+]
+isStarred: false
+isTrashed: false

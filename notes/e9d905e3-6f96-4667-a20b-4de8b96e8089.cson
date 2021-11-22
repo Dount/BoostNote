@@ -1,0 +1,129 @@
+createdAt: "2021-10-19T10:57:59.454Z"
+updatedAt: "2021-10-22T08:23:12.031Z"
+type: "MARKDOWN_NOTE"
+folder: "4a531f803551ee928694"
+title: "Bat脚本基础教程"
+tags: []
+content: '''
+  # Bat脚本基础教程
+  [toc]
+  
+  ## 基本概念
+  bat脚本就是DOS批处理脚本，就是将一些列DOS命令按照一定顺序排列而形成的集合，运行在windows命令环境上
+  
+  ## bat脚本初始化
+  ```
+  @echo off
+  echo hello world
+  
+  @echo on
+  ```
+  
+  ## 变量设置和读取
+  
+  ### 常用系统变量
+  ```
+  %cd% 获取当前目录
+  %path% 获取命令搜索路径
+  %date% 获取当前日期
+  %time% 获取当前时间
+  ```
+  ### 变量读取
+  ```
+  echo %RANDOM%
+  ```
+  ### 变量设置
+  ```
+  set var1 ="123456"
+  echo %var1%
+  ```
+  ## 字符串基本操作
+  ### 字符串截取
+  ```
+  使用命令 echo %var:~n,k%,
+  其中%var表示待截取字符的字符串，
+  ~取字符标志符，
+  n表示字符截取起始位置，
+  k表示截取结束位置
+  ```
+  ### 字符串替换
+  ```
+  使用命令 %var:old_str=new_str%
+  其中%var表示源字符串，
+  old_str表示待替换的字符串，
+  new_str表示新提花的字符串，
+  ```
+  ## DOS基本命令介绍
+  1. rem 注释符
+  2. echo 显示信息,或启动或关闭命令回显。
+  3. pause 暂停并输出“请按任意键继续...”
+  4. pause >nul 等待但不出现提示语
+  5. errorlevel 程序执行结果返回码，成功返回0，失败返回1
+  6. start 启动一个单独的窗口运行指定
+  7. call 调用另一个批处理程序，并且暂停父批处理程序，只有该批处理执行完才会往下走
+  8. exit 退出cmd.exe或当前批处理脚本
+  9. cls 清除屏幕内容
+  ## 文件操作命令
+  ### copy 文件复制命令
+  ```
+  copy d:\\temp1\\file1.txt d:\\temp2 将文件file1.txt复制到temp2目录，有相同文件提示
+  copy d:\\temp1\\file1.txt d:\\temp2 /y 将文件file1.txt复制到temp2目录,有相同文件覆盖原文件，不提示
+  copy d:\\temp1\\* d:\\temp2 /y 将temp1目录下的所有文件复制到temp2目录,有相同文件覆盖原文件，不提示
+  ```
+  ### xcopy 目录复制命令
+  ```
+  xcopy temp1 d:\\temp2 /y 将temp1目录下的文件复制到temp2目录，不包括temp1子目录下的文件。
+  xcopy temp1 d:\\temp2 /s /e /y 将temp1目录下的文件复制到temp2目录，包括temp1子目录下的文件
+  ```
+  ### type 显示文件内容命令
+  ```
+  type file1.txt 查看file1文件内容
+  type file1.txt file2.txt  #查看file1和file2文件内容
+  type file1.txt > file2.txt  #将file1.txt文件内容重定向到file2.txt
+  type nul > file1.txt #创建文件
+  ```
+  ### ren 重命名文件命令
+  ```
+  ren d:\\temp1\\file1.txt file2.txt 修改temp目录下的file1.txt文件名为file2.txt
+  ```
+  ### del 删除文件命令
+  ```
+  del d:\\temp1\\file1.txt 删除temp目录下的file1.txt文件
+  del d:\\temp\\*.txt  删除temp目录下的后缀为.txt的文件
+  ```
+  
+  ## 目录操作命令
+  ### 显示当前目录或切换目录
+  ```
+  cd d:\\temp1 切换到temp1目录，当前目录是d盘
+  cd /d d:\\temp1 切换到temp1目录，当前目录非d盘
+  cd .. 切换到上一级目录
+  ```
+  ### 创建目录
+  ```
+  mkdir test 在当前目录下创建test目录
+  mkdir d:\\temp1\\test 在temp1目录下创建test目录，如果temp1目录不存在，自动创建
+  ```
+  ### 删除目录
+  ```
+  rmdir d:\\temp1 删除空目录temp1，非空则删除失败
+  rmdir d:\\temp1 /s /q 删除temp1目录，包括子目录(/s)，并且删除时不提示(/q)
+  ```
+  ### 显示目录下的子目录和文件
+  ```
+  dir d:\\temp1 显示temp1目录下的文件和目录信息，显示信息包含日期、时间、文件类型和文件名
+  dir d:\\temp1 /a:a /b 只显示temp1目录下（不包括子目录）的文件的绝对路径，不显示日期、时间、文件类型和文件名
+  dir d:\\temp1 /b /s /o:n /a:a  显示temp1路径下（包括子目录）的所有文件的绝对路径。输出文件按照文件名数字顺序排序
+  dir d:\\temp1\\*.txt /a:a /b /o:n 显示.txt后缀文件，并且按照文件名顺序排序(/on),其他排序方法查看help dir
+  ```
+  
+  ## 参考文献
+  [bat脚本基础教程 - 锅边糊 - 博客园](https://www.cnblogs.com/linyfeng/p/8072002.html)
+  [Bat命令学习 - aspirant - 博客园](https://www.cnblogs.com/aspirant/p/7233893.html)
+  [dos/bat脚本 call和start的区别_杨杨杨~~的博客-CSDN博客_bat call start](https://blog.csdn.net/weixin_38316697/article/details/91389811)
+  [批处理命令——call 和 start - kaizen - 博客园](https://www.cnblogs.com/Braveliu/p/5078283.html)
+  [bat����μ�ʵ��breakЧ����_�ٶ�֪��](https://zhidao.baidu.com/question/1382712153153484540.html)
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false
