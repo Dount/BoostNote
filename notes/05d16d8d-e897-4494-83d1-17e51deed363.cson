@@ -1,5 +1,5 @@
 createdAt: "2021-11-12T06:44:41.788Z"
-updatedAt: "2021-11-22T08:24:08.978Z"
+updatedAt: "2021-11-26T09:26:59.579Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "IOS学习"
@@ -8,12 +8,12 @@ content: '''
   # IOS学习
   [TOC]
   
-  ## 1.苹果开发人员计划
+  # 1.苹果开发人员计划
   1. ios开发的App如果需要发布到App Store上进行销售，需要申请开发人员账户。
   2. 个人开发者账户：个人开发者只能通过App Store进行发布。
   3. 企业开发者账户：可以开发私有App,但不能通过App Store分发。
   
-  ## 2.第一个iOS应用
+  # 2.第一个iOS应用
   ## 2.1 项目结构
   AppDelegate:是应用程序代理类，用来处理应用程序生命周期的各个事件响应。
   ViewController:是主界面的视图控制器。
@@ -22,7 +22,7 @@ content: '''
   Asset.xcasset：是用来存放图片的地方，可以把App的图标和启动画面根据一定的规格集中在这里指定和存放。
   info.plist：是一个键值对文件，指定该App的很多属性。
   
-  ## 3. Cocoa Touch 框架的运行机制和开发流程
+  # 3. Cocoa Touch 框架的运行机制和开发流程
   ## 3.1 用户操作，硬件中断与消息处理
   用户操作时，硬件会产生一个中断，此时操作系统将陷入中断处理状态，此时会调用应用程序注册好的回调响应方法来响应该中断。
   App通过向操作系统注册回调方法，就能轻松实现某输入事件发生后自己定义的回调方法按预期被调用。
@@ -50,13 +50,13 @@ content: '''
   一般的收拾有捏拉缩放，轻拍，连拍，滑动，轻扫。
   控件的基础类为UIControl(该类也是UIView的子类)，是能够操作的视图类，比如开关控制，按钮控制等。同时提供了一个方法addTarget:action:forControlEvents:,可方便地为某个事件添加相应的响应方法。
   
-  ## 4 iOS开发命名习惯与约定
-  ### 4.1.1命名方式
+  # 4 iOS开发命名习惯与约定
+  ## 4.1命名方式
   变量或方法命名，第一个字母小写，而后每一个单词的首字母大写。如：textLabel,datailLabel.
   类和枚举的命名，加上大写前缀，而后的每个单词都首字母大写。如：UIView,UIScrollView,UITableView.
   
-  ## 5 iOS用户界面元素之UIView与控件
-  ### 5.1 UIView家族
+  # 5 iOS用户界面元素之UIView与控件
+  ## 5.1 UIView家族
   UIView是所有视图类的根类，由其衍生出来众多的子类以及控件类。值得注意的是，UIView的父类是UIResponder,
   凡是继承于UIResponder类的对象，都能收到用户触摸的事件以及消息。
   ![60131160.png](:storage\\05d16d8d-e897-4494-83d1-17e51deed363\\60131160.png)
@@ -76,7 +76,7 @@ content: '''
   tintColor:影响默认的一些颜色。
   layer:视图真正的显示层。CALayer类型，常用来定义视图的边框和圆角。
   tag:视图的额外编号，整数类型，用的不多，定义了tag，便可使用整个tag从其父视图搜索到这个视图。
-  #### 5.1.3 视图层次体系
+  ### 5.1.3 视图层次体系
   ![67f02917.png](:storage\\05d16d8d-e897-4494-83d1-17e51deed363\\67f02917.png)
   
   ![93524e3b.png](:storage\\05d16d8d-e897-4494-83d1-17e51deed363\\93524e3b.png)
@@ -158,18 +158,7 @@ content: '''
   
   - (void)onSegChange:(id)sender{}
   ```
-  ### 5.5.4 Alert的使用
-  初始化一个alert,并添加确定和取消监听事件
-  ```
-  UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"温馨提示" message:[NSString stringWithFormat:@"您点击了第%ld段",(long)seg.selectedSegmentIndex + 1] preferredStyle:UIAlertControllerStyleAlert];
-  [alert addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-     确定点击事件
-  }]];
-  [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-     取消点击事件        
-  }]];
-  [self presentViewController:alert animated:true completion:nil];
-  ```
+  
   
   ## 5.6 输入控件
   
@@ -353,9 +342,7 @@ content: '''
   键盘关闭
   ```
   [tf resignFirstResponder];
-  ```
-  ## 
-  
+  ``` 
   ## 5.10 网页控件WKWebView(IOS9已弃用UIWebView)
   WKWebView有两个代理,<WKUIDelegate,WKNavigationDelegate>
   WKNavigationDelegate主要处理一些跳转、加载处理操作，
@@ -460,17 +447,147 @@ content: '''
   self.title = @"导航栏与工具栏示例";
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(onClick:)];
   ```
-  5.12 UIView动画
+  ## 5.12 UIView动画
+  平移动画：
+  ```
+  [UIView animateWithDuration:0.3 animations:^{
+  if(view.frame.origin.x<160){
+  view.frame = CGRectMake(240, 100, 60, 60);}
+  else{
+  view.frame = CGRectMake(16, 100, 60, 60);
+  }
+  }];
+  ```
+  透明度动画：
+  ```
+  [UIView animateWithDuration:0.3 animations:^{
+  if(view.alpha <0.5){
+  view.alpha = 1;
+  }else{
+  view.alpha = 0.1;
+  }
+  }];
+  ```
+  旋转动画：
+  ```
+  CGAffineTransform transform = CGAffineTransformRotate(view.transform, M_PI);
+  [UIView animateWithDuration:0.3 animations:^{
+  view.transform = transform;}completion:^(BOOL finished) {
+  [UIView animateWithDuration:0.3 animations:^{
+  view.transform = CGAffineTransformIdentity;
+  }];
+  }];
+  ```
+  ## 5.13 自定义UIControl
+  继承 UIControl 类,有一个属性checked
+  ```
+  #import <UIKit/UIKit.h>
+  @interface CheckedButton : UIControl
+  @property (assign,nonatomic)BOOL checked;
+  @end
+  ```
+  给UIControl的子类添加响应事件,然后重写checked属性的setter方法
+  ```
+   [self addTarget:self action:@selector(onClick:) forControlEvents:UIControlEventTouchUpInside];
+   
+  -(void)onClick:(id)sender{
+      NSLog(@"run click,check:%d",self.checked);
+      self.checked = !_checked;
+  }
+  
+  -(void)setChecked:(BOOL)checked{
+      NSLog(@"run setChecked ,check:%d",checked);
+      _checked = checked;
+      imgV.image = checked ? checkedImg :nil;
+      self.layer.borderColor = checked?checkedBorderColor.CGColor :unCheckedBorderColor.CGColor;
+      [self setNeedsLayout];
+  }
+  ```
+  # 6 导航控制器
+  ## 6.1 导航器控制器概述
+  导航控制分为两种，一个在顶部，一个在底部。
+  顶部为UINavigationController.
+  底部为UITabBarController.(与UIToolBar类似)
+  
+  ### 6.1.2 设计思路
+  首先把 Navigation View 加到 TabBarView 的内容上去，TabBarView再加到 Window 上去。
+  然后Window套 UITabBarController，UITabBarController套UINavigationController, UINavigationController套UIViewController。
+  最后当跳转到详情页面的时候，如果 UITabBar 仍然存在的话就会造成逻辑混乱，用户体验也会下降，因此需要将UITabBar隐藏
   
   
+  ## 6.2 导航控制器UINavigationController
+  UINavigationController：同级页面之间的跳转，界面典型的特点就是页面上部有一UINavigationBar导航条，导航条可以设置标题、左上角的按钮（一般用于返回），右上角的按钮，也可以自定义这些元素。
+  
+  ## 6.3 标签页控制器UITabBarController
+  UITabBarController：父子页面之间的嵌套关系，界面典型的特点是耍耍下部有一UITabBar选项组，通过点击Tab，可切换上面的视图的变换。
+  
+  # 8 提醒用户
+  ## 8.1 警告框AlertView
+  初始化一个alertView,并添加确定和取消监听事件
+  
+  ```
+  UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"温馨提示" message:[NSString stringWithFormat:@"您点击了第%ld段",(long)seg.selectedSegmentIndex + 1] preferredStyle:UIAlertControllerStyleAlert];
+  [alert addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+     确定点击事件
+  }]];
+  [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+     取消点击事件        
+  }]];
+  [self presentViewController:alert animated:true completion:nil];
+  ```
+  ## 8.2 操作表AlertSheet
+  初始化一个sheetAlert,并添加确定和取消监听事件
+  ```
+  - (IBAction)onActionSheet:(id)sender {
+      UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"温馨提示" message:@"操作表" preferredStyle:UIAlertControllerStyleActionSheet];
+      [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
+      [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDestructive handler:nil]];
+      [self presentViewController:alert animated:YES completion:nil];
+  }
+  ```
+  ## 8.3 活动指示器IndicatorView
+  初始化一个IndicatorView，并添加取消和关闭逻辑
+  ```
+  @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *av;
+  - (IBAction)onIndicatorView:(UIButton *)sender {
+      if(_av.isAnimating){
+          [_av stopAnimating];
+          [sender setTitle:@"活动指示器开始" forState:UIControlStateNormal];
+      }else{
+          [_av startAnimating];
+          [sender setTitle:@"活动指示器停止" forState:UIControlStateNormal];
+      }
+  }
+  ```
+  
+  ## 8.4 进度条ProgressView
+  初始化一个ProgressView,并添加取消和关闭逻辑
+  ```
+  - (IBAction)onProgress:(id)sender {
+      [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(onTimer:) userInfo:nil repeats:YES];
+  }
+  
+  - (void)onTimer:(NSTimer *)sender{
+      _progressBar.progress +=0.025;
+      if(ABS(_progressBar.progress-1)<0.0001){
+          [sender invalidate];
+          _progressBar.progress = 0;
+      }
+  }
+  ```
   
   ## 参考文献
   [IOS进阶之WKWebView - 简书](https://www.jianshu.com/p/4fa8c4eb1316)
   [教你使用 WKWebView 的正确姿势_一头雾水的Blog-CSDN博客_wkwebview](https://blog.csdn.net/guojin08/article/details/78895695)
   [IOS进阶之WKWebView - 简书](https://www.jianshu.com/p/4fa8c4eb1316)
+  [[IOS开发初学者]UINavigationController详解 - 简书](https://www.jianshu.com/p/ef1cd11a4b53)
+  [iOS-UINavigationController基本使用 - 简书](https://www.jianshu.com/p/47d2708f95e7)
+  [iOS ViewController跳转界面的几种方法简单总结 - 简书](https://www.jianshu.com/p/ceaf978f9dfe)
+  [[纯代码]搭建UINavigationController与UITabBarController主流App框架整合 - 简书](https://www.jianshu.com/p/9c12bc9ca414)
 '''
 linesHighlighted: [
   46
+  5
 ]
 isStarred: false
 isTrashed: false
