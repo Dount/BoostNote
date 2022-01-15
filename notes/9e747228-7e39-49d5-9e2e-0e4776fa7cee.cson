@@ -1,5 +1,5 @@
 createdAt: "2021-10-13T09:08:11.549Z"
-updatedAt: "2021-11-19T02:25:43.776Z"
+updatedAt: "2021-12-13T07:26:25.785Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "50个KotlinDemo学习"
@@ -7,6 +7,33 @@ tags: []
 content: '''
   # 50个KotlinDemo学习
   [TOC]
+  ## 1.Tap Counte
+  1. 学习viewBinding的使用
+  2. 学习自定义Menu和加载Menu
+  3. 通过使用inner class实现点击事件
+  
+  ## 2.Tap or HoldCounter
+  1. 学习使用time,timerTask计时器
+  2. 了解kotlin中timerTask与java中的timerTask可以共用
+  3. 学习使用runOnUiThread方法更新UI主线程
+  
+  ## 3.Tip Calculator
+  1. 了解输入事件处理EditorInfo,如IME_ACTION_DONE完成输入。
+  2. 了解kotlin中strings处理字符串的方法。
+  
+  ## 4.My Location
+  1. 了解as 关键字的理解
+  2. 了解Kotlin中位运算符(and,or,inv位非,xor异或,shl左移,shr右移,ushr无符号右移)
+  3. 学习使用动态权限的判定和申请。
+  4. 学习HttpURLConnection的使用。
+  
+  ## 5.Pick Image
+  1. 学习在kotlin中使用startActivityForResult
+  2. 学习通过intent获取相册图片
+  3. 学习通过intent获取相机拍摄图片
+  
+  ## 6.Basic RecycleView
+  
   
   ## 15.DataBase with Room
   1. 学习初始化创建Room
@@ -124,10 +151,13 @@ content: '''
   6. 了解ViewPage,TabLayout进行联动。
   
   ## 33. ObjectBox And Coroutines
-  
-  
-  ## 34. Basic Material Animation
-  
+  1. 了解Kotlin-Job协程方式
+  2. 了解colorFilter颜色过滤器的使用
+  3. 了解PorterDuffColorFilter图形混合滤镜的使用
+  4. 学习RecycleView,adapter初始化方式
+  5. 学习通过launch启动协程方式来异步更新UI。
+  6. 学习嵌入式数据库ObjectBox的使用
+  7. 学习自定义ViewHolder中的bind方法。
   
   ## 参考文献
   
@@ -147,9 +177,14 @@ content: '''
   [【Android】android中Invalidate和postInvalidate的区别 - Rex.. - 博客园](https://www.cnblogs.com/rayray/p/3437048.html)
   [Kotlin中T.()-＞Unit 、(T) -＞ Unit 、()-＞Unit傻傻分不清_0你太猖狂0的博客-CSDN博客](https://blog.csdn.net/qq_27753689/article/details/119848381)
   [Kotlin (一) 复合符号( '?.' '?:' '!!' 'as?' '?' )_大于弱智的博客-CSDN博客](https://blog.csdn.net/lckj686/article/details/80448471)
+  [详解Paint的setColorFilter(ColorFilter filter) - developer_Kale - 博客园](https://www.cnblogs.com/tianzhijiexian/p/4297104.html)
+  [自定义控件绘制(Paint之setColorFilter)篇七 - 简书](https://www.jianshu.com/p/4581d92d1902)
+  [Kotlin协程 - 简书](https://www.jianshu.com/p/6e6835573a9c)
+  [ObjectBox 的基础使用（Kotlin 版本） - 简书](https://www.jianshu.com/p/2f578a9749e1)
+  [对Kotlin中as关键字的理解_caremmm的博客-CSDN博客_kotlin中as](https://blog.csdn.net/weixin_47885879/article/details/107629997)
 '''
 linesHighlighted: [
-  96
+  101
 ]
 isStarred: false
 isTrashed: false
