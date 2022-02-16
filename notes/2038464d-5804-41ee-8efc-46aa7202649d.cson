@@ -1,0 +1,1579 @@
+createdAt: "2022-01-20T02:36:31.286Z"
+updatedAt: "2022-02-16T07:26:33.618Z"
+type: "MARKDOWN_NOTE"
+folder: "bfd1eca2e356e7181dfa"
+title: "IOS 开发：从零基础到精通"
+tags: []
+content: '''
+  # IOS 开发：从零基础到精通
+  [TOC]
+  
+  
+  # 第一部分
+  ## 第一章 IOS介绍
+  ### 1.1 Xcode 常用快捷键
+  ```
+  注释某行/取消注释某行:command+/
+  代码整体向上移动:command+option+[(windows上option替换alt)
+  代码整体向下移动:command+option+](windows上option替换alt)
+  在单个文件中搜索关键字: command+F
+  在整个工程中搜索关键字: command+shift+f
+  查看方法实现: command+单击
+  查看方法帮助: option+单击(windows上option替换alt)
+  前一个打开的文件:ctrl+command+方向键
+  后一个打开的文件:ctrl+command+方向键
+  ```
+  ### 1.2 Code Snippets快捷代码段
+  创建自定义CodeSnippet
+  ![2e8c2b33.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\2e8c2b33.png)
+  
+  自定义codeSnippet
+  ![ebb4c2bb.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\ebb4c2bb.png)
+  
+  使用codeSnippet
+  ![19e1bf87.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\19e1bf87.png)
+  ![cc1a62c7.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\cc1a62c7.png)
+  
+  导出或导入CodeSnippet
+  Xcode 的 CodeSnippet 目录 ~/Library/Developer/Xcode/UserData/CodeSnippet。
+  如果你没有创建过自定义的CodeSnippet，那么就不会有CodeSnippet文件夹.
+  
+  把CodeSnippet文件夹的自定义CodeSnippet代码块全部保存到你想保存的地方,换电脑或者重装Xcode时,再导入到CodeSnippet文件夹,即可再次使用.
+  
+  ## 第二章 数据类型和表达式
+  ### 2.1 数据类型与常量
+  #### 2.1.1 基本数据类型
+  ```
+  int number = 10;
+  NSLog(@"%d",number);
+  
+  float f = 10.1234;
+  NSLog(@"%f",f);
+          
+  double d = 10.1234;
+  NSLog(@"%f",d);
+          
+  char c = 'a';
+  NSLog(@"%c",c);
+          
+  BOOL b1 = YES;
+  BOOL b2 = NO;
+  NSLog(@"b1:%d,b2:%d",b1,b2);
+  ```
+  #### 2.1.2 限定词
+  ```
+  将number声明为long的整形变量
+  long int i1 = 100;
+  NSLog(@"i1:%ld",i1);
+  
+  双长整形相当于双精度long
+  long long int i2 = 100;
+  NSLog(@"i2:%lld",i2);
+          
+  告诉编译器要声明的特定变量用来存储相当小的整数。
+  short int i3 = 100;
+  NSLog(@"i3:%d",i3);
+  
+  当整数变量只用来存储正数的情况下使用该限定符
+  unsigned int i4 = 100;
+  NSLog(@"i4:%d",i4);
+  
+  signed限定词可明确地告诉编译器该整型变量是有符号的。
+  signed int i5 = 100;
+  NSLog(@"i5:%d",i5);
+  ```
+  #### 2.1.3 id与instancetype
+  id数据类型可存储任何类型的对象。从某种意义上说，它是通用对象类型。
+  这和C语言中的void * 很相似。id是一个指向任意一个继承了NSObject类的对象。id是一个指针，所以在使用id的时候不需要加星号。
+  
+  id类型是Object-c中经常使用的一种重要数据类型，它是Object-C动态绑定的基础。
+  ```
+  NSArray *array = @[@123,@"99ios"];
+  id obj = array[1];
+  NSLog(@"%@",obj);
+  ```
+  在类方法中，例如，以alloc,new开头的方法，以及实例方法中autorelease,init,retain等方法的返回值类型就是instancetype类型。
+  这些就称为关联返回类型的方法。这些方法的返回值是一个以方法所在的类为类型的对象。
+  ```
+  +(instancetype)alloc
+  -(instancetype)init
+  ```
+  
+  id和instancetype的异同
+  id和instancetype的相同点在于都可以作为方法的返回值类型。
+  两者不同点体现在：
+  - id可以作为方法或函数的参数类型，也可以单独用这种类型定义变量，但是instancetype不行。
+  - 如果方法的返回值类型是instancetype,那么它返回的一定是这个类型的对象，如果方法的返回值类型是id,那么它返回的是未知类型的对象。
+  
+  ### 2.2 算数表达式
+  #### 2.2.1 基本运算符
+  #### 2.2.2 数据类型转换
+  在Objective-c语言中，类型转换的一般形式为(类型说明符)(表达式)
+  该功能是吧表达式的运算结构强制转换成类型说明符所表示的类型。
+  ```
+  (float)a;
+  (int)(x+y);
+  ```
+  类型转换时，存在以下几种常见形式。
+  - 浮点值赋给整型变量，数值的小数部分会被删掉，整数部分不变。
+  - 整型值赋给浮点型变量，数值大小不发生变化，数据类型变成浮点型。
+  - id类型的对象转换成特定类型的对象。
+  ```
+  int a= 10,b=4;
+  float c=2.0, d= 1.5;
+          
+  NSLog(@"(float)(a+b)=%f",(float)(a+b));
+  NSLog(@"(int)(a+b)=%d",(int)(c+d));    
+  NSLog(@"a=%d,b=%d,c=%f,d=%f",a,b,c,d);
+          
+  int intResult;
+  intResult = d;
+  NSLog(@"(intResult=d) --> initResult=%d",intResult);
+          
+  float floatResult;
+  floatResult = a;
+  NSLog(@"(floatResult=a)-->floatReuslt= %f",floatResult);
+      
+  id Object;
+  NSString *string = @"99iOS";
+  Object = (NSString *)string;
+  NSLog(@"id object=%@",Object);
+  ```
+  ### 2.3 循环结构
+  #### 2.3.1 for循环
+  #### 2.3.2 for-in循环
+  在Object-C编程中，for-in循环可以认为是一种增强型的for循环，这个是Objective-C中的一个重要语法。当遇到遍历数据的情况时经常会使用到for-in循环。
+  ```
+  NSMutableArray *array = [NSMutableArray arrayWithObjects:@"张三",@"李四",@"王五",@"赵六",nil];
+  for(NSString *string in array){
+  NSLog(@"%@",string);}
+  ```
+  在for-in循环使用中不允许改变容器中的对象，即不允许删除或者增加枚举容器中的对象。因为对于一个既定的枚举器来说，其内部的对象都已经对其进行了枚举排序，如果你私自添加或者删除对象，那么其既定的枚举序列就发生了改变，而这种改变是系统不能识别的。所以Objective-c中不允许这么做。
+  
+  若必须在for-in过程中删除一些对象，这时就需要在删除完一个对象时，对循环执行break操作.
+  ```
+  NSMutableArray *array = [NSMutableArray arrayWithObjects:@"张三",@"李四",@"王五",@"赵六",nil];
+  for(NSString *string in array){
+  if([string isEqualToString:@"张三"]){
+  [array removeObject:string];
+  break;
+  }}
+  ```
+  #### 2.3.3 while循环
+  #### 2.3.4 break与continue
+  ### 2.4 选择结构
+  #### 2.4.1 if语句
+  #### 2.4.2 switch语句
+  #### 2.4.3 条件运算符/三目运算符
+  ### 2.5 typedef语句
+  Objectvie-C允许开发者为已经定义过的数据类型指派一个别名。需要使用typedef语句。typedef可以定义任意的数据类型，可以是系统自带的数据类型，
+  如int,float等。也可以是自定义的类，同时也可以支持枚举或者结构体。
+  ```
+  typedef int Integer;
+  typedef MYPerson *Person;
+  typedef CGRect MYRect;
+  ```
+  使用
+  ```
+  int number1 = 100;
+  Integer number2 = 100;
+          
+  MYPerson *person1 = [[MYPerson alloc]init];
+  Person person2 = [[MYPerson alloc]init];
+          
+  CGRect frame1 =CGRectMake(0, 0, 100, 100);
+  MYRect frame2 =CGRectMake(0, 0, 100, 100);
+  ```
+  ## 第三章 类、对象与方法
+  ### 3.1 类
+  #### 3.1.1 类的定义
+  在Objective-c中，每个类的定义包括两个部分：接口(interface)和实现(implementation)。接口部分定义在.h文件中，包含类的声明、属性以及方法，主要作用是对外提供访问解耦。实现部分定义在.m文件中，主要用于方法的功能实现。
+  
+  类定义是一种类型的对象原型，其声明了每个对象都具有的属性(Property),同时还定义了同一类的所有对象都使用的一系列方法(Method)。
+  
+  接口文件实现
+  ```
+  #import <Foundation/Foundation.h>
+  
+  NS_ASSUME_NONNULL_BEGIN
+  
+  @interface Player : NSObject
+  @property (nonatomic,assign)int healthPoint;
+  @property (nonatomic,assign)int magicPoint;
+  
+  +(Player *)player; //初始化类方法
+  -(void) normalAttack;
+  -(void) magicAttack;
+  
+  @end
+  NS_ASSUME_NONNULL_END
+  ```
+  
+  实现文件实现
+  ```
+  #import "Player.h"
+  @implementation Player
+  +(Player *) player{
+  //实例化对象
+  Player *player = [[Player alloc]init];
+  //设置属性初始化
+  player.healthPoint =100;
+  player.magicPoint = 100; 
+  return player;
+  }
+  -(void)normalAttack{   
+  }
+  -(void)magicAttack{  
+  }
+  @end
+  ```
+  
+  #### 3.1.2 类的继承
+  在Objective-c中创建的类也遵循继承的原则。主要体现在两个方面。
+  - 继承父类的属性：当创建一个新的类时，新的类不仅仅包含其自身定义的属性，并且还包括在其父类中定义的属性，以及其父类的父类的属性，并按照这个规则一直追溯到根类。NSObject是所有类的根类，因此，所有类都可以使用NSObject中定义的属性以及方法。
+  
+  - 继承父类的方法：一个对象既可以访问自身定义的方法，也可以访问所有父类的方法。当需要调用父类的方法时，需要使用到关键字super.
+  
+  接口文件实现
+  ```
+  #import "Player.h"
+  NS_ASSUME_NONNULL_BEGIN
+  @interface Magician : Player
+  -(void) specialMagicAttack;
+  -(void) mixAttack;
+  @end
+  NS_ASSUME_NONNULL_END
+  ```
+  
+  实现文件实现
+  ```
+  #import "Magician.h"
+  @implementation Magician
+  -(void) specialMagicAttack{
+      //调用父类的属性
+      self.magicPoint -=50;
+  }
+  -(void)mixAttack{ 
+      //调用父类的方法
+      [super normalAttack];
+      [super magicAttack];
+  }
+  @end
+  ```
+  ### 3.2 属性
+  #### 3.2.1 属性的定义
+  属性在类的定义中使用非常普遍，属性定义后，会创建一个与该属性名称同名且带下划线的实例变量，与此同时，编译器会根据属性的特性，自动合成该属性对应实例变量的存取方法(getter和setter方法)。
+  
+  当在类中声明一个属性时，需要在类的@interface代码部分编写
+  ```
+  @property (attributes) type name;
+  ```
+  - @property 属性定义关键字
+  - attribute 属性的特性，提供了该属性的存储方法以及属性行为的说明，常见的关键字有weak/strong,assign,copy,atomic/nonatomic。
+  - type属性的类型说明。
+  - name属性的名称。
+  
+  获取属性的值：在点语法中使用objectName.properyName来获取属性的值，其本至上是调用了属性对应的getter方法。
+  
+  设置属性的值: 在点语法中使用objectName.properyName = value来给属性直接设值，其本质上是调用了属性对应的setter方法。需要注意的是，属性定义中包含readonly关键字的属性是不能设置值的。
+  ```
+  MYClass *object = [[MYClass alloc]init];
+  //获取属性的值，getter方法
+  NSLog(@"name属性初始值:%@",object.name);
+  //设置属性的值，setter方法
+  NSLog(@"name属性最新值:%@",object.name);
+  ```
+  
+  懒加载指系统不会在初始化时就加载某个对象，而是在第一次调用get方法时候才加载这个对象的内存。懒加载其实就是对属性的getter方法进行重写操作。在懒加载过程中，可以对属性进行一些初始化的操作。
+  ```
+  @property (nonatomic,strong)NSMutableArray *dataArray;
+  -(NSMutableArray *)dataArray{
+  if(!_dataArray){
+  _dataArray = [NSMutableArray array];
+  }
+  return _dataArray;
+  }
+  ```
+  #### 3.2.2 公有属性与私有属性
+  **在自定义类中，既可以在.h文件中声明属性，也可以在.m文件中声明属性。在.h文件中声明的属性可以供外部调用，称为公有属性。在.m文件中声明的属性，即该类扩展中声明的属性，只能在该类的实现部分使用，称为私有属性。公有属性与私有属性的作用域是不同的，公有属性可以在整个工程中都被调用到，而私有属性只能在该类内部调用。**
+  
+  在实现文件中，可以定义供类内部使用的专有属性。专有属性的作用域只限于本类，即只能够在该类的内部使用，外部无法访问。
+  ```
+  @interface Player ()
+  @property (nonatomic,copy)NSString *firstName;
+  @property (nonatomic,copy)NSString *lastName;
+  @end
+  
+  完成专有属性后，通常建议使用懒加载的方式。
+  -(NSString *)firstName {
+      if(_firstName == nil){
+          _firstName = [NSString stringWithFormat:@""];
+      }
+      return _firstName;
+  }
+  
+  -(NSString *)lastName {
+      if(_lastName == nil){
+          _lastName = [NSString stringWithFormat:@""];
+      }
+      return _lastName;
+  }
+  ```
+  
+  在接口文件中，公共属性是可以被外部进行访问和调用的。
+  ```
+  @property (nonatomic,copy) NSString *name;
+  -(NSString *)name{
+      if(_name ==nil){
+          _name = [self.firstName stringByAppendingString:self.lastName];
+      }
+      return _name;
+  }
+  ```
+  #### 3.2.3 属性关键字
+  在定义属性的时候，需要在括号内说明该属性的特性(attribute)。属性的特性决定了属性在原子性，存取方法以及内存管理3个方面的特性。目前，常用的特性关键字有8个，分别由nonatomic,atomic,readonly,readwrite,strong,weak,assign,copy.
+  
+  原子性(atomic,nonatomic)
+  atomic意为操作是原子的，意味着只有一个线程访问实例变量。atomic是线程安全的，
+  - 当一个变量声明为atomic时，意味着在多线程中只能有一个线程能对它进行访问。
+  - 当一个变量声明为atomic时，该变量为线程安全性，但是会影响访问速度。
+  - 当一个变量声明为atomic时，在非ARC编译环境下，需要设置访问锁来保证对该变量进行正确的getter/setter.
+  
+  nonatomic表示非原子的，可以被多个线程访问，效率比atomic快，但不能保证在多线程环境下的安全性，在单线程和明确只有一个线程访问的情况下广泛使用。
+  - 当一个变量声明为nonatomic时，意味着多个线程可以同时对其进行访问。
+  - 当一个变量声明为nonatomic时，它是非线程安全型，访问速度快。
+  - 当一个变量声明为nonatomic时，当两个不同的线程对其访问时，容易失控。
+  
+  存取方法(readwrite,readonly)
+  readwrite是默认值，表示该属性同时拥有setter和getter，即该属性即可以读，也可以写。
+  readonly表示只有getter没有setter,即该属性只能读取，不能更新或写入。
+  
+  内存管理(strong,weak,assign,copy)
+  - strong表示实例变量对传入对象要有所有权关系，引用计数加1.
+  - weak弱引用在setter方法中，对传入的对象不进行引用计数加1的操作。简单来说，就是对传入的对象没有所有权，当该对象引用计数为0时，即该对象被释放后，用weak声明的实例变量指向nil.
+  - assign简单复制，不更改索引计数，适合简单数据类型。如 int、float、double和NSInteger,CGFloat等。
+  - copy 用于希望在内存中保留一份传入值的复制，而不是值自身的情况，即把原来的对象完整地复制到另外一个新的内存区，当副本改变时，原对象并不同时改变，同样，当原对象发送改变时，其副本也不会发生改变，因为原对象与原复制对象存储在独立的两个内存区域中。
+  
+  copy与strong的区别在于实例对象是对传入对象的副本拥有所有权，而非对象本身。
+  
+  - strong 自定义对象，控制器对象使用strong,如果不指定，属性默认取值strong.
+  - weak代理对象，IBOutlet使用weak.
+  - assign基本数据类型，int,float,double,NSInteger,CGFloat使用assgin.
+  - copy NSString,NSArray,NSDictionary及其可变子类，Block块代码使用copy
+  ```
+  @property (nonatomic,strong) MYClass *myclass;
+  @property (nonatomic,weak) id delegate;
+  @property (nonatomic,assign) int age ;
+  @property (nonatomic,copy) NSString *name;
+  @property (nonatomic,copy) NSArray *courseResults;
+  @property (nonatomic,copy) void (^blockProperty)(void);
+  ```
+  
+  ### 3.3 方法
+  #### 3.3.1 方法的定义
+  在IOS开发中，调用某个对象定义的方法是通过向对象发送消息的方式进行的，消息的名称对应类中定义的方法名称。消息机制是Objective-C语言区别其它编程语言的一个特性。在Object-c中，有两种类型的方法，分别是实例方法与类方法。
+  
+  1. 有关方法的基本概念
+  ```
+  [receiver message];消息传递模型
+  ```
+  - 消息message: 在iOS开发中，调用一个方法相当于传递一个消息，这里的消息指的是方法名（选择器selector）和参数。
+  - 接收者receiver: 通常为一个对象，消息告诉接收者需要去做什么事情。当消息发送的时候，系统从接收者的方法列表中选择最合适的方法并调用。
+  - 方法method: 方法都包括方法声明和方法实现两部分，相关代码分别编写在.h和.m文件中。
+  - 发送消息：当需要调用一个方法时，通过给实现该方法的对象发送一条消息来实现，简单来说。就是通知对象去调用其定义的某个方法或者其父类的某个方法。
+  - 选择器selector: 因为方法在消息中负责在对象的方法列表中选择一个方法执行，因此方法名在消息中通常成为选择器。
+  
+  2. 方法的定义
+  方法声明包含了以下几个部分：方法类型标识符，返回类型，方法名称，参数类型和参数名称。
+  ```
+  - (void)insertString:(NSString *)astring atIndex:(NSInteger)loc;
+  ```
+  - 方法类型标识符(-) 表示一个实例方法
+  - 返回类型(void) 即没有返回值
+  - 方法名称(insertString:atIndex:) 一个方法的实际名称是所有签名关键词的串联，包括冒号字符。
+  - 参数类型 该方法中包括了两个参数，两个参数的类型为NSString和NSUInteger.
+  - 参数名称 该方法中包含了两个参数，两个参数的名称分别为astring和loc
+  
+  3. 方法的类型
+  在iOS开发中，方法一共有两种类型，分别为实例方法和类方法。
+  - 实例方法:消息的接收者必须为一个已经实例化的对象，实例方法在定义时以-开头。
+  ```
+  -(void)appendString:(NSString *)aString;
+  ```
+  - 类方法:有时也称为工厂方法，类方法通常用于创建类的新实例。消息的接收者为一个类对象，类方法在定义时以+开头，类方法是一般情况下是有返回值的，返回类型通常为instancetype.
+  ```
+  +(instancetype)stringWithFormat:(NSString *)format....;
+  ```
+  #### 3.3.2 方法的调用
+  在Objective-C中，调用一个方法相当于传递一个消息，这里的消息指的是方法名和参数。
+  所有消息的分派都是动态的，所谓动态指的是所有消息处理直到执行时(runtime)才会动态决定，而不是在编译时就绑定，这也体现了Objective-C对象的多态行为。
+  
+  1. 方法调用的方式
+  - 普通调用 使用方括号将消息本身与参数放到括号内，同时将接受消息的对象放在最前面。
+  ```
+  NSString *str = [NSString stringWithFormat:@"九九学院"]; //类方法调用
+  NSString *str2 = [NSString stringWithFormat:@"www.99ios.com"]; //类方法调用
+  str = [str stringByAppendingString:str2]; //实例方法调用
+  NSLog(@"%@",str);
+  ```
+  - 嵌套调用 有时为了避免声明大量的局部变量来存储临时结果，Objective-C也支持嵌套消息表达式。
+  ```
+  NSString *str = [NSString stringWithFormat:@"九九学院"]; //类方法调用
+  str = [str stringByAppendingString:[NSStringstringWithFormat:@"www.99ios.com"]]; //方法的嵌套调用
+  NSLog(@"%@",str);
+  ```
+  - 调用父类的方法 子类可以直接调用父类的方法
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "myPerson.h"
+  int main(int argc, char * argv[]) {
+  @autoreleasepool {
+  myPerson *myPerson1 = [[myPerson alloc] init];
+  [myPerson copy];
+  }
+  return 0;
+  }
+  ```
+  
+  2. 点语法
+  Objective-C中还提供专门用于调用存取方法(setter/getter)的点语法。开发者可以调用getter/setter方法来获取或设置对象的属性的值，同样的，可以使用点语法来更加简便地获取或设置对象属性的值。
+  
+  - 创建一个MyPerson类，并添加一个name属性
+  ```
+  #import <Foundation/Foundation.h>
+  NS_ASSUME_NONNULL_BEGIN
+  @interface myPerson : NSObject
+  @property (nonatomic,copy) NSString *name;
+  @end
+  NS_ASSUME_NONNULL_END
+  ```
+  - 使用点语法对name属性进行赋值以及取值操作。
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "myPerson.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          myPerson *myPerson1 = [[myPerson alloc] init];
+          myPerson1.name = @"MYClass";
+          NSLog(@"class name is %@",myPerson1.name);
+      }
+      return 0;
+  }
+  ```
+  3. 消息处理机制
+  在Objective-C中，消息是直到运行时才和方法进行绑定关联的。消息机制的关键在于编译器为类和对象生成的结构。其中类的结构中包含两个基本元素：**，指向父类的指针；第二，类的方法列表**,而对象被创建时，对象的第一个实例变量是一个指向该对象的类结构的指针，即isa指针。通过该指针，就可以访问到该类及其父类的方法列表。
+  
+  当向某个对象发送消息时:
+  - 首先根据isa指针，找到该对象对应的类结构的方法列表，继而可找到具体的方法实现。当在本类的方法列表中找不到对应的方法时，会根据类结构中父类的指针去查找父类的方法列表，直至NSObject根类。
+  - 将对象以及参数传递给找到的方法实现。
+  - 执行方法中的代码，获取方法的返回值。 
+  
+  #### 3.3.3 方法的重写
+  在Objective-C中，子类不仅可以继承父类的属性，同时还可以直接继承父类中的方法，而不需要重新编写相同的方法，但有时候在子类中并不想原封不动地继承父类中的方法，而是希望在子类中实现一些特定的功能，这时可以对父类进行方法重写或方法覆盖。
+  
+  1. 方法重写的规则
+  一般来说，如果希望在子类中调用父类的某个方法，实现一些特定的功能时，可以考虑对父类的方法进行重写。当子类需要重写父类的方法时，必须保证重写的两个方法放回置，方法名，参数列表完全一致。
+  
+  2. 实例代码实现
+  新增一个ClassA类，在ClassA.h文件中，添加webSite属性以及printWebSite方法#import 
+  ```
+  #import <Foundation/Foundation.h>
+  
+  NS_ASSUME_NONNULL_BEGIN
+  
+  @interface ClassA : NSObject
+  @property (nonatomic,copy) NSString *webSite;
+  -(void) printWebSite;
+  
+  @end
+  
+  NS_ASSUME_NONNULL_END
+  ```
+  在ClassA.m文件中，实现printWebSite方法的功能，即打印webSite属性的值。
+  ```
+  #import "ClassA.h"
+  @implementation ClassA
+  -(void) printWebSite {
+      NSLog(@"classA 中打印webSite的只：%@",self.webSite);
+  }
+  @end
+  ```
+  新建一个ClassB,继承自ClassA,在ClassB.h文件中，同样添加一个printWebSite方法。
+  ```
+  #import <Foundation/Foundation.h>
+  #import "ClassA.h"
+  NS_ASSUME_NONNULL_BEGIN
+  @interface ClassB : ClassA
+  -(void)printWebSite;
+  @end
+  NS_ASSUME_NONNULL_END
+  ```
+  ClassB.m文件中，重写printWebSite方法，改变打印的内容。
+  ```
+  #import "ClassB.h"
+  @implementation ClassB
+  -(void)printWebSite{
+      NSLog(@"ClassB中打印webSite的值:%@",[NSString stringWithFormat:@"http://%@",self.webSite]);
+  }
+  @end
+  ```
+  在main()中分别调用父类和子类的printwebSite方法。
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "ClassA.h"
+  #import "ClassB.h"
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          ClassA *classA = [[ClassA alloc] init];
+          classA.webSite = @"www.99ios.com";
+          [classA printWebSite];
+          ClassB *classB = [[ClassB alloc]init];
+          classB.webSite = @"www.99ios.com";
+          [classB printWebSite];
+          //return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
+      }
+      return 0;
+  }
+  ```
+  3. 子类方法调用父类方法
+  在发开过程中，需要子类先调用父类的方法，然后再进行一些定制操作，因此在调用父类方法时需要用到super关键字
+  ```
+  #import "ClassB.h"
+  @implementation ClassB
+  -(void)printWebSite{
+  [super printWebSite];
+  NSLog(@"ClassB中打印webSite的值:%@",[NSString stringWithFormat:@"http://%@",self.webSite]);
+  }
+  @end
+  ```
+  ### 3.4 对象
+  #### 3.4.1 创建对象
+  对象是类Class运行时的实例，它包含了自己的实例变量的内存副本以及类方法的指针，在实际开发种可以采用分配内存地址alloc以及初始化init两个步骤来创建一个对象。
+  
+  对象的创建分为两个阶段：内存空间分配和初始化。通常情况下，初始化总是紧跟在内存空间分配之后进行的，但是在创建对象的过程种，这两个操作的作用是不同的。
+  
+  1. 分配内存空间alloc
+  除了为对象在程序的内存区划定一块合适大小的内存空间之外,alloc方法还有以下几个重要作用：
+  - 将对象的引用计数设置为1。其中，引用计数与对象的内存管理有关，在ARC模式下，当引用计数为0时，对象会被释放。
+  - 初始化对象的isa指针并指向对象的类。在实际开发过程种，会遇到对象类的类对象两个概念，其中，对象类是一个根据类定义编译得到的运行对象。另外，每一个对象都有一个isa指针表示其是哪个类的实例。
+  - 将类种定义的属性的值初始化为0或者nil.
+  
+  如果只执行了alloc操作，在内存种分配了内存空间，但未进行任何初始化操作。
+  其对象的地址是存在的，但其属性的值为空。
+  
+  2. 初始化init
+  初始化的过程将对象的实例变量设置为合理且有用的初始值，还可以分配和准备对象需要的其他全局资源，并在必要时加载诸如文件这样的资源。
+  
+  在对象调用init方法时，主要完成了以下工作。
+  - 调用父类的初始化方法[super init]
+  - 如果父类返回的对象不为空，则可以对对象进一步设置；
+  - 如果父类返回的对象为nil,则直接返回nil。
+  
+  3. 类方法
+  类方法是方法前面为+号的方法，类方法把创建对象过程中的两个步骤(alloc+init)合并，直接返回被创建的对象。在实际开发过程中，类方法的使用非常普遍。
+  ![635dcb02.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\635dcb02.png)
+  下方的示例代码中分别使用类方法和实例方法创建了NSString 类型的对象。
+  ```
+  //使用类方法创建字符串对象
+  NSString *str = [NSString stringWithFormat:@"www.99ios.com"];
+  //使用alloc+init方法创建字符串对象
+  NSString *str2 = [[NSString alloc] initWithString:@"九九学院"];
+  ```
+  #### 3.4.2 对象操作
+  针对对象的常见操作主要包括:判断对象的类型，判断对象是否响应消息，对象间的比较以及对象复制
+  
+  1. 判断对象的类型
+  对象通过调用isKindOfClass:方法，可以判断对象的类型。isKindOfClass:方法是NSObject类的方法，将类型为Class的对象aClass作为参数传入，返回一个BOOL类型的返回值。
+  ```
+  -(BOOL)isKindOfClass:(Class)aclass;
+  ```
+  ```
+  NSString *str = [NSString stringWithFormat:@"www.99ios.com"];
+  if([str isKindOfClass:[NSString class]]){
+  NSLog(@"str 是NSString类型的对象!");}
+  ```
+  
+  2. 判断对象是否响应消息
+  在Objective-C 中，调用对象的方法需要向对象发送消息，这是Objective-C语言的重要特征。要判断一个对象是否响应一条消息，则可以调用respondsToSelector：方法。应用程序通常在验证一个对象响应一则消息后，才将消息发送给该对象。
+  
+  定义MYClass.h文件中，添加一个name属性
+  ```
+  #import <Foundation/Foundation.h>
+  NS_ASSUME_NONNULL_BEGIN
+  
+  @interface MYClass : NSObject
+  @property (nonatomic,copy)NSString *name;
+  @end
+  
+  NS_ASSUME_NONNULL_END
+  ```
+  在自定义类MYClass.m文件中，对属性进行懒加载
+  ```
+  #import "MYClass.h"
+  @implementation MYClass
+  -(NSString *)name{
+      if(_name ==nil){
+          _name=@"99ios";
+      }
+      return _name;
+  }
+  @end
+  ```
+  在main()中，判断自定义类是否实现了属性的getter方法
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "MYClass.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          MYClass *obj = [[MYClass alloc]init];
+          if([obj respondsToSelector:@selector(name)]){
+              NSLog(@"obj可以响应名称为name的消息");
+          }
+      }
+      return 0;
+  }
+  ```
+  3. 对象间的比较
+  当需要对比两个对象是否相同时，可以使用isEqual:方法。如果相同，则该方法返回YES。该方法是在NSObject类中定义的，因此所有的对象都可以调用这个方法。
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSString *str1 = [NSString stringWithFormat:@"www.99ios.com"];
+          NSString *str2 = @"九九学院";
+          if([str1 isEqual:str2]){
+              NSLog(@"str1与str2相同");
+          }else{
+              NSLog(@"str1与str2不相同");
+          }
+          if([str1 isEqualToString:@"www.99ios.com"]){
+              NSLog(@"str1与字符串 wwww.99ios.com相同");
+          }
+          //return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
+      }
+      return 0;
+  }
+  ```
+  4. 对象复制
+  通过调用copy方法，可以创建对象的副本。调用copy方法，有个前提条件，即接受的对象的类必须遵守NSCopying协议。另外，在使用对象复制时，还需要考虑针对该对象是浅复制还是深复制。有关沈复制与浅复制后续会详细介绍。
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSString *str = [NSString stringWithFormat:@"www.99ios.com"];
+          //对象复制
+          NSString *copyString = [str copy];
+          NSLog(@"copyString的值:%@",copyString);
+          //return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
+      }
+      return 0;
+  }
+  ```
+  ### 3.5 变量
+  #### 3.5.1 局部变量
+  局部变量也称为内部变量，局部变量在方法内部声明，作用域仅仅限于方法内。有关局部变量在实际使用中，有以下几个常用的要点。
+  - 局部变量在方法内部定义，只有在方法运行时才存在。
+  - 局部变量没有默认的初始值，因此在使用前需要赋值。
+  - 在一个方法中，方法中的输入参数也属于局部变量的范畴。
+  
+  示例代码
+  定义一个MYClass类，在该类MYClass.h文件中添加一个printlocalVariable方法。
+  ```
+  #import <Foundation/Foundation.h>
+  NS_ASSUME_NONNULL_BEGIN
+  @interface MYClass : NSObject
+  -(void) printLocalVariable;
+  @end
+  NS_ASSUME_NONNULL_END
+  ```
+  在类MYClass.m文件中，实现printLocalVariable方法。在printLocalVariable方法内部，定义个局部变量localVar,并赋初始值0.当方法被调用时，打印当前localVar的值，之后localVar值执行加1操作。
+  ```
+  #import "MYClass.h"
+  @implementation MYClass
+  -(void) printLocalVariable{
+      int localVar = 0;
+      NSLog(@"localVar value :%d",localVar);
+      localVar++;
+  }
+  @end
+  ```
+  在main函数中反复调用printlocalVariable方法
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "MYClass.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          MYClass *myclass = [[MYClass alloc] init];
+          [myclass printLocalVariable];
+          [myclass printLocalVariable];
+          [myclass printLocalVariable];
+      }
+      return 0;
+  }
+  ```
+  #### 3.5.2 全局变量
+  全局变量也称为外部变量，它不属于任何一个方法，而是属于一个源程序文件或者特定的类。根据其作用区域来区分，全局变量包括内部全局变量以及外部全局变量，其中，**内部全局变量的作用域是整个类，而外部全局变量的作用域是整个程序。**
+  
+  1. 内部全局变量
+  如果在程序开始处定义变量，那么久可以在类中任何位置都使用这个变量的值，且变量的值是累计变化的，这个时候，这个变量的作用域在于整个类的实现文件，称之为内部全局变量。
+  
+  在MYClass.m文件中定义一个内部全局变量gNum,并且赋初始值0，那么就可以在该类的所有方法中使用该变量，不需要重新声明，并且对于该变量值的修改是累加的。
+  ```
+  import "MYClass.h"
+  @implementation MYClass
+  int gNum = 0;
+  -(void) printLocalVariable{
+      NSLog(@"localVar value :%d",gNum);
+      gNum++;
+  }
+  @end
+  ```
+  在main()函数中，调用printGlobalVariable方法，来检验内部全局变量gNum的值是累加的。
+  ```
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          MYClass *myclass = [[MYClass alloc] init];
+          [myclass printLocalVariable];
+          [myclass printLocalVariable];
+          [myclass printLocalVariable];
+      }
+      return 0;
+  }
+  ```
+  2. 外部全局变量
+  外部全局变量，也是可以在程序的其他任何方法以及函数中访问的。**这需要在访问外部全局变量的地方，声明变量类型以及名称，并添加extern关键字，即可访问该全局变量。**
+  
+  首先在classA.m classB.m文件中实现printExternVar方法，并对全局变量gNum进行声明。
+  ```
+  #import "ClassA.h"
+  @implementation ClassA
+  -(void)printLocalVariable{
+      extern int gNum;
+      NSLog(@"globalVar value (Class A):%d",gNum);
+      gNum++;
+  }
+  @end
+  ```
+  
+  ```
+  #import "ClassB.h"
+  @implementation ClassB
+  -(void)printLocalVariable{
+      extern int gNum;
+      NSLog(@"globalVar value (Class B):%d",gNum);
+  }
+  @end
+  ```
+  
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "MYClass.h"
+  #import "ClassA.h"
+  #import "ClassB.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          MYClass *myclass = [[MYClass alloc] init];
+          [myclass printLocalVariable];
+          [myclass printLocalVariable];
+          [myclass printLocalVariable];
+          
+          ClassA *classA = [[ClassA alloc]init];
+          [classA printLocalVariable];
+          
+          ClassB *classB = [[ClassB alloc]init];
+          [classB printLocalVariable];
+          
+          //return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
+      }
+      return 0;
+  }
+  ```
+  **注意 需要区分变量的声明和定义，变量的声明不会引起内存空间的分配，而定义会分配内存空间。处理外部变量时，变量可以在很多地方声明为extern,但只能定义一次。**
+  
+  #### 3.5.3 静态变量
+  在Objective-C中，在变量声明前加上关键字static,该变量就成为静态变量。静态变量可以使局部变量保留多次调用同一个方法所取得的值。
+  1. 在方法之内定义静态变量
+  静态变量只在程序开始执行初始化一次。在不指定静态变量的值时，默认情况下，静态变量的初始值为0，并且多次调用方法时，保存这些数值。静态变量也可以在方法内部定义，此时，只能在该方法中使用定义的静态变量。
+  
+  在MYClass.m文件printStaticVariable方法中定义静态变量staticValue.该静态变量只能在printStaticVariable方法中使用。
+  ```
+  #import "MYClass.h"
+  @implementation MYClass
+  -(void)printStaticVariable{
+      static int staticValue;
+      NSLog(@"staticVar value: %d",staticValue);
+      staticValue++;
+  }
+  @end
+  ```
+  当在main中多次调用printStaticVariable方法时，staticValue的值会累加。
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "MYClass.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          MYClass *myclass = [[MYClass alloc] init];
+          [myclass printStaticVariable];
+          [myclass printStaticVariable];
+          [myclass printStaticVariable];
+      }
+      return 0;
+  }
+  ```
+  2. 在方法之外定义静态变量
+  静态变量除了可以在方法内部定义之外，还可以在方法之外定义，此时，该类的所有方法都可以访问该静态变量。
+  
+  在MYClass.m文件 @implementation之外定义一个静态变量staticValue2,并赋初始值100.
+  ```
+  #import "MYClass.h"
+  static int staticValue2 = 100;
+  @implementation MYClass
+  -(void) testStaticVarValue1{
+      NSLog(@"在方法1中打印静态变量的当前值:%d",staticValue2);
+      staticValue2++;
+  }
+  -(void) testStaticVarValue2{
+      NSLog(@"在方法2中打印静态变量的当前值:%d",staticValue2);
+      staticValue2++;
+  }
+  @end
+  ```
+  在main函数中
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "MYClass.h"
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          MYClass *myclass = [[MYClass alloc] init];
+          [myclass testStaticVarValue1];
+          [myclass testStaticVarValue2];
+          [myclass testStaticVarValue1];
+          [myclass testStaticVarValue2];
+      }
+      return 0;
+  }
+  ```
+  3. 静态变量的重要特性
+  - 某个对象调用不同的方法，修改同一个静态变量时，则该静态变量的值使累加的。
+  - 当同一个类的不同对象，修改同一个静态变量时，则该静态变量的值也是累加的。
+  
+  在main函数中，再创建一个MYClass对象,可以验证，此时静态变量staticValue2的值也是叠加的。
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "MYClass.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          MYClass *myclass = [[MYClass alloc] init];
+          [myclass testStaticVarValue1];
+          [myclass testStaticVarValue2];
+          [myclass testStaticVarValue1];
+          [myclass testStaticVarValue2];
+          
+          MYClass *myclass2 = [[MYClass alloc]init];
+          [myclass2 testStaticVarValue1];
+          [myclass2 testStaticVarValue2];
+          [myclass2 testStaticVarValue1];
+          [myclass2 testStaticVarValue2];
+          
+          //return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
+      }
+      return 0;
+  }
+  ```
+  #### 3.5.4 const关键字
+  
+  1. const介绍
+  如果不像让某些变量的值改变，可以使用const关键字来修饰这些变量。如果添加const关键字，这些变量的值从头到尾都不会改变了。在iOS开发中，经常把字符串常量添加const关键字，从而替代宏(#define),因为const的执行性能比宏定义要高。给变量添加const关键字，主要目的是防止定义的对象被修改，在定义有const关键字的对象时，需要设置初始值。
+  
+  const在不同位置情况下的变量
+  ```
+  int main() {
+      @autoreleasepool {
+          int a = 10;
+          const int *p = &a;
+          int const *p2 = &a;
+          int * const p3 = &a;
+          
+          int b = 20;
+          *p = 12;
+          p = &b;
+          
+          *p2 = 12;
+          p2 = &b;
+          
+          *p3 = 12;
+          p3 = &b;
+  
+          printf("%d",*p);
+          printf("%d",*p2);
+          printf("%d",*p3);
+      }
+  }
+  ```
+  结果如下：
+  ![aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80MDQ0ODk2LTRmZmFhNWYxNWEzZDVkNzgucG5n.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\25b94e62.png)
+  
+  情况1: 
+  ```
+  const int *p = &a
+  此时const修饰的是*p,*p的意义是指针所指向的内存地址的值，所以此时的意思是指针p所指向的内存地址的值是不可变的，但是指向的内存地址可变。
+  ```
+  情况2：
+  ```
+  int const *p = &a
+  此时const修饰的仍然是*p,同情况1一样。
+  ```
+  情况3：
+  ```
+  int *const p = &a
+  此时const修饰的是变量p,也就是局部变量p的值不能被改变，所以当尝试使用*p改变p所指向的内存地址a中的值时是可行的，但是当尝试重新给p赋值，让其指向b的内存地址时会报错。
+  ```
+  2. const使用方法
+  在实际的iOS开发中，const最常用于定义字符串常量，并且为了维护方便，会把工程中所有的字符串常量都统一放在一个const类中。
+  
+  在MYConst.h文件中，声明所有的常量，而且需要在每个常量前面都加上extern关键字。
+  ```
+  #import <Foundation/Foundation.h>
+  
+  NS_ASSUME_NONNULL_BEGIN
+  
+  extern int const height;
+  extern NSString *const launchSuccessNotification;
+  
+  @interface MYConst : NSObject
+  @end
+  NS_ASSUME_NONNULL_END
+  ```
+  在MYConst.m文件中，为常量赋值。
+  ```
+  #import "MYConst.h"
+  int const height = 44;
+  NSString *const launchSuccessNotification = @"launchSuccessNotification";
+  @implementation MYConst
+  @end
+  ```
+  当需要使用const修饰的常量时，引入MYConst类。
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "MYClass.h"
+  #import "MYConst.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSLog(@"my const height:%d",height);
+          NSLog(@"my const notification string:%@",launchSuccessNotification);
+      }
+      return 0;
+  }
+  ```
+  ## 第四章 Foundation框架
+  ### 4.1 Foundation框架介绍
+  - Application Kit 框架：包含了用于开发交交互式图形应用程序，使得开发文本，菜单，工具栏，表，文档，剪切板和窗口之类的过程变得十分简便，用于Mac OS桌面程序的开发。
+  - Cocoa:总体来说，通常指的试Foundation框架，Application Kit框架以及CoreData框架，Cocoa一般针对的是MacOSd的应用开发。
+  - Cocoa Touch:指的是Foundation框架，UIKit框架以及CoreData框架，CocoaTouch一般用于iOS移动设备开发。
+  
+  ### 4.2 字符串类
+  在Foundation框架中，处理字符串的类就是NSString和NSMutableString。这两个类完成了Objective-C中与字符串相关的核心功能处理。而NSString和NSMutableString两个类最主要的区别是NSString类的字符串对象，在创建赋值后不能动态修改长度和内容，除非重新赋值。而NSMutableString类似于链表，在创建赋值后可以进行修改长度，插入，删除等操作。
+  
+  #### 4.2.1 不可变字符串NSString
+  1. 创建字符串对象
+  ```
+  NSString *webSite =@"www.99ios.com"
+  NSString *string1 = [NSString stringWithFormat:@"www.99ios.com"];
+  NSString *string2 =[NSString stringWithUTF8String:"九九学院"];
+  NSString *string3 =[[NSString alloc]initWithFormat:@"www.99ios.com"];
+  NSString *string4 = [[NSString alloc]initWithUTF8String:"九九学院"]
+  ```
+  2. 字符串比较
+  使用isEqualToString判断字符串是否相同
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "MYClass.h"
+  #import "MYConst.h"
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSString *string1 = @"www.99ios.com";
+          NSString *string2 = @"www.99ios.com";
+          if([string1 isEqualToString: string2]){
+              NSLog(@"string1 与string2 相等");
+          }
+      }
+      return 0;
+  }
+  ```
+  判断字符串中是否包含某个字符串，使用containsString
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "MYClass.h"
+  #import "MYConst.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSString *string = @"www.99ios.com";
+          if([string containsString:@"99.ios"]){
+              NSLog(@"string 中包含字符串99 ios!");
+          }
+      }
+      return 0;
+  }
+  ```
+  使用hasPrefix与hasSuffix判断字符串的开头与结尾
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "MYClass.h"
+  #import "MYConst.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSString *string = @"www.99ios.com";
+          if([string hasSuffix:@"com"]){
+              NSLog(@"string 以com结尾");
+          }
+          if([string hasPrefix:@"www"]){
+              NSLog(@"string 以www开头");
+          }
+      }
+      return 0;
+  }
+  ```
+  
+  3. 字符串的拼接与截取
+  - 使用substringFromIndex,获得从指定索引位置开始的字符串，传入的参数表示开发截取的位置，最终截取得到的字符串中不包括参数表示位置的字符。
+  - 使用substringToIndex,获得从字符串开始到指定索引之间的字符串，最终截取得到的字符串中不包括参数表示位置的字符。
+  - 使用substringWithRange，从字符串中间截取一段字符串，需要传入一个NSRange类型的参数，用于指明截取的范围。
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "MYClass.h"
+  #import "MYConst.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSString *string = @"www.99ios.com";
+          NSString *subString1 = [string substringFromIndex:4];
+          NSString *subString2 = [string substringToIndex:3];
+          NSRange range = NSMakeRange(4, 5);
+          
+          NSString *subString3 = [string substringWithRange:range];
+          NSLog(@"subString1:%@",subString1);
+          NSLog(@"subString2:%@",subString2);
+          NSLog(@"subString3:%@",subString3);
+      }
+      return 0;
+  }
+  ```
+  
+  4. 字符串的其他操作
+  使用length属性，获取字符串的长度。
+  使用integerValue方法实现数字字符串与数字的转换。
+  
+  #### 4.2.2 可变字符串NSMutableString
+  NSMutableString是继承自NSString类的，所以NSString中定义的所有方法NSMutableString都可以使用，与NSString相比，NSMutableString类的对象在内存中存储的空间是可以变化的，因此存储的字符串长度和内容都可以改变。
+  
+  1. NSMutableString的初始化
+  NSMutableString类的对象，可以采用以下几个方法来进行初始化。
+  - stringWithCapacity，需要指定初始化时预留的可供存储的字符串最大长度。
+  - initWithCapacity,需要指定初始化时预留的可供存储的字符串最大长度。
+  - stringWithString,传入一个初始化字符串
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "MYClass.h"
+  #import "MYConst.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSMutableString *mString1 = [NSMutableString stringWithCapacity:100];
+          NSMutableString *mString2 = [[NSMutableString alloc] initWithCapacity:100];
+          NSMutableString *mString3 = [NSMutableString stringWithString:@"www.99ios.com"];
+      }
+      return 0;
+  }
+  ```
+  
+  2. NSMutableString 字符串的修改
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "MYClass.h"
+  #import "MYConst.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSMutableString *mString = [NSMutableString stringWithCapacity:100];
+          //赋值
+          [mString setString:@"www.99ios.com"];
+          //拼接
+          [mString appendString:@"九九学院"];
+          //在指定位置插入字符串
+          [mString insertString:@"欢迎访问" atIndex:0];
+          NSLog(@"%@",mString);
+      }
+      return 0;
+  }
+  
+  ```
+  
+  3. NSMutableString 字符串的替换与删除
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "MYClass.h"
+  #import "MYConst.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSMutableString *mString = [NSMutableString stringWithString:@"www.99ios.com"];
+          NSRange range = NSMakeRange(4, 5);//位置和长度
+          [mString replaceCharactersInRange:range withString:@"apple"];
+          [mString deleteCharactersInRange:range];
+      }
+      return 0;
+  }
+  
+  ```
+  4. 连接两个字符串对象
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "MYClass.h"
+  #import "MYConst.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSMutableString *mString1 = [NSMutableString stringWithString:@"www.99ios.com"];
+          NSMutableString *mString2 = [NSMutableString stringWithString:@"九九学院"];
+          NSString *mNewString = [mString1 stringByAppendingString:mString2];
+          NSLog(@"合并后的字符串:%@",mNewString);
+      }
+      return 0;
+  }
+  ```
+  ### 4.3 数组类
+  数组是有序的对象集合，一般情况下，一个数据中的元素都是同一类型的对象。
+  Objective-C的数据比C++，Java的数组强大之处在于，NSArray保存的对象可以是不同类型的对象。但是缺点是只能保存对象，int、char、double等基本数据类型不能直接保存，需要通过转换成Objective-C对象后才能加入数组。
+  
+  NSArray类的数组是不可变数组，这种不可变包括：数组中不能新增元素，并且数组内已存在的对象也不支持修改。如果希望对数组进行修改，那么在声明时需要把数组声明为NSMutableArray可变数组，NSMutableArray类是NSArray类的子类。
+  
+  #### 4.3.1 不可变数组 NSArray
+  1. 创建数组
+  - 使用@[]的方式是创建数组经常使用的方式之一，只需要把数组中需要保存的对象放在括号中间
+  ```
+  NSArray *array1 = @[@123,@456,@789];
+  NSArray *array2 = @[@123,@456,@"789"];//数组中可以保存不同的数据对象类型
+  NSArray *array3 = @[@"tom",@"jerry",@"jobs"];
+  ```
+  - 使用arrayWithObjects 这种方式创建数组，需要在数组的结尾处添加一个空对象nil来标识数组的结尾。
+  ```
+  NSArray *array = [NSArray arrayWithObjects:@"123",@"456",@"789",nil];
+  ```
+  - 使用initWithObjects 这种方式创建数组，需要提前执行alloc操作。
+  ```
+  NSArray *array = [[NSArray alloc]initWithObjects：@"tom",@"jerry",@"jobs",nil];
+  ```
+  
+  2. 数组的复制
+  当直接把一个数组对象赋值给另外一个数组对象时，此时进行的是指针复制，即在内存中，数组中的对象只保留了一个版本。
+  使用arrayWithArray方式复制数组，对原数组进行完整的复制，从而得到一个全新的数组。
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "MYClass.h"
+  #import "MYConst.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSArray *array = @[@123,@456,@789];
+          NSArray *copyArray1 = array;
+          NSArray *copyArray2 = [NSArray arrayWithArray:array];
+          NSLog(@"原始数组地址:%p,指针复制数组地址:%p,深复制数组地址:%p",array,copyArray1,copyArray2);
+      }
+      return 0;
+  }
+  ```
+  3. 数组元素操作
+  - objectAtIndex方法访问数组中的元素，或者使用数组名称[序号]来访问。
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSArray *array = @[@123,@456,@789];
+          NSNumber *num = array[0];
+          NSLog(@"num:%@",num);
+          id obj = [array objectAtIndex:0];
+          NSLog(@"obj:%@",obj);
+      }
+      return 0;
+  }
+  ```
+  - indexOfObject方法获取某个对象在数组中的下标。
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSArray *array = @[@123,@456,@789];
+          NSUInteger index = [array indexOfObject:@456];
+          NSLog(@"对象对应数组中的下表为:%lu",index);
+      }
+      return 0;
+  }
+  
+  ```
+  - containsObject 查找某个对象是否存在数组中。
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSArray *array = @[@123,@456,@789];
+          if([array containsObject:@123]){
+              NSLog(@"数组中包含这个对象");
+          }
+          //return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
+      }
+      return 0;
+  }
+  ```
+  4. 其他常用操作
+  - count返回数组中元素个数
+  - firstObject获取数组中的第一个对象
+  - lastObject获取数组中的最后一个对象
+  
+  #### 4.3.2 可变数组 NSMutableArray
+  NSMutableArray类可以对数组内的元素数量进行增加，删除。同时也可以对存储元素的内容进行修改。由于NSMutableArray类是NSArray类的子类，因此NSArray类的方法和属性，NSMutableArray类都可以继续使用。
+  
+  1. 可变数组创建
+  - 使用array 可以不指定可变数组的容量。
+  - 使用arrayWithCapacity 需要提供数组的初始容量。
+  - 使用initWithCapacity 需要提供数组的初始容量。
+  ```
+  NSMutableArray *mArray1 = [NSMutableArray array];
+  NSMutableArray *mArray2 = [NSMutableArray arrayWithCapacity:100];
+  NSMutableArray *mArray3 = [[NSMutableArray alloc] initWithCapacity:100];
+  ```
+  
+  2. 可变数组的元素操作
+  - 在数组末尾增加
+  ```
+  [mArray3 addObject:(nonnull id)];
+  ```
+  - 在指定位置增加元素 
+  ```
+  [mArray3 insertObject:(nonnull id) atIndex:(NSUInteger)];
+  ```
+  - 替换某个下标的元素
+  ```
+  [mArray3 replaceObjectAtIndex:(NSUInteger) withObject:(nonnull id)];
+  ```
+  - 删除元素
+  ```
+  [mArray3 removeObject:(nonnull id)];
+  ```
+  - 删除指定下标的元素
+  ```
+  [mArray3 removeObjectAtIndex:(NSUInteger)];
+  ```
+  - 删除所有元素
+  ```
+  [mArray3 removeAllObjects];
+  ```
+  - 修改某个元素对象的值，可以使用赋值运算符直接更新数组中某个下标对象的值。
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSMutableArray *mArray = [NSMutableArray arrayWithObjects:@"九九学院",@"99ios",nil];
+          NSLog(@"初始化状态下，数组中第一个对象的值:%@",mArray[0]);
+          mArray[0] = @"www.99ios.com";
+          NSLog(@"更新后，数组中第一个对象的值:%@",mArray[0]);
+      }
+      return 0;
+  }
+  ```
+  ### 4.4 字典类
+  字典是由键-值组成的数据集合，其中值为对象。可以通过键从字典中获取需要的值。
+  字典中的键必须唯一。通常情况下，键为字符串对象，主要用于注明存储对象的说明，但键也可以是其他类型的对象。和键关联的值可以是任何对象类型。
+  
+  #### 4.4.1 不可变字典NSDictionary
+  1. 创建不可变字典
+  NSDictionary字典创建完成后，不能再新增/删除键值对。
+  ```
+          NSDictionary *dict = @{
+              @"website":@"www.99ios.com",
+              @"name":@"九九学院",
+              @"business":@"iOS学习",
+              @"foundedYear":@2016
+          };
+          
+  ```
+  这4个键值对的key都使用字符串对象，用来说明键值的含义，而value中可以保存各种类型的对象，可以是NSString字符串对象，也可以是NSNumber数字对象。
+  
+  2. 访问字典的键值
+  使用NSDictionary[key]或objectForKey方法
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSDictionary *dict = @{
+              @"website":@"www.99ios.com",
+              @"name":@"九九学院",
+              @"business":@"iOS学习",
+              @"foundedYear":@2016
+          };
+          NSString *website = dict[@"website"];
+          NSLog(@"字典中website对应的value: %@",website);
+          NSString *name = [dict objectForKey:@"name"];
+          NSLog(@"字典中name 对应的value:%@",name);
+      }
+      return 0;
+  }
+  ```
+  3. 遍历字典中的键值对
+  在Objective-C 中提供了for-in循环，for-in循环除了能够用于遍历数组中的对象之外，也可以用于遍历字典中的键值对。
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSDictionary *dict = @{
+              @"website":@"www.99ios.com",
+              @"name":@"九九学院",
+              @"business":@"iOS学习",
+              @"foundedYear":@2016
+          };
+          for(NSDictionary *key in dict){
+              NSLog(@"key:%@ value:%@",key,dict[key]);
+          }
+      }
+      return 0;
+  }
+  
+  ```
+  4. 其他操作
+  - 获取字典中键值对的数量
+  ```
+  @property (readonly) NSUInteger count;
+  ```
+  - 获取一个字典中所有的键，返回一个数组
+  ```
+  @property (readonly,copy)NSArray<KeyType> *allKeys
+  ```
+  - 获取一个字典中所有的值，返回一个数组
+  ```
+  @property (readonly,copy)NSArray<ObjectType> *allValues
+  ```
+  
+  #### 4.4.2 可变字点NSMutableDictionary
+  可变字典类NSMutableDictionary类是不可变字典类NSDictionary的子类。
+  NSMutableDictionary类继承了NSDictionary类的属性和方法之外，与不可变字典相比，其存储的键值可以新增、删除以及修改。
+  
+  1. 实例化可变字典对象
+  使用dictionary方法初始化一个空的可变字典对象是最简便地得到一个可变字典对象的方法，获得的可变字典对象不指定初始容量。
+  ```
+  NSMutableDictionary *mDict = [NSMutableDictionary dictionary];
+  ``` 
+  2. 增加键值对
+  通过调用setObject:forKkey:方法可增加字典内存储的键值。
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSMutableDictionary *mDict = [NSMutableDictionary dictionary];
+          [mDict setObject:@"www.99ios.com" forKey:@"website"];
+          [mDict setObject:@"九九学院" forKey:@"name"];
+          NSLog(@"wesite:%@",mDict[@"website"]);
+          NSLog(@"name:%@",mDict[@"name"]);
+      }
+      return 0;
+  }
+  ```
+  3. 修改键值对的值
+  当需要修改键值对时，需要根据键去除字典中的键值对，然后使用赋值运算符更新值。
+  
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSMutableDictionary *mDict = [NSMutableDictionary dictionary];
+          [mDict setObject:@"www.99ios.com" forKey:@"website"];
+          [mDict setObject:@"九九学院" forKey:@"name"];
+          NSLog(@"wesite:%@",mDict[@"website"]);
+          NSLog(@"name:%@",mDict[@"name"]);
+          
+          mDict[@"wesite"] =@"www.apple.com";
+          mDict[@"name"] = @"苹果公司";
+          NSLog(@"wesite新值:%@",mDict[@"website"]);
+          NSLog(@"name新值:%@",mDict[@"name"]);
+      }
+      return 0;
+  }
+  
+  ```
+  4. 移除键值对
+  - removeObjectForKey 方法可以移除某个键值对。
+  - removeObjectsForKeys 方法可以以出多个键值对，把需要移除的所有键存储在一个数组对象中。
+  - removeAllObjects方法 可以移除可变字典中的所有键值对。
+  
+  ### 4.5 NSNumber类
+  在编程的过程中，一些基本数据类型的变量是必不可少的，但是在Objective-C编程语言当中，Objective-C的消息机制并不能向这些基本数据类型发送消息，而且Objective-C的集合当中是不能存放基本数据类型的，所以就需要将基本数据类型转换成对象来使用。
+  Objective-C中提供了NSNumber类来将基本数据类型包装成**数字对象**，这样就可以将基本数据类型当作对象来处理。
+  
+  1. NSNumber 对象创建
+  - 使用@符号进行快速封装。
+  - 使用NSNumber类提供的方法。
+  ```
+  NSNumber *intNum = @10;
+  NSNumber *floatNum = @3.14;
+          
+  NSNumber *intNum2 = [NSNumber numberWithInt:10];
+  NSNumber *floatNum2 = [NSNumber numberWithFloat:3.14];
+  NSNumber *integerNum = [NSNumber numberWithInteger:100];
+  NSNumber *doubleNum = [NSNumber numberWithInteger:100.01];
+  NSLog(@"%@--%@--%@--%@--%@--%@",intNum,intNum2,floatNum,floatNum2,integerNum,doubleNum);
+  ```
+  
+  2. NSNumber 对象与基本数据类型之间的转换
+  基本数据类型可以转换为NSNumber类的对象，NSNumber类的对象也可以转换成基本数据类型，在NSNumber类中也提供了对象的属性和方法。
+  ```
+  NSNumber *intNum = [NSNumber numberWithInt:10];
+  NSNumber *floatNum = [NSNumber numberWithFloat:3.14];
+  NSNumber *integerNum = [NSNumber numberWithInteger:100];
+  NSNumber *doubleNum = [NSNumber numberWithDouble:100.01];
+          
+  int intBasic = [intNum intValue];
+  float floatBasic = [floatNum floatValue];
+  double doubleBasic = [doubleNum doubleValue];
+  NSInteger integerBasic = [integerNum integerValue];
+  NSLog(@"%d--%f--%f--%ld",intBasic,floatBasic,doubleBasic,(long)integerBasic);
+  ```
+  ### 4.6 NSDate类
+  NSData对象用来表示一个具体的时间点，它存储的是世界标准时间，所以在使用的时候可能会需要根据不同的时区将时间转换为本地时间。
+  
+  1. 获取日期与时间
+  NSDate类中提供了data方法，用来获取当前标准时区的时间(国际标准时间)，
+  然后需要获取系统当地时区，再获取当前时区与格林尼治时间的间隔。最后转换为本地时间。
+  ```
+  NSDate *date = [NSDate date];
+  NSLog(@"国际标准时间:%@",date);
+  NSTimeZone *zone = [NSTimeZone systemTimeZone];
+          
+  NSInteger interval = [zone secondsFromGMTForDate:date];
+          
+  NSDate *localDate = [NSDate dateWithTimeIntervalSinceNow:interval];
+  NSLog(@"当前时区时间:%@",localDate);
+  ```
+  
+  
+  2. 日期格式转换
+  默认情况下，通过NSDate获取的日期时间格式为:yyyy-MM-ddHH:mm:ss。如果需要更换日期格式，需要用到NSDateFormatter类对日期格式进行转换，这里有两种方式转换。
+  
+  - NSDate转NSString时，需要使用NSDateFormatter类的stringFromDate。
+  - NSString 转NSDate时，需要使用NSDateFormatter类的dateFromString。
+  
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSDate *date = [NSDate date];
+          NSLog(@"国际标准时间:%@",date);
+          NSTimeZone *zone = [NSTimeZone systemTimeZone];
+          
+          NSInteger interval = [zone secondsFromGMTForDate:date];
+          
+          NSDate *localDate = [NSDate dateWithTimeIntervalSinceNow:interval];
+          NSLog(@"当前时区时间:%@",localDate);
+          
+          NSDateFormatter *df = [[NSDateFormatter alloc] init];
+          df.dateFormat = @"yyyy年MM月dd日 HH:mm:ss";
+          NSString *date2string = [df stringFromDate:date];
+          NSLog(@"日期转字符串:%@",date2string);
+          NSDate *string2date = [df dateFromString:date2string];
+          NSLog(@"字符串转日期:%@",string2date);
+          
+          //return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
+      }
+      return 0;
+  }
+  
+  ```
+  3. 其他常用操作
+  - 比较两个时间对象的先后，可以使用earlierDate以及laterDate方法。
+  - 比较两个时间的间隔，可以使用timeIntervalSinceDate方法。
+  - 比较两个日期是否相等，可以使用isEqualToDate方法
+  
+  
+  ### 4.7 NSFileManager类
+  #### 4.7.1 文件操作
+  #### 4.7.2 目录操作
+  #### 4.7.3 枚举目录的内容
+  #### 4.7.4 文件的读写与写入
+  ### 4.8 NSURL类
+  NSURL类提供在应用中使用URL地址的相关方法。
+  1. 创建NSURL对象。
+  在NSURL类中提供了URLWithString方法，可以把一个字符串转换称为一个NSURL对象。
+  除此之外，还可以使用initWithString方法。
+  ```
+  +(nullable instancetype) URLWithString:(NSString *)URLString
+  -(nullable instancetype) initWithString:(NSString *)URLString
+  ```
+  
+  2. 获取输出
+  - 通过调用NSString类的stringWith-ContentsOfURL:encoding:error可以获取NSURL对象指针地址中存储的数据，并转换成字符串形式。
+  
+  - 获取NSData类的输出内容，通过NSData类的dataWithContentsOfURL:url可以返回NSData类的对象。
+  
+  ### 4.9 NSBundle类
+  当创建一个应用时，系统存储了应用相关联的所有资源，例如图片、文件等。将这些内容放在应用包中，为了定位应用包中的资源，则需要使用NSBundle类。
+  
+  NSBundle类提供了在程序包中查找资源的相关方法。
+  - 使用mainBundle方法来实例化得到一个NSBundle类对象。
+  - 使用pathForResource方法来获取某个资源的路径，返回一个NSString类型对象。
+  
+  ```
+  NSString *filePath = [[NSBundle mainBundle] pathForResource:@"myfile" ofType:@"txt"];   
+  NSLog(@"%@",filePath);
+      
+  NSString *fileString = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:nil];
+  NSLog(@"%@",fileString);
+  ```
+  
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

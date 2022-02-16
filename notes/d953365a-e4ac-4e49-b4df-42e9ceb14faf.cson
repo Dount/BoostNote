@@ -1,5 +1,5 @@
 createdAt: "2020-11-16T14:18:42.347Z"
-updatedAt: "2021-03-09T07:59:51.983Z"
+updatedAt: "2022-01-27T02:45:41.842Z"
 type: "MARKDOWN_NOTE"
 folder: "d93d185dcf894dbad7b3"
 title: "铁路调度台项目总结"
@@ -170,8 +170,6 @@ content: '''
   
   
   第二种方式，直接把第三方应用当作系统桌面应用，但是若该应用出BUG时，桌面就不能启动，因为桌面就是该应用。
-  
-  ## 四、注意点
 '''
 linesHighlighted: [
   86

@@ -1,11 +1,11 @@
 createdAt: "2021-11-12T06:44:41.788Z"
-updatedAt: "2022-01-15T06:41:26.962Z"
+updatedAt: "2022-01-20T02:36:24.677Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
-title: "IOS学习"
+title: "IOS 开发基础教程"
 tags: []
 content: '''
-  # IOS学习
+  # IOS 开发基础教程
   [TOC]
   
   # 1.苹果开发人员计划
@@ -711,6 +711,281 @@ content: '''
   - (void)backWithStr:(NSString *)str {
   self.label.text = str;
   }
+  ```
+  ## 10.3 观察者模式
+  如果当一件事情发生后，需要通知多个对象执行方法，比如更换账号登录，需要通知多个界面进行更新显示。这时候就需要观察者模式，IOS提供了一个通知中心类。
+  NSNotificationCenter.其本身是一个单例对象。对某个通知感兴趣的对象，可以在通知中心注册一下感兴趣的通知。当有这个通知到来时，所有注册了这个通知的对象都会
+  收到通知从而响应。
+  
+  viewWillAppear和viewDidDisAppear 方法是控制器的两个生命周期回调方法。
+  分别在视图将要呈现时回调，以及在视图已经消失时候回调。
+  
+  观察者模式实现
+  ```
+  向通知中心注册
+  -(void)viewWillAppear:(BOOL)animated{
+      NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+      指定一个selector作为收到通知时的响应方法。
+      [center addObserver:self selector:@selector(onChanged:) name:UITextFieldTextDidChangeNotification object:nil];
+  }
+  
+  向通知中心销毁
+  -(void)viewDidDisappear:(BOOL)animated{
+      NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+      [center removeObserver:self name:UITextFieldTextDidChangeNotification object:nil];
+  }
+  
+  -(void)onChanged:(NSNotification *)sender{
+      self.textLabel.text = self.textField.text;
+  }
+  ```
+  # 11 数据存储
+  ## 11.1 文件保存与恢复
+  ### 11.1.1 沙盒机制
+  什么是沙盒？相当于一个文件系统监狱，App被限制在这个监狱中，对监狱之外的事物一无所知。每个App都是一个隔离的沙盒，彼此之间不能访问，老死不相往来。
+  
+  沙盒的目录结构如下：
+  默认情况下，每个沙盒含有3个文件夹:Documents,Library和tmp.因此应用的沙盒机制，应用只能在几个目录下。
+  1. Documents:苹果建议将程序中建立的或在成续重浏览到的文件数据保存在该目录下，iTunes备份和恢复的时候会包括此目录。
+  2. Library: 存储程序的默认设置或其他状态信息。
+  3. Library/Caches：存放缓存文件，iTunes不会备份此目录，此目录下文件不会在应用退出时删除。
+  4. tmp:提供一个即时创建临时文件的地方。iTunes在与iPhone同步时，备份所有的Documents和Library文件。
+  
+  iPhone在重启时，会丢弃所有的tmp文件。
+  这些文件夹路径，必须通过专用的方法来获取，获取到的路径字符串，前面有一串随机字符串，每次重启IOS后这一串随机字符串都不相同，因此保存这个路径是没有用的。必须严格按照方法来重新获取路径。
+  
+  ### 11.1.2 数据类的保存和恢复
+  1.从沙盒获取一个保存数据的路径
+  2.将数据写入对应的路径。
+  
+  从沙盒获取路径函数
+  ```
+  NSString *homedirectory = NSHomeDirectory();
+  //返回值是主目录，在IOS中表示打开程序的沙盒主目录
+  ```
+  获取要保存的数据目录
+  ```
+  NSArray *document = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask , YES);
+  //NSSearchPathDirectory 表示要查找的目录
+  //NSSearchPathDomainMask 是一个根目录，用来指定查找范围
+  //expandTilde 表示是否展开的波浪号
+  ```
+  将文件与路径连接
+  ```
+  NSString *path = [doc stringByAppendingPathComponent:@"array.plist"];
+  //用来连接字符串，并且只能作用在文件路径上。
+  ```
+  写入文件
+  ```
+  写入NSArry数组
+  [array writeToFile:path atomically:YES];
+  //writeToFile 表示要写入的路径，路径+文件名
+  //atomically 表示数据写入一个备用的文件，意思是保存文件改名了，改成Path路径中的文件名。
+  ```
+  读文件
+  ```
+  NSArray *document = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask , YES);
+  NSString *doc = document[0];
+  NSString *path = [doc stringByAppendingPathComponent:@"array.plist"];
+  NSArray *documentResource = [[NSArray alloc]initWithContentsOfFile:path];
+  ```
+  
+  注意
+  1:NSArry和NSDictionary保存的文件格式是XML文档，后缀名要用Plist.
+  2:写入Plist文件，数据类型有限制：NSInteger,CGFloat,NSString,NSDate,NSDictionary.
+  
+  ### 11.1.3 文件操作相关类
+  文件操作相关类可以通过NSFileManager来操作,NSFileManager运用了单例模式.
+  ```
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  ```
+  
+  创建文件夹
+  ```
+  BOOL ok = [fileManager createDirectoryAtPath:myDirectory withIntermediateDirectories:YES attributes:nil error:nil];
+  if(ok){
+  NSLog(@"创建成功");
+  }else{
+  NSLog(@"创建失败");
+  }
+  ```
+  取得一个目录下的所有文件名
+  ```
+  NSArray *files = [fileManager subpathsOfDirectoryAtPath:myDirectory error:nil];
+  ```
+  移动文件
+  ```
+  if([fileManager moveItemAtPath:filePath1 toPath:filePath2 error:nil]!=YES){
+  }
+  else{
+  }
+  ```
+  删除文件
+  ```
+  if([fileManager removeItemAtPath:filePath error:nil]!=YES){    
+  }
+  else{
+  }
+  ```
+  判断是否是文件夹
+  ```
+  BOOL isDir = NO;
+  [fileManager fileExistsAtPath:path isDirectory:(&isDir)];
+  ```
+  获取文本
+  
+  ```
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  NSData *data = [fileManager contentsAtPath:@"path"];
+  NSString *string =[[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+  ```
+  获取图片
+  ```
+  NSData *myData = [fileManager contentsAtPath:@"path"];
+  UIImage *myImage = [UIImage imageWithDate:myData];
+  ```
+  ## 11.2 内置数据库sqlite3
+  ### 11.2.1 概述
+  在iOS中使用SQLite，需要加入libsqlite3.tbd的库，并引入SQLite的头文件。
+  ![404fc22c.png](:storage\\05d16d8d-e897-4494-83d1-17e51deed363\\404fc22c.png)
+  
+  ![45faa0fe.png](:storage\\05d16d8d-e897-4494-83d1-17e51deed363\\45faa0fe.png)
+  
+  ### 11.2.1 sqlite3 接口函数介绍
+  
+  打开数据或创建数据库
+  ```
+  NSArray *document = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask , YES);
+  NSString *path = [document[0] stringByAppendingPathComponent:@"demo.db"];
+  第一个参数数据库存放路径，如果路径下没有数据库文件则系统会在此路径下创建一个数据库。
+  第二个参数则是数据库的句柄引用，但此函数调用成功后此句柄将会保存打开数据库的句柄，此句柄在往后的数据库操作中需要用到。
+  if(sqlite3_open([path UTF8String], &dbHandle)==SQLITE_OK){
+  NSLog(@"打开数据库成功"); }
+  ```
+  对数据库进行操作,有两种方式。
+  第一种通过sqlite3_exec函数，这种方式一般使用在不返回数据集的情况。
+  主要用于创建表结构，更新，插入，删除。
+  ```
+  char *errorMsg;
+  第一个参数打开数据库的句柄
+  第二个参数SQL语句
+  第三个参数回调方法的函数指针
+  第四个参数回调第一个参数引用
+  第五个参数是一个指向指针的指针，用来保存方法执行异常时返回的错误描述信息
+  if(sqlite3_exec(dbHandle, "create table if not exists persons (id integer primary key autoincrement,name);", NULL, NULL, &errorMsg)!=SQLITE_OK){
+  NSLog(@"操作失败!");
+  }else{
+  NSLog(@"创建数据表成功");
+  }
+  sqlite3_free(errorMsg);//释放errorMsg，避免内存泄漏
+  ```
+  第二种通过sqlite3_prepare_v2与sqlite3_step
+  ```
+  sqlite3_stmt *statement;
+  const char *insertSQL = "insert into persons (name) values ('zhouwei')";
+  第一个参数打开数据库时的数据库句柄对象
+  第二个参数SQL语句
+  第三个参数用于指定SQL语句最大的长度
+  第四个参数是调用函数后返回的第一个结构体包含相关语句信息。（sqkute3_step）
+  第五个参数用于指向前一条语句结束位置
+  int insertResult = sqlite3_prepare_v2(dbHandle, insertSQL, -1, &statement, nil);
+  if(insertResult !=SQLITE_OK){
+  NSLog(@"添加失败,%d",insertResult);
+  }else{
+  NSLog(@"添加成功");
+  sqlite3_step(statement);}
+  sqlite3_finalize(statement);
+  ```
+  ## 11.3 CoreData
+  
+  ### 11.3.1 建立数据模型
+  在创建项目时候选中User Core Data
+  ![f0374e34.png](:storage\\05d16d8d-e897-4494-83d1-17e51deed363\\f0374e34.png)
+  
+  根据Xcode生成的文件，来定义数据表。
+  ![6b956759.png](:storage\\05d16d8d-e897-4494-83d1-17e51deed363\\6b956759.png)
+  
+  ![63d366a1.png](:storage\\05d16d8d-e897-4494-83d1-17e51deed363\\63d366a1.png)
+  
+  ![0a8353cd.png](:storage\\05d16d8d-e897-4494-83d1-17e51deed363\\0a8353cd.png)
+  右侧窗口的Codegen选项，选择Class Definition的话，可以自动生成实体类代码。
+  类文件将以类名开头
+  ### 11.3.2 使用CoreData
+  获取实体类引用
+  ```
+  NSFetchRequest *req = [NSFetchRequest fetchRequestWithEntityName:@"AddressBook"];
+  NSError *err = nil;
+  NSArray *data = [self.persistentContainer.viewContext executeFetchRequest:req error:&err];
+  ```
+  
+  增加数据
+  ```
+  NSArray<NSString *> *names = @[@"张三",@"李四",@"王五"];
+  NSArray<NSString *> *phones = @[@"18612345678", @"18687654321", @"18912348765"];
+  for(int i = 0; i<names.count;i++){
+  AddressBookEntity *entity = 
+  [NSEntityDescription 
+  insertNewObjectForEntityForName:@"AddressBook" inManagedObjectContext:self.persistentContainer.viewContext];
+  
+  entity.name = names[i];
+  entity.phone = phones[i];
+  }
+  [self saveContext];
+  ```
+  查找数据
+  ```
+  NSArray<AddressBookEntity *> *data;
+  NSFetchRequest *req = [NSFetchRequest fetchRequestWithEntityName:@"AddressBook"];
+  NSError *err = nil;
+  AppDelegate *app = (AppDelegate *)[[UIApplication sharedApplication]delegate];
+  NSArray *d = [app.persistentContainer.viewContext executeFetchRequest:req error:&err];
+  if(err){
+  NSLog(@"%@",err);
+  }else{
+  data = d;
+  }
+  AddressBookEntity *entity = data[indexPath.row];
+  cell.textLabel.text = entity.name;
+  cell.detailTextLabel.text = entity.phone;
+  ```
+  修改数据
+  ```
+  // 改变张三的电话为18611111111
+  // 1.查找到张三
+  // 1.1FectchRequest 抓取请求对象
+  NSFetchRequest *request = [NSFetchRequestfetchRequestWithEntityName:@"AddressBook"];
+  // 1.2设置过滤条件
+  // 查找zhangsan
+  NSPredicate *pre = [NSPredicate predicateWithFormat:@"name = %@", @"张三"];
+  request.predicate = pre;
+  // 1.3执行请求
+  AppDelegate *app = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+  NSArray *abs = [app.persistentContainer.viewContext executeFetchRequest:request error:nil];
+  // 2.更新身高
+  for (AddressBookEntity *e in abs) {
+  e.name = @"18611111111";}
+  // 3.保存
+  [app saveContext];
+  ```
+  删除数据
+  ```
+  // 删除 李四
+  // 1.查找李四
+  // 1.1FectchRequest 抓取请求对象
+  NSFetchRequest *request = [NSFetchRequest mfetchRequestWithEntityName:@"AddressBook"];
+  // 1.2设置过滤条件
+  // 查找李四
+  NSPredicate *pre = [NSPredicate predicateWithFormat:@"name = %@",@"李四"];
+  request.predicate = pre;
+  // 1.3执行请求
+  AppDelegate *app = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+  NSArray *abs = [app.persistentContainer.viewContext executeFetchRequest:request error:nil];
+  // 2.删除
+  for (AddressBookEntity *e in abs) {
+  [app.persistentContainer.viewContext deleteObject:e];
+  }
+  // 3.保存
+  [app saveContext];
   ```
   
   
