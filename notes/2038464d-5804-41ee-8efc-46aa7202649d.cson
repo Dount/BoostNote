@@ -1,5 +1,5 @@
 createdAt: "2022-01-20T02:36:31.286Z"
-updatedAt: "2022-02-16T07:26:33.618Z"
+updatedAt: "2022-03-15T02:52:14.357Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "IOS 开发：从零基础到精通"
@@ -1061,6 +1061,7 @@ content: '''
   ```
   
   3. 字符串的拼接与截取
+  截取
   - 使用substringFromIndex,获得从指定索引位置开始的字符串，传入的参数表示开发截取的位置，最终截取得到的字符串中不包括参数表示位置的字符。
   - 使用substringToIndex,获得从字符串开始到指定索引之间的字符串，最终截取得到的字符串中不包括参数表示位置的字符。
   - 使用substringWithRange，从字符串中间截取一段字符串，需要传入一个NSRange类型的参数，用于指明截取的范围。
@@ -1085,7 +1086,24 @@ content: '''
       return 0;
   }
   ```
-  
+  拼接
+  - stringWithFormat
+  ```
+  NSString * string1 = @"123";
+  NSString * string2 = @"456";
+  NSString * string3 = [NSString stringWithFormat:@"%@%@", string1, string2];
+  NSLog(@"%@", string3);
+  ```
+  - stringByAppendingString
+  ```
+  NSString * string4 = [string1 stringByAppendingString:string2];
+  NSLog(@"%@", string4);
+  ```
+  - stringByAppendingFormat
+  ```
+  NSString * string5 = [string1 stringByAppendingFormat:@"%@", string2];
+  NSLog(@"%@", string5);
+  ```
   4. 字符串的其他操作
   使用length属性，获取字符串的长度。
   使用integerValue方法实现数字字符串与数字的转换。
@@ -1573,7 +1591,969 @@ content: '''
   NSLog(@"%@",fileString);
   ```
   
+  ## 第五章 Objective-C语言特性
+  ### 5.1 代码块
+  Block是对C语言的一个扩展，在Objective-C中完全支持。Block在现在的iOS开发中使用越来越普遍，Block就是封装了一组代码语句的对象，可以在任何时间执行。
+  #### 5.1.1 Block简介
+  Block块是封装工作单元的对象，是可以在任何时间执行的代码段。其本质上是可移植的匿名函数，可以作为方法和函数的参数传入，可以从方法和函数中返回。
+  
+  1. Block的定义与调用
+  块是以插入字符^开头，后面的一个括号内表示块所需要的参数，最后面的大括号中的块主体，最后以分号结束。
+  ```
+  ^(int inputNum){
+  NSLog(@"printBlock Called");
+  return inputNum;
+  };
+  ```
+  代码块也可以进行赋值
+  ```
+  int (^printBlock)(int) =  ^(int inputNum){
+  NSLog(@"printBlock Called");
+  return inputNum;
+  };
+  ```
+  当需要调用已定义的Block时。
+  ```
+  int i = printBlock(100);
+  ```
+  2. 把Block声明为类的属性
+  由于Block就是一个存储了一段代码的对象，因此也可以把Block设置为某个类的属性。
+  Block属性与其他类型的属性，如NSString、NSArray没有什么本质区别，都可以使用点句
+  法来对属性进行取值和赋值。
+  申命两个Block属性
+  ```
+  #import <UIKit/UIKit.h>
+  @interface ViewController : UIViewController
+  @property(copy) void (^blockProperty)(void);
+  @property(copy,nonatomic)void (^blockPropertyWithInput)(int);
+  @end
+  ```
+  在实现文件中，通过点语法为两个Block属性赋值，然后再调用Block中的代码。
+  ```
+  #import "ViewController.h"
+  @interface ViewController ()
+  @end
+  @implementation ViewController
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      self.blockProperty = ^{
+          NSLog(@"blockProperty被调用!");
+      };
+      self.blockProperty();
+      
+      self.blockPropertyWithInput = ^(int i) {
+          NSLog(@"blockPropertyWithInput被调用!,输入的参数是%d",i);
+      };
+      self.blockPropertyWithInput(150);
+  }
+  @end
+  ```
+  #### 5.1.2 Block的参数与返回值
+  1. 无输入参数+无返回值
+  ```
+  void (^blockWithoutInputAndOutput)(void) = ^(void){
+              NSLog(@"欢迎访问 www.99ios.com");
+  };
+  blockWithoutInputAndOutput();
+  ```
+  2. 有输入参数+无返回值
+  ```
+  void (^blockWithInput)(int)=^(int inputNum){
+              NSLog(@"blockWithInput 被调用！输入参数的值为%d.",inputNum);
+  };
+  blockWithInput(99);
+  ```
+  3. 有输入参数及返回值
+  ```
+  int (^blockWithOutputAndInput)(int) = ^(int inputNum){
+            NSLog(@"blockWithOutputAndInput 被调用!");
+            return inputNum * inputNum;
+  };
+  int a = blockWithOutputAndInput(100);
+  NSLog(@"blockWithOutputAndInput 的返回值是:%d",a);
+  ```
+  4. 有多个输入参数
+  ```
+  double(^multiplyTwoValues)(double,double) = ^(double number1,double number2){
+              return number1 *number2;
+  };
+  double doubleNumber = multiplyTwoValues(5.0,5.6);
+  NSLog(@"multiplyTwoValues:%f",doubleNumber);
+  ```
+  5. 无输入参数+有返回值
+  ```
+  int (^blockWithOutput) (void) = ^(void){
+              NSLog(@"blockWithOutput 被调用");
+              return 100;
+  };
+  int a = blockWithOutput();
+  NSLog(@"blockWithoutput的返回值:%d",a);
+  ```
+  #### 5.1.3 操作Block外部的变量
+  1. 访问Block之外的变量
+  如果在一个方法中声明了Block,那么Block中也可以访问在该方法中定义的变量，前提是该变量的定义在Block定义之前。
+  ```
+  int i = 100;
+  void (^beginBlock)(void) = ^(void){
+  NSLog(@"i 在Block中获取的值:%d",i);
+  };
+  beginBlock();
+  i =200;
+  beginBlock();
+  NSLog(@"i的当前值:%d",i);
+  ```
+  2. 修改Block之外的变量 
+  在Block中，假如需要更新在Block之外定义的变量，那么在定义变量时，必须加上_ _ block关键字。
+  ```
+  __block int i = 100;
+  void (^beginBlock)(void) = ^(void){
+  NSLog(@"i 在Block中获取的值:%d",i);
+  };
+  beginBlock();  
+  i =200;
+  beginBlock();
+  NSLog(@"i的当前值:%d",i);
+  ```
+  #### 5.1.4 Block回调
+  在iOS的开发过程中，Block的回调使用非常普遍，也是Block的重要用法之一，在使用过程中经常可以用于替换代理的实现方法。
+  
+  当需要定义回调Block时，通常情况下可以按照如下步骤进行：
+  - 定义带Block参数的方法。
+  ```
+  #import <Foundation/Foundation.h>
+  NS_ASSUME_NONNULL_BEGIN
+  @interface Task : NSObject
+  -(void) beginTaskWithCallbackBlock:(void (^)(void)) callBackBlock;
+  @end
+  NS_ASSUME_NONNULL_END
+  ```
+  - 设置Block的回调时机。
+  ```
+  #import "Task.h"
+  @implementation Task
+  -(void)beginTaskWithCallbackBlock:(void (^)(void))callBackBlock{
+      NSLog(@"任务开始,3秒后调用block中的代码！现在时间是:%@",[NSDate date]);
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0*NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+          callBackBlock();
+      });
+  }
+  @end
+  ```
+  - 定义Block中需要执行的操作。
+  ```
+  #import "ViewController.h"
+  #import "Task.h"
+  @interface ViewController ()
+  @end
+  @implementation ViewController
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      Task *task = [[Task alloc] init];
+      [task beginTaskWithCallbackBlock:^{
+          NSLog(@"block中的代码被执行！现在时间是:%@",[NSDate date]);
+      }];
+  }
+  @end
+  ```
+  ### 5.2 分类
+  
+  
+  ### 5.3 协议
+  #### 5.3.1 协议简介
+  协议是多个类共享的一个方法列表，在协议中列出的方法，在定义协议的类中并没有给出具体的实现，而协议的实现的功能是在遵守协议的类中定义的。通过协议可以实现对象之间的通信，同时又能够使类的定义更加通用。
+  
+  1. 协议的实现步骤
+  - 添加协议，并设置协议中包含的方法，同时添加一个属性用于设置遵守协议的对象。
+  - 设置触发执行协议中方法的时机。
+  - 在遵守协议的类中，实现协议中方法的具体功能。
+  
+  #### 5.3.2 代理
+  1. 代理协议(Delegate)
+  在iOS开发中，经常使用到代理协议以及数据源协议。所谓代理协议，通俗来讲，就是委托别人办事。
+  
+  2. 代理协议的实现
+  - 在自定义视图类MYView.h文件中，设置类引用@class、定义代理协议名称、定义代理协议中包含的方法、添加代理属性(注意使用weak属性)。
+  ```
+  #import <UIKit/UIKit.h>
+  
+  @class MYView; //设置类应用class
+  
+  @protocol MyViewDelegate <NSObject> //定义代理协议名称
+  -(void) myView:(MYView *) myView clickMYButtonShowAlert:(NSString *)message; //定义代理协议中包含的方法
+  
+  @end
+  
+  @interface MYView : UIView
+  @property (nonatomic,weak) id <MyViewDelegate> delegate; //添加代理方法
+  @end
+  ```
+  - 在MYView.m文件中，监听代理协议定义事件的发生。当事件发生时，通知遵守代理协议的对象去工作，即设置在实现代理协议的类中，代理协议方法执行的时机。使用respondsToSelector方法判断一下对象中是否已经实现了该协议的方法
+  ```
+  #import "MYView.h"
+  @implementation MYView
+  -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+      if([self.delegate respondsToSelector:@selector(myView:clickMYButtonShowAlert:)]){
+          [self.delegate myView:self clickMYButtonShowAlert:@"视图被点击了"];
+      }
+  }
+  @end
+  ```
+  - 在需要遵守代理协议的类中，引用头文件并遵守代理协议，遵守代理协议需要在类的接口部分使用<>符号来声明该类需要遵守的协议，同一个类可以遵守多个协议。
+  ```
+  #import "MYView.h"
+  
+  @interface ViewController () <MyViewDelegate>
+  @property (nonatomic,strong) MYView *myView;
+  @end
+  ```
+  - 设置代理对象
+  ```
+  -(MYView *)myView{
+      if(_myView ==nil){
+          _myView = [[MYView alloc]init];
+          _myView.frame = CGRectMake(0, 500, 320, 50);
+          _myView.backgroundColor = [UIColor yellowColor];
+          _myView.delegate = self;
+      }
+      return _myView;
+  }
+  
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      [self.view addSubview:self.view];
+  }
+  ```
+  - 实现协议方法。即当触发条件发生时，执行的动作。
+  ```
+  -(void)myView:(MYView *)myView clickMYButtonShowAlert:(NSString *)message{
+      //__func__ 用于打印当前函数名
+      NSLog(@"%s",__func__);
+      NSLog(@"传递的消失是:%@",message);
+  }
+  ```
+  ### 5.4 KVC
+  #### 5.4.1 使用KVC赋值取值
+  KVC(Key-value coding)即键值编码，对应了NSKeyValueCoding类。NSKeyValueCoding类是对NSObject类进行的扩展，因此所有的类都可以使用NSKeyValueCoding类中定义的方法。其最基本的使用就是可以对对象属性继续宁赋值和取值，可以起到和点语法同样的效果。
+  
+  - 在Person.h文件中添加如下代码
+  ```
+  #import <Foundation/Foundation.h>
+  #import "Dog.h"
+  NS_ASSUME_NONNULL_BEGIN
+  
+  @interface Person : NSObject
+  
+  @property (nonatomic,copy) NSString *personName;
+  @property (nonatomic,strong) Dog *dog;
+  
+  @end
+  
+  NS_ASSUME_NONNULL_END
+  ```
+  - 在Dog.h文件中添加如下代码
+  ```
+  #import <Foundation/Foundation.h>
+  
+  NS_ASSUME_NONNULL_BEGIN
+  
+  @interface Dog : NSObject
+  
+  @property (nonatomic,copy) NSString *dogName;
+  @property (nonatomic,copy) NSString *dogAge;
+  
+  @end
+  
+  NS_ASSUME_NONNULL_END
+  ```
+  下面的示例代码综合使用了KVC中有关赋值/取值的方法.
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "Person.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          Person *person = [[Person alloc]init];
+          Dog *dog = [[Dog alloc]init];
+          //使用kvc赋值
+          [dog setValue:@"tom" forKey:@"dogName"];
+          [person setValue:@"shixin" forKey:@"personName"];
+          [person setValue:dog forKey:@"dog"];
+          [person setValue:@2 forKeyPath:@"dog.dogAge"];
+          
+          //使用KVC取值
+          NSString *personName = [person valueForKey:@"personName"];
+          NSString *dogName = [person valueForKeyPath:@"dog.dogName"];
+          NSString *dogAge = [person valueForKeyPath:@"dog.dogAge"];
+          
+          NSLog(@"<%@>的宠物狗名<%@>,它<%@>岁了",personName,dogName,dogAge);
+          
+          //return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
+      }
+      return 0;
+  }
+  ```
+  #### 5.4.2 字典转模型
+  KVC除了最简单的对对象属性进行赋值和取值外，在NSKeyValueCoding类中，还提供了SetValuesForKeysWithDictionary方法。**该方法专门用于把一个字典转换成一个模型对象，但使用过程中要求字典中的键值和类中定义的属性名称必须完全一致。**假如有不一致的情况，就需要在类的实现文件中，对名称不一致的键值需要使用setValue:forUnderfinedKey方法进行特殊处理。
+  
+  在Person.h文件中添加idNumber、name和age3个属性。
+  ```
+  @interface Person : NSObject
+  
+  @property (nonatomic,copy)NSString *idNumber;
+  @property (nonatomic,copy)NSString *name;
+  @property (nonatomic,assign) int age;
+  
+  @end
+  ```
+  在Person.m文件中使用setValue:forUndefinedKey方法对idNumber属性的赋值方法进行特殊处理，即字典中的id键值对的value需要赋值给idNumber属性。
+  ```
+  -(void)setValue:(id)value forUndefinedKey:(nonnull NSString *)key{
+      if([key isEqualToString:@"id"]){
+          self.idNumber = (NSString *)value;
+      }
+  }
+  ```
+  在main函数中，使用setValuesForKeysWithDictionary:方法来把一个字典转换成一个Person类的模型对象。
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "Person.h"
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSDictionary *dict = @{
+              @"id" :@1234567,
+              @"name" :@"99iOS",
+              @"age":@2
+          };
+          Person *person = [[Person alloc]init];
+          [person setValuesForKeysWithDictionary:dict];
+          NSLog(@"idNumber:%@",person.idNumber);
+          NSLog(@"NAME:%@",person.name);
+          NSLog(@"age:%d",person.age);
+      }
+      return 0;
+  }
+  ```
+  #### 5.4.3 修改readonly的属性以及私有属性
+  
+  ### 5.5 KVO
+  KVO(Key Value Observing)可以实现模型和视图的联动机制，即数据模型发生了修改之后，立即将改变呈现到视图View上去的一种双向绑定的机制。
+  
+  - 模型对象注册指定KeyPath的监听方法。通常情况下，当模型对象的指定Key发生变化时，通知视图对象。
+  ```
+  - (void)addObserver:(NSObject *)observer 
+           forKeyPath:(NSString *)keyPath 
+              options:(NSKeyValueObservingOptions)options 
+              context:(void *)context;
+  ```
+  - 视图对象的监听回调方法，在该方法中可以获取数据模型变化前后的数据
+  ```
+  - (void)observeValueForKeyPath:(NSString *)keyPath 
+                        ofObject:(id)object 
+                          change:(NSDictionary<NSKeyValueChangeKey, id> *)change 
+                         context:(void *)context;
+  ```
+  - 删除指定Key路径的监听器
+  ```
+  - (void)removeObserver:(NSObject *)observer 
+              forKeyPath:(NSString *)keyPath 
+                 context:(void *)context;
+  ```
+  使用KVO实现模型与视图联动的步骤
+  - 创建数据模型对象，并且注册需要监听的KeyPath.
+  - 在视图类中，实现监听回调方法，即当收到模型对象指定KeyPath发生变化时，对界面UI执行的更新操作。
+  
+  实现过程
+  - 定义Person模型类，并添加一个name属性
+  ```
+  #import <Foundation/Foundation.h>
+  @interface Person : NSObject
+  @property(nonatomic,copy)NSString *name;
+  @end
+  ```
+  - 定义MYLabel视图类，继承自UILabel，在MYLabel.h中添加一个Person类型的属性，该属性为MYLabel提供展示的数据.
+  ```
+  #import <UIKit/UIKit.h>
+  #import "Person.h"
+  @interface MYLabel : UILabel
+  @property (nonatomic,strong) Person *viewData;
+  @end
+  ```
+  - 在MYlabel.m文件中，重写viewData属性的setter方法，当设置viewData属性时，更新MYLabel上的文字显示。
+  ```
+  #import "MYLabel.h"
+  @implementation MYLabel
+  -(void)setViewData:(Person *)viewData{
+      _viewData = viewData;
+      self.text = viewData.name;
+  }
+  ```
+  - 在MYLabel.m文件中，实现视图对象的监听回调方法，该方法在模型数据发生变化时会调用，此时会把数据模型中最新的数据从change参数中获取，等获取到最新的数据后，跟新MYLabel的文字显示。
+  ```
+  -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{
+      NSString *newText = change[@"new"];
+      self.text = newText;
+  }
+  ```
+  - 在ViewController.m文件中，添加Person类型的属性以及MYLabel类型的属性，并对myLabel属性进行懒加载操作。
+  ```
+  #import "MYLabel.h"
+  #import "Person.h"
+  
+  @interface ViewController ()
+  @property (nonatomic,strong) Person *myPerson;
+  @property (nonatomic,strong) MYLabel *myLabel;
+  
+  @end
+  
+  -(MYLabel*)myLabel{
+      if(_myLabel == nil){
+          _myLabel = [[MYLabel alloc] initWithFrame:CGRectMake(150,150,100,100)];
+          _myLabel.backgroundColor = [UIColor redColor];
+          _myLabel.textColor = [UIColor whiteColor];
+      }
+      return _myLabel;
+  }
+  ```
+  - 在ViewDidLoad方法中，创建Person类对象，并注册需要监听的KeyPath。
+  ```
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      
+      [self.view addSubview:self.myLabel];
+      Person *person = [[Person alloc]init];
+      self.myPerson = person;
+      [person addObserver:self.myLabel forKeyPath:@"name" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:nil];
+  
+  }
+  ```
+  - 单击屏幕时，更新Person类对象的值，此时会调用MYLabel类中的observeValueForKeyPath:ofObject:change:context:方法，从而更新MYLabel对象的显示
+  ```
+  -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+      self.myPerson.name = [NSString stringWithFormat:@"%d",arc4random_uniform(1000000)];
+  }
+  ```
+  ## 第六章 Objective-C进阶
+  ### 6.1 对象复制
+  #### 6.1.1 浅复制与深复制的简介
+  在Objective-C中，基本数据类型的复制都会在内存中对需要赋值的变量创建一个副本。而对象的复制有两种形式:浅复制与深复制
+  
+  - 浅复制:将原始对象的指针值复制到副本中，即指针复制，原始对象和副本共享引用的数据，相当于创建了一份新的文件。
+  - 深复制:复制原始对象指针所引用的数据，并将赋给副本对象，即内容复制，相当于创建了一份新的文件。
+  - 当属性添加copy关键字时，那么对这个属性赋值时，就会执行深复制操作，同时还需要该类遵守NSCopying协议。当把属性关键字改为strong或者weak时，那么对这个属性赋值时，就会执行浅复制。
+  
+  
+  新增一个ClassA类，添加一个NSString类型的name1属性，并添加copy关键字，添加一个NSString类型的name2属性，并添加strong关键字。
+  ```
+  @property (nonatomic,copy) NSString *name1;
+  @property (nonatomic,strong) NSString *name2;
+  ```
+  
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "ClassA.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSMutableString *string = [[NSMutableString alloc]initWithFormat:@"www.99ios.com"];
+          ClassA *classA = [[ClassA alloc]init];
+          
+          classA.name1 = string;
+          classA.name2 = string;
+          
+          [string appendString:@"+"];
+          
+          NSLog(@"原字符串值:%@,内存地址:%p",string,string);
+          NSLog(@"name1复制字符串值:%@,内存地址:%p",classA.name1,classA.name1);
+          NSLog(@"name2复制字符串值:%@,内存地址:%p",classA.name2,classA.name2);
+      }
+      return 0;
+  }
+  ```
+  #### 6.1.2 可变对象复制与不可变对象复制
+  
+  #### 6.1.3 自定义对象复制
+  对于自定义对象的复制，首先要保证在类的定义中遵守NSCopying协议，然后实现copyWithZone：方法，对于自定义对象的复制特性，都取决于copyWithZone:方法中的实现情况，对于类中定义的属性也需要综合考虑其定义中有关内存管理的特性。
+  
+  1. 类的定义与复制
+  为了实现对该类对象的复制，要求ClassB类遵守NSCopying协议，同时在类的.m文件中实现copyWithZone:方法，在该方法中的实现逻辑决定了当调用copy方法时，对该类对象进行复制所采取的方法。
+  
+  ```
+  #import <Foundation/Foundation.h>
+  #import "ClassA.h"
+  
+  NS_ASSUME_NONNULL_BEGIN
+  
+  @interface ClassB : NSObject <NSCopying>
+  
+  @property (nonatomic,copy)NSString *name;
+  @property (nonatomic,strong) ClassA *customClass;
+  @property (nonatomic,weak) id delegate;
+  @property (nonatomic,assign) int number;
+  @end
+  NS_ASSUME_NONNULL_END
+  ```
+  2. 浅复制该类的对象
+  当仅仅需要对该对象进行浅复制时，可以在copyWithZone:方法中，直接返回要复制的对象即可。
+  ```
+  #import "ClassB.h"
+  @implementation ClassB 
+  - (nonnull id)copyWithZone:(nullable NSZone *)zone {
+      return self;
+  }
+  @end
+  ```
+  3. 深复制该类的对象
+  当需要对自定义对象深复制时，需要在copyWithZone:方法中调用alloc以及init方法，重新开辟一块新的内存空间。另外，对于属性的复制过程中，也需要考虑到属性自身的特性。
+  ```
+  - (nonnull id)copyWithZone:(nullable NSZone *)zone {
+      ClassB *copyObject = [[[self class]allocWithZone:zone] init];
+      copyObject.name = [self.name mutableCopy];
+      copyObject.customClass = self.customClass;
+      copyObject.delegate = self.delegate;
+      copyObject.number = self.number;
+      return copyObject;
+      //return self;
+  }
+  ```
+  
+  
+  4. 深复制与浅复制代码验证
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #import "ClassA.h"
+  #import "ClassB.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          ClassA *classA = [[ClassA alloc]init];
+          ClassB *myClass1 = [[ClassB alloc]init];
+          myClass1.name = @"ABC";
+          myClass1.customClass = classA;
+          myClass1.delegate = classA;
+          myClass1.number =100;
+          ClassB *myClass2 = [myClass1 copy];
+          NSLog(@"对象类:[%@]原对象内存地址:[%p],复制对象内存地址:[%p]",[ClassB class],myClass1,myClass2);
+          NSLog(@"[原对象]:copy属性-[%p],strong属性-[%p],weak属性-[%p],assign属性-[%d]",myClass1.name,myClass1.customClass,myClass1.delegate,myClass1.number);
+          NSLog(@"[复制对象]:copy属性-[%p],strong属性-[%p],weak属性-[%p],assign属性-[%d]",myClass2.name,myClass2.customClass,myClass2.delegate,myClass2.number);
+      }
+      return 0;
+  }
+  ```
+  ### 6.2 内存管理
+  1. 引用计数
+  引用计数是在Object-C中用于管理对象生命周期的机制，这种机制可以很有效地管理对象的生命周期。当一个对象被创建时，它的引用计数为1。每当有新的指针指向这个对象时，这个对象的引用计数就加1.当某个指针不再指向这个对象时，该对象的应用计数减1。当该对象的应用计数为0时，该对象就自动销毁，占用的内存被回收。
+  2. MRC(手工引用计数)
+  MRC在Xcode4.2版本之前，对象的引用计数都需要程序员来手工管理，因此，程序员需要花费大量的精力来管理对象的创建于销毁，其中一个最基本的原则就是：谁创建谁销毁。
+  
+  3. ARC(自动引用计数)
+  随着Xcode4.2的版本发布，苹果引用了其中一个新特性就是自动引用计数。与MRC不同，自动引用计数模式中，对象的引用计数管理完全交由系统来管理，也就是说，在MRC中的retain/release操作都由系统自动完成了。
+  
+  ### 6.3 预编译指令
+  预处理指令是以#号开头的代码行。#号必须是该行除了任何空白字符串外的第一个字符。#号后是指令关键字，在关键字和#号之间允许存在任意个数的空白字符。整行语句构成了一条预处理指令，该指令将在编译器进行编译之前对源代码做某些转换。预处理过程先于编译器对源代码进行处理，还会删除程序中的注释和多余的空白字符。
+  
+  #### 6.3.1 宏定义
+  宏定义了一个代表特定内容的标识符。预处理过程会把源代码中出现的宏标识符替换成宏定义时的值。宏最常见的用法是定义代表某个值的全局符号。宏的第二种用法是定义带参数的宏，这样的宏可以像函数一样被调用，但它是在调用语句处展开宏，并用调用时的实际参数来代替定义中的形式参数。#define 预处理指令是用来定义宏的，宏的作用范围是从宏定义的那一行开始，直到文件尾。
+  1. 无参宏
+  - 定义符号常量
+  ```
+  #define PI 3.14 
+  ```
+  - 定义表达式
+  ```
+  #define LARGE (100+100)
+  ```
+  - 定义字符串常量
+  ```
+  #define WEBNAME "www.99ios.com"
+  ```
+  - 定义符号
+  ```
+  #define AND &&
+  ```
+  - 宏定义中
+  ```
+  #define TWO_PI(2.0*PI)
+  ```
+  2. 有参宏
+  - 当使用有参宏时，需要传入必要的参数参与运算。
+  ```
+  #define 宏名(参数列表)宏体
+  ```
+  - 定义一个又一个参数的宏,求参数的平方值
+  ```
+  #define SQUARE(a) ((a)*(a))
+  ```
+  - 使用续行符定义多行的宏。\\被称为续行符，表示下一行是本行的延续。在\\符号所在行之后不能加任何空白字符。
+  ```
+  #define LARGER(a,b) ({\\
+  int m=a,n=b;m>n ? m:n;\\
+  })
+  ```
+  3. 运算符#
+  出现在宏定义中的#运算符把跟在其后的参数转换成一个字符串。有时把这种用法的#称为字符串化运算符。
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  #define STRING(n) #n
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSLog(@"%s",STRING(www.99ios.com));
+      }
+      return 0;
+  }
+  ```
+  4. 运算符##
+  ##运算符用于把多个参数连接到一起。预处理程序把出现在##两侧的参数合并成一个符号。
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  
+  #define STRING(a,b,c) (a##b##c)
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          NSLog(@"%f",STRING(13.6,2,3));
+      }
+      return 0;
+  }
+  ```
+  #### 6.3.2 #include、#import与@class
+  ```
+  #include <类名.h>
+  ```
+  这种格式告诉预处理程序在编译器自带的或外部库的头文件中搜索被包含的头文件。
+  ```
+  #include "类名.h"
+  ```
+  这种格式告诉预处理程序在当前被编译的应用程序的源代码文件中搜索被包含的头文件，如果找不到，再搜索编译器自带的头文件。
+  
+  #import与#include 是一样的，@class指令与#import的功能类似。**但是使用@class不能引入类中的属性和方法。**
+  
+  #### 6.3.3 条件编译
+  条件编译指令决定哪些代码将被编译，而哪些是不被编译的。例如NSLog函数，可以定义只有在版本调试debug状态时才打印日志，在版本发布release状态时不打印日志。
+  - #if 指令检测跟在关键字后的宏或者常量表达式的值，如果值为真，则编译后面的代码。直到出现#else,#elif或#endif为止，反之则不执行。
+  - #elif预处理指令综合了#else和#if指令的作用。类似于else if.
+  - #else指令用于某个#if指令之后，当前面的#if指令的条件不为真时，就编译#else后面的代码。
+  
+  
+  ### 6.4 NSLog函数
+  
+  ### 6.5 结构
+  #### 6.5.1 结构的定义与基本使用
+  1. 结构类型的定义
+  ```
+  struct Date {
+  int day;
+  int month;
+  int year;};
+  ```
+  2. 结构变量的声明
+  ```
+  struct Date today;
+  ```
+  3. 结构变量的赋值/初始化
+  ```
+  today.day = 2;
+  today.month = 9;
+  today.year = 2016;
+  ```
+  4. 结构体成员变量的访问
+  ```
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+  
+  int main(int argc, char * argv[]) {
+      @autoreleasepool {
+          struct Date {
+              int day;
+              int month;
+              int year;
+          };
+          struct Date today;
+          today.day = 2;
+          today.month = 9;
+          today.year = 2016;
+          NSLog(@"今天是:%d年%d月%d日",today.year,today.month,today.day);
+      }
+      return 0;
+  }
+  ```
+  ## 第七章 基础UI控件
+  ### 7.1 UIKit框架
+  ### 7.2 视图UIView
+  #### 7.2.1 UIView简介
+  #### 7.2.2 视图UIView的外观
+  #### 7.2.3 视图UIView的形变
+  #### 7.2.4 视图UIView的层次关系
+  #### 7.2.5 视图UIView的动画
+  #### 7.2.6 响应用户交互事件
+  UIView类的对象都具有响应用户交互的能力，因为UIView继承自UIResponder.在初始化视图对象的过程中，可以给UIView对象添加手势，以响应用户交互。另外，对于自定义视图类，可以通过实现其有关触摸的相关方法，来定义用户交互的动作。
+  
+  1. 与用户交互事件相关属性
+  UIView类中，userInteractionEnabled属性可以用来自定义视图类对象是否能够响应用户交互。
+  **在UILabel、UIImageView子类中该属性默认情况下是关闭的，**另外multipleTouchEnabled属性用于设置视图对象能否支持多点触控，默认情况下，其取值是NO。
+  ```
+  //是否支持用户交互
+  @property(nonatomic, getter=isUserInteractionEnabled) BOOL userInteractionEnabled;
+  //是否支持多点触控
+  @property(nonatomic, getter=isMultipleTouchEnabled) BOOL multipleTouchEnabled;
+  ```
+  2. 添加手势
+  对于视图类对象，都可以通过添加手势的方法来响应用户的交互。一个视图类对象，可以添加多个手势。
+  - 获取视图对象上的所有手势
+  ```
+  @property(nonatomic, readonly, copy) NSArray<UIGestureRecognizer *> *gestureRecognizers;
+  ```
+  - 添加手势
+  ```
+  - (void)addGestureRecognizer:(UIGestureRecognizer *)gestureRecognizer;
+  ```
+  - 移除手势
+  ```
+  - (void)removeGestureRecognizer:(NSGestureRecognizer *)gestureRecognizer;
+  ```
+  在ViewController.m文件中添加以下示例代码。
+  ```
+  #import "ViewController.h"
+  
+  @interface ViewController ()
+  @property (nonatomic,strong)UIView *myView;
+  @end
+  
+  @implementation ViewController
+  
+  
+  -(UIView *)myView{
+      if(_myView == nil){
+          _myView = [[UIView alloc] initWithFrame:CGRectMake(100, 100, 100, 100)];
+          _myView.backgroundColor = [UIColor redColor];
+      }
+      return _myView;
+  }
+  
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      [self.view addSubview:self.myView];
+      //添加长按手势
+      UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressAction)];
+      [self.myView addGestureRecognizer:longPress];
+      UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction)];
+      [self.myView addGestureRecognizer:tap];
+      NSLog(@"myView gesture :%@",self.myView.gestureRecognizers);
+  }
+  
+  -(void)longPressAction{
+      NSLog(@"%s",__func__);
+     
+      UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"长按" delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
+      
+      [alertView show];
+  }
+  
+  -(void)tapAction{
+      NSLog(@"%s",__func__);
+      
+      UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"点击了" delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
+      [alertView show];
+  }
+  @end
+  ```
+  #### 7.2.7 内容模式contentMode
+  视图的contentMode属性决定了边界变化和缩放操作作用到视图上产生的效果。视图在屏幕上显示后，渲染后的内存会被缓存在视图的图层上，当视图的大小发生变化时，UIKit并不强制对视图进行重画，而是根据其contentMode属性决定如何显示缓存内容。由于这种机制的存在，当修改视图的大小时，可以提升性能。
+  
+  1. contentMode简介
+  contentMode经常用于图像视图UIImageView。当希望在app中调整控件的尺寸时，务必优先考虑使用contentMode,这样做可以在视图的外观发生形变时，避免编写定制的描画代码。
+  ```
+  @property(nonatomic)UIViewContentMode contentMode;
+  ```
+  在开发过程中，当发生以下两种情况时，会使用到contentMode:
+  - 改变frame或bounds中的高度或宽度
+  - 修改transform属性。
+  
+  2. 常见的contentMode
+  ```
+  UIViewContentModeScaleToFill
+  如有必要，可以通过更改内容的纵横比来缩放内容以适应其自身的大小。
+  UIViewContentModeScaleAspectFit
+  通过保持纵横比来缩放内容以适应视图大小的选项。视图边界的任何剩余区域都是透明的。
+  UIViewContentModeScaleAspectFill
+  缩放内容以填充视图大小的选项。内容的某些部分可能会被剪裁以填充视图的边界。
+  UIViewContentModeRedraw
+  通过调用 setNeedsDisplay 方法在边界更改时重新显示视图的选项。
+  UIViewContentModeCenter
+  使内容在视图边界居中的选项，保持比例不变。
+  UIViewContentModeTop
+  将在视图边界顶部对齐的内容居中的选项。
+  UIViewContentModeBottom
+  将在视图边界底部对齐的内容居中的选项。
+  UIViewContentModeLeft
+  在视图左侧对齐内容的选项。
+  UIViewContentModeRight
+  在视图右侧对齐内容的选项。
+  UIViewContentModeTopLeft
+  对齐视图左上角内容的选项。
+  UIViewContentModeTopRight
+  对齐视图右上角的内容的选项。
+  UIViewContentModeBottomLeft
+  对齐视图左下角的内容的选项。
+  UIViewContentModeBottomRight
+  在视图的右下角对齐内容的选项。
+  ```
+  3. contentMode的设置方法
+  - 使用storyboard设置。选中一个视图控件，可以在右侧的选项中设置contentMode.
+  ![dc6cf195.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\dc6cf195.png)
+  - 使用代码来设置contentMode.UIView类中提供了contentMode属性,其是一个UIViewContentMode类型的属性，默认取值为UIViewContentModeScaleToFill。
+  
+  #### 7.2.8 图片拉伸
+  #### 7.2.9 使用代码创建自定义UIView
+  #### 7.2.10 使用XIB创建自定义UIView
+  - 新增一个NibView类，继承自UIView
+  ![4b9d0fb2.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\4b9d0fb2.png)
+  - 新增一个XIB文件，命名为NibView.xib
+  ![50df840d.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\50df840d.png) 
+  - 使用XIB绘制UIView的界面，添加子视图并设置约束关系。
+  ![1f8cfe80.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\1f8cfe80.png)
+  - 由于使用XIB在初始化时不会调用initWithFrame方法，而是调用initWithCoder方法。因此在.h文件中定义一个类方法initFromNib，并在.m文件中对该方法进行实现。该方法的主要功能从XIB文件中加载，该方法会调用initWithCoder 方法。
+  ```
+  #import <UIKit/UIKit.h>
+  
+  NS_ASSUME_NONNULL_BEGIN
+  
+  @interface NibView : UIView
+  
+  @property (weak,nonatomic) IBOutlet UIView *subView;
+  +(NibView*)initFromNib;
+  @end
+  
+  NS_ASSUME_NONNULL_END
+  ```
+  
+  
+  ```
+  #import "NibView.h"
+  
+  @implementation NibView
+  
+  //加载XIB布局
+  +(NibView *)initFromNib{
+      NSLog(@"%s",__func__);
+      return [[[NSBundle mainBundle] loadNibNamed:@"NibView" owner:self options:nil]lastObject];
+  }
+  
+  //只要对象是从文件解析来的，就会调用
+  -(instancetype) initWithCoder:(NSCoder *)coder{
+      NSLog(@"%s",__func__);
+      self = [super initWithCoder:coder];
+      if(self){
+          
+      }
+      return self;
+  }
+  //从xib或者storyboard加载完毕就会调用
+  -(void)awakeFromNib{
+      [super awakeFromNib];
+      NSLog(@"%s",__func__);
+      self.alpha =0.5;
+  }
+  
+  //当需要对子视图进行重新布局的时候
+  -(void)layoutSubviews{
+      NSLog(@"%s",__func__);
+  }
+  //当需要自定义绘图的时候
+  -(void)drawRect:(CGRect)rect{
+      NSLog(@"%s",__func__);
+  }
+  
+  @end
+  ```
+  然后在ViewController加载布局
+  ```
+  #import "ViewController.h"
+  #import "NibView.h"
+  @interface ViewController ()
+  @property (nonatomic,strong)UIView *myView;
+  @end
+  @implementation ViewController
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      NibView *nibView = [NibView initFromNib];
+      [self.view addSubview:nibView];
+  }
+  @end
+  ```
+  
+  注意：
+  initWithCoder：使用文件加载的对象调用（如从xib或stroyboard中创建）
+  initWithFrame：使用代码加载的对象调用（使用纯代码创建）
+  
+  #### 7.2.11 控件改变坐标系
+  ### 7.3 图片控件UIImageView
+  #### 7.3.1 基本使用
+  #### 7.3.2 常用操作
+  #### 7.3.3 帧动画功能
+  ### 7.4 按钮控件UIButton
+  #### 7.4.1 基本使用
+  #### 7.4.2 按钮的创建
+  #### 7.4.3 调整图标与标题的位置
+  ### 7.5 文本控件UILabel
+  #### 7.6 提示框控件UIAlertController
+  苹果自iOS8开始，就已经废弃了之前用于界面提醒的UIAlertView类以及UIActionSheet,取而代之的是UIAlertController以及UIAlertAction。
+  
+  1. UIAlertController的使用
+  - UIAlertController实例化方法，通过该方法可以创建一个UIAlertController类的对象。
+  ```
+  + (instancetype)alertControllerWithTitle:(NSString *)title message:(NSString *)message preferredStyle:(UIAlertControllerStyle)preferredStyle;
+  ```
+  - 在提醒对象中添加按钮，每个按钮都是一个UIAlertAction类的对象。
+  ```
+  -(void)addAction:(UIAlertAction *)action;
+  ```
+  - 在界面上显示提醒信息
+  ```
+  - (void)presentViewController:(NSViewController *)viewController animator:(id<NSViewControllerPresentationAnimator>)animator;
+  ```
+  - 显示样式
+  ```
+  //在呈现它的视图控制器的上下文中显示的操作表。
+  UIAlertControllerStyleActionSheet
+  //为应用程序模态显示的警报。
+  UIAlertControllerStyleAlert
+  ```
+  2. UIAlertAction的使用
+  UIAlertAction是定义提醒每个按钮的样式以及用户点击后执行的操作，每个UIAlertAction对象都需要添加到一个UIAlertController对象上才能生效。当需要创建UIAlertAction对象时，可以使用如下类方法
+  ```
+  + (instancetype)actionWithTitle:(NSString *)title style:(WKAlertActionStyle)style handler:(WKAlertActionHandler)handler;
+  ```
+  3. 示例代码
+  ```
+  -(void)viewDidAppear:(BOOL)animated{
+      UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"是否要访问99IOS" preferredStyle:UIAlertControllerStyleAlert];
+      
+      UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"YES" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
+          NSLog(@"点击了 YES");
+      }];
+      
+      UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"NO" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action){
+          NSLog(@"点击了 NO");
+      }];
+      
+      [alert addAction:defaultAction];
+      [alert addAction:cancelAction];
+      
+      [self presentViewController:alert animated:YES completion:nil]; 
+  }
+  ```
+  
+  
+  #### 7.7 文本输入框UITextField
 '''
-linesHighlighted: []
+linesHighlighted: [
+  1791
+  1790
+]
 isStarred: false
 isTrashed: false
