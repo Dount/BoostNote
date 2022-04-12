@@ -1,5 +1,5 @@
 createdAt: "2022-01-20T02:36:31.286Z"
-updatedAt: "2022-03-15T02:52:14.357Z"
+updatedAt: "2022-03-26T06:51:54.848Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "IOS 开发：从零基础到精通"
@@ -2548,8 +2548,357 @@ content: '''
   }
   ```
   
+  ### 7.7 文本输入框UITextField
+  #### 7.7.1 UITextField的基本属性
+  1. UITextField的文本相关属性
+  - text 获取文本框中的文字
+  - placeholder 占位符
+  - textColor 字体颜色
+  - font 字体大小
+  - textAlignment 文本对齐方式
+  2. UITextField 的外观属性
+  - backgroundColor 背景颜色
+  - boderStyle 边框样式,UITextBorderStyleNone(无边框),UITextBorderStyleLine(线形边框),UITextBorderStyleBezel(带阴影效果的边框),UITextBorderStyleRoundedRect(圆角边框)
+  3. 其它属性
+  - keyboardType 键盘类型
+  - returnKeyType 键盘弹出后的键盘返回键类型
+  - autocapitailzationType 设置输入框输入的字符是否大写
+  - clearsOnBeginEditing 当开始编辑时，是否删除TextField里面的所有字符串。
   
-  #### 7.7 文本输入框UITextField
+  #### 7.7.2 UITextField的代理
+  - 当开始输入时调用，即当键盘弹出时候
+  ```
+  - (void)textFieldDidBeginEditing:(UITextField *)textField;
+  ```
+  - 编辑结束时调用。即当键盘收起时候
+  ```
+  - (void)textFieldDidEndEditing:(UITextField *)textField;
+  ```
+  - 是否允许编辑，当返回值是NO时，此时UITextField对象不能输入任何内容
+  ```
+  - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField;
+  ```
+  - 是否允许编辑结束，并且放弃第一响应者状态
+  ```
+  - (BOOL)textFieldShouldEndEditing:(UITextField *)textField;
+  ```
+  - 是否响应清除按钮
+  ```
+  - (BOOL)textFieldShouldClear:(UITextField *)textField;
+  ```
+  - 是否响应键盘上的返回按钮
+  ```
+  - (BOOL)textFieldShouldReturn:(UITextField *)textField;
+  ```
+  #### 7.7.3 UITextField的键盘回收代理方法
+  当需要进行键盘回收时，可以使用两种方法。
+  - 调用UIResponder类的resignFirstResponder方法
+  ```
+  -(BOOL)resignFirstResponder
+  ```
+  - 调用UITextField类的endEditing方法
+  ```
+  -(BOOL)endEditing:(BOOL)force
+  ```
+  示例代码
+  ```
+  #import "ViewController.h"
+  @interface ViewController ()<UITextFieldDelegate>
+  @property(nonatomic,strong)UITextField *textField;
+  @end
+  @implementation ViewController
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      self.view.backgroundColor = [UIColor redColor];
+      [self.view addSubview:self.textField];
+      
+  }
+  -(UITextField*)textField{
+      if(_textField == nil){
+          _textField = [[UITextField alloc] initWithFrame:CGRectMake(50, 50, 250, 50)];
+          _textField.backgroundColor = [UIColor whiteColor];
+          _textField.placeholder = @"欢迎访问99IOS";
+          _textField.textAlignment = NSTextAlignmentCenter;
+          _textField.borderStyle = UITextBorderStyleRoundedRect;
+          _textField.returnKeyType = UIReturnKeyDone;
+          _textField.delegate = self;
+      }
+      return _textField;
+  }
+  
+  -(BOOL)textFieldShouldReturn:(UITextField *)textField{
+      [textField endEditing:YES];
+      return YES;
+  }
+  
+  -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+      [self.textField resignFirstResponder];
+  }
+  @end
+  ```
+  #### 7.7.4 UITextField的字数限制代理方法
+  在UITextFieldDelegate代理协议中，定义了textField:shouldChangeCharactersInRange:replacementString方法，当用户在一个UITextField对象中输入内容时，该方法会被持续调用，即每次输入都会调用该方法。通过该代理协议，可以监控用户的输入过程，并且对于用户的输入内容进行控制。该方法中提供了两个参数，其中range可以获取当前输入的内容的长度，string可以获取输入的内容。
+  ```
+  - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string;
+  ```
+  示例代码
+  ```
+  -(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
+      if(range.location - range.length >=3){
+          NSLog(@"字数超出限制，无法继续输入");
+          return NO;
+      }else{
+          NSLog(@"字数未超出限制，可以继续输入");
+          return YES;
+      }
+  }
+  ```
+  ## 第八章 高级UI控件
+  ### 8.1 滚动视图UIScrollView
+  #### 8.1.1 UIScrollView基本使用
+  UIScrollView 是一个能够在上下左右四个方向滚动的控件，UITableView、UICollectionView也是继承自UIScrollView.
+  ![a63cbd69.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\a63cbd69.png)
+  1. UIScrollView简介
+  UIScrollView用于显示超出屏幕大小的内容，一般需要配合其他控件来使用，如添加一个UIImageView子控件，可以用来显示更大的图片。UITableView、UICollectionView、以及UITextView这些可以滑动显示更多内容的控件都是UIScrollView的子类。
+  2. UIScrollView的常用属性
+  UIScrollView在使用过程中有3个核心属性。
+  - contentSize 表示UIScrollView内容的尺
+  - contentOffset 当前屏幕显示区域的原点，在UIScrollView的位置
+  - contentInset 可以在UIScrollView内容的四周增加额外的滚动区域
+  
+  除此之外，UIScrollView还有以下几个常用的属性
+  - bounces 当UIScrollView滚动到边界时，再继续滚动会有个反弹的效果。注意如果不设置contentSize,bounces的效果显现不出来。
+  - showHorizontalScrollIndicator 显示水平指示器
+  - showsVerticalScrollIndicator 显示垂直指示器
+  - pagingEnabled 分页效果
+  - scrollEnabled UIScrollView 是否可以滚动
+  
+  3. 示例代码
+  ```
+  #import "ViewController.h"
+  @interface ViewController ()
+  @end
+  @implementation ViewController
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      self.view.backgroundColor = [UIColor redColor];
+      UIImageView *imageView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"image"]];
+      UIScrollView *myScrollView = [[UIScrollView alloc]initWithFrame:self.view.bounds];
+      myScrollView.contentSize = imageView.bounds.size;
+      myScrollView.backgroundColor = [UIColor redColor];
+      myScrollView.contentOffset = CGPointMake(0, 0);
+      myScrollView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
+      [myScrollView addSubview:imageView];
+      [self.view addSubview:myScrollView];
+      
+  }
+  @end
+  ```
+  #### 8.1.2 UIScrollView常用代理方法的实现
+  1. UIScrollViewDelegate中的常用方法
+  - 当滚动时不断调用
+  ```
+  - (void)scrollViewDidScroll:(UIScrollView *)scrollView;
+  ```
+  - 即将开始滚动时调用
+  ```
+  - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView;
+  ```
+  - 手指离开屏幕，停止滚动时调用
+  ```
+  - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView 
+                    willDecelerate:(BOOL)decelerate;
+  ```
+  示例代码
+  ```
+  #import "ViewController.h"
+  
+  @interface ViewController () <UIScrollViewDelegate>
+  
+  @end
+  
+  @implementation ViewController
+  
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      self.view.backgroundColor = [UIColor redColor];
+      UIImageView *imageView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"image"]];
+      UIScrollView *myScrollView = [[UIScrollView alloc]initWithFrame:self.view.bounds];
+      myScrollView.contentSize = imageView.bounds.size;
+      
+      myScrollView.backgroundColor = [UIColor redColor];
+      myScrollView.delegate = self;
+      
+      [myScrollView addSubview:imageView];
+      [self.view addSubview:myScrollView];
+      
+  }
+  
+  -(void)scrollViewDidScroll:(UIScrollView *)scrollView{
+      NSLog(@"滚动，调用ScrollViewDidScroll 方法");
+  }
+  
+  -(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
+      NSLog(@"即将开始滚动时，调用ScrollViewWillBeginDraggin：方法");
+  }
+  
+  -(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
+      NSLog(@"停止滚动时，调用scrollViewDidEndDragging: 方法");
+  }
+  
+  @end
+  ```
+  ### 8.2 表视图UITableView
+  表视图主要用于呈现一个滚动的选择列表，在使用过程中主要有三个步骤：
+  初始化，数据源的设置以及委托代理方法的实现。
+  UITableView中数据中只行的概念，并没有列的概念，因为在手机中显示多列是不利于操作的。
+  #### 8.2.1 UITableView基本介绍
+  1. UITableView样式
+  UITableView有两种样式：平铺(UITableViewStylePlain)和分组(UITableViewStyleGrouped)，这两者本质区别不大。在没有特别设置的情况下，UITableViewStyleGrouped样式会默认留出header和footer的位置。也就是分组样式。
+  ![ec2d7c09.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\ec2d7c09.png) ![7ee6f19f.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\7ee6f19f.png)
+  2. UITableView的属性
+  - 获取表视图的样式
+  ```
+  @property(nonatomic,readonly)UITableViewStyle style
+  ```
+  - UITableView的数据源对象与代理对象，需要遵守UITableViewDataSource协议与UITableViewDelegate
+  ```
+  @property(nonatomic,weak,nullable)id <UITableViewDataSource>dataSource;
+  @property(nonatomic,weak,nullable)id <UITableViewDelegate> delegate;
+  ```
+  - 单元格的行高
+  ```
+  @property(nonatomic)CGFloat rowHeight
+  ```
+  - 段section的header高度与footer高度
+  ```
+  @property(nonatomic)CGFloat sectionHeaderHeight;
+  @property(nonatomic)CGFloat sectionFooterHeight;
+  ```
+  - 整体表视图的顶部视图与底部视图
+  ```
+  @property(nonatomic,strong,nullable)UIView *tableHeaderView;
+  @property(nonatomic,strong,nullable)UIView *tableFooterView;
+  ```
+  - 表索引的样式位置
+  ```
+  @property(nonatomic,strong,nullable)UIColor *sectionIndexColor;
+  @property(nonatomic,strong,nullable)UIColor *sectionIndexBackgroundColor;
+  ```
+  - 分割线的样式设置
+  ```
+  @property(nonatomic,UITableViewCellSeparatorStyle separatorStyle);
+  @property(nonatomic,strong,nullable)UIColor *separatorColor;
+  ```
+  
+  #### 8.2.2 UITableView的数据方法
+  1. UITableView 表视图的数据源简介
+  对于UITableView类的对象，除了可以设置代理属性之外，还需要设置其数据源属性，因为UITableView中展示的数据是由其数据源对象提供的。在设置完UITableView的dataSource属性后，通过实现UITableViewDataSource协议中定义的数据源方法来为UITableView对象提供需要展示的数据。
+  
+  在UITableView中，引入了NSIndexPath类来定位每一个单元格。在NSIndexPath类中，包含两个关键属性:section和row,分别对应每个单元格在UITableView中段号Section与行号Row.根据索引路径indexPath即可定位到唯一的一个单元格。
+  
+  2. UITableViewDataSource中的常用方法
+  UITableViewDataSource协议中，有3个方法是最常使用的，一般情况下在初始化UITableView时都需要实现，这3个方法分别用于返回表视图的段数、每段的行数以及每个单元格的样式与展示内容。
+  - (必选)返回每个段(section)中有多少个单元格
+  ```
+  - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;
+  ```
+  - (必选)返回每个单元格的具体样式和显示内容
+  ```
+  - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
+  ```
+  - (可选)返回整个表视图有多少个段(section)，如果不实现该方法，默认为1个段。
+  ```
+  - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView;
+  ```
+  3. UITableViewDataSource中的其他方法
+  - 设置某section上header的标题，当tableView的style是平铺时有悬浮效果，为分组时是没有时是没有悬浮效果的。
+  ```
+  - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section;
+  ```
+  - 设置每个段section上的footer的标题
+  ```
+  - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section;
+  ```
+  - 设置表视图的索引
+  ```
+  - (NSArray<NSString *> *)sectionIndexTitlesForTableView:(UITableView *)tableView;
+  ```
+  - 点击右侧索引栏时调用
+  ```
+  - (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index;
+  ```
+  - 对单元格进行编辑(删除，添加)时调用
+  ```
+  - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath;
+  ```
+  - 设置单元格是否可移动
+  ```
+  - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath;
+  ```
+  - 对单元格的移动
+  ```
+  - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath;
+  ```
+  #### 8.2.3 了解单元格UITableViewCell
+  1. 系统自带单元格组成
+  单元格(UITableViewCell)是UITableView的组成单元,每一个单元格都是一个UITableViewCell对象。默认情况下，一个单元格具有1个icon图片、1个title、1个detailtitle以及1个accessory。
+  ![04cb5ed6.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\04cb5ed6.png)
+  - imageView 显示在左边的一张图片logo
+  - textLabel 主要文字，黑色字体显示，textLabel和detailTextLabel会在上图中的Text处显示。
+  - detailTextLabel 详细说明文字，字体较小
+  - accessaryView 附件视图，可以使用自定义View,也可以使用系统自带的一些标准按钮
+  
+  2. 系统自带单元格的样式
+  默认情况下，系统自带了4中样式的单元格，区别在于显示的属性内容以及位置不同。
+  - UITableViewCellStyleDefault
+  - UITableViewCellStyleValue1
+  - UITableViewCellStyleValue2
+  - UITableViewCellStyleSubtitle
+  ![478097fb.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\478097fb.png)
+  3. Accessory View的简介
+  Accessory View是显示在单元格最左边的图标，主要可以用来显示一些提示信息，默认情况下是不显示的。当需要显示AccessoryView时，可以有两种方式来设置。
+  - 通过cell的accessoryType属性设置。此时可以使用系统提供的样式。
+  ```
+  @property(nonatomic)UITableViewCellAccessoryType accessoryType
+  ```
+  ![企业微信截图_16482762287476.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\87b40f84.png)
+  
+  - 通过cell的accessoryView属性来自定义附件的样式
+  ```
+  @property(nonatomic,strong,nullable)UIView *accessoryView
+  ```
+  #### 8.2.4 UITableView创建示例
+  
+  #### 8.2.5 UITableView搭理方法之点击单元格
+  
+  #### 8.2.6 UITableView代理方法之编辑单元格
+  
+  #### 8.2.7 UITableViewCell性能优化
+  
+  #### 8.2.8 分段Section
+  
+  #### 8.2.9 分段Section实现示例
+  
+  #### 8.2.10 自定义Cell
+  
+  #### 8.2.11 Cell高度的设置
+  
+  #### 8.2.12 动态调整Cell高度(self-sizing)
+  
+  #### 8.2.13 动态调整Cell(代码)
+  
+  #### 8.2.14 改变Cell位置
+  
+  #### 8.2.15 UITableView的Header和Footer
+  
+  #### 8.2.16 去除多余的单元格分割线
+  
+  ### 8.3 集合视图UICollectionView
+  
+  ### 8.4 手势UIGestureRecognizer
+  
+  
 '''
 linesHighlighted: [
   1791
