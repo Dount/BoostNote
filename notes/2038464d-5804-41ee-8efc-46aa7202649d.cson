@@ -1,5 +1,5 @@
 createdAt: "2022-01-20T02:36:31.286Z"
-updatedAt: "2022-03-26T06:51:54.848Z"
+updatedAt: "2022-05-06T13:42:16.324Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "IOS 开发：从零基础到精通"
@@ -2869,32 +2869,793 @@ content: '''
   @property(nonatomic,strong,nullable)UIView *accessoryView
   ```
   #### 8.2.4 UITableView创建示例
+  UITableView是由一个个的UITableViewCell单元格构成的，并且每个单元格中显示的数据都是通过其数据源对象来获取的。
   
+  - 在ViewController.m文件中，设置该控制器类遵守UITableViewDataSource协议，并且添加一个UITableView类型的属性。
+  ```
+  @interface ViewController () <UITableViewDelegate,UITableViewDataSource>
+  @property (nonatomic,strong) UITableView *tableView;
+  @end
+  ```
+  - 对tableView属性进行懒加载，设置表视图的属性。
+  ```
+  -(UITableView *)tableView{
+      if(_tableView == nil){
+          _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+          _tableView.dataSource = self;
+      }
+      return  _tableView;
+  }
+  ```
+  - 把表视图添加到控制器View上
+  ```
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      [self.view addSubview:self.tableView]; 
+  }
+  ```
+  - 实现UITableViewDataSource协议中的tableView:numberOfRowsInSection:方法，返回表视图中包含的单元格个数。
+  ```
+  -(NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+      return 20;
+  }
+  ```
+  - 实现tableView:cellForRowAtIndexPath:方法，创建每一个单元格，该方法会被反复调用20次。
+  ```
+  -(UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+      static NSString *cellID = @"cell";
+      UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
+      if(cell ==nil){
+          cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
+      }
+      NSString *text = [NSString stringWithFormat:@"%d",arc4random_uniform(1000000)];
+      cell.textLabel.text = text;
+      return cell;
+  }
+  ```
   #### 8.2.5 UITableView搭理方法之点击单元格
+  在UITableView中的每个单元格Cell都可以监听用户的点击动作，并可以通过代理方法来进行一个逻辑处理。
+  - 用户点击单元格时调用
+  ```
+  - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath;
+  - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath;
+  ```
+  - 取消单元格选中调用
+  ```
+  - (NSIndexPath *)tableView:(UITableView *)tableView willDeselectRowAtIndexPath:(NSIndexPath *)indexPath;
+  - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath;
+  ```
+  - 单元格高亮显示
+  ```
+  - (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath;
+  - (void)tableView:(UITableView *)tableView didHighlightRowAtIndexPath:(NSIndexPath *)indexPath;
+  - (void)tableView:(UITableView *)tableView didUnhighlightRowAtIndexPath:(NSIndexPath *)indexPath;
+  ```
   
+  - 实例代码
+  ```
+  //通知委托是否开启点击高亮显示
+  -(BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(nonnull NSIndexPath *)indexPath{
+      return YES;
+  }
+  //通知委托指定行被高亮显示
+  -(void)tableView:(UITableView *)tableView didHighlightRowAtIndexPath:(nonnull NSIndexPath *)indexPath{
+      NSLog(@"调用 tableView:didHighlightRowAtIndexPath: 方法");
+  }
+  //通知委托指定行不在高亮显示，一般是点击其他行的时候
+  -(void)tableView:(UITableView *)tableView didUnhighlightRowAtIndexPath:(nonnull NSIndexPath *)indexPath{
+      NSLog(@"调用 tableView:didUnhighlightRowAtIndexPath:方法");
+  }
+  //通知委托指定行将要被选中，返回响应行的索引
+  -(nullable NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(nonnull NSIndexPath *)indexPath{
+      NSLog(@"调用 tableView:willSelectRowAtIndexPath:%@",indexPath);
+      return indexPath;
+  }
+  //通知委托指定行将取消选中
+  -(nullable NSIndexPath *)tableView:(UITableView *)tableView willDeselectRowAtIndexPath:(nonnull NSIndexPath *)indexPath{
+      NSLog(@"调用 tableView:willDeselectRowAtIndexPath:%@",indexPath);
+      return indexPath;
+  }
+  //通知委托指定行被选中
+  -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(nonnull NSIndexPath *)indexPath{
+      NSLog(@"调用 tableView:didSelectRowAtIndexPath:方法");
+  }
+  //通知委托指定行被取消选中
+  -(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(nonnull NSIndexPath *)indexPath{
+      NSLog(@"调用 tableView:didDeselectRowAtIndexPath:方法");
+  }
+  ```
   #### 8.2.6 UITableView代理方法之编辑单元格
+  1. 单元格Cell编辑方法
+  当希望对表视图中的单元格进行编辑时，因为涉及对数据的修改，因此需要通过表视图的代理进行操作。在UITableViewDelegate协议中，定义了如下几个与单元格修改的方法，当需要对单元格进行修改时，会调用对应的方法。
+  - 设置对单元格修改时添加的按钮及其对应的处理事件
+  ```
+  - (NSArray<UITableViewRowAction *> *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath;
+  ```
+  - 开始编辑单元格前调用的方法。
+  ```
+  - (void)tableView:(UITableView *)tableView willBeginEditingRowAtIndexPath:(NSIndexPath *)indexPath;
+  ```
+  - 完成编辑单元格后调用的方法。
+  ```
+  - (void)tableView:(UITableView *)tableView didEndEditingRowAtIndexPath:(NSIndexPath *)indexPath;
+  ```
+  2. UITableViewRowAction简单介绍
+  UITableViewRowAction 对象是用于设置UITableViewCell处于编辑状态下所显示的按钮，默认情况下，左滑会显示一个删除按钮，也可以创建多个UITableViewRowAction对象从而实现不同的操作。
+  
+  UITableViewRowAction 对象的创建可以调用API中定义的类方法，在该方法中包含3个参数，分别是按钮的样式style,显示的标题title以及用户点击按钮后的操作handler。
+  ```
+  + (instancetype)rowActionWithStyle:(NSTableViewRowActionStyle)style title:(NSString *)title handler:(void (^)(NSTableViewRowAction *action, NSInteger row))handler;
+  ```
+  除此之外，UITableViewRowAction对象还可以设置它的背景颜色backgroundColor,其title属性也可以被修改。
+  
+  3. 实现单元格编辑的基本步骤
+  - 实现editActionsForRowAtIndexPath:方法
+  - 创建UITableViewRowAction对象，并设置每个按钮对应的操作.
+  - 调用reloadData方法刷新表格：对tableView的cell进行操作后，一定记得需要重新刷新表格，更新样式.
+  
+  ```
+  #import "ViewController.h"
+  @interface ViewController () <UITableViewDelegate,UITableViewDataSource>
+  @property (nonatomic,strong) UITableView *tableView;
+  @property (nonatomic,retain) NSMutableArray *data;
+  @end
+  @implementation ViewController
+  
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      self.data = [NSMutableArray array];
+      for(int i=0;i<20;i++){
+          NSString *text = [NSString stringWithFormat:@"mj-%i",i];
+          [self.data addObject:text];
+      }
+      _tableView.delegate = self;
+      [self.view addSubview:self.tableView];
+  }
+  
+  -(UITableView *)tableView{
+      if(_tableView == nil){
+          _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+          _tableView.dataSource = self;
+          _tableView.delegate = self;
+      }
+      return  _tableView;
+  }
+  
+  -(NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+      return self.data.count;
+  }
+  
+  -(UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+      static NSString *cellID = @"cell";
+      UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
+      if(cell ==nil){
+          cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
+      }
+      cell.textLabel.text = [self.data objectAtIndex:indexPath.row];
+      return cell;
+  }
+  -(nullable NSArray <UITableViewRowAction *>*)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath{
+      UITableViewRowAction *action1 = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"添加" handler:nil];
+      UITableViewRowAction *action2 = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"移动" handler:nil];
+      UITableViewRowAction *action3 = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"删除" handler:^(UITableViewRowAction*_Nonnull action,NSIndexPath*_Nonnull indexPath){
+          NSLog(@"删除第%ld行",(long)indexPath.row);
+          [self.data removeObjectAtIndex:indexPath.row];
+          [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+      }];
+      NSArray *actionArray = @[action1,action2,action3];
+      return actionArray;
+  }
+  @end
+  ```
   
   #### 8.2.7 UITableViewCell性能优化
   
   #### 8.2.8 分段Section
+  1. Section的定义
+  在UITableView中，可以设置多个段Section,每个Section中可以包含若干个单元格Cell,同时每个Section还包含了一个头部视图以及一个底部视图，因此具有很强的定制能力。
   
+  2. 在UITableViewDataSource协议中，如果涉及多个Section的配置，则需要实现如下方法。如不实现，则section的默认值为1，即整个表视图只有一个段Section.
+  ```
+  - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView;
+  ```
+  3. Section的header/footer的title设置
+  如果Section的header以及footer只显示一些文字提示，则可以直接调用UITableViewDataSource协议中的方法来设置。
+  - 设置header文字
+  ```
+  - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section;
+  ```
+  - 设置footer文字
+  ```
+  - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section;
+  ```
+  4. Section的header/footer的自定义样式
+  通常情况下，在开发App的过程中，Section的header,footer并不仅仅需要显示一些普通的文字，而是需要对显示的样式进行定制，这就需要通过UITableViewDelegate中定义的代理方法进行定制。
+  - 定制Section的顶部视图样式
+  ```
+  - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section;
+  ```
+  - 定制Section的底部视图样式
+  ```
+  - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section;
+  ```
+  5. Section的索引
+  在表视图的右侧，可以定制每个section的索引，可以通过如下方法以及属性来设置。例如，在通讯录应用中，右侧的索引可以显示联系人的姓名拼音首字。
+  
+  - 索引显示的内容需要通过sectionIndexTitlesForTableView:数据源方法来实现，索引内容需要存放在一个数组中作为该方法的返回值，数组中的每个对象都与一个Section对应。
+  ```
+  - (NSArray<NSString *> *)sectionIndexTitlesForTableView:(UITableView *)tableView;
+  ```
+  - 索引文字颜色
+  ```
+  @property(nonatomic, strong) UIColor *sectionIndexColor;
+  ```
+  - 索引背景颜色
+  ```
+  @property(nonatomic, strong) UIColor *sectionIndexBackgroundColor;
+  ```
+  - 索引点击时的背景颜色
+  ```
+  @property(nonatomic, strong) UIColor *sectionIndexTrackingBackgroundColor;
+  ```
   #### 8.2.9 分段Section实现示例
+  1. 准备工作
+  在ViewController.m中直接添加一个UITableView类型的属性，ViewController作为UITableView的代理及数据源要遵守UITableView的代理协议和数据源协议。
+  ```
+  @interface ViewController () <UITableViewDelegate,UITableViewDataSource>
+  @property (nonatomic,strong) UITableView *tableView;
+  @end
+  ```
+  通过懒加载的方式初始化UITableView,并对其做一些简单的设置.
+  ```
+  -(UITableView *)tableView{
+      if(_tableView == nil){
+          _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 20, [UIScreen mainScreen].bounds.size.width,[UIScreen mainScreen].bounds.size.height)style:UITableViewStyleGrouped];
+          //设置代理和数据源
+          _tableView.dataSource = self;
+          _tableView.delegate = self;
+          //分割线与屏幕等宽
+          _tableView.separatorInset = UIEdgeInsetsMake(0,0,0,0);
+          //分割线颜色
+          _tableView.separatorColor = [UIColor blueColor];
+          //索引栏颜色
+          _tableView.sectionIndexBackgroundColor = [UIColor clearColor];
+          //索引文字颜色
+          _tableView.sectionIndexColor = [UIColor redColor];
+      }
+      return  _tableView;
+  }
+  ```
+  将TableView作为子视图添加到控制器View上。
+  ```
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      [self.view addSubview:self.tableView];
+  }
+  ```
+  2. 实现数据源方法
+  - 实现UITableViewDataSource中定义的必须实现的数据源方法，设置每个Section中单元格的数量，并创建所有的单元格对象
+  ```
+  -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+      return 4;
+  }
   
+  -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+      //设定重用标识符
+      static NSString *cellID = @"cellID";
+      //重用机制
+      UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
+      if(cell == nil){
+          cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellID];
+      }
+      cell.textLabel.text = @"99iOS";
+      cell.detailTextLabel.text = @"苹果IOS开发进阶之路";
+      cell.imageView.image = [UIImage imageNamed:@"99logo"];
+      cell.accessoryType = UITableViewCellAccessoryNone;
+      return cell;
+  }
+  ```
+  - 设置Section数量
+  ```
+  -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+      return 2;
+  }
+  ```
+  3. 设置Section的头部文字与底部文字
+  - 设置Section的header文字
+  ```
+  -(NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+      NSString *message = [NSString stringWithFormat:@"这是第%ld个Section头部时图",(long)section];
+      return message;
+  }
+  ```
+  - 设置Section的footer文字
+  ```
+  -(NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section{
+      NSString *message = [NSString stringWithFormat:@"这是第%ld个Section底部视图",(long)section];
+      return message;
+  }
+  ```
+  4. 设置Section的样式--使用自定义View
+  - 定制头部视图样式
+  ```
+  -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+      UIView *headerView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width,30)];
+      headerView.backgroundColor = [UIColor orangeColor];
+      return headerView;
+  }
+  ```
+  - 定制底部视图样式
+  ```
+  -(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section{
+      UIView *footerView = [[UIView alloc]initWithFrame:CGRectMake(0, 0,[UIScreen mainScreen].bounds.size.width,30)];
+      footerView.backgroundColor = [UIColor greenColor];
+      return footerView;
+  }
+  ```
+  5. 索引样式定制
+  通过实现sectionIndexTitlesForTableView:方法即可实现索引内容的定制，该方法的返回值是一个数组，并且数组中存储的都是字符串类型的对象。由于数组中的对象是有序存储的，因此每个字符串对象都对应了一个段Section.
+  当点击索引时，即可跳转到对应的段Section.另外，关于索引外观样式的定制需要在UITableView对象中设置。
+  ```
+  -(NSArray<NSString *>*)sectionIndexTitlesForTableView:(UITableView *)tableView{
+      return @[@"s0",@"s1",@"s2",@"s3"];
+  }
+  ```
   #### 8.2.10 自定义Cell
+  参考科大天行中CreateMeetingViewController,CreateMeetingTableViewCell
   
   #### 8.2.11 Cell高度的设置
+  对于单元格高度的控制，有以下几种常用的方法：
+  - 修改rowHeight属性。当单元格的高度为固定值时，可以使用rowHeight属性来设置单元格的高度。
+  ```
+  @property CGFloat rowHeight;
+  ```
+  - 在heightForRowAtIndexPath:代理方法中设置单元格的高度。tableView:heightForRowAtIndexPath:代理方法中可以根据indexPath参数，为每一个单元格设置不同的高度。
+  ```
+  - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath;
+  ```
+  - 使用self-sizing,要求适配的版本必须在IOS8 以上。
+  - 使用代码计算Cell高度，该方法的通用性比较强，需要提前根据显示的内容来计算单元格的高度，但需要编写的代码比较多，使用不太方便。
+  - 使用第三方库UITableView+FDTemplateLayoutCell计算单元格高度。
   
   #### 8.2.12 动态调整Cell高度(self-sizing)
+  在IOS 8中，苹果引入了UITableView的一项新功能-Self Sizing cells。
   
+  1. self-sizing相关属性与方法
+  当需要使用self-sizing功能时，需要同时满足如下几个预设条件才能使用。
+  - 确认需要适配的iOS版本高于IOS8.
+  - 必须使用自动布局方法来定义单元格的样式。
+  - 设置表视图的estimatedRowHeight属性，即单元体的预估行高，一般设置为单元格的默认行高。
+  ```
+  @property(nonatomic) CGFloat estimatedRowHeight;
+  ```
+  - 将表视图的rowHeight属性设置为UITableViewAutomaticDimension.
+  ```
+  const CGFloat UITableViewAutomaticDimension;
+  ```
+  2. 示例代码
+  - 使用XIB搭建Cell并设置约束。对于需要动态调整高度的控件，在使用自动布局设置约束时，一般不要设置其绝对高度，其高度要根据控件与其他控件的相对位置约束来确定。
+  ![50b3e4d3.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\50b3e4d3.png)
+  - 针对可变高度的UILabel需要设置其行数Lines为0
+  ![c908ac9a.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\c908ac9a.png)
+  - 初始化Cell.m 并初始化数据。
+  ```
+  Cell.h文件
+  #import <UIKit/UIKit.h>
+  #import "MYModel.h"
+  NS_ASSUME_NONNULL_BEGIN
+  @interface MYTableViewCell : UITableViewCell
+  @property(nonatomic,strong)MYModel *cellData;
+  +(instancetype) cellWithTableView:(UITableView *)tableview;
+  @end
+  NS_ASSUME_NONNULL_END
+  
+  Cell.m文件
+  #import "MYTableViewCell.h"
+  
+  @interface MYTableViewCell()
+  @property (weak, nonatomic) IBOutlet UIImageView *profileImageView;
+  @property (weak, nonatomic) IBOutlet UILabel *userNameLabel;
+  @property (weak, nonatomic) IBOutlet UILabel *sourceLabel;
+  @property (weak, nonatomic) IBOutlet UIImageView *iconImageView;
+  @property (weak, nonatomic) IBOutlet UILabel *contentLabel;
+  @end
+  
+  @implementation MYTableViewCell
+  
+  +(instancetype)cellWithTableView:(UITableView *)tableview{
+      static NSString *cellID = @"cell";
+      MYTableViewCell *cell = [tableview dequeueReusableCellWithIdentifier:cellID];
+      if(cell == nil){
+          cell = [[[NSBundle mainBundle]loadNibNamed:@"MYTableViewCell" owner:self options:nil]lastObject];
+      }
+      return cell;
+  }
+  - (void)layoutSubviews{
+      [super layoutSubviews];
+      self.profileImageView.layer.masksToBounds = YES;
+      self.profileImageView.layer.borderWidth = 1;
+      self.iconImageView.layer.masksToBounds = YES;
+      self.iconImageView.layer.borderWidth = 1;
+      self.contentLabel.adjustsFontSizeToFitWidth = YES;
+  }
+  - (void)setCellData:(MYModel *)cellData{
+      _cellData = cellData;
+      self.profileImageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"%@",cellData.profileImageName]];
+      self.userNameLabel.text = cellData.userName;
+      self.sourceLabel.text = cellData.source;
+      self.iconImageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"%@",cellData.iconName]];
+      self.contentLabel.text = cellData.content;
+  }
+  - (void)awakeFromNib {
+      [super awakeFromNib];
+      // Initialization code
+  }
+  - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+      [super setSelected:selected animated:animated];
+      // Configure the view for the selected state
+  }
+  @end
+  ```
+  - 为初始化表视图，并设置表视图属性以及数据。
+  ```
+  #import "ViewController.h"
+  #import "MYModel.h"
+  #import "MYTableViewCell.h"
+  @interface ViewController () <UITableViewDelegate,UITableViewDataSource>
+  @property (nonatomic,strong) UITableView *tableView;
+  @property (nonatomic,retain) NSMutableArray *rowDataArray;
+  @end
+  
+  @implementation ViewController
+  
+  -(NSMutableArray *)rowDataArray{
+      if(_rowDataArray == nil){
+          _rowDataArray = [NSMutableArray array];
+          for(int i=0;i<20;i++){
+              MYModel *model = [MYModel myCellModel];
+              [self.rowDataArray addObject:model];
+          }
+      }
+      return _rowDataArray;
+  }
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      [self.view addSubview:self.tableView];
+  }
+  
+  -(UITableView *)tableView{
+      if(_tableView == nil){
+          _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width,[UIScreen mainScreen].bounds.size.height)style:UITableViewStyleGrouped];
+          //设置数据源
+          _tableView.dataSource = self;
+          //分割线与屏幕等宽
+          _tableView.separatorInset = UIEdgeInsetsMake(1, 0, 1, 0);
+          //分割线颜色
+          _tableView.separatorColor = [UIColor blackColor];
+          _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+          _tableView.estimatedRowHeight = 127;
+          _tableView.rowHeight = UITableViewAutomaticDimension;
+      }
+      return _tableView;
+  }
+  -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+      return self.rowDataArray.count;
+  }
+  -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+      MYTableViewCell *cell = [MYTableViewCell cellWithTableView:tableView];
+      cell.cellData = self.rowDataArray[indexPath.row];
+      return cell;
+  }
+  @end
+  ```
+  - 更新Model类的初始化方法。
+  ```
+  Model.h
+  #import <Foundation/Foundation.h>
+  #import <UIKit/UIKit.h>
+  NS_ASSUME_NONNULL_BEGIN
+  
+  @interface MYModel : NSObject
+  @property (nonatomic,copy) NSString *profileImageName;//头像
+  @property (nonatomic,copy) NSString *userName;//发送用户
+  @property (nonatomic,copy) NSString *source;//设备来源
+  @property (nonatomic,copy) NSString *content;//内容
+  @property (nonatomic,copy) NSString *iconName;//小图标
+  @property (nonatomic,assign) CGFloat cellLabelHeight;
+  +(instancetype)myCellModel;
+  @end
+  NS_ASSUME_NONNULL_END
+  
+  Model.m
+  #import "MYModel.h"
+  @implementation MYModel
+  +(instancetype)myCellModel {
+      MYModel *cellModel = [[MYModel alloc]init];
+      cellModel.userName = @"99iOS";
+      cellModel.profileImageName = @"99logo";
+      cellModel.iconName = @"99logo";
+      cellModel.source = @"来自99的iPhone 7 Plus";
+      int arcNumber = arc4random_uniform(2);
+      if (arcNumber == 1) {
+          cellModel.content = @"对于需要动态调整高度的控件，在使用自动布局设置约束时，一定不要设置其绝对高度，其高度要根据控件与周边其他控件的位置约束来决定。如下图所示";
+      }else {
+          cellModel.content = @"苹果iOS开发进阶之路";
+      }
+      return cellModel;
+  }
+  @end
+  ```
   #### 8.2.13 动态调整Cell(代码)
   
   #### 8.2.14 改变Cell位置
+  在表视图中的单元格cell,可以通过代理方法调整其显示的顺序/位置，该功能在实际的应用开发中。
+  如果需要调整cell的位置，首先需要设置表视图的editing属性为true
+  ```
+  tableView.editing = YES;
+  ```
+  另外，还需要添加tableView:moveRowAtIndexPath:toIndexPath:代理方法，在该方法中，可以获取单元格的原索引位置sourceIndexPath以及更新后的索引位置destinationIndexPath,通过这两个属性，需要去修改该单元格对应的数据在数据源数组中的位置，以便再次刷新界面后，该单元格的显示顺序是不变的。
+  ```
+  - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath;
+  ```
   
+  示例
+  ```
+  -(void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath{
+      MYModel *model = self.rowDataArray[sourceIndexPath.row];
+      [self.rowDataArray removeObjectAtIndex:sourceIndexPath.row];
+      [self.rowDataArray insertObject:model atIndex:destinationIndexPath.row];
+  }
+  ```
   #### 8.2.15 UITableView的Header和Footer
+  每一个UITableView对象都有一个tableHeaderView属性和一个tableFooterView属性，这两个属性是对应整个表视图的顶部视图和底部视图。
+  需要主要同Section的HeaderView以及FooterView进行区分。通常来说UITableView的tableHeaderView经常会放置搜索栏或者图片轮播器，tableFooterView也可以根据设计需要添加定制的视图类UIView类控件。
   
+  示例代码
+  ```
+  -(UITableView *)tableView{
+      if(_tableView == nil){
+          _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width,[UIScreen mainScreen].bounds.size.height)style:UITableViewStyleGrouped];
+          _tableView.dataSource = self;
+          //UITableView 的顶部视图
+          UIView *tableViewHeader = [[UIView alloc]initWithFrame:CGRectMake(0,0, [UIScreen mainScreen].bounds.size.width, 40)];
+          tableViewHeader.backgroundColor = [UIColor greenColor];
+          _tableView.tableHeaderView = tableViewHeader;
+          //UITableView 的底部视图
+          UIView *tableViewFooter = [[UIView alloc]initWithFrame:CGRectMake(0,0, [UIScreen mainScreen].bounds.size.width, 50)];
+          tableViewFooter.backgroundColor = [UIColor yellowColor];
+          _tableView.tableFooterView = tableViewFooter;
+      }
+      return _tableView;
+  }
+  ```
   #### 8.2.16 去除多余的单元格分割线
-  
+  当单元格Cell的数量不够覆盖整个屏幕的时候，系统默认情况下，会自动添加一些分割线。
+  去除多余的单元格分割线的设置方法如下，初始化一个空的UIView对象，并把其赋值给表视图的tableFooterView属性。
+  ```
+  UIView *view = [UIView new];
+  view.backgroundColor = [UIColor clearColor];
+  _tableView.tableFooterView = view;
+  ```
   ### 8.3 集合视图UICollectionView
+  #### 8.3.1 UICollectionView简介
+  UICollectionView 集合视图，是在IOS6中推出的。它和UITableView共享API设计，但它在UITableView上做了一些扩展。UICollectionView独特的强大之处，就是其完全灵活的布局结构。
+  它可以提供网状排列的UI控件。在IOS中，要实现九宫数据显示，最常用的做法就是使用UICollectionView。UICollectionView继承自UIScrollView.
+  在使用集合视图时，需要提供两个核心的元素。
+  第一：集合视图需要显示的数据。
+  第二：集合视图的布局方法。
+  
+  1. 集合视图简介
+  集合视图由3部分组成
+  - Cell：单元格
+  - Supplementary View:补充视图，指的就是图中的Header与Footer，每个段Section都可以设置不同的补充视图。
+  - Decoration View:装饰视图，一般用于背景
+  ![6c2bfbd8.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\6c2bfbd8.png)
+  
+  2. 集合视图的布局
+  集合视图有2种布局
+  - UICollectionViewFlowLayout
+  Flow Layout是一个单元格的线性布局方案，并具有页面和页脚。
+  ![e1ebc79c.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\e1ebc79c.png)
+  - 自定义布局方式
+  这种布局方式具有很大的灵活性，但需要开发者创建一个UICollectionViewLayout类型的对象，并针对布局编写相关的代码。
+  ![22962e7d.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\22962e7d.png)
+  
+  3. 集合视图的常见属性
+  集合视图继续自UIScrollView,因此其具有父类的所有属性和方法。
+  - 布局对象，用于实现单元格的自定义布局
+  ```
+  @property(strong) __kindof NSCollectionViewLayout *collectionViewLayout;
+  ```
+  - 集合视图的初始化方法，需要传递一个UICollectionViewLayout类型的布局对象。
+  ```
+  - (instancetype)initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewLayout *)layout;
+  ```
+  - 背景视图，会自动填充整个UICollectionView
+  ```
+  @property(nonatomic, readonly) UIView *backgroundView;
+  ```
+  - 是否允许选中Cell,默认允许选中.
+  ```
+  @property(nonatomic) BOOL allowsSelection;
+  ```
+  - 是否可以多选，默认只能单选
+  ```
+  - (BOOL)allowsMultipleSelection;
+  ```
+  #### 8.3.2 UICollectionView数据源协议DataSource
+  UICollectionView的数据源对象为集合视图的单元格Cell提供了数据，其基本使用方法与UITableView的数据源方法类似，但区别在于集合视图需要提前注册单元格Cell.
+  1. 常用数据源方法
+  必须实现的方法
+  - 返回单元格个数
+  ```
+  - (NSInteger)collectionView:(NSCollectionView *)collectionView numberOfItemsInSection:(NSInteger)section;
+  ```
+  - 根据indexPath属性，返回该单元格的具体样式和显示内容
+  ```
+  - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath;
+  ```
+  另外，与表视图的数据源协议类似，这里还可以设置集合视图中包含的段Section数量。
+  - 返回段Section个数，默认为1
+  ```
+  - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView;
+  ```
+  - 设置头尾视图，同样也要先注册
+  ```
+  - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath;
+  ```
+  - 设置单元格是否可以移动
+  ```
+  - (BOOL)collectionView:(UICollectionView *)collectionView canMoveItemAtIndexPath:(NSIndexPath *)indexPath;
+  ```
+  - 获取被移动单元格的原始位置与最新位置，移动单元格后调用，此方法用于更新数据源中的数据。
+  ```
+  - (void)collectionView:(UICollectionView *)collectionView moveItemAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath;
+  ```
+  2. 注册单元格
+  在集合视图中的单元格必须在创建集合视图时进行注册，单元格有两种注册方式，分别对应通过代码创建的单元格以及通过XIB创建的单元格.
+  - 通过代码创建出的单元格的注册方法
+  ```
+  - (void)registerClass:(Class)cellClass forCellWithReuseIdentifier:(NSString *)identifier;
+  ```
+  - 通过xib创建出的单元格的注册方法
+  ```
+  - (void)registerNib:(UINib *)nib forCellWithReuseIdentifier:(NSString *)identifier;
+  ```
+  #### 8.3.3 最简单的集合视图实现
+  ```
+  #import "ViewController.h"
+  @interface ViewController () <UICollectionViewDataSource>
+  @property(nonatomic,strong) UICollectionView *collectionView;
+  @end
+  
+  @implementation ViewController
+  
+  
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      [self.view addSubview:self.collectionView];
+      [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cell"];
+  }
+  
+  -(UICollectionView *) collectionView{
+      if(_collectionView == nil){
+          //UICollectionViewLayout是UICollectionViewFlow的父类
+          UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc]init];
+          _collectionView = [[UICollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:flowLayout];
+          _collectionView.dataSource = self;
+          _collectionView.backgroundColor = [UIColor whiteColor];
+      }
+      return _collectionView;
+  }
+  
+  -(NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
+      return 100;
+  }
+  
+  -(__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
+      UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
+      cell.backgroundColor = [UIColor yellowColor];
+      return cell;
+  }
+  
+  @end
+  ```
+  
+  #### 8.3.4 UICollectionView代理协议方法简介
+  通过UICollectionView的代理协议UICollectionViewDelegate中定义的方法，可以捕获用户点击集合视图中单元的行为。
+  
+  1. 与用户点击相关的代理方法
+  - 单元格被选中时调用
+  ```
+  - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath;
+  ```
+  - 设置单元格是否能够被选中
+  ```
+  - (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath;
+  ```
+  - 设置单元格是否能够取消选中
+  ```
+  - (BOOL)collectionView:(UICollectionView *)collectionView shouldDeselectItemAtIndexPath:(NSIndexPath *)indexPath;
+  ```
+  - 单元格item被取消选中时调用
+  ```
+  - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath;
+  ```
+  
+  2. 与单元格高亮显示相关的代理方法
+  - 单元格为高亮状态时调用，只有当collectionView:shouldHighlightItemAtIndexPath:方法返回YES时，此方法才有用。
+  ```
+  - (void)collectionView:(UICollectionView *)collectionView didHighlightItemAtIndexPath:(NSIndexPath *)indexPath;
+  ```
+  - 单元格取消高亮状态时调用
+  ```
+  - (void)collectionView:(UICollectionView *)collectionView didUnhighlightItemAtIndexPath:(NSIndexPath *)indexPath;
+  ```
+  #### 8.3.5 UICollectionView代理方法实例
+  前提要先实现UICollectionViewDlegate代理。
+  
+  
+  - 实现单元格被选中时的代理方法
+  ```
+  //设置单元格能够选中
+  -(BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+      return YES;
+  }
+  //设置单元格能够取消选中
+  -(BOOL)collectionView:(UICollectionView *)collectionView shouldDeselectItemAtIndexPath:(NSIndexPath *)indexPath{
+      return YES;
+  }
+  //单元格被选中时调用
+  -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+      NSLog(@"%s",__func__);
+      UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:indexPath];
+      cell.backgroundColor = [UIColor greenColor];
+  }
+  //单元格被取消选中时调用
+  -(void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath{
+      NSLog(@"%s",__func__);
+      UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:indexPath];
+      cell.backgroundColor = [UIColor redColor];
+  }
+  ```
+  - 实现单元格高亮状态显示相关的代理方法
+  ```
+  //设置单元格能够设置高亮显示
+  -(BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath{
+      return YES;
+  }
+  
+  //单元格维高亮状态时调用
+  -(void)collectionView:(UICollectionView *)collectionView didHighlightItemAtIndexPath:(NSIndexPath *)indexPath{
+      NSLog(@"%s",__func__);
+  }
+  //单元格取消高亮状态时调用
+  -(void)collectionView:(UICollectionView *)collectionView didUnhighlightItemAtIndexPath:(NSIndexPath *)indexPath{
+      NSLog(@"%s",__func__);
+  }
+  ```
+  #### 8.3.6 UICollectionViewFlowLayout简介
+  UICollectionView将其子视图的位置，大小和外观的控制权委托给一个单独的布局对象UICollectionViewLayout。UICollectionViewLayout是一个抽象基类。
+  UICollectionView类从名称上理解是一个流式的布局，各个单元格是从左到右依次排列的。当一行排列完成后，会自动切换到下一行。
+  ![d76fc0c1.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\d76fc0c1.png)
+  
+  - 单元格之间的最小行间距
+  ![c2382f9d.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\c2382f9d.png)
+  
+  - 单元格之间的最小列间距
+  ![ad63fd98.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\ad63fd98.png)
+  - 单元格的尺寸，通过这个属性设置的单元格尺寸是统一的，另外，每个单元格的尺寸都可以不同，如果要完成这种效果，需要实现collectionView:layout:sizeForItemAtIndexPath:
+  ![1a0d07a4.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\1a0d07a4.png)
+  - 段Section的四边距
+  ![7a31c468.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\7a31c468.png)
+  
+  #### 8.3.7 UICollectionViewFlowLayout使用实例
+  
+  #### 8.3.8 UICollectionViewDelegateFlowLayout类的代理方法实现
+  
+  #### 8.3.9 自定义Cell
+  
   
   ### 8.4 手势UIGestureRecognizer
   
