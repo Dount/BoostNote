@@ -1,5 +1,5 @@
 createdAt: "2022-01-20T02:36:31.286Z"
-updatedAt: "2022-05-06T13:42:16.324Z"
+updatedAt: "2022-06-02T05:42:07.584Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "IOS 开发：从零基础到精通"
@@ -2281,6 +2281,7 @@ content: '''
       return 0;
   }
   ```
+  # 第二部分 iOS开发基础
   ## 第七章 基础UI控件
   ### 7.1 UIKit框架
   ### 7.2 视图UIView
@@ -3651,19 +3652,2256 @@ content: '''
   ![7a31c468.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\7a31c468.png)
   
   #### 8.3.7 UICollectionViewFlowLayout使用实例
+  - 创建集合视图对象，并设置其布局属性。创建一个UICollectionViewFlowLayout类的布局对象，并对其中布局相关的属性进行设置后，把其作为入参传入集合视图的实例化方法中。
+  ```
+  -(UICollectionView *) collectionView{
+      if(_collectionView == nil){
+          //UICollectionViewLayout是UICollectionViewFlow的父类
+          UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc]init];
+          flowLayout.minimumLineSpacing = 30;
+          flowLayout.minimumInteritemSpacing = 40;
+          flowLayout.headerReferenceSize = CGSizeMake([UIScreen mainScreen].bounds.size.width,50);
+          flowLayout.footerReferenceSize =CGSizeMake([UIScreen mainScreen].bounds.size.width,50);
+          
+          flowLayout.sectionInset = UIEdgeInsetsMake(10, 20, 30, 40);
+      
+          _collectionView = [[UICollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:flowLayout];
+          _collectionView.dataSource = self;
+          _collectionView.delegate = self;
+          //_collectionView.backgroundColor = [UIColor whiteColor];
+      }
+      return _collectionView;
+  }
+  ```
+  - 在viewDidLoad方法中注册单元格和段Section的头尾视图
+  ```
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      [self.view addSubview:self.collectionView];
+      [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cellId"];
+      //注册header和footer
+      [self.collectionView registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"headerView"];
+      [self.collectionView registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"footerView"];
+  }
+  ```
+  - 在集合视图的数据源方法中，设置每个段中单元格的数量以及集合视图中包含的段Section数。
+  ```
+  -(NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
+      return 10;
+  }
   
+  -(NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
+      return 10;
+  }
+  ```
+  - 在集合视图的数据源方法中，创建单元格对象
+  ```
+  -(__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
+      UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cellId" forIndexPath:indexPath];
+      cell.backgroundColor = [UIColor yellowColor];
+      return cell;
+  }
+  ```
+  - 实现头尾视图
+  ```
+  -(UICollectionReusableView *) collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath{
+      UICollectionReusableView *reusableView = nil;
+      if([kind isEqualToString:UICollectionElementKindSectionHeader]){
+          UICollectionReusableView *header = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"headerView" forIndexPath:indexPath];
+          header.backgroundColor = [UIColor greenColor];
+          reusableView = header;
+      }else{
+          UICollectionReusableView *footer = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"footerView" forIndexPath:indexPath];
+          footer.backgroundColor = [UIColor redColor];
+          reusableView = footer;
+      }
+      return reusableView;
+  }
+  ```
   #### 8.3.8 UICollectionViewDelegateFlowLayout类的代理方法实现
+  1. UICollectionViewDelegateFlowLayout介绍
+  使用流式布局的集合视图中，其单元格的大小以及位置不仅可以通过属性设置，还可以通过UICollectionViewDelegatelowLayout类中定义的协议方法进行动态设置。UICollectionViewDelegateFlowLayout协议中的所有方法都不是必须实现的，当没有实现该协议中的方法时。
+  集合视图的布局样式会由其collectionViewLayout属性来设置。当需要实现该协议中的方法时，需要预先设置集合视图的delegate属性。
+  - 设置单元格的大小
+  ```
+  - (NSSize)collectionView:(NSCollectionView *)collectionView layout:(NSCollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath;
+  ```
+  - 单元格的边距设置，即Cell整体相对于Header,Footer以及屏幕左右两侧的距离。
+  ```
+  - (NSEdgeInsets)collectionView:(NSCollectionView *)collectionView layout:(NSCollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
+  ```
+  - 单元格之间横向间距与纵向间距的设置
+  ```
+  - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section;
+  ```
+  ```
+  - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section;
+  ```
+  - 设置某个段Section的Header与Footer的大小
+  ```
+  - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section;
+  ```
+  ```
+  - (NSSize)collectionView:(NSCollectionView *)collectionView layout:(NSCollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section;
+  ```
   
+  2. 示例代码
+  - 设置预置条件。
+  ```
+  @interface ViewController () <UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
+  @property(nonatomic,strong) UICollectionView *collectionView;
+  @end
+  
+  @implementation ViewController
+  ``` 
+  ```
+  -(UICollectionView *) collectionView{
+      if(_collectionView == nil){
+          //UICollectionViewLayout是UICollectionViewFlow的父类
+          UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc]init];
+          _collectionView = [[UICollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:flowLayout];
+          _collectionView.dataSource = self;
+          _collectionView.delegate = self;
+          //_collectionView.backgroundColor = [UIColor whiteColor];
+      }
+      return _collectionView;
+  }
+  ```
+  - 设置单元格Cell的大小
+  ```
+  -(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath{
+      CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
+      CGFloat cellWidth = (screenWidth-20-40-2*20)/3;
+      return CGSizeMake(cellWidth, 60);
+  }
+  ```
+  - 设置单元格的边距。单元格Cell的边距设置，即Cell整体相对于Header、Footer以及屏幕左右两侧的距离，优先级较高
+  ```
+  -(UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section{
+      UIEdgeInsets insets = UIEdgeInsetsMake(10, 20, 30, 40);
+      return insets;
+  }
+  ```
+  - 设置单元格Cell之间的横向距离与纵向距离
+  ```
+  -(CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section{
+      return 20;;
+  }
+  ```
+  ```
+  -(CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section{
+      return 20;
+  }
+  ```
+  - 设置段Section的header与Footer的大小
+  ```
+  -(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section{
+      CGSize headerSize = CGSizeMake([UIScreen mainScreen].bounds.size.width,50);
+      return headerSize;
+  }
+  ```
+  ```
+  -(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section{
+      CGSize footerSize = CGSizeMake([UIScreen mainScreen].bounds.size.width, 50);
+      return footerSize;
+  }
+  ```
   #### 8.3.9 自定义Cell
   
-  
   ### 8.4 手势UIGestureRecognizer
+  
+  #### 8.4.1 UIGestureRecognizer简介
+  UIKit框架一共提供了6种类型的手势操作，分别为:点击，捏合，旋转，滑动，拖动，长按。手势需要添加到UIView类以及其子类之上，同时每个UIView可以添加多个手势。
+  
+  1. UIGestureRecognizer类简介
+  UIGestureRecognizer类是一个抽象类，不能直接使用，具体使用过程中需要使用子类。UIGestureRecognizer一共包括6个子类，分别对应6中手势。
+  - UITapGestureRecognizer:点击
+  - UIPinchGestureRecognizer:捏合
+  - UIRotationGestureRecognizer:旋转
+  - UISwipeGestureRecognizer:滑动
+  - UIPanGestureRecognizer:拖动
+  - UILongPressGestureRecognizer长按
+  
+  2. UIGestureRecognizer创建方法
+  - 使用-initWithTarget:action:方法创建一个手势类对象，设置当手势事件发生时，调用的方法。
+  - 使用addGestureRecognizer:方法，把手势对象添加到一个UIView的对象上。
+  - 实现手势事件发生时所调用的方法
+  3. UIGestureRecognizer类常用属性以及方法
+  UIGestureRecognizer类虽然是一个抽象类，但是其中定义了其子手势类中可以通用的方法和属性。
+  - 初始化手势对象并设置手势发生时调用的方法
+  ```
+  - (instancetype)initWithTarget:(id)target action:(SEL)action;
+  ```
+  - 获取手势点击的位置
+  ```
+  - (CGPoint)locationOfTouch:(NSUInteger)touchIndex inView:(UIView *)view;
+  ```
+  - 获取手势点击的状态和视图
+  ```
+  @property(nonatomic,readonly)UIGestureRecognizerState state;
+  ```
+  常用的UIGestureRecognizerState有以下几个
+  UIGestureRecognizerStateBegon:开始手势事件
+  UIGestureRecognizerStateEnded:结束手势事件
+  UIGestureRecognizerStateChanged:手势位置发生变化
+  UIGestrueRecognizerStateFailed:无法识别的手势
+  
+  - 手势事件对应的视图对象
+  ```
+  @property(nullable,nonatomic,readonly) UIView *view
+  ```
+  #### 8.4.2 点击手势UITapGestureRecognizer
+  UITapGestureRecognizer类能够识别点击手势，同时能够识别点击/双击，甚至能够识别到使用几根手指来进行点击。
+  1. UITapGestureRecognizer类介绍
+  - 需要点击的次数，用于识别单击或双击，默认为单击。
+  ```
+  @property(nonatomic)NSUInteger numberOfTapsRequired;
+  ```
+  - 点击的手指数，默认为：1
+  ```
+  @property(nonatomic)NSUInteger numberOfTouchesRequired;
+  ```
+  2. 单个手指单击手势实现
+  ```
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      //创建UIView对象
+      UIView *myView = [[UIView alloc]initWithFrame:CGRectMake(50, 50, 250, 50)];
+      myView.backgroundColor = [UIColor redColor];
+      [self.view addSubview:myView];
+      //单击，单手指
+      UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(singleTap:)];
+      //单击
+      singleTap.numberOfTapsRequired = 1;
+      //单手指
+      singleTap.numberOfTouchesRequired = 1;
+      [myView addGestureRecognizer:singleTap];
+  }
+  -(void)singleTap:(UITapGestureRecognizer *)tap{
+      NSLog(@"单个手势单击触发！");
+  }
+  ```
+  3. 双手指双击手势实现
+  ```
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      //创建UIView对象
+      UIView *myView = [[UIView alloc]initWithFrame:CGRectMake(50, 50, 250, 50)];
+      myView.backgroundColor = [UIColor redColor];
+      [self.view addSubview:myView];
+      //单击，单手指
+      UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(singleTap:)];
+      //单击
+      singleTap.numberOfTapsRequired = 2;
+      //单手指
+      singleTap.numberOfTouchesRequired = 2;
+      [myView addGestureRecognizer:singleTap];
+  }
+  -(void)singleTap:(UITapGestureRecognizer *)tap{
+      NSLog(@"两个手指双击触发！");
+  }
+  ```
+  #### 8.4.3 捏合与旋转手势UIPinchGestureRecognizer
+  #### 8.4.4 滑动手势UISwipeGestureRecognizer
+  #### 8.4.5 拖动手势UIPanGestureRecognizer
+  #### 8.4.6 长按手势UILongPressGestureRecognizer
+  
+  ## 第九章 控制器
+  ### 9.1 控制器UIViewController
+  #### 9.1.1 控制器简介以及创建控制器
+  1. UIViewController简介
+  UIViewController是所有控制器的根类，常见的子类有UITableViewController,UICollectionViewController,UINavigationController,UITabbarController。
+  创建控制器的方法有：
+  - 通过代码创建控制器
+  - 通过XIB创建控制器
+  - 通过Storyboard创建控制器
+  2. 使用代码创建控制器
+  
+  ![e1f67b57.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\e1f67b57.png)
+  在AppDelegate.m文件中，实例化这个控制器类，并设置为窗口window的根控制器，最后显示出来。
+  ```
+  #import "AppDelegate.h"
+  #import "MYViewController.h"
+  @interface AppDelegate ()
+  @end
+  @implementation AppDelegate
+  - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+      MYViewController *rootVc = [[MYViewController alloc]init];
+      self.window = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
+      self.window.rootViewController = rootVc;
+      [self.window makeKeyAndVisible];
+      return YES;
+  }
+  ```
+  #### 9.1.2 使用XIB以及Storyboard创建控制器
+  1. 使用XIB创建控制器
+  ![260c1830.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\260c1830.png)
+  创建成功后，系统会自动创建3个文件，分别为.h.m.xib文件。
+  ![3b0a7ea4.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\3b0a7ea4.png)
+  选中.xib文件，可以看到XIB文件的File's Owner属性为XibViewController类。
+  ![21a057f7.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\21a057f7.png)
+  在AppDelegate.m文件中，实例化这个控制器，并设置为Window的根控制器。**注意实例化控制器使用initWithNibName方法**
+  ```
+  #import "AppDelegate.h"
+  #import "ViewController.h"
+  #import "XibViewController.h"
+  @interface AppDelegate ()
+  @end
+  @implementation AppDelegate
+  - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+      XibViewController *rootVc = [[XibViewController alloc]initWithNibName:@"XibViewController" bundle:nil];
+      self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+      self.window.rootViewController = rootVc;
+      [self.window makeKeyAndVisible];
+      return YES;
+  }
+  ```
+  #### 9.1.3 控制器的生命周期
+  1. 与控制器生命周期相关的常用方法
+  所谓控制器的生命周期，通俗来讲，就是控制器的创建、视图的加载与显示，以及控制器的销毁等操作。
+  - 控制器初始化方法
+  ```
+  - (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil;
+  - (instancetype)initWithCoder:(NSCoder *)coder;
+  ```
+  - 控制器视图加载与现实方法
+  ```
+  - (void)loadView;
+  - (void)viewDidLoad;
+  - (void)viewWillAppear:(BOOL)animated;
+  - (void)viewDidAppear:(BOOL)animated;
+  - (void)viewWillDisappear:(BOOL)animated;
+  - (void)viewDidDisappear:(BOOL)animated;
+  - (void)viewWillLayoutSubviews;
+  - (void)viewDidLayoutSubviews;
+  ```
+  - 控制器销毁时候调用的相关方法
+  ```
+  - (void)dealloc;
+  ```
+  2. 控制器生命周期相关方法的调用时机
+  - 使用代码创建控制器。当使用代码创建控制器时，一般会使用init方法进行实例化。
+  ```
+  2022-05-09 21:49:32.460288+0800 HelloWorld[226:4098] -[CodeViewController init]
+  2022-05-09 21:49:32.462915+0800 HelloWorld[226:4098] -[CodeViewController loadView]
+  2022-05-09 21:49:32.463568+0800 HelloWorld[226:4098] -[CodeViewController viewDidLoad]
+  2022-05-09 21:49:32.463810+0800 HelloWorld[226:4098] -[CodeViewController viewWillAppear:]
+  2022-05-09 21:49:32.467797+0800 HelloWorld[226:4098] -[CodeViewController viewWillLayoutSubviews]
+  2022-05-09 21:49:32.467942+0800 HelloWorld[226:4098] -[CodeViewController viewDidLayoutSubviews]
+  2022-05-09 21:49:32.470499+0800 HelloWorld[226:4098] -[CodeViewController viewDidAppear:]
+  ```
+  - 使用XiB创建控制，当使用XIB创建控制器时，一般会使用initWithNibName方法进行实例化。
+  ```
+  2022-05-09 21:58:21.539530+0800 HelloWorld[279:6834] -[XibViewController initWithNibName:bundle:]
+  2022-05-09 21:58:21.542130+0800 HelloWorld[279:6834] -[XibViewController loadView]
+  2022-05-09 21:58:21.544401+0800 HelloWorld[279:6834] -[XibViewController viewDidLoad]
+  2022-05-09 21:58:21.544983+0800 HelloWorld[279:6834] -[XibViewController viewWillAppear:]
+  2022-05-09 21:58:21.549052+0800 HelloWorld[279:6834] -[XibViewController viewWillLayoutSubviews]
+  2022-05-09 21:58:21.549196+0800 HelloWorld[279:6834] -[XibViewController viewDidLayoutSubviews]
+  2022-05-09 21:58:21.551903+0800 HelloWorld[279:6834] -[XibViewController viewDidAppear:]
+  ```
+  #### 9.1.4 使用Storyboard切换控制器
+  
+  #### 9.1.5 使用代码切换控制器
+  使用代码切换控制器之前，需要首先创建目标控制器，然后再调用presentViewController方法来完成控制器的切换
+  1. 切换新的控制器
+  ```
+  -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+      UIViewController *newVC = [[UIViewController alloc] init];
+      newVC.view.backgroundColor = [UIColor redColor];
+      [self presentViewController:newVC animated:YES completion:nil];
+  }
+  ```
+  2. 返回原控制器
+  当需要返回原控制器时，调用dismissViewControllerAnimated方法，此时该控制器对象会被销毁
+  ```
+  -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+      UIViewController *newVC = [[UIViewController alloc] init];
+      newVC.view.backgroundColor = [UIColor redColor];
+      [self presentViewController:newVC animated:YES completion:^{
+          dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0*NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+              [self dismissViewControllerAnimated:newVC completion:nil];
+          });
+      }];
+  }
+  ```
+  #### 9.1.6 控制器嵌套
+  1. 控制器嵌套简介
+  所谓控制器嵌套，指的就是在一个父控制器上，再添加若干个子控制器。有些功能的实现可以在子控制器的代码中进行实现，同时子控制器与父控制器之间可以使用代理或者通知的方法进行通信，以便实现父子控制器之间的数据交互。
+  UIViewController类中，对于子控制器提供了一些管理方法，包括:添加子控制器，移除子控制器等，常用的方法如下：
+  - 获取父控制器对象中所有的子控制器，返回一个数组。
+  ```
+  @property(nonatomic,readonly)NSArray *childViewControllers;
+  ```
+  - 添加子控制器
+  ```
+  - (void)addChildViewController:(UIViewController *)childController;
+  ```
+  - 移除子控制器
+  ```
+  - (void)removeFromParentViewController;
+  ```
+  2. 父子控制器之间的通信
+  父控制器和子控制之间可以建立通信机制，例如：当点击子控制器上的某个按钮时，通知父控制器跳转到一个新的控制器。父子控制器之间的通信方法可以采用以下两种方式。
+  - 代理：在子控制器的类中，添加代理属性和代理方法，并在父控制器中实现代理方法。
+  - 通知：当子控制器某个事件发生时，需要通知多个对象时，即一对多，也可以采用通知的方法。
+  
+  3. 示例代码
+  在SubViewController中，定制子控制器的一些属性。
+  ```
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      self.view.frame = CGRectMake(0, [UIScreen mainScreen].bounds.size.height *0.5,
+                                   [UIScreen mainScreen].bounds.size.width,
+                                   [UIScreen mainScreen].bounds.size.height *0.5);
+      self.view.backgroundColor = [UIColor greenColor];
+      UIImageView *iconImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"99logo"]];
+      iconImage.frame = CGRectMake(120, 50, 128, 128);
+      [self.view addSubview:iconImage];
+  }
+  ```
+  在父控制器类中，添加一个子控制器属性，注意，使用Strong关键字，并实现子控制器的懒加载方法。
+  ```
+  #import "ViewController.h"
+  #import "SubViewController.h"
+  @interface ViewController ()
+  @property (nonatomic,strong) SubViewController *subVC;
+  @end
+  @implementation ViewController
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+  }
+  -(SubViewController *)subVC{
+      if(_subVC == nil){
+          _subVC = [[SubViewController alloc]init];
+          [self.view addSubview:_subVC.view];
+      }
+      return _subVC;
+  }
+  -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+      [self addChildViewController:self.subVC];
+  }
+  @end
+  ```
+  在需要创建子控制器的时候，使用addChildViewController:方法添加子控制器。
+  ```
+  -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+      [self addChildViewController:self.subVC];
+  }
+  ```
+  ### 9.2 导航控制器UINavigationController
+  #### 9.2.1 导航控制器简介
+  1. 控制器类型简介
+  - 内容类控制器,主要用于显示内容，有UIViewController,UITableViewController,UICollectionViewController等。
+  - 容器类控制器,**主要用于容纳内容类控制器，本身并不主要用于显示有用的内容。**主要负责在不同控制器之间进行转换。有UINavigationController,UITableBarController等。
+  
+  2. UINavigationController简介
+  导航控制器在实际的App中十分常见，iPhone的设置功能中就使用到了导航控制器。通过导航控制器，可以实现控制器之间的跳转与返回。
+  - 容器类控制器
+  ![0f92511f.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\0f92511f.png)
+  - 控制器间关系
+  ![955baf5b.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\955baf5b.png)
+  - 导航控制器跳转
+  ![9554975d.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\9554975d.png)
+  
+  3. 堆和栈的简介
+  导航控制器对于控制器的管理方法才哦用的就是栈的模式，遵守先进后出
+  ![22b9bbf3.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\22b9bbf3.png)
+  
+  4. 创建导航控制器
+  - 实例化一个控制器对象，作为导航控制器对象的根控制器rootViewController.
+  
+  - 实例化UINavigationController对象，并制定该导航控制器对象的根控制器rootViewcontroller.
+  ```
+  - (instancetype)initWithRootViewController:(UIViewController *)rootViewController;
+  ```
+  - 定制导航栏的显示样式。例如，可以设置导航栏的标题，需要注意的是该属性是在UINavigationController的父类UIViewController类中定义的。
+  ```
+  @property(nullable,nonatomic,copy)NSString *title
+  ```
+  5. 实例代码
+  在定制导航栏中间文件的时候，设置的是navRootVC(UIViewController)的title属性，而不是navVC(UINavigationController类)的title属性。
+  ```
+  - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+      UIViewController *navRootVC = [[UIViewController alloc]init];
+      navRootVC.view.backgroundColor = [UIColor redColor];
+      UINavigationController *navVC= [[UINavigationController alloc]initWithRootViewController:navRootVC];
+      navRootVC.title = @"99iOS.com";
+      self.window = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
+      self.window.rootViewController =navVC;
+      [self.window makeKeyAndVisible];
+      return YES;
+  }
+  ```
+  #### 9.2.2 控制器跳转
+  导航控制器的定义中，提供了Push与Pop的方法，来实现子控制器之间的跳转，其中Push对应入栈操作，Pop对应出栈操作。
+  - 入栈操作，显示新的子控制器。
+  ```
+  - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated;
+  ```
+  - 出栈操作，显示目前在栈顶的控制器
+  ```
+  - (UIViewController *)popViewControllerAnimated:(BOOL)animated;
+  ```
+  - 出栈操作，显示指定的控制器
+  ```
+  - (UIViewController *)popViewControllerAnimated:(BOOL)animated;
+  ```
+  - 出栈操作，显示指定的控制器
+  ```
+  - (NSArray<__kindof UIViewController *> *)popToViewController:(UIViewController *)viewController animated:(BOOL)animated;
+  ```
+  - 出栈操作，显示导航控制器的根控制器
+  ```
+  - (NSArray<__kindof UIViewController *> *)popToRootViewControllerAnimated:(BOOL)animated;
+  ```
+  #### 9.2.3 子控制器的管理
+  UINavigationController类中提供了可以访问所有子控制器的方法和属性，因此，可以通过导航控制器获取到其所管理的任意一个子控制器对象。
+  另外，任意一个子控制器，也可以获取到管理它的导航控制器，继而可以与其他子控制器进行通信。
+  
+  1. 管理UINavigationController的子控制器
+  导航控制器对象中提供了相关属性，用于获取该导航控制器管理下的所有子控制器，主要包括如下几个属性。
+  - 获取导航控制器管理的所有子控制器，导航控制器的ViewController属性是一个数组，有序存放了该导航控制器管理的所有子控制器。
+  ```
+  @property(nonatomic,copy)NSArrray *viewController;
+  ```
+  - 获取栈顶控制器
+  ```
+  @property(nullable,nonatomic,readonly,strong)UIViewController *topViewController;
+  ```
+  
+  2. UIViewController 中有关导航控制器的属性
+  在UIViewController 对象中，也可以获取到管理自身的导航控制器，通过该属性，任何一个子控制器，都可以获取管理自身的导航控制器，并且通过该导航控制器继而可以获取到其他子控制器。
+  ```
+  @interface UIViewController(UINavigationControllerItem)
+  @property(nullable,nonatomic,readonly,strong)UINavigationController *navigationController;
+  @end
+  ```
+  #### 9.2.4 UINavigationBar
+  UINavigationBar继承自UIView,它是UINavigationController中的一个重要属性，因此，导航栏样式主要是由UINavigationBar决定的。其影响的主要是除导航栏中按钮和标题之外的样式。
+  例如背景颜色，背景图片等。而导航栏中左右两侧的按钮和中间的标题是在子控制器中设置的。
+  1. UINavigationBar介绍
+  UINavigationBar继承自UIView,因此导航栏的样式是由其决定的。另外，导航栏外观的定制主要包括以下两个内容。
+  - UINavigationBar自身的外观属性：如背景颜色，文字颜色、BarStyle、背景图片等，所有子控制器都会使用的公共样式。
+  ```
+  @property(nonatomic,readonly)UINavigationBar *navigationBar;
+  ```
+  - UINavigationBar上的UINavigationItem:NavigationBar上的按钮都是UINavigationitem对象。
+  一个导航控制器的创建过程中，会先创建一个NavigationBar,然后NavigationBar会创建对应控制器的NavigationItem.
+  
+  2. UINavigationBar的外观属性
+  UINavigationBar中提供的有关样式设置主要属性和方法有以下几种。
+  - 导航栏整体样式
+  ```
+  @property(nonatomic,assign)UIBarStyle barStyle;
+  ```
+  - 导航栏文字颜色
+  ```
+  @property(null_resettable,nonatomic,strong)UIColor *tintColor;
+  ```
+  - 导航栏背景颜色
+  ```
+  @property(nullable,nonatomic,strong)UIColor *barTintColor;
+  ```
+  - 设置导航栏背景图片
+  ```
+  - (void)setBackgroundImage:(UIImage *)backgroundImage forBarMetrics:(UIBarMetrics)barMetrics;
+  ```
+  3. 获取子控制器的UINavigationItem
+  UINavigationBar类中也提供了用于获取在该控制器中的所有UINavigationItem对象，用于管理UINavigationitem的相关属性主要包括
+  ```
+  @property(nullable,nonatomic,copy)NSArray<UINavigationItem *>*items;
+  @property(nullable,nonatomic,readonly,strong) UINavigationItem *topItem;
+  @property(nullable,nonatomic,readonly,storng) UINavigationItem *backItem;
+  ```
+  #### 9.2.5 barStyle属性
+  1. barStyle属性介绍
+  UINavigationBar中的barStyle属性用于定制导航栏的样式，其有两种取值，分别是默认(UIBarStyleDefault)和黑色(UIBarStyleBlack)。
+  
+  2. 示例代码
+  ```
+  - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+      UIViewController *navRootVC = [[UIViewController alloc]init];
+      navRootVC.view.backgroundColor = [UIColor redColor];
+      UINavigationController *navVC= [[UINavigationController alloc]initWithRootViewController:navRootVC];
+      navVC.navigationBar.barStyle = UIBarStyleDefault;
+      navRootVC.title = @"99iOS.com";
+      self.window = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
+      self.window.rootViewController =navVC;
+      [self.window makeKeyAndVisible]; 
+      return YES;
+  }
+  ```
+  #### 9.2.6 barTintColor与tintColor
+  1. barTintColor属性
+  barTintColor属性用于设置导航栏背景颜色，通过修改该属性，可以设置导航栏的整体背景颜色。虽然UINavigationBar继承自UIView,但是设置导航栏的背景颜色并不是使用backgroundColor属性，而是barTintColor属性。
+  ```
+  - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+      UIViewController *navRootVC = [[UIViewController alloc]init];
+      navRootVC.view.backgroundColor = [UIColor redColor];
+      UINavigationController *navVC= [[UINavigationController alloc]initWithRootViewController:navRootVC];
+      navVC.navigationBar.barTintColor =[UIColor greenColor];
+      navRootVC.title = @"99iOS.com";
+      self.window = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
+      self.window.rootViewController =navVC;
+      [self.window makeKeyAndVisible];
+      return YES;
+  }
+  ```
+  2. tintColor
+  tintColor属性用于设置导航栏图标被渲染的颜色。
+  ```
+  - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+      UIViewController *navRootVC = [[UIViewController alloc]init];
+      navRootVC.view.backgroundColor = [UIColor redColor];
+      UINavigationController *navVC= [[UINavigationController alloc]initWithRootViewController:navRootVC];
+      navVC.navigationBar.barTintColor =[UIColor greenColor];
+      navVC.navigationBar.tintColor = [UIColor redColor];
+    
+      navRootVC.title = @"99iOS.com";
+      navRootVC.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:nil];
+      navVC.navigationBar.tintColor = [UIColor whiteColor];
+      
+      self.window = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
+      self.window.rootViewController =navVC;
+      [self.window makeKeyAndVisible];
+      return YES;
+  }
+  ```
+  #### 9.2.7 导航栏设置背景图片
+  在UINavigationBar类中，提供了setBackgroundImag:forBarMetrics:方法，该方法可以为导航栏添加背景图片。
+  ```
+  - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+      UIViewController *navRootVC = [[UIViewController alloc]init];
+      navRootVC.view.backgroundColor = [UIColor redColor];
+      UINavigationController *navVC= [[UINavigationController alloc]initWithRootViewController:navRootVC];
+      
+      navVC.navigationBar.barStyle = UIBarStyleDefault;
+      
+      [navVC.navigationBar setBackgroundImage: [UIImage imageNamed:@""] forBarMetrics:UIBarMetricsDefault];
+      
+      navRootVC.title = @"99iOS.com";
+      self.window = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
+      self.window.rootViewController =navVC;
+      [self.window makeKeyAndVisible];
+      return YES;
+  }
+  ```
+  #### 9.2.8 UINavigationItem
+  UINavigationItem类的对象主要用于导航栏上显示的按钮以及标题，一般来说，每个子控制器需要显示的标题以及按钮都不相同。
+  1. UINavigationItem的常用属性
+  UINavigationItem类的对象包含了用于设置导航栏的左侧，右侧以及中间视图的属性。中间可以显示一个UIView类型的titleView,左右两侧可以分别显示一个或者多个按钮。需要注意的是，显示在导航栏两侧的按钮是UIBarButtonItem类的对象，不是UIButton类。
+  在UINavigationItem类中。
+  - 中间的标题视图
+  ```
+  @property(nullable, nonatomic, strong) UIView *titleView;
+  ```
+  - 左侧/右侧单个按钮
+  ```
+  @property(nonatomic, readwrite, strong) UIBarButtonItem *leftBarButtonItem;
+  @property(nonatomic, readwrite, strong) UIBarButtonItem *rightBarButtonItem;
+  ```
+  - 左侧/右侧设置多个按钮。当需要在导航栏两侧设置多个按钮时，可以创建若干个UIBarButtonItem对象，然后把这些对象放到leftBarButtonItems或rightBarButtonItems数组中。
+  ```
+  @property(nullable,nonatomic,copy)NSArray<UIBarButtonItem *>*leftBarButtonItems
+  @property(nullable,nonatomic,copy)NSArray<UIBarButtonItem *>*rightBarButtonItems
+  ```
+  - 标题，如果设置了该属性，titleView不生效。UIViewController类也有一个title属性可以用于设置导航栏的标题。但UINavigationItem的title优先级要高。
+  ```
+  @property(nullable,nonatomic,copy)NSString *title;
+  ```
+  - 导航栏提示语
+  ```
+  @property(nullable,nonatomic,copy)NSString *prompt;
+  ```
+  2. UINavigationItem对象的创建
+  在UINavigationItem类的API中提供了initWithTitle方法用于UINavigationItem对象的创建。使用该方法创建的UINavigationItem对象只有中间的标题，左右两侧的按钮需要另外定制
+  ```
+  -(instancetype)initWithTitle:(NSString *)title;
+  ```
+  3. UIBarButtonItem类
+  UINavigationItem类中定义的按钮，不是UIButton类的，而是UIBarButtonItem类的，并且从UIBarButtonItem类的继承关系来看，其父类并不是UIView,而是UIBarItem,因此，UIBarButtonItem类并不具备诸如:backgroundColor之类的属性。
+  ```
+  @interface UIBarButtonItem: UIBarItem<NSCoding>
+  ```
+  在UIBarButtonItem类的定义中，也提供了几种常用的实例化方法。
+  - 实例化一个只显示文字的按钮
+  ```
+  - (instancetype)initWithTitle:(NSString *)title style:(UIBarButtonItemStyle)style target:(id)target action:(SEL)action;
+  ```
+  - 实例化一个只有图标的按钮
+  ```
+  - (instancetype)initWithImage:(UIImage *)image style:(UIBarButtonItemStyle)style target:(id)target action:(SEL)action;
+  ```
+  - 当需要定义UIBarButtonItem类的外观时，可以使用initWithCustomView:方法，该方法传入一个UIView的参数，可以显示定制样式
+  ```
+  - (instancetype)initWithCustomView:(UIView *)customView;
+  ```
+  
+  
+  #### 9.2.9 UINavigationItem 定制示例
+  ```
+  - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+      UIViewController *navRootVC = [[UIViewController alloc]init];
+      navRootVC.view.backgroundColor = [UIColor grayColor];
+      UINavigationController *navVC= [[UINavigationController alloc]initWithRootViewController:navRootVC];
+      
+      UIBarButtonItem *leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"返回" style:UIBarButtonItemStylePlain target:self action:nil];
+      navRootVC.navigationItem.leftBarButtonItem = leftBarButtonItem;
+      
+      UIBarButtonItem *rightBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"write_comment"] style:UIBarButtonItemStylePlain target:self action:nil];
+      navRootVC.navigationItem.rightBarButtonItem = rightBarButtonItem;
+      navRootVC.navigationItem.title = @"99iOS.com";
+      navRootVC.navigationItem.prompt =@"苹果iOS开发进阶之路";
+      
+      navVC.navigationBar.tintColor = [UIColor redColor];
+      
+      self.window = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
+      self.window.rootViewController =navVC;
+      [self.window makeKeyAndVisible];
+      
+      return YES;
+  }
+  ```
+  #### 9.2.10 UINavigationItem 显示原始图片样式
+  在UIBarButtonItem的初始化方法中，提供了initWithCustomView方法，该方法需要传入一个UIView的对象，因此，可以考虑传入一个UIButton对象，把原始图片设置为该UIButton的图片
+  ```
+  - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+      UIViewController *navRootVC = [[UIViewController alloc]init];
+      navRootVC.view.backgroundColor = [UIColor grayColor];
+      UINavigationController *navVC= [[UINavigationController alloc]initWithRootViewController:navRootVC];
+      
+      UIBarButtonItem *leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"返回" style:UIBarButtonItemStylePlain target:self action:nil];
+      navRootVC.navigationItem.leftBarButtonItem = leftBarButtonItem;
+      
+      UIButton *rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+      rightBtn.frame = CGRectMake(0, 0, 44, 44);
+      [rightBtn setImage:[UIImage imageNamed:@"write_comment"] forState:UIControlStateNormal];
+      [rightBtn addTarget:self action:@selector(clickRightBarButton) forControlEvents:UIControlEventTouchUpInside];
+      
+      UIBarButtonItem *rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:rightBtn];
+      navRootVC.navigationItem.rightBarButtonItem = rightBarButtonItem;
+      
+      navRootVC.navigationItem.title = @"99iOS.com";
+      navVC.navigationBar.tintColor = [UIColor redColor];
+      
+      self.window = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
+      self.window.rootViewController =navVC;
+      [self.window makeKeyAndVisible];
+      
+      return YES;
+  }
+  ```
+  
+  #### 9.2.11 UINavigationController的代理方法
+  UINavigationBar的代理方法可以监听UINavigationBar添加NavigationItem的入栈和出栈操作，一般把导航控制器设置为UINavigationBar的代理对象。
+  - 是否允许调用入栈push方法
+  ```
+  - (BOOL)navigationBar:(UINavigationBar *)navigationBar shouldPushItem:(UINavigationItem *)item;
+  ```
+  - 入栈push动画播放完成后调用
+  ```
+  - (void)navigationBar:(UINavigationBar *)navigationBar didPushItem:(UINavigationItem *)item;
+  ```
+  - 是否允许调用出栈pop方法
+  ```
+  - (BOOL)navigationBar:(UINavigationBar *)navigationBar shouldPopItem:(UINavigationItem *)item;
+  ```
+  - 出栈pop动画播放完成后调用
+  ```
+  - (void)navigationBar:(UINavigationBar *)navigationBar didPopItem:(UINavigationItem *)item;
+  ```
+  #### 9.2.12 顺传数据
+  1. 顺传数据的核心思路是在目标控制中新增一个数据模型的属性，在执行pushViewController方法之前，把源控制器中的数据传递给该属性。
+  
+  - 在目标控制器中新增属性，用于接收数据
+  - 在源控制器中初始化目标控制器，给目标控制器的新增属性赋值，并跳转到目标控制器。
+  
+  2. 示例代码
+  - 在目标控制器中新增属性dataText，用于接收源控制器传递的字符串对象。
+  ```
+  #import <UIKit/UIKit.h>
+  @interface DestinationViewController : UIViewController
+  @property (nonatomic,copy) NSString *dataText;
+  @end
+  ```
+  - 在源控制器中，初始化目标控制器DestinationViewController,给目标控制器的dataText属性赋值，并跳转到目标控制器。
+  ```
+  -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+      DestinationViewController *descVC = [[DestinationViewController alloc]init];
+      descVC.view.backgroundColor = [UIColor redColor];
+      descVC.navigationItem.title = @"目标控制器";
+      descVC.dataText = @"99iOS.com";
+      [self.navigationController pushViewController:descVC animated:YES];
+  }
+  ```
+  #### 9.2.13 使用代理逆传数据
+  1. 示例代码
+  - 在DestinationViewController中，新增代理协议DestinationViewControllerDelegate添加一个用于回传数据的代理方法,并新增代理属性
+  ```
+  #import <UIKit/UIKit.h>
+  @class DestinationViewController;
+  @protocol DestinationViewControllerDelegate <NSObject>
+  -(void) destinationViewController:(DestinationViewController *) destinationViewController
+               return2SrcVCWithData:(NSString *) string;
+  @end
+  
+  @interface DestinationViewController : UIViewController
+  @property (nonatomic,weak) id <DestinationViewControllerDelegate> delegate;
+  @property (nonatomic,copy) NSString *dataText;
+  @end
+  ```
+  - 在目标控制器中，需要执行popViewController:方法之前，通知代理对象调用代理协议中定义的方法。
+  ```
+  -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+      if([self.delegate respondsToSelector:@selector(destinationViewController:return2SrcVCWithData:)]){
+          [self.delegate destinationViewController:self return2SrcVCWithData:@"九九学院"];
+      }
+      [self.navigationController popViewControllerAnimated:YES];
+  }
+  ```
+  - 设置SourceViewController.m类遵守DestinationViewControllerDelegate代理协议
+  ```
+  @interface SourceViewController ()<DestinationViewControllerDelegate>
+  ```
+  - 设置目标控制器的代理对象。在SourceViewController.m中，在实例化目标控制器后，设置其代理对象为源控制器
+  ```
+  -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+      DestinationViewController *descVC = [[DestinationViewController alloc]init];
+      descVC.view.backgroundColor = [UIColor redColor];
+      descVC.navigationItem.title = @"目标控制器";
+      descVC.dataText = @"99iOS.com";
+      descVC.delegate = self;
+      [self.navigationController pushViewController:descVC animated:YES];
+  }
+  ```
+  - 在SourceViewController.m中，在代理方法中实现具体功能。
+  ```
+  -(void)destinationViewController:(DestinationViewController *)destinationViewController return2SrcVCWithData:(NSString *)string{
+      NSLog(@"目标控制器回传的字符串数据:%@",string);
+  }
+  ```
+  #### 9.2.14 使用通知逆传数据
+  与代理相比，通知的优点在于可以支持一对多的进行数据传递。使用通知进行数据逆向传递。
+  - 在源控制器SourceViewController.m中，注册观察者
+  ```
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      // Do any additional setup after loading the view.
+      [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveMessage:) name:@"destinationVCReturn" object:nil];
+  }
+  ```
+  - 在源控制器SourceViewController.m中，实现收到通知后的操作，即实现receiveMessage方法。从目标控制器中传递的通知中，携带了传递过来的数据对象。
+  ```
+  -(void)receiveMessage:(NSNotification *)notification{
+      NSString *string = (NSString *)notification.object;
+      NSLog(@"目标控制器回传的字符串数据(使用通知):%@",string);
+  }
+  ```
+  - 在生命周期最后一步结束通知订阅
+  ```
+  -(void)receiveMessage:(NSNotification *)notification{
+      NSString *string = (NSString *)notification.object;
+      NSLog(@"目标控制器回传的字符串数据(使用通知):%@",string);
+  }
+  ```
+  - 在目标控制器DestinationViewController.m中，在目标控制器出栈前调用popViewControllerAnimated方法前，推送通知给各个观察值，在推送的通知中传递需要交互的数据对象。
+  ```
+  -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+      [[NSNotificationCenter defaultCenter]postNotificationName:@"destinationVCReturn" object:@"九九学院"];
+      [self.navigationController popViewControllerAnimated:YES];
+  }
+  ```
+  #### 9.2.15 使用Block逆传数据
+  - 在目标控制器DestinationViewController.h中，添加Block属性
+  ```
+  @interface DestinationViewController : UIViewController
+  @property (nonatomic,weak) id <DestinationViewControllerDelegate> delegate;
+  @property (copy) PassDataBlock block;
+  @end
+  ```
+  - 在目标控制器DestinationViewController.m中，设置Block中代码的执行时机，即在返回上一个控制器之前调用。
+  ```
+  -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+      if(self.block){
+          self.block(@"九九学院");
+      }
+      [self.navigationController popViewControllerAnimated:YES];  
+  }
+  ```
+  - 在源控制器SourceViewController.m中，给目标控制器对象的Block赋值，即调用Block时需要执行的操作。
+  ```
+  -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+      DestinationViewController *descVC = [[DestinationViewController alloc]init];
+      descVC.view.backgroundColor = [UIColor redColor];
+      descVC.navigationItem.title = @"目标控制器";
+      descVC.dataText = @"99iOS.com";
+      descVC.delegate = self;
+      
+      descVC.block = ^(NSString *string){
+          NSLog(@"目标控制器回传的字符串数据(使用Block):%@",string);
+      };
+      
+      [self.navigationController pushViewController:descVC animated:YES];
+  }
+  ```
+  #### 9.2.16 工具栏toolBar
+  导航器控制器中，除了在顶部具有一个navigationBar之外，在底部还有一个toolBar,在默认情况下，toolBar是被隐藏起来的。
+  1. toolBar简介
+  toolBar可以理解为显示在屏幕底部的navigationBar,它具有同NavigationBar一样的特性，上面的按钮都是UIBarButtonItem类的对象。
+  ![07483430.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\07483430.png)
+  
+  ### 9.3 UITabBarController
+  #### 9.3.1 UITabBarController的常用属性和方法
+  UITabBarController类用来实现底部的功能菜单以及切换。
+  一个UITabBarController管理着4~5个UINavigationController,然后每个UINavigationController又管理着一组UIViewController对象或者子类对象。
+  
+  2. UITabBarController常用属性
+  在UITabBarController类中，有两个核心属性，分别为ViewControllers和tabBar,其分别管理UITabBarController的子控制器以及底部菜单栏的样式。
+  - viewController用于存储UITabBarController所需要管理的子控制器，通常这些子控制器时UINavigationController类的对象。
+  ```
+  @property(nonatomic, copy) NSArray<__kindof UIViewController *> *viewControllers;
+  ```
+  - tabBar用于定制tabBar的整体外观样式，例如，背景颜色，背景图片等，需要注意的是:tabBar上每个按钮的样式定制并不由tabBar决定。这个与导航栏navigationBar是类似的。
+  ```
+  @property(nonatomic, readonly) UITabBar *tabBar;
+  ```
+  - selectedViewController设置被选中的子控制器，被选中的子控制器会显示被选中的状态。
+  ```
+  @property(readonly, strong) NSViewController *selectedViewController;
+  ```
+  - selectedIndex 根据序号设置被选中的子控制器
+  ```
+  @property NSInteger selectedIndex;
+  ```
+  3. UIViewController类中的tabBarItem与tabBarController
+  与UINavigationController类似，UITabBarController类中也对UIViewController类的属性进行了扩展，增加了tabButton这个关键属性，因此每个子控制器的UITabBarItem样式，其实是在子控制器对象中进行设置的。这样保证了定制的灵活性。另外，tabBarController属性使每个子控制器都可以获取到管理它的UITabBarController对象。
+  
+  #### 9.3.2 UITabBar的常用属性和方法
+  UITabBar类对象tabBar是UITabBarController中的一个属性，其负责定义底部功能栏的整体外观样式，但每个菜单按钮的样式并不是由UITabBar类对象控制的。
+  而是有各个子控制器中的tabBarItem属性决定的。UITabBar类中定义了如下一些常用的属性和方法。
+  - tintColor tabBar整体渲染的颜色
+  - barTintColor tabBar的整体背景颜色
+  ```
+  @property(nonatomic, strong) UIColor *barTintColor;
+  ```
+  - backgroundImage 为tabBar设置背景图片
+  ```
+  @property(nonatomic, strong) UIImage *backgroundImage;
+  ```
+  - barStyle tabBar的整体风格样式，默认为白色，可以改为黑色
+  ```
+  @property(nonatomic) UIBarStyle barStyle;
+  ```
+  - items,获取tabBar上面的所有UITabBarItem类的对象，即底部菜单栏上面的按钮，可以对其样式进行修改.
+  ```
+  @property(nullable,nonatomic,copy)NSArray<UITabBarItem *> *items;
+  ```
+  #### 9.3.3 UITabBarItem的常用属性和方法
+  UITabBarItem是用于定义底部tabBar上每个按钮样式的类，UITabBarItem对象的设置是在各个子控制器中设置的。
+  1. UITabBarItem简介
+  在TabBar上每个按钮都是UITabBarItem类的对象，虽然其看上去是按钮，但UITabBarItem类并不是UIView的子类，而是NSObject的子类。
+  ```
+  @interface UITabBarItem:UIBarItem
+  @interface UIBarItem:NSObject<NSCoding,UIAppearance>
+  ```
+  2. UITabBarItem的常用属性和方法
+  - UITabBarItem类的实例化方法，该方法需要传递3个参数，分别为每个UITabBarItem的底部文字描述，中间的图片以及选中后显示的图片。需要注意的是，选中状态下文字的颜色需要设置tabBar的tintColor属性。
+  ```
+  - (instancetype)initWithTitle:(NSString *)title image:(UIImage *)image selectedImage:(UIImage *)selectedImage;
+  ```
+  - badgeValue 每个UITabBarItem对象右上角的提示信息
+  ```
+  @property(nonatomic, assign) NSUInteger badgeValue;
+  ```
+  - badgeColor iOS10中新加入的属性，可以定制badge的颜色，默认为红色，也可以修改为其他颜色。
+  ```
+  @property(nonatomic, readwrite, copy) UIColor *badgeColor;
+  ```
+  #### 9.3.4 微信TabBar实现
+  对于TabBar来说，通常是在App开发的最初阶段就开发完成的。相当于App的框架，后期只需要去定制其中各个子控制器类的功能即可。
+  1. 微信TabBar实现思路
+  微信的整体框架包括4个功能模块:微信、通讯录、发现和我，每个功能模块都是对应一个UINavigationController对象，这4个UINavigationController对象装进一个UITabBarController中进行统一管理。
+  - 创建子控制器：分别创建各个功能模块对应的UINavigationController对象，并设置其tabBarItem属性。
+  - 创建UITabBarController对象，把4个UINavigationController对象装进viewControllers属性中。
+  - 定制TabBar的外观
+  - 其他属性的设置以及功能实现
+  2. 示例代码
+  - 创建子控制器，并设置其tabBarItem的属性
+  ```
+      UIViewController *homeVC = [[UIViewController alloc]init];
+      homeVC.title = @"微信";
+      UINavigationController *homeNaviVC = [[UINavigationController alloc]initWithRootViewController:homeVC];
+      UITabBarItem *item0 = [[UITabBarItem alloc] initWithTitle:homeVC.title image:[UIImage imageNamed:@"tabbar_mainframe"] selectedImage:[UIImage imageNamed:@"tabbar_mainframeHL"]];
+      homeNaviVC.tabBarItem = item0;
+      
+      UIViewController *contactVC = [[UIViewController alloc]init];
+      contactVC.title = @"通讯录";
+      UINavigationController *contactNaviVC = [[UINavigationController alloc]initWithRootViewController:contactVC];
+      UITabBarItem *item1 = [[UITabBarItem alloc] initWithTitle:contactVC.title image:[UIImage imageNamed:@"tabbar_contacts"] selectedImage:[UIImage imageNamed:@"tabbar_contactsHL"]];
+      contactNaviVC.tabBarItem = item1;
+      
+      UIViewController *discoverVC = [[UIViewController alloc]init];
+      discoverVC.title =@"发现";
+      UINavigationController *discoverNaviVC = [[UINavigationController alloc]initWithRootViewController:discoverVC];
+      UITabBarItem *item2 = [[UITabBarItem alloc]initWithTitle:discoverVC.title image:[UIImage imageNamed:@"tabbar_discover"] selectedImage:[UIImage imageNamed:@"tabbar_discoverHL"]];
+      discoverNaviVC.tabBarItem = item2;
+      
+      UIViewController *myVC = [[UIViewController alloc]init];
+      myVC.title = @"我";
+      UINavigationController *myNaviVC = [[UINavigationController alloc]initWithRootViewController:myVC];
+      UITabBarItem *item3 = [[UITabBarItem alloc]initWithTitle:myVC.title image:[UIImage imageNamed:@"tabbar_me"] selectedImage:[UIImage imageNamed:@"tabbar_meHL"]];
+      myNaviVC.tabBarItem = item3;
+  ```
+  - 创建UITabBarController对象，把4个UINavigationController对象存入ViewControllers属性中
+  ```
+  UITabBarController *tabBarVC = [[UITabBarController alloc]init];
+  tabBarVC.viewControllers = @[homeNaviVC,contactNaviVC,discoverNaviVC,myNaviVC];
+  tabBarVC.selectedViewController = homeNaviVC;
+  ```
+  - 定制tabBar外观
+  ```
+  tabBarVC.tabBar.backgroundImage = [UIImage imageNamed:@"tabbarBkg"];
+  tabBarVC.tabBar.tintColor = [UIColor colorWithRed:31/255.0 green:185/255.0 blue:34/255.0 alpha:1.0];
+  ```
+  - 定制每个tabBarItem的外观,由于tabBar的tintColor属性在起作用，通常点击tabBarItem时，显示原始素材的样式，因此，需要设置图片的渲染模式为UIImageRenderingModelAlwaysOriginal.
+  ```
+      for(UITabBarItem *item in tabBarVC.tabBar.items){
+          UIImage *image = item.selectedImage;
+          UIImage *correctImage = [image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+          item.selectedImage = correctImage;
+      }
+  ```
+  - 设置启动时加载UITabBarController对象
+  ```
+      self.window = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
+      self.window.rootViewController = tabBarVC;
+      [self.window makeKeyAndVisible];
+  ```
+  
+  #### 9.3.5 UITabBarController的代理协议
+  UITabBarController类中也定义了其代理协议UITabBarControllerDelegate,可以监测有关UITabBarController的用户交互行为，并调用不同的方法。
+  例如在切换不同的子控制器时，可以在代理方法中发送网络请求，来更新控制器的界面数据。UITabBarControllerDelegate的代理协议中的以下几个方法在实际开发中比较常用。
+  - 当切换子控制器时调用。可以用于切换控制器时准备界面数据。
+  ```
+  - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController;
+  ```
+  - 设置子控制器能否被选中
+  ```
+  - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController;
+  ```
+  ### 9.4 UIWindow、UIView与UIViewController 关系
+  #### 9.4.1 概念简介
+  1. UIWindow(窗口)
+  UIWindow是一个特殊的UIView,UIWindow类继承自UIView,一个App只有一个UIWindow,但特定情况下也会出现多个UIWindow.ios启动完毕后，创建的第一个视图控件就是UIWindow，此时需要给UIWindow对象指定根控制器，
+  即设置rootViewController属性，系统会自动把rootViewController的view添加到window上，从而在屏幕上就可以显示出程序启动后的初始界面。rootVeiwController是应用程序的根控制器，只要App未被销毁，则rootViewController就不会被销毁。
+  
+  2. UIView(视图)
+  每个UIView都负责在屏幕上一个特定矩形区域的显示，可以通过设置backgroundColor属性来查看该矩形区域的范围。每个UIView对象除了要负责渲染矩形区域的内容之外，还要响应该区域中发生的交互事件，因为UIView继承自UIResponder类，并且每个UIView对象中都可以添加一个或多个子UIView
+  队形。UIView对象只有显示在UIWindow上，用户才能看到界面的样式。通过UIView类的window属性，可以获得该UIView对象所在的UIWindow对象。
+  
+  3. UIViewController(视图控制器)
+  每个UIViewController都有一个view属性，用于显示该控制器的外观样式，UIViewController类负责管理在View上显示的数据，并协调它们和应用程序其他部分的关系。UIViewController类负责创建其管理的视图，并且在内存不足时，将它们从内容移出。
+  可以再didReceiveMemoryWarning方法中实现。除此之外，视图控制器还为某些标准的系统行为提供自动响应。例如，在设备方法变化时，如果应用程序支持该方向，视图控制器可以对其管理的视图进行尺寸调整，使其适应新的方向。
+  
+  #### 9.4.2 关系描述
+  以使用浏览器浏览网页为例，UIWindow相当于显示器屏幕，UIView相当于不同的网页，UIViewController相当于控制网页切换的用户。
+  
+  ## 第十章 其它UI控件
+  ### 10.1 WKWebView
+  ### 10.2 UITextView
+  ### 10.3 UIPageControl
+  ### 10.4 UIPickerView
+  ### 10.5 UISilder
+  ### 10.6 UIDataPicker
+  ### 10.7 UISegmentedControl
+  
+  # 第三部分 iOS开发进阶
+  ## 第十一章 多线程
+  ### 11.1 线程基础知识
+  1. 线程与进程
+  - 对于任意一个iOS应用，程序运行起来后，默认会产生一个主线程(MainThread)。主线程专门用来处理UIKit对象的操作，如界面的显示与更新、处理用户交互事件等。
+  - 对于耗时的操作，需要再另外创建一个线程，放到后台处理，当处理完成得到结果后，再返回主线程去设置UI界面，这就涉及线程间通信的相关知识。
+  - 多线程同时处理任务，还会涉及线程安全的问题，当多个线程对一个对象进行同时操作时，就会影响结果的正确性。因此，线程对某个对象操作时，需要使用到锁的机制，即当一个线程操作一个对象的过程中，会给这个对象上锁，其他线程就不能够访问该对象了。枷锁虽然解决了线程安全的问题，但带来的另外一个弊端就是影响了程序运行的效率。
+  - 当给一个自定义类中添加属性时，属性关键字其中就有atomic和nonatomic的区分，其中atomic是线程安全的，当有线程访问这个属性时，会为该属性的setter方法加锁，atomic是默认值。但是在实际的开发中，都会把属性设置nonatomic关键字。
+  2. NSThread类
+  NSThread类是苹果官方提供的管理线程的类，提供了一些线程管理的方法。但是随着GCD和NSOperation的推出，NSThread的使用场景已经大大减少。
+  - 获取当前线程对象
+  ```
+  +(NSThread *)currentThread;
+  ```
+  - 获取主线程对象
+  ```
+  +(NSThread *)mainThread;
+  ```
+  - 使主线程休眠ti秒
+  ```
+  +(void)sleepForTimeInterval:(NSTimeInterval)ti;
+  ```
+  3. 示例代码
+  - 实现获取字符串的方法，在每个方法中都会阻塞主线程3秒
+  ```
+  -(NSString *) generateString1{
+      [NSThread sleepForTimeInterval:3.0];
+      NSString *string = @"hello world!";
+      return string;
+  }
+  
+  -(NSString *) generateString2{
+      [NSThread sleepForTimeInterval:3.0];
+      NSString *string =@"www.99iOS.com";
+      return string;
+  }
+  
+  -(NSString *) generateString3 {
+      [NSThread sleepForTimeInterval:3.0];
+      NSString *string = @"2017";
+      return string;
+  }
+  ```
+  - 实现显示内容按钮的点击操作
+  ```
+  - (IBAction)showContent:(id)sender {
+      //记录开始时间
+      NSLog(@"\\n Start Time:%@, \\n Current Thread: %@, \\n Main Thread: %@", [NSDate date], [NSThread currentThread], [NSThread mainThread]);
+      self.label1.text = [self generateString1];
+      self.label2.text = [self generateString2];
+      self.label3.text = [self generateString3];
+      //记录结束时间
+      NSLog(@"\\n End Time:%@, \\n Current Thread: %@, \\n Main Thread: %@", [NSDate date], [NSThread currentThread], [NSThread mainThread]);
+  }
+  ```
+  ### 11.2 GCD
+  #### 11.2.1 GCD 基本概念介绍
+  相比于NSThread,GCD中已经完全屏蔽了有关线程的概念，而是引入了任务和队列，把任务放到队列中执行，指定任务和队列的类型。其他有关线程管理的事务完全交由GCD来处理。大大简化了多任务开发的难度。
+  
+  1. GCD简介
+  由于GCD对线程管理进行了封装，因此，当使用GCD时，只需要把任务添加到一个队列中执行，有关线程调度的工作完全交由GCD完成。
+   - 在Block中定义需要执行的任务内容。
+   - 把任务添加到队列queue中。
+  GCD对队列中的任务，按照先进先出的原则，根据任务添加到队列的顺序来对队列进行处理，GCD会根据任务和队列的类型，自动在多个线程之间分配工作。
+  
+  2. 任务
+  在GCD中，需要处理的事务统一使用Block封装起来，称为任务。任务有两种类型，同步任务和异步任务。通过调用不同的函数，来设置任务的类型。同时，任务编写在函数的Block参数中。
+  - 异步任务:执行任务时，会在另外的线程中执行，即可能会创建新的线程。
+  ```
+  void dispatch_async(dispatch_queue_t queue, dispatch_block_t block);
+  ```
+  - 同步任务:执行任务时，会在当前的线程中执行，当前线程有可能是主线程，也有可能是子线程。
+  ```
+  void dispatch_sync(dispatch_queue_t queue, dispatch_block_t block);
+  ```
+  3. 队列
+  GCD中，队列是一个重要概念。系统提供了若干预定义的队列，其中包括可以获取应用程序的主队列。另外，工程师可以自由创建不同类型的队列。例如:并行队列和串行队列，队列的类型决定了任务的执行方式。GCD队列严格按照先进先出的原则，添加到GCD队列中的任务，始终会按照加入队列的顺序被执行。
+  - 并行队列: 并行队列中的任务可以在多线程之间分配执行，分配的原则由GCD控制，因此，并行队列的任务，虽然执行时按照先进先出进行分配的，但由于各个任务被分配到不同的线程执行，因此其完成时间有可能不同。
+  ```
+  dispatch_queue_global_t dispatch_get_global_queue(intptr_t identifier, uintptr_t flags);
+  ```
+  - 串行队列: 串行队列中的任务时按照顺序一个一个完成的，当一个任务完成后，才去执行下一个任务，因此，串行队列对应一个线程执行。
+  ```
+  dispatch_queue_t dispatch_queue_create(const char *label, dispatch_queue_attr_t attr);
+  ```
+  - 主队列: 主队列也是一个串行队列，主队列中的任务都在主线程中执行。
+  ```
+  dispatch_queue_main_t dispatch_get_main_queue(void);
+  ```
+  #### 11.2.2 队列与任务组合
+  在GCD中存在队列和任务两个核心概念，同时队列又分为并行队列、串行队列和主队列，任务包括异步任务和同步任务。GCD的使用方法就是把任务放到队列中执行，因为根据不同的任务类型和队列类型，就会存在6种组合。
+  1. 异步任务+并行队列
+  ```
+  //获取并行队列
+      dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+      //创建异步任务，并放到并行队列中执行
+      dispatch_async(queue, ^{
+          for(int i = 0 ;i<2;i++){
+              NSLog(@"task1:%d",i);
+          }
+          NSLog(@"task1----%@",[NSThread currentThread]);
+      });
+      dispatch_async(queue, ^{
+          for(int i = 0 ;i<2;i++){
+              NSLog(@"task2:%d",i);
+          }
+          NSLog(@"task2----%@",[NSThread currentThread]);
+      });
+      dispatch_async(queue, ^{
+          for(int i = 0;i<2;i++){
+              NSLog(@"task3:%d",i);
+          }
+          NSLog(@"task3---%@",[NSThread currentThread]);
+      });
+  ```
+  异步任务+并行队列组合情况下，每个任务会在不同的线程中同时执行。
+  2. 异步任务+串行队列
+  ```
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      //创建串行队列
+      dispatch_queue_t queue = dispatch_queue_create("com.99ios", NULL);
+      //创建异步任务
+      dispatch_async(queue, ^{
+          for(int i = 0 ;i<2;i++){
+              NSLog(@"task1:%d",i);
+          }
+          NSLog(@"task1----%@",[NSThread currentThread]);
+      });
+      dispatch_async(queue, ^{
+          for(int i = 0 ;i<2;i++){
+              NSLog(@"task2:%d",i);
+          }
+          NSLog(@"task2----%@",[NSThread currentThread]);
+      });
+      dispatch_async(queue, ^{
+          for(int i = 0;i<2;i++){
+              NSLog(@"task3:%d",i);
+          }
+          NSLog(@"task3---%@",[NSThread currentThread]);
+      });
+  }
+  ```
+  所有任务都在一个线程中执行，并且完成一个后，再执行一个。
+  3. 异步任务+主队列
+  把异步任务放在主队列中执行，由于主队列是一个特殊的串行队列，因此任务时串行执行的，但由于主队列对应序号为1的线程，因此，即便是异步任务，也不会再创建新的线程。
+  ```
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      //获取主队列
+      dispatch_queue_t mainQueue = dispatch_get_main_queue();
+      //创建异步任务
+      dispatch_async(mainQueue, ^{
+          for(int i = 0 ;i<2;i++){
+              NSLog(@"task1:%d",i);
+          }
+          NSLog(@"task1----%@",[NSThread currentThread]);
+      });
+      dispatch_async(mainQueue, ^{
+          for(int i = 0 ;i<2;i++){
+              NSLog(@"task2:%d",i);
+          }
+          NSLog(@"task2----%@",[NSThread currentThread]);
+      });
+      dispatch_async(mainQueue, ^{
+          for(int i = 0;i<2;i++){
+              NSLog(@"task3:%d",i);
+          }
+          NSLog(@"task3---%@",[NSThread currentThread]);
+      });
+  }
+  ```
+  4. 同步任务+并行队列
+  同步任务的执行是在当前线程中完成的，因此，即便是把同步任务放在并行队列中执行，由于只有1个线程，任务也是一个一个按顺序执行。
+  ```
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      //获取并行队列
+      dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+      //同步执行
+      dispatch_sync(queue, ^{
+          for(int i = 0 ;i<2;i++){
+              NSLog(@"task1:%d",i);
+          }
+          NSLog(@"task1----%@",[NSThread currentThread]);
+      });
+      dispatch_sync(queue, ^{
+          for(int i = 0 ;i<2;i++){
+              NSLog(@"task2:%d",i);
+          }
+          NSLog(@"task2----%@",[NSThread currentThread]);
+      });
+      dispatch_sync(queue, ^{
+          for(int i = 0;i<2;i++){
+              NSLog(@"task3:%d",i);
+          }
+          NSLog(@"task3---%@",[NSThread currentThread]);
+      });
+  }
+  ```
+  5. 同步任务+串行队列
+  同步任务放在串行队列中执行，任务会在当前线程依次执行。
+  ```
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      //获取串行队列
+      dispatch_queue_t queue = dispatch_queue_create("com.99ios", NULL);
+      //同步执行
+      dispatch_sync(queue, ^{
+          for(int i = 0 ;i<2;i++){
+              NSLog(@"task1:%d",i);
+          }
+          NSLog(@"task1----%@",[NSThread currentThread]);
+      });
+      dispatch_sync(queue, ^{
+          for(int i = 0 ;i<2;i++){
+              NSLog(@"task2:%d",i);
+          }
+          NSLog(@"task2----%@",[NSThread currentThread]);
+      });
+      dispatch_sync(queue, ^{
+          for(int i = 0;i<2;i++){
+              NSLog(@"task3:%d",i);
+          }
+          NSLog(@"task3---%@",[NSThread currentThread]);
+      });
+  }
+  ```
+  6. 同步任务+主队列
+  这种情况下，主线程会被阻塞，程序会挂死，不能使用
+  ```
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      //获取主队列
+      dispatch_queue_t mainQueue = dispatch_get_main_queue();
+      //同步执行
+      //1
+      dispatch_sync(mainQueue, ^{ //block1
+          for(int i = 0 ;i<2;i++){
+              NSLog(@"task1:%d",i);
+          }
+          NSLog(@"task1----%@",[NSThread currentThread]);
+      });
+      //2
+      dispatch_sync(mainQueue, ^{
+          for(int i = 0 ;i<2;i++){
+              NSLog(@"task2:%d",i);
+          }
+          NSLog(@"task2----%@",[NSThread currentThread]);
+      });
+      //3
+      dispatch_sync(mainQueue, ^{
+          for(int i = 0;i<2;i++){
+              NSLog(@"task3:%d",i);
+          }
+          NSLog(@"task3---%@",[NSThread currentThread]);
+      });
+  }
+  ```
+  当调用dispatch_sync会阻塞线程。执行完1之后主线程需要执行2,3,此时Block1等在2,3的代码执行完成，而代码1需要等待Block1执行完成。这就造成了1和Block1相互等待，成了死锁。
+  #### 11.2.3 线程间通信
+  由于UI的更新和操作是由主线程负责的，因此，当使用子线程获取到数据时，需要返回主线程对UI界面进行更新，这时就涉及线程间的通信。
+  1. 在涉及网络数据获取的过程中，一般会使用异步任务+并发队列进行数据获取。当获取到网络服务器返回的数据后，需要在主线程中把数据显示在屏幕上，因此这就涉及线程间的通信。在并列队列中的任务还可以嵌套子任务，嵌套的子任务可以设置为在主线程中执行的任务。
+  
+  2. 示例代码
+  ```
+  - (IBAction)downLoadImageView:(id)sender {
+      //获取并行队列
+      dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+      
+      NSLog(@"0---%@", [NSThread currentThread]);
+      
+      //异步任务
+      dispatch_async(queue, ^{
+          //从网络下载图片
+          NSString *urlString = @"http://7xta2c.com1.z0.glb.clouddn.com/99logo.png";
+          NSURL *url = [NSURL URLWithString:urlString];
+          NSData *imageData = [NSData dataWithContentsOfURL:url];
+          UIImage *image = [UIImage imageWithData:imageData];
+          NSLog(@"1---%@", [NSThread currentThread]);
+          
+          //返回主线程设置UI
+          dispatch_async(dispatch_get_main_queue(), ^{
+              self.imageView.image = image;
+              NSLog(@"2---%@", [NSThread currentThread]);
+          });
+          
+      });
+      
+      NSLog(@"3---%@", [NSThread currentThread]);
+  }
+  ```
+  #### 11.2.4 队列组dispatch group
+  在使用GCD进行任务操作时，有时会希望若干个任务执行之间有先后执行的依赖关系，例如，当A,B两个异步任务完成后，再去完成C任务，这时就可以使用队列组dispatch group 来完成。
+  1. 队列组基本介绍
+  在串行队列中，任务是按照进入队列的顺序依次执行，因此任务和任务之间有明确的先后顺序的。但是对于并行队列的任务来说，由于任务会被自动分配到不同的线程中执行，因此任务完成的顺序是不确定的。假如希望给并行队列中的任务设置执行顺序。
+  例如，当任务A和任务B完成后，再去完成任务C，就需要使用到任务组dispatch group.
+  
+  - 创建队列组
+  ```
+  dispatch_group_t dispatch_group_create(void);
+  ```
+  - 向队列组中插入一个异步任务
+  ```
+  void dispatch_group_async(dispatch_group_t group, dispatch_queue_t queue, dispatch_block_t block);
+  ```
+  - 队列组中其他任务执行完成后，执行的任务，通常可以用来设置UI界面
+  ```
+  void dispatch_group_notify(dispatch_group_t group, dispatch_queue_t queue, dispatch_block_t block);
+  ```
+  #### 11.2.5 延迟执行操作
+  
+  1. 使用GCD实现延迟执行
+  在GCD中可以使用dispatch_after()函数，封装一段代码到Block中，在设置的延迟时间dispatch_time_t之后执行。
+  ```
+  void dispatch_after(dispatch_time_t when, dispatch_queue_t queue, dispatch_block_t block);
+  ```
+  如下所示:在2.0秒后，输出一段日志。在该方法中，延迟执行的代码在主队列中执行，也可以修改执行的队列。
+  ```
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0*NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+          NSLog(@"延迟2.0秒后打印出来的日志");
+      });
+  }
+  ```
+  2. 使用NSRunLoop类中的方法实现延迟执行
+  在NSRunLoop类中，也提供了有关延迟执行的方法。
+  ```
+  - (void)performSelector:(SEL)aSelector withObject:(id)anArgument afterDelay:(NSTimeInterval)delay inModes:(NSArray<NSRunLoopMode> *)modes;
+  - (void)performSelector:(SEL)aSelector withObject:(id)anArgument afterDelay:(NSTimeInterval)delay;
+  ```
+  下面的代码中也实现了延迟2.0秒打印一段日志的操作
+  ```
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      [self performSelector:@selector(printInfo) withObject:nil afterDelay:2.0];
+  }
+  
+  -(void)printLog{
+      NSLog(@"延迟2.0秒后打印出来的日志！");
+  }
+  ```
+  ### 11.3 NSOperation
+  
+  #### 11.3.1 NSOperation 基本使用
+  NSOperation在iOS 4后也基于GCD实现，但是相对于GCD来说可控性更强，并且可以加入操作依赖。
+  1. NSOperation的类族
+  NSOperation是一个抽象类，不能够直接使用NSOperation,因此系统提供了NSBlockOperation和NSInvocationOperation两个子类，还可以使用自定义CustomOperation类。
+  对于NSBlockOperation类来讲，可以把任务封装在一个Block块之内。NSBlockOperation类提供了如下操作方法，用于创建一个NSBlockOperation对象，任务封装在Block中。
+  ```
+  + (instancetype)blockOperationWithBlock:(void (^)(void))block;
+  ```
+  对于NSInvocationOperation类来说，需要执行的任务直接指定已定义的方法。
+  ```
+  (instancetype)initWithTarget:(id)target selector:(SEL)sel object:(id)arg;
+  ```
+  2. 无队列情况下执行任务
+  在不创建队列的情况下，可以直接调用NSOperation类的start方法来执行某个任务。该任务是在当前线程进行执行的。如果是在主线程调用的start方法，那么则会在主线程中执行任务。
+  ```
+  -(void)executeInCurrentThread{
+      NSBlockOperation *task1 = [NSBlockOperation blockOperationWithBlock:^{
+          NSLog(@"task-----%@",[NSThread currentThread]);
+      }];
+      NSBlockOperation *task2 = [NSBlockOperation blockOperationWithBlock:^{
+          NSLog(@"task2-----%@",[NSThread currentThread]);
+      }];
+      [task1 start];
+      [task2 start];
+  }
+  ```
+  3. 在队列中执行任务
+  当把任务放到队列中进行执行时，系统会自动并行执行所有任务，对于开多少条线程之类的事务，完全交由系统处理，开发者只要把任务添加到队列中即可。另外，可以通过设置队列的maxConcurrentOperationCount属性，来设置并行执行任务的数量。
+  ```
+  -(void)executeInQueue{
+      NSBlockOperation *task1 = [NSBlockOperation blockOperationWithBlock:^{
+          NSLog(@"task1------%@",[NSThread currentThread]);
+      }];
+      NSBlockOperation *task2 = [NSBlockOperation blockOperationWithBlock:^{
+          NSLog(@"task2 ------%@",[NSThread currentThread]);
+      }];
+      NSBlockOperation *task3 = [NSBlockOperation blockOperationWithBlock:^{
+          NSLog(@"task3 ------%@",[NSThread currentThread]);
+      }];
+      NSBlockOperation *task4 = [NSBlockOperation blockOperationWithBlock:^{
+          NSLog(@"task4 ------%@",[NSThread currentThread]);
+      }];
+      NSBlockOperation *task5 = [NSBlockOperation blockOperationWithBlock:^{
+          NSLog(@"task5 ------%@",[NSThread currentThread]);
+      }];
+      
+      NSOperationQueue *queue = [[NSOperationQueue alloc]init];
+      queue.maxConcurrentOperationCount = 5;
+      [queue addOperation:task1];
+      [queue addOperation:task2];
+      [queue addOperation:task3];
+      [queue addOperation:task4];
+      [queue addOperation:task5];
+  }
+  ```
+  4. 在任务中添加新任务
+  通过调用NSOperation类的addExecutionBlock方法，可以为某个NSOperation对象增加额外的任务。当把这些新增的任务放到队列中执行时，也是并行执行的。
+  ```
+  - (void)addExecutionBlock:(void (^)(void))block;
+  ```
+  下面的示例代码中在任务中添加新任务，所有的任务都会并行执行。
+  ```
+  -(void)addTaskInOperation{
+      NSBlockOperation *task1 = [NSBlockOperation blockOperationWithBlock:^{
+          NSLog(@"task1 -----%@",[NSThread currentThread]);
+      }];
+      NSBlockOperation *task2 = [NSBlockOperation blockOperationWithBlock:^{
+          NSLog(@"task2 -----%@",[NSThread currentThread]);
+      }];
+      [task1 addExecutionBlock:^{
+          NSLog(@"task1 add task------ %@",[NSThread currentThread]);
+      }];
+      [task2 addExecutionBlock:^{
+          NSLog(@"task2 add task-----%@",[NSThread currentThread]);
+      }];
+      NSOperationQueue *queue = [[NSOperationQueue alloc]init];
+      [queue addOperation:task1];
+      [queue addOperation:task2];
+  }
+  ```
+  5. 在队列中直接添加任务
+  通过调用NSOperationQueue的addOperationWithBlock方法，可以向队列中直接添加任务Block。
+  ```
+  -(void)addTaskInQueue{
+      NSBlockOperation *task1 = [NSBlockOperation blockOperationWithBlock:^{
+          NSLog(@"task1 -----%@",[NSThread currentThread]);
+      }];
+      NSBlockOperation *task2 = [NSBlockOperation blockOperationWithBlock:^{
+          NSLog(@"task2 -----%@",[NSThread currentThread]);
+      }];
+      [task1 addExecutionBlock:^{
+          NSLog(@"task1 add task------ %@",[NSThread currentThread]);
+      }];
+      [task2 addExecutionBlock:^{
+          NSLog(@"task2 add task-----%@",[NSThread currentThread]);
+      }];
+      NSOperationQueue *queue = [[NSOperationQueue alloc]init];
+      [queue addOperation:task1];
+      [queue addOperation:task2];
+      [queue addOperationWithBlock:^{
+          NSLog(@"queue task-----%@",[NSThread currentThread]);
+      }];
+  }
+  ```
+  6. 在任务中创建completionBlock
+  在NSOperation类中，可以通过设置completionBlock来创建所有任务执行完成后，自动调用一个Block,该Block的执行时在任务执行后被调用的，有先后顺序。
+  ```
+  -(void)addCompletionBlock {
+      NSBlockOperation *task1 = [NSBlockOperation blockOperationWithBlock:^{
+          NSLog(@"task1 -----%@",[NSThread currentThread]);
+      }];
+      NSBlockOperation *task2 = [NSBlockOperation blockOperationWithBlock:^{
+          NSLog(@"task2 -----%@",[NSThread currentThread]);
+      }];
+      [task1 addExecutionBlock:^{
+          NSLog(@"task1 add task------ %@",[NSThread currentThread]);
+      }];
+      task1.completionBlock = ^{
+          NSLog(@"task1 end!!!%@",[NSThread currentThread]);
+      };
+      
+      [task2 addExecutionBlock:^{
+          NSLog(@"task2 add task-----%@",[NSThread currentThread]);
+      }];
+      task2.completionBlock = ^{
+          NSLog(@"task2 end!!!%@",[NSThread currentThread]);
+      };
+      
+      NSOperationQueue *queue = [[NSOperationQueue alloc]init];
+      [queue addOperation:task1];
+      [queue addOperation:task2];
+  }
+  ```
+  7. NSOperation与GCD的区别
+  - GCD的底层是C语言构成，而NSOperation及相关对象是Objective-C的对象。
+  - KVO可以应用到NSOperation中，可以监听一个Operation是否完成或取消，比GCD更有效地掌控执行的后台任务。
+  
+  #### 11.3.2 线程间通信
+  与GCD相同，对于放在后台线程执行的任务执行完成后，通常是通过网络获取数据后返回主线程进行界面UI的更新。在NSOperationQueue类中，也可以获取主线程队列，相关更新UI的任务必须放在主队列中完成。
+  ```
+  - (IBAction)downloadImage:(id)sender {
+      //创建任务
+      NSBlockOperation *downloadTask = [NSBlockOperation blockOperationWithBlock:^{
+          //下载网络图片
+          NSString *urlStr = @"http://7xta2c.com1.z0.glb.clouddn.com/99logo.png";
+          NSURL *url = [NSURL URLWithString:urlStr];
+          NSData *imageData = [NSData dataWithContentsOfURL:url];
+          UIImage *image = [UIImage imageWithData:imageData];
+          //返回主线程设置UI
+          NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
+          [mainQueue addOperationWithBlock:^{
+              self.imageView.image = image;
+          }];
+      }];
+      //创建队列
+      NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+      [queue addOperation:downloadTask];
+  }
+  ```
+  #### 11.3.3 任务间的执行依赖
+  在GCD中可以使用队列组来设置任务之间的依赖关系，而在NSOperation中则提供了更加方便直观的方式来设置任务执行的先后顺序关系。通过NSOperation类中的addDependency方法，即可添加任务之间的依赖关系。
+  由于addDependency是NSOperation类中的方法，与队列无关，因此也可以针对不同队列中的任务设置任务执行的先后依赖关系。
+  ```
+  - (IBAction)downloadTwoImage:(id)sender {
+      //创建两个任务，两个任务完成后，返回主线程执行第三个更新Label的任务
+      NSBlockOperation *task1 = [NSBlockOperation blockOperationWithBlock:^{
+          //下载网络图片
+          NSString *urlStr = @"http://7xta2c.com1.z0.glb.clouddn.com/99logo.png";
+          NSURL *url = [NSURL URLWithString:urlStr];
+          NSData *imageData = [NSData dataWithContentsOfURL:url];
+          UIImage *image1 = [UIImage imageWithData:imageData];
+          NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
+          [mainQueue addOperationWithBlock:^{
+              self.imageView1.image = image1;
+          }];
+      }];
+      NSBlockOperation *task2 = [NSBlockOperation blockOperationWithBlock:^{
+          //下载网络图片
+          NSString *urlStr = @"http://7xta2c.com1.z0.glb.clouddn.com/99logo.png";
+          NSURL *url = [NSURL URLWithString:urlStr];
+          NSData *imageData = [NSData dataWithContentsOfURL:url];
+          UIImage *image2 = [UIImage imageWithData:imageData];
+          NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
+          [mainQueue addOperationWithBlock:^{
+              self.imageView2.image = image2;
+          }];
+      }];
+      NSBlockOperation *task3 = [NSBlockOperation blockOperationWithBlock:^{
+          NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
+          [mainQueue addOperationWithBlock:^{
+              self.label.text = @"下载完成";
+          }];
+      }];
+      //设置任务之间的执行依赖关系
+      [task3 addDependency:task1];
+      [task3 addDependency:task2];
+      [task2 addDependency:task1];
+      NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+      [queue addOperation:task1];
+      [queue addOperation:task2];
+      [queue addOperation:task3];
+  }
+  ```
+  
+  ## 第十二章 网络
+  
+  ## 第十三章 数据持久化
+  ### 13.1 沙盒
+  #### 13.1.1 沙盒基础
+  1. 什么是沙盒
+  iOS中的沙盒机制是一种安全体系，它规定了应用程序只能再本应用的文件夹内读取文件，不可以访问其他区域的内容，此区域被称为沙盒。所有的非代码文件都保存在这个地方，比如图片、声音、属性列表和文本文件等。
+  - 每个应用程序都有属于本应用的沙盒存储空间。
+  - 应用程序不能随意跨越自己的沙盒去访问其他的应用程序沙盒的内容。
+  - 应用程序向外读写数据都需要经过权限认证。
+  正是因为沙河机制的存在，iOS以及MacOS的软件安全性要比Android以及Windows应用的安全性高。
+  
+  2. 沙盒目录介绍
+  默认情况下，每个应用的沙盒包含3个文件夹:Documents、Library和tmp。由于沙盒机制的存在，应用只能在这几个目录中读写文件。使用iTunes与iphone同步时，会备份所有的Documents和Library文件。iPhone在重新时，会丢弃所有的tmp文件。
+  - Documents: 苹果建议将程序中建立的或在程序中浏览到的文件数据保存在该目录下，iTunes备份和恢复的时候会包括此目录。
+  - Library: 存储程序的默认设置或其他状态信息，其中又包含了Caches文件夹和Preferences文件夹。
+  - Library/Caches: 存放缓存文件，iTunes不会备份此目录，但此目录下文件在应用退出时不会被删除。
+  - Library/Preferences: 存放偏好设置的plist文件。
+  - tmp: 提供一个即时创建临时文件的地方。
+  
+  3. 获取沙盒中文件夹的路径
+  - App沙盒的路径.
+  ```
+  NSString *homePath = NSHomeDirectory();
+  ```
+  - 获取沙盒中Documents文件夹目录
+  ```
+      NSArray *documentsArr = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+      NSString *documentsPath = [documentsArr objectAtIndex:0];
+      NSLog(@"%@",documentsPath);
+  ```
+  - 获取Library文件夹目录
+  ```
+      NSArray *libraryArr = NSSearchPath
+  ```
+  - 获取Library文件夹目录
+  ```
+      NSArray *libraryArr = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+      NSString *libraryPath = [libraryArr objectAtIndex:0];
+      NSLog(@"%@",libraryPath);
+  ```
+  - 获取Caches文件夹目录
+  ```
+      NSArray *cachesArr = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+      NSString *cachesPath = [cachesArr objectAtIndex:0];
+      NSLog(@"%@",cachesPath);
+  ```
+  - 获取tmp文件目录
+  ```
+      NSString *tmpPath = NSTemporaryDirectory();
+      NSLog(@"%@",tmpPath);
+  ```
+  #### 13.1.2 在Mac上查看沙盒目录
+  ### 13.2 Plist文件
+  #### 13.2.1 Plist简介
+  1. Plist简介
+  鉴于Plist属于文件存储，不是数据库存储，所以当数据量不是特别大时，建议采用。一般来说，App在本地不会存储大量的数据，前端所需的数据一般都是存储在远程服务器的数据库中。对于手持终端来说，Plist存储对于绝大多数情况下，都能够满足数据持久化的要求。
+  
+  2. 手工创建Plist文件
+  - 在Xcode中，新建文件，选择PropertyList
+  - Plist文件创建完成后，可以在Xcode中选中这个Plist文件，并新增一些记录。
+  
+  3. 读取Plist文件中的内容
+  Plist文件创建完成后，就可以使用Foundation框架中提供的文件存取方法读取Plist文件中的数据。
+  - 获取Plist文件所在路径，由于是手工新增的Plist文件，因此存储在mainBundle中。
+  ```
+    NSString *path = [[NSBundle mainBundle]pathForResource:@"website" ofType:@"plist"];
+  ```
+  - 读取Plist文件中的内容，返回结果存储在一个字典对象中。
+  ```
+   NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:path];
+  ```
+  #### 13.2.2 Plist文件的读取
+  Plist文件的顶层结构通常是由一个字典或者一个数组构成的。因此,Plist文件的读取思路，就是把Plist文件中的所有数据一次性读取出来，然后放到一个字典对象或数组对象中，供后续操作使用。
+  1. 读取Plist文件返回数组
+  当Plist文件的顶层结构是一个数组时，通常会用于存储一些具有相同数据结构的数据，这个结构与数据库的表是类似的。
+  - 手工添加一个Plist文件，顶层结构是一个Array，然后再添加两条记录。
+  ![eadfde7f.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\eadfde7f.png)
+  - 获取Plist文件的路径
+  ```
+  NSString *arrayPistPath = [[NSBundle mainBundle]pathForResource:@"websites" ofType:@"plist"];
+  ```
+  - 使用arrayWithContentsOfFile:方法，读取Plist方法，结果存放在一个数组对象中。
+  ```
+  NSString *arrayPistPath = [[NSBundle mainBundle]pathForResource:@"websites" ofType:@"plist"];
+  NSMutableArray *arrayM = [NSMutableArray arrayWithContentsOfFile:arrayPistPath];
+  ```
+  2. 读取Plist文件返回字典
+  - 手工添加一个Plist文件，顶层结构是一个字典。
+  ![f98149d3.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\f98149d3.png)
+  - 获取Plist文件的路径。
+  ```
+  NSString *dicPistPath = [[NSBundle mainBundle]pathForResource:@"website" ofType:@"plist"];
+  ```
+  - 使用dictionaryWithContentsOfFile方法，读取Plist文件，结果存放在一个字典对象中。
+  ```
+  NSString *dicPistPath = [[NSBundle mainBundle]pathForResource:@"website" ofType:@"plist"];
+  NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:dicPistPath];
+  ```
+  
+  #### 13.2.3 Plist文件的写入
+  Plist文件的操作也属于文件操作的范畴，通常可以使用writeToFile方法，把一个字典对象或数组对象写入一个指定的Plist文件中进行保存。
+  - 首先准备需要写入的数据对象。
+  ```
+  NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+  [dict setValue:%@"99iOS" forKey:@"webName"];
+  ```
+  - 准备Plist文件的路径，通常考虑写入沙盒中的Documents目录中。
+  ```
+      NSArray *documentsArr = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+      NSString *documentsPath = [documentsArr objectAtIndex:0];
+      NSString *dictPlistPath = [documentsPath stringByAppendingPathComponent:@"dict.plist"];
+  ```
+  - 使用NSArray类或NSDictionary类中提供的writeToFile:方法，写入指定的Plist文件。
+  ```
+  [dict writeToFile:dictPlistPath atomically:yes];
+  ```
+  
+  #### 13.2.4 操作实例
+  1. 创建模型Model
+  - 创建一个Person类，其中包含姓名name以及年龄age两个属性。
+  ```
+  @property(nonatomic,strong) NSString *name;
+  @property(nonatomic,strong) NSNumber *age;
+  ```
+  - 由于Plist文件中只能保存Foundation框架中定义的NSString、NSDictionary以及NSArray等类型的数据，而不能保存对象，所以需要再Person.h中添加一个方法，通过该方法可以把Plist文件保存的数据转换成对象。
+  ```
+  +(instancetype) personWithDict:(NSDictionary *)dict;
+  ```
+  - 在Person.m中实现personWithDict:方法的功能。
+  ```
+  +(instancetype)personWithDict:(NSDictionary *)dict{
+      Person *person = [[Person alloc] init];
+      person.name = dict[@"name"];
+      person.age = dict[@"age"];
+      return person;
+  }
+  ```
+  2. 创建用于Plist操作的Service类
+  - 在Service.h文件中添加两个方法，分别用于写入新增数据以及读取所有联系人。
+  ```
+  - (void)addPersonWithDict:(NSDictionary *)dict;
+  - (NSArray *)readAllPerson;
+  ```
+  - 在Service.m文件中，实现上述方法的功能。
+  ```
+  /* 获取plist文件的路径*/
+  -(NSString *)personPlistFilePath{
+      NSArray *documentArray = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask, YES);
+      NSString *documentPath = [documentArray firstObject];
+      NSString *personPlistFilePath = [documentPath stringByAppendingPathComponent:@"person.plist"];
+      return personPlistFilePath;
+  }
+  
+  -(void)addPersonWithDict:(NSDictionary *)dict{
+      //获取Plist文件路径
+      NSString *plistPath = [self personPlistFilePath];
+      //检查Plist文件是否存在
+      NSFileManager *fileManager = [NSFileManager defaultManager];
+      if(![fileManager fileExistsAtPath:plistPath]){
+          [fileManager createFileAtPath:plistPath contents:nil attributes:nil];
+      }
+      //读取Plist中的文件
+      NSMutableArray *personArrayM = [NSMutableArray arrayWithContentsOfFile:plistPath];
+      //判断arrayM是否为空，为空则创建
+      if(personArrayM == nil){
+          personArrayM = [NSMutableArray array];
+      }
+      //传入的dict插入数组中
+      [personArrayM addObject:dict];
+      //写入文件
+      [personArrayM writeToFile:plistPath atomically:YES];
+  }
+  
+  -(NSArray *)readAllPerson{
+      //获取plist文件路径
+      NSString *plistPath = [self personPlistFilePath];
+      //读取plist文件
+      NSArray *personArray = [NSArray arrayWithContentsOfFile:plistPath];
+      return personArray;;
+  }
+  ```
+  3. 实现写入功能
+  - 在ViewController.m文件中，实现写入Plist文件的功能
+  ```
+  - (IBAction)writeToPlist:(id)sender {
+      NSNumberFormatter *formatter = [[NSNumberFormatter alloc]init];
+      NSNumber *age = [formatter numberFromString:self.ageTextField.text];
+      NSDictionary *personItemDict = @{
+          @"name" :self.nameTextField.text,
+          @"age":age,
+      };
+      [[[Service alloc]init] addPersonWithDict:personItemDict];
+  }
+  ```
+  4. 实现读取功能
+  ```
+  - (IBAction)readFromPlist:(id)sender {
+      NSArray *personArray = [[[Service alloc]init]readAllPerson];
+      for(NSDictionary *dict in personArray){
+          Person *person = [Person personWithDict:dict];
+          NSLog(@"%@,%@",person.name,person.age);
+      }
+  }
+  ```
+  ### 13.3. 偏好设置NSUserDefaults
+  #### 13.3.1 NSUserDefaults 简介
+  1. 偏好设置简介
+  Foundation框架提供了一套标准的解决方法为应用提供了偏好设置功能。每个应用都有一个NSUserDefaults实例，通过它来存取偏好设置。NSUserDefaults基本上支持所有的原生数据类型NSString,NSNumber,NSDate,NSArray,NSDictionary,BOOL,NSInterger.
+  - 偏好设置也是保存在应用的沙盒中，保存的路径在Library/Preferences路径下。
+  - 偏好设置可以理解为是一个特殊的Plist文件，但由于其本质上还是Plist文件，因此，存储形式还是使用键值对的方式。
+  2. 偏好设置常用方法和属性 
+  在Foundation框架中的NSUserDefaults.h文件中，提供了NSUserDefaults类的方法和属性，常用的方法和属性有以下几个。
+  - standardUserDefaults 获取系统默认的偏好设置对象。
+  ```
+  @property(class, readonly, strong) NSUserDefaults *standardUserDefaults;
+  ```
+  - 偏好设置写入方法
+  ![483e5ae3.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\483e5ae3.png)
+  - 偏好设置读取方法
+  ![6202091b.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\6202091b.png)
+  - 移除某个键值对
+  ```
+  - (void)removeObjectForKey:(NSString *)aKey;
+  ```
+  - synchronize: 立即写入偏好设置Plist文件中。
+  ```
+  - (BOOL)synchronize;
+  ```
+  #### 13.3.2 读写示例
+  1. 存储数据(新增/更新)
+  ```
+      NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+      [defaults setObject:[NSDate date] forKey:@"LastLoginTime"];
+      [defaults setBool:NO forKey:@"IsFirstLogin"];
+      [defaults setValue:@"99iOS" forKey:@"UserName"];
+      
+      [defaults synchronize];
+  ```
+  2. 读取数据
+  ```
+      NSUserDefaults *readdefaults = [NSUserDefaults standardUserDefaults];
+      NSDate *lastLoginTime = [readdefaults objectForKey:@"LastLoginTime"];
+      BOOL isFirstLogin = [readdefaults boolForKey:@"IsFirstLogin"];
+      NSString *userName = [readdefaults valueForKey:@"UserName"];
+      NSLog(@"%@--%d--%@",lastLoginTime,isFirstLogin,userName);
+  ```
+  
+  3. 删除数据
+  ```
+      NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+      [defaults removeObjectForKey:@"LastLoginTime"];
+  ```
+  ### 13.4 归档
+  ### 13.5 SQLite
+  #### 13.5.1 数据库的操作
+  对于简单的数据，完全可以使用Plist来存取数据。随着数据逐渐变大，查询数据和修改数据就会变得越来越麻烦。另外，使用Plist来存取数据无法解决的一个问题是，每次查询数据需要将整个文件都加载到内存中。
+  
+  1. 数据类型
+  ![fb3975d9.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\fb3975d9.png)
+  
+  2. 导入SQLite
+  在工程的TARGETS中选择Build Phases选项，在Link Binary With Libraries中添加libsqlite3.dylib到工程中。在添加的过程中，存在libsqlite3.dylib和libsqlite3.0.tbd.这两者的区别是:libsqlite3.dylib总是链向最新的libsqlite库.
+  在程序需要使用SQLite的类中添加头文件。
+  ```
+  #import<sqlite3.h>
+  ```
+  3. 创建数据库
+  - 在控制器类中添加一个sqlite3 类型的属性
+  ```
+  #import <sqlite3.h>
+  @interface ViewController ()
+  @property (nonatomic,assign)sqlite3 *db;
+  @end
+  ```
+  - 在ViewController.m中，添加如下的方法，为用户创建一个SQLite数据库
+  ```
+  -(BOOL)openDatabaseWithName:(NSString *) databaseName{
+      NSString *docsDir = nil;
+      NSArray *dirPath = nil;
+      
+      dirPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+      docsDir = [dirPath objectAtIndex:0];
+      
+      NSString *databasePath = [[NSString alloc] initWithString:[docsDir stringByAppendingPathComponent:databaseName]];
+      
+      NSFileManager *fileManager = [NSFileManager defaultManager];
+      
+      const char *dbPath = [databasePath UTF8String];
+      
+      if(![fileManager fileExistsAtPath:databasePath]){
+          if(sqlite3_open(dbPath, &_db)== SQLITE_OK){
+              NSLog(@"数据库打开/创建 成功：%@",databasePath);
+              return YES;
+          }
+          else{
+              NSLog(@"数据库打开/创建 失败：%@",databasePath);
+              return NO;
+          }
+      }else{
+          NSLog(@"数据库已创建：%@",databasePath);
+          if(sqlite3_open(dbPath, &_db) == SQLITE_OK){
+              NSLog(@"数据库打开/创建 成功：%@",databasePath);
+              return YES;
+          }else{
+              NSLog(@"数据库打开/创建 成功：%@",databasePath);
+              return NO;
+          }
+          return YES;
+      }
+  }
+  ```
+  - 关闭数据库
+  ```
+  - (void)closeDB {
+      if (NULL == _db) {
+          NSLog(@"数据库不存在");
+      } else {
+          sqlite3_close(_db); // 关闭数据库
+      }
+  }
+  ```
+  #### 13.5.2 表的操作
+  1. 创建表
+  ```
+  -(BOOL)createTable{
+      if(NULL == _db){
+          NSLog(@"数据库不存在，创建联系人，表失败");
+          return NO;
+      }
+      char *errMsg = NULL;
+      const char *sql = "CREATE TABLE IF NOT EXISTS CONTACTS (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, address TEXT, phone TEXT)";
+      if(sqlite3_exec(_db, sql, NULL, NULL, &errMsg)!=SQLITE_OK){
+          NSLog(@"创建，联系人表失败");
+          return NO;
+      }
+      NSLog(@"创建联系人表成功");
+      return YES;
+  }
+  ```
+  2. 删除表
+  ```
+  -(BOOL)dropTable{
+      if(NULL == _db){
+          NSLog(@"数据库不存在，删除联系人，表失败");
+          return NO;
+      }
+      char *errMsg = NULL;
+      const char *sql = "DROP TABLE CONTACTS;";
+      if(sqlite3_exec(_db, sql, NULL, NULL, &errMsg)!=SQLITE_OK){
+          NSLog(@"删除，联系人表失败");
+          return NO;
+      }
+      NSLog(@"删除联系人表成功");
+      return YES;
+  }
+  ```
+  #### 13.5.3 数据记录的操作
+  1. 添加数据
+  ```
+  - (BOOL)insertContact:(NSString *)name address:(NSString *)address phone:(NSString *)phone{
+      if(NULL == _db){
+          NSLog(@"数据库不存在，添加联系人失败");
+          return NO;
+      }
+      char *errMsg = NULL;
+      NSString *sqlString = [NSString stringWithFormat:@"INSERT INTO CONTACTS (name,address,phone) VALUES('%@','%@','%@');",name,address,phone];
+      const char *sql = [sqlString UTF8String];
+      if(sqlite3_exec(_db, sql, NULL, NULL, &errMsg) != SQLITE_OK){
+          NSLog(@"添加联系人失败");
+          return NO;
+      }
+      NSLog(@"添加联系人成功");
+      return YES;
+  }
+  
+  ```
+  
+  2. 查询数据
+  ```
+  -(void)printAllContact{
+      if(NULL == _db){
+          NSLog(@"数据库不存在，添加联系人失败");
+          return;
+      }
+      const char *sql = "SELECT * FROM CONTACTS";
+      sqlite3_stmt *stmt = NULL;
+      if(sqlite3_prepare_v2(_db, sql, -1, &stmt, nil)==SQLITE_OK){
+          while (sqlite3_step(stmt) == SQLITE_ROW) {
+              char *name = (char*)sqlite3_column_text(stmt, 1);
+              NSString *nameString = [[NSString alloc]initWithUTF8String:name];
+              char *address = (char *)sqlite3_column_text(stmt, 2);
+              NSString *addressString = [[NSString alloc]initWithUTF8String:address];
+              char *phone = (char *)sqlite3_column_text(stmt, 3);
+              NSString *phoneString = [[NSString alloc]initWithUTF8String:phone];
+              
+              NSLog(@"name:%@,address:%@,phone:%@",nameString,addressString,phoneString);
+          }
+          sqlite3_finalize(stmt);
+      }
+  }
+  ```
+  - sqlite3_prepare_v2 是执行语句前编译语句，如果返回SQLITE_OK表示查询成功
+  - sqlite3_step为执行查询语句，如果返回SQLITE_ROW则表示查询到记录
+  - sqlite3_column_text用于获取查询到记录的值。
+  - sqlite3_finalize语句需要和sqlite3_prepare_v2成对出现，否则会造成内存泄漏。
+  
+  3. 删除数据
+  ```
+  -(BOOL)deleteAllContactWithName:(NSString *)name{
+      if(NULL ==_db){
+          NSLog(@"数据库不存在，删除联系人失败");
+          return NO;
+      }
+      char *errMsg = NULL;
+      NSString *sqlString = [NSString stringWithFormat:@"DELETE FROM CONTACTS WHERE name='%@'",name];
+      const char *sql = [sqlString UTF8String];
+      if(sqlite3_exec(_db, sql, NULL, NULL, &errMsg)!=SQLITE_OK){
+          NSLog(@"删除联系人失败");
+          return NO;
+      }
+      NSLog(@"删除联系人成功");
+      return YES;
+  }
+  ```
+  4. 修改数据
+  ```
+  -(BOOL)updatePhone:(NSString *)phone forContactWithName:(NSString *)name{
+      if(NULL ==_db){
+          NSLog(@"数据库不存在，更新联系人失败");
+          return NO;
+      }
+      char *errMsg = NULL;
+      NSString *sqlString = [NSString stringWithFormat:@"UPDATE CONTACTS SET phone='%@' WHERE name='%@'",phone,name];
+      const char *sql = [sqlString UTF8String];
+      if(sqlite3_exec(_db, sql, NULL, NULL, &errMsg)!=SQLITE_OK){
+          NSLog(@"更新联系人失败");
+          return NO;
+      }
+      NSLog(@"更新联系人成功");
+      return YES;
+  }
+  ```
+  ### 13.6 FMDB
+  #### 13.6.1 基本介绍
+  FMDB是使用Object-C 对SQLite的API进行封装的库，使用起来会比直接使用C语言API容易。
+  
+  ### 13.7 Core Data
+  #### 13.7.1 概念简介
+  Core Data是苹果官方提供的管理数据层对象的框架，它提供了对象关系映射的功能，即能够将Objective-C对象转换成数据，保存在SQLite数据库文件中,也能够将保存在数据库中的数据还原成Objective-C对象。在此数据操作期间，不需要编写任何SQL语句。
+  Core Data针对对象生命周期，以及持久化的对象图管理中的一些常见问题提供了解决方案。Core Data的主要任务是负责数据更改的管理、序列化到磁盘、最小化内存占用以及查询数据。
+  1. Core Data中的术语
+  - 实体: 在Core Data中定义的类。在关系型数据库中，一个实体对应于一张表。
+  - 属性: 实体的一部分信息。比如，一个雇员实体有名字属性、职位属性、工资属性。在数据库中一个属性对应表中一个字段。
+  - 关系: 多个实体间的链接。在Core Data里两个实体的关系称为一对一关系。一个和多个实体的关系称为一对多的关系。
+  
+  2. Core Data中的核心类
+  - NSManagedObjectModel:管理对象模型，用于描述应用程序的数据模型，这个模型包含实体(Entity)、特性(Property)、读取请求(Fetch Request)等，Core Data默认使用SQLite数据库作为存储源，因此你可以把数据类型当成数据库的表结构。
+  - NSManagedObjectContext:管理对象上下文，参与对数据对象进行各种操作的全过程，并监测数据对象的变化，以提供对undo/redo的支持及更新绑定到数据的UI.
+  - NSPersistentContainer: 相当于数据文件管理器，处理底层的堆数据文件的读取与写入。
+  
+  3. Core Data中的常用方法
+  对于Core Data的操作，与SQLite类似，主要就是涉及数据的增、删、改、查相关操作。
+  - 实例化一个管理对象。在Core Data中管理的都是NSManagedObject对象，在NSManagedObject.h中也提供了用于创建NSManagedObject对象的方法。
+  ```
+  - (__kindof NSManagedObject *)initWithEntity:(NSEntityDescription *)entity insertIntoManagedObjectContext:(NSManagedObjectContext *)context;
+  ```
+  
+  - 执行查询请求。在NSManagedObjectContext类中，提供了用于查询的方法，在该方法中，需要传递一个NSFetchRequest类型的参数作为查询请求，该参数中包含了查询条件等相关信息。
+  ```
+  - (NSArray *)executeFetchRequest:(NSFetchRequest *)request error:(NSError * _Nullable *)error;
+  ```
+  
+  - 查询条件的设置。在Core Data中，不需要编写SQL语句，但提供了NSFetchRequest类，在该类中，可以设置相关的查询条件，包括需要查询的对象、结果的排序方法(NSSortDescriptor)以及查询条件(NSPredicate类)。
+  ```
+  + (instancetype)fetchRequestWithEntityName:(NSString *)entityName;
+  @property(nullable,nonatomic,strong) NSArray<NSSortDescriptor *> *sortDescriptors
+  @property(nullable,nonatomic,strong) NSPredicate *predicate;
+  ```
+  
+  - 插入与删除对象。在NSManagedObjectContext类中，提供了用于针对NSManagedObject类对象的插入以及删除方法，利用这些方法就不再需要编写INSERT语句以及DELETE语句。
+  ```
+  - (void)insertObject:(NSManagedObject *)object;
+  - (void)deleteObject:(NSManagedObject *)object;
+  ```
+  
+  #### 13.7.2 使用示例
+  1. 创建项目时，勾选Use Core Data选项
+  
+  ![29e55c28.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\29e55c28.png)
+  
+  2. 通过.xcdatamodeld来添加一个Entity.
+  ![63ebde5a.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\63ebde5a.png)
+  3. 单击Xcode的Editor菜单，选中Create NsManagedObject SubClass来添加实体类，另外在编译选项中添加CoreData.framework.并且删除CompileSources中的Person+CoreDataProperties.m
+  ![c2027895.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\c2027895.png)
+  4. 准备工作
+  在ViewController.m中引入需要使用的其他类的头文件。
+  ```
+  #import "ViewController.h"
+  #import <CoreData/CoreData.h>
+  #import "Person+CoreDataClass.h"
+  #import "AppDelegate.h"
+  
+  @interface ViewController ()<UITextFieldDelegate>
+  @property (weak, nonatomic) IBOutlet UITableView *tableView;
+  @property (nonatomic,strong) UIAlertController *alert;
+  @property (nonatomic,strong) NSMutableArray<Person *> *personList;
+  
+  @end
+  
+  @implementation ViewController
+  
+  - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+      return self.personList.count;
+  }
+  
+  - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+      UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"TableViewCell"];
+      cell.textLabel.text = self.personList[indexPath.row].name;
+      return cell;
+  }
+  
+  #pragma mark - Getter
+  - (NSMutableArray<Person *> *)personList {
+      if (nil == _personList) {
+          _personList = [NSMutableArray<Person *> arrayWithCapacity:10];
+      }
+      return _personList;
+  }
+  
+  @end
+  
+  ```
+  
+  5. 查询数据
+  在ViewDidLoad方法中，添加代码，可以实现当打开App会自动从管理对象上下文中获取存储的数据。并显示到UITableView中。
+  ```
+  - (void)viewDidLoad {
+      [super viewDidLoad];
+      //1. 获取NSManagedObjectContext对象
+      AppDelegate *appDelegate = (id)[UIApplication sharedApplication].delegate;
+      NSManagedObjectContext *context = appDelegate.persistentContainer.viewContext;
+      //2. 生成一个Person 的查询对象
+      NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Person"];
+      //3. 设置查询对象排序描述符，这样能使得查询的结果按需排序
+      NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES];
+      NSArray *sortDescriptors = [NSArray arrayWithObject:sort];
+      fetchRequest.sortDescriptors = sortDescriptors;
+      
+      //4. 设置查询条件，这边直接返回TRUE，表示查询所有数据
+      NSPredicate *predicate = [NSPredicate predicateWithValue:YES];
+      fetchRequest.predicate = predicate;
+      //5. 执行查询语句，并更新tableview的显示
+      NSArray *results = [context executeFetchRequest:fetchRequest error:nil];
+      [self.personList addObjectsFromArray:results];
+      //更新表视图
+      [self.tableView reloadData];
+  }
+  ```
+  6. 添加数据
+  通过Person实体并添加预选创建的管理对象上下文中。
+  ```
+  - (BOOL)textFieldShouldReturn:(UITextField *)textField {
+      [self.alert dismissViewControllerAnimated:YES completion:^{
+          NSLog(@"%@", textField.text);
+          // 1. 获取NSManagedObjectContext对象
+          AppDelegate *appDelegate = (id)[UIApplication sharedApplication].delegate;
+          NSManagedObjectContext *context = appDelegate.persistentContainer.viewContext;
+          // 2. 创建Person实体描述
+          NSEntityDescription *entity = [NSEntityDescription entityForName:@"Person"
+                                                    inManagedObjectContext:context];
+          // 3. 创建一个Person实体
+          Person *person = (id)[[NSManagedObject alloc] initWithEntity:entity
+                                        insertIntoManagedObjectContext:context];
+          person.name = textField.text;
+          // 4. 添加Person实体到UITableView数据源
+          [self.personList addObject:person];
+          [self.tableView reloadData];
+      }];
+      self.alert = nil;
+      return YES;
+  }
+  
+  - (IBAction)onClickedAddButton:(id)sender {
+      self.alert = [UIAlertController alertControllerWithTitle:@"添加名字" message:nil preferredStyle:UIAlertControllerStyleAlert];
+      __weak typeof(self) weakSelf = self;
+      [self.alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+          textField.delegate = weakSelf;
+      }];
+      [self presentViewController:self.alert animated:YES completion:nil];
+  }
+  
+  ```
+  7. 更新数据
+  ```
+  - (IBAction)onClickedEditLastOneButton:(id)sender {
+      NSLog(@"修改最后一行");
+      Person *person = self.personList.lastObject;
+      person.name = [NSString stringWithFormat:@"已修改:%@", person.name];
+      [self.tableView reloadData];
+  }
+  ```
+  8. 删除数据
+  ```
+  - (IBAction)onClickedDeleteLastOneButton:(id)sender {
+      if (self.personList.count == 0) {
+          NSLog(@"没有数据了，不能进行操作");
+          return;
+      }
+      
+      NSLog(@"删除最后一行");
+      // 1. 获取最后一个Person对象
+      Person *person = self.personList.lastObject;
+      // 2. 获取NSManagedObjectContext对象
+      AppDelegate *appDelegate = (id)[UIApplication sharedApplication].delegate;
+      NSManagedObjectContext *context = appDelegate.persistentContainer.viewContext;
+      [context deleteObject:person];
+      // 3. 判断Person对象如果被删除，则从self.personList中把它移除。随后更新表视图
+      if ([person isDeleted]) {
+          [self.personList removeObject:person];
+      }
+      [self.tableView reloadData];
+  }
+  ```
+  ### 13.8 Realm
+  #### 13.8 Realm 基本介绍
+  Realm是一个跨平台的移动数据库引擎，它是专门为移动应用所设计的数据持久化解决方案。Realm并不是对SQLite或者CoreData的简单封装，它建立了自己独特的数据库存储引擎，可以方便，高效地完成数据库的各种操作。
+  Realm是一款专门针对移动平台设计的数据库，因此其能够无缝支持iOS以及Android,并且支持Objective-C,Swift,Java,ReactNative等多种编程语言编写。
+  与SQLite或者CoreData相比，Realm最大的优势在于学习门槛极低，由于其是直接针对对象进行读写的，因此，不必像SQLite一样，需要预先掌握SQL语句，也不像CoreData那么繁琐。
   
   
 '''
 linesHighlighted: [
   1791
   1790
+  5349
+  5393
 ]
 isStarred: false
 isTrashed: false
