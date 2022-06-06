@@ -1,5 +1,5 @@
 createdAt: "2022-01-20T02:36:31.286Z"
-updatedAt: "2022-06-02T05:42:07.584Z"
+updatedAt: "2022-06-04T15:45:52.025Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "IOS 开发：从零基础到精通"
@@ -5894,6 +5894,85 @@ content: '''
   Realm是一个跨平台的移动数据库引擎，它是专门为移动应用所设计的数据持久化解决方案。Realm并不是对SQLite或者CoreData的简单封装，它建立了自己独特的数据库存储引擎，可以方便，高效地完成数据库的各种操作。
   Realm是一款专门针对移动平台设计的数据库，因此其能够无缝支持iOS以及Android,并且支持Objective-C,Swift,Java,ReactNative等多种编程语言编写。
   与SQLite或者CoreData相比，Realm最大的优势在于学习门槛极低，由于其是直接针对对象进行读写的，因此，不必像SQLite一样，需要预先掌握SQL语句，也不像CoreData那么繁琐。
+  
+  ## 第十四章 绘画和动画
+  ### 14.1 核心绘画
+  ### 14.2 UIImage绘图应用
+  ### 14.3 CALayer
+  ### 14.4 核心动画
+  
+  ## 第十五章 设计模式
+  ### 15.1 iOS下的MVC设计模式
+  1. iOS开发中MVC之间的通信方式
+  ![6b0b87eb.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\6b0b87eb.png)
+  - 黄色实线(粗):在M和V之间有两条黄线，这意味着你不能穿越这黄线，任何一个方向都不行。也就是说在iOS开发中使用的MVC设计模式中，模型和视图之间是不能直接通信的。
+  - 白色虚线:意味着这个方向可以任意通过，即C可以随意访问V和M.
+  - 白色实线(细):意味着V和M可以访问C，但是是需要采取迂回的一些方式，不能直接访问。
+  
+  ### 15.2 单例模式
+  单例(singleton)模式的作用是用来解决一个应用中某个类只有唯一一个对象的问题。
+  1. 单例类的实现方式
+  单例类的实现原理就是要保证单例类对象的alloc与init操作，在应用的整个生命周期过程中，只执行一次。当单例类对象被创建后，假如在其他多个地方需要使用该对象，则无须执行alloc+init操作，而是直接返回已经存在的对象即可。
+  在单例类的实现过程中，为了保证alloc与init只执行一次，可以使用dispatch_once函数，dispatch_once函数的作用就是整个应用生命周期中只能执行一次代码块。
+  
+  - 创建一个单例类
+  - 提供一个类方法sharedInstance,通过该方法就能够获取到该单例类的对象,要遵守NSCopying协议
+  ```
+  #import <Foundation/Foundation.h>
+  @interface Singleton : NSObject <NSCopying>
+  +(instancetype) sharedInstance;
+  @end
+  ```
+  
+  - 在单例类的.m文件中添加如下方法，主要实现了对于单例对象在整个应用的声明周期中只能被实例化一次，并且使用copy方法时，获得的也是该单例对象。
+  ```
+  #import "Singleton.h"
+  @implementation Singleton
+  static id _instance;
+  
+  + (instancetype)sharedInstance{
+      static dispatch_once_t onceToken;
+      dispatch_once(&onceToken, ^{
+          _instance = [[self alloc] init];
+      });
+      return _instance;
+  }
+  
+  +(instancetype)allocWithZone:(struct _NSZone *)zone{
+      static dispatch_once_t onceToken;
+      dispatch_once(&onceToken, ^{
+          _instance = [super allocWithZone:zone];
+      });
+      return _instance;
+  }
+  
+  -(id)copyWithZone:(NSZone *)zone{
+      return _instance;
+  }
+  @end
+  ```
+  
+  ### 15.3 iOS下的MVVM设计模式
+  1. View 
+  View负责定义页面结构，布局用户在屏幕上看到的界面。在iOS开发中，View一般是程序中的一个页面。一个View也可以是父View的一部分。
+  每个View都有自己的View Model.或者它从父View中继承了View Model.View通常是通过View Model的绑定、或者调用View Model中的方法来获取数据。在运行的时候,UI控件要响应View Model抛出通知事件来更新UI。
+  为了响应UI上的交互，需要再View Model中实现相应的代码。比如一个按钮被点击，需要将这个按钮点击事件绑定到View Model中去，然后在View Model中写代码处理用户的交互。在iOS开发中View和ViewController都是属于View这部分。
+  2. Model
+  与业务和验证逻辑有关的域模型，都可以认为是MVVM中Model。比如：业务对象、数据传输对象(DTOs)、实体、代理对象等都可以认为是Model.
+  3. View Model
+  ViewModel 扮演着View和Model的中介角色，它负责处理视图逻辑和数据转化。一般来说View Model通过调用Model的方法来和Model进行交互。View Model随后将从Model中获取的数据以一种View容易使用格式提供给View。
+  ViewModel负责UI交互的响应代码实现。例如：当用户在界面上点击了一个按钮，这个动作会使View Model中相应代码被执行。ViewModel也负责控制视图的显示逻辑，比如修改一个属性isLoading=YES,从而告诉视图有操作正在进行中。视图通过观察View Model的值isLoading获取到isLoading变成了YES，那么View就可以在界面上显示一个提示加载中的动画。
+  
+  ## 第十六章 自动布局
+  ### 16.1 自动布局简介
+  1. Auto Layout的工作原理
+  在Auto Layout中的基本工具就是约束，一个约束描述了两个视图之间的关系。Auto Layout会根据视图的约束自动计算视图的位置和大小。比如，设置一个按钮的顶部距离一个图片视图的底部距离为8px。那么一旦图片视图的位置发生了改变，按钮的位置也会随之发生改变。这种基于约束的设计允许用用户根据内部或者外部约束来动态的构建用户界面。
+  
+  Auto Layout考虑所有约束，然后通过数学计算来最终确定视图的位置和大小。这些计算都是由Auto Layout做的。用户要做的仅仅是设置约束。当用户为一个控件设置的约束不足以确定其大小和位置时，AutoLayout会给出相关的提示。
+  另外，当用户为一个控件设置其约束后，不论是横屏还是竖屏状态下，都能够确定该控件的位置和大小。
+  
+  ### 16.2 Masonry
+  Masonry用漂亮的语法对AutoLayout进行了包装，是一个轻量级的布局框架。Masronry提供了一种链式描述约束的方法，这使得布局的代码更简洁和易读。并且Masonry支持IOS和Mac OS X
   
   
 '''
