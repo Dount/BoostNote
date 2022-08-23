@@ -1,0 +1,49 @@
+createdAt: "2022-08-22T02:39:02.575Z"
+updatedAt: "2022-08-23T02:47:18.862Z"
+type: "MARKDOWN_NOTE"
+folder: "d93d185dcf894dbad7b3"
+title: "摩云Z100终端ROOMS"
+tags: []
+content: '''
+  # 摩云Z100终端ROOMS
+  [TOC]
+  
+  ## 一、实现方式
+  
+  ### 1.1 开发
+  1. 基于明日科技提供的UT30Android一体机。。
+  2. App基于UISdk开发实现与平台互通。
+  3. 其画面大小固定在1920*1080分辨率下。
+  4. 以软终端+SDK的实现方式与UT30深度绑定。以实现硬终端的效果。
+  
+  ### 1.2 代码结构
+  1. Activity 实现各个界面的主体
+  2. adapter 涉及Android wifi列表功能
+  3. assists 涉及登录，入会，创会，更新等与SDK交互
+  4. base Activity的父类，继承于AppCompatActivity
+  5. eventframe 消息框架，事件注解
+  6. fragments 管理有线网络配置和登录配置界面。
+  7. Service 日志管理类
+  8. utils 工具管理
+  9. views 包括所有自定的组合控件。
+  
+  ## 二、功能介绍
+  Rooms 涵盖的功能包括：
+  1. 以太网配置，根据厂商提供的解决方法。通过接口实现DHCP和静态IP的配置。
+  2. wifi配置，通过wifimanager原生类来控制整个wifi模块。
+  3. 登录，利用SDK，APS-》RTC的方法实现与平台建立链接。
+  4. 创会，入会，被入会，会议列表。通过SDK接口实现。
+  5. 会议中，包括发言人模式，画廊模式，
+  6. 更新，强制更新当前在平台发布的版本。
+  7. 遥控器，根据机器按键事件进行拦截，并根据功能指定到对应的按键上。
+  
+  ## 三、遇到的问题
+  
+  1. 在选中要连接的wifi时候需要去处理焦点事件，不然当Recycleview刷新时会失去焦点。
+  2. 在以太网和wifi切换情况下，需要根据是否在会议中指定两套不通的断链重连机制。
+  3. UI界面的焦点处理，需要根据遥控器以及触摸屏两种方式做定制。
+  4. 由于SDK回调消息较多，根据需要通过注解的方式对消息进行分布式处理。
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

@@ -1,5 +1,5 @@
 createdAt: "2022-01-20T02:36:31.286Z"
-updatedAt: "2022-06-04T15:45:52.025Z"
+updatedAt: "2022-08-22T02:38:38.491Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "IOS 开发：从零基础到精通"
@@ -5974,13 +5974,178 @@ content: '''
   ### 16.2 Masonry
   Masonry用漂亮的语法对AutoLayout进行了包装，是一个轻量级的布局框架。Masronry提供了一种链式描述约束的方法，这使得布局的代码更简洁和易读。并且Masonry支持IOS和Mac OS X
   
+  ## 第十七章 设备调用
+  ### 17.1 UIDevice类
+  ### 17.2 位置应用
+  ### 17.3 地图应用
+  ### 17.4 相机与相册
+  ### 17.5 CoreMotion 框架
+  ### 17.6 系统应用调用
+  ## 第十八章 证书管理与应用发布
+  ### 18.1 证书管理
+  #### 18.1.1 iOS开发证书(调试证书)管理
+  #### 18.1.2 iOS发布证书创建详情
+  ### 18.2 推送证书管理
+  #### 18.2.1 推送调试证书
+  #### 18.2.2 推送生产证书
+  ### 18.3 App Store 应用发布
+  #### 18.3.1 App Store 应用发布详解
+  #### 18.3.2 App被拒绝上架的原因
+  ## 第十九章 消息推送
+  ### 19.1 远程消息推送
+  ### 19.2 本地消息推送(基于iOS 10 UserNotifications框架)
+  #### 19.2.1 UNNotificationRequest类
+  本地消息推送都是使用UILocalNotification类进行管理的。iOS10中，引入了UserNotification框架，从而对本地消息推送抽象出来了一些新的类。每一类本地推送消息都是一个UNNotificationRequest类(推送请求类)的对象，该类中包含如下核心的属性和方法。
+  - UNNotificationRequest 类的初始化方法，该方法需要传递3个参数，分别为该推送消息的标识、内容以及触发条件。
+  ```
+  + (instancetype)requestWithIdentifier:(NSString *)identifier content:(UNNotificationContent *)content trigger:(UNNotificationTrigger *)trigger;
+  ```
+  1. identifier: 每个推送请求类的标识，用于区分每一类的本地推送请求。通过标识，可以区分多个推送请求，可以为每一类推送请求设置不同的提醒内容以及提醒周期。注意该属性是readonly的，只能在初始化时指定。
+  2. content: 每个推送请求的内容，这个属性是一个UNNotificationContent类的对象。每个推送请求中所携带的信息，都在content属性中。注意，该属性是readonly的，只能在初始化时指定。
+  3. trigger: 触发器。从字面意思上理解，trigger决定了消息推送的时间。该属性是一个UNNotificationTrigger类的对象。当一个推送消息的trigger为空时，意味着该消息被立即推送。
+  #### 19.2.2 UNNotificationContent类
+  UNNotificationContent类定义了消息推送所携带的消息提内容，即每一类的推送消息所携带的信息都被封装在UNNotificationContent类中，包括经常使用的title,body以及一些附加信息等。
+  1. UNNotificationContent类常用属性和方法。
+  UNNnotificationContent 类中封装了消息推送的信息，常用的有如下一些属性。
+  - body 推送消息消息体内容。
+  - title 推送消息的主标题
+  - subtitle 推送消息的子标题内容
+  - userInfo 一个字典，可以用于在推送消息中携带消息，信息在该字典中以键值对的形式进行存储。
+  - sound 推送消息的提醒声音类型。
+  - launchImageName 当用户通过推送消息打开App时，显示该启动图片
+  - categoryIdentifier 已注册的UNNotificationCategory类的提示符，UNNotificationCategory类的对象可以用于在推送消息中添加一些操作。
+  - badge 数量
+  - attachments 推送消息中可以携带的可选附件
   
+  2. UNMutableNotificationContent类
+  UNNotificationContent是一个不可变类，用户不能够对其属性进行修改。而UNMutableNotificationContent类是可变类，当需要设置消息体的内容时，需要创建UNMutableNotificationContent类的对象。
+  
+  #### 19.2.3 UNNotificationTrigger类
+  UNNotificationTrigger类定义了推送消息触发的方式，可以支持四种，分别为消息推送，按照时间间隔，
+  按照特定日期以及按照特定地理位置。
+  
+  - UNPushNotificationTrigger: 对应远程消息推送，即由苹果服务器推送的提醒。
+  - UNTimeIntervalNotificationTrigger: 基于固定时间间隔触发消息推送。
+  - UNCalendarNotificationTrigger: 基于特定日期触发消息推送。
+  - UNLocationNotificationTrigger: 基于特定地理位置触发消息推送。
+  
+  1. UNPushNotificationTrigger
+  该类型的触发器是由苹果的推送服务器推送的，推送的消息是由外部操作所决定的。因此，
+  在UNNotificationTrigger类中，只定义了有UNPushNotificationTrigger子类，但是该子类没有定义任何的属性和方法。
+  
+  2. UNTimerIntervalNotificationTrigger
+  UNTimeIntervalNotificationTrigger类型的触发器，可以设置在固定的时间间隔发送消息推送。
+  - 实例化方法，需要传入提醒的时间间隔，以及是否重复提醒标识。
+  ```
+  + (instancetype)triggerWithTimeInterval:(NSTimeInterval)timeInterval repeats:(BOOL)repeats;
+  ```
+  - nextTriggerDate 设置下次触发时间
+  - timeInterval 获取已经设置的时间间隔
+  
+  3. UNCalendarNotificationTrigger
+  - 实例化方法，需要传入提醒的日期,以及是否重复提醒标识。
+  ```
+  + (instancetype)triggerWithDateMatchingComponents:(NSDateComponents *)dateComponents repeats:(BOOL)repeats;
+  ```
+  - nextTriggerDate 设置下次触发时间
+  - dateComponents 获取已经设置的提醒日期
+  4. UNPushNotificationTrigger
+  - 实例化方法，需要传入一个标识地理位置的参数regin
+  ```
+  + (instancetype)triggerWithRegion:(CLRegion *)region repeats:(BOOL)repeats;
+  ```
+  - region获得设置提醒的地理位置
+  #### 19.2.4 UNNserNotificationCenterDelegate代理协议
+  1. UNUserNotificationCenterDelegate
+  UNUserNotificationCenterDelegate中定义了以下两个代理协议方法。
+  - 当终端即将展示推送消息时，会调用willPresentNotification方法。
+  ```
+  - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler;
+  ```
+  - 当用户点击推送消息，打开App时，didReceiveNotificationResponse: 方法会被调用。
+  ```
+  - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler;
+  ```
+  2. 获取推送中携带的信息
+  在UNUserNotificationCenterDelegate协议定义的代理方法中，可以获取notification以及response参数，通过这两个参数，都可以获取到携带推送信息的content对象。
+  ![02ca65e4.png](:storage\\2038464d-5804-41ee-8efc-46aa7202649d\\02ca65e4.png)
+  3. 注意点
+  - 设置遵守代理协议
+  ```
+  #import "ViewController.h"
+  #import <UserNotifications/UserNotifications.h>
+  @interface ViewController () <UNUserNotificationCenterDelegate>
+  ```
+  - 设置代理对象
+  ```
+  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+  center.delegate = self;
+  ```
+  
+  #### 19.2.5 示例代码
+  1. 在推送中心注册推送请求
+  - 获取UNUserNotificationCenter示例center;
+  - 创建一个推送请求request,需要预先创建UNMutableNotificationContent对象以及UNTimeIntervalNotificationTrigger对象。
+  - 把推送请求request添加到推送中心center中。
+  ```
+  -(void)registerNotification{
+      //获取UNUserNotificationCenter实例center
+      UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+      //需要创建一个包含待通知内容的UNMutableNotificationContent对象，
+      UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc]init];
+      
+      content.title = [NSString localizedUserNotificationStringForKey:@"九九学院" arguments:nil];
+      content.subtitle = @"苹果iOS进阶之路";
+      content.sound = [UNNotificationSound defaultSound];
+      content.launchImageName = @"99logo";
+      //在alertTime后推送本地推送
+      UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:60 repeats:YES];
+      //创建一个推送请求request
+      UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:@"99iOSNotification" content:content trigger:trigger];
+      //添加推送请求request到center
+      [center addNotificationRequest:request withCompletionHandler:nil]; 
+  }
+  ```
+  2. 其他相关设置
+  - 推送中心center预先向用户申请，以获取消息推送功能的授权。
+  - 设置推送中心center的代理对象。
+  - 设置需要在center中注册的推送请求。
+  ```
+  - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+      
+      UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+      //推送中心center预先获取消息推送功能的授权
+      [center requestAuthorizationWithOptions:(UNAuthorizationOptionAlert +UNAuthorizationOptionSound) completionHandler:^(BOOL granted, NSError * _Nullable error) {}];
+      //获取当前的通知设置 UNNotificationSettings 是只读对象，不能直接修改
+      [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {}];
+      center.delegate  = self;
+      [self registerNotification];
+      return YES;
+  }
+  ```
+  3. 实现UNUserNotificationCenterDelegate代理方法
+  4. 
+  ```
+  -(void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler{
+      NSLog(@"%s",__func__);
+      UNNotificationContent *content = response.notification.request.content;
+      NSLog(@"notification body:%@",content.body);
+      NSLog(@"notification subtitle:%@",content.subtitle);
+      NSLog(@"notification title:%@",content.title);
+  }
+  
+  -(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler{
+      NSLog(@"%s",__func__);
+  }
+  ```
 '''
 linesHighlighted: [
   1791
   1790
   5349
   5393
+  6027
+  8
 ]
 isStarred: false
 isTrashed: false
