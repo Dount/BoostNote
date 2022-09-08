@@ -1,0 +1,174 @@
+createdAt: "2022-09-07T06:32:45.069Z"
+updatedAt: "2022-09-08T09:06:17.895Z"
+type: "MARKDOWN_NOTE"
+folder: "bfd1eca2e356e7181dfa"
+title: "Android 音视频开发"
+tags: []
+content: '''
+  # Android 音视频开发
+  [TOC]
+  
+  ## 第一章 音视频基础知识
+  ### 1.1 视频编码
+  视频编码分为两个系列:
+  - MPEG 系列
+  MPEG1,MPEG2,MPEG4,MPEG4AVC
+  
+  - H.26X 系列
+  H.261,H.262,H.263,H.263+,H.263++,H.264
+  
+  ### 1.2 音频编码
+  - AAC
+  一种专为声音数据设计的文件压缩格式，与MP3不同，它采用了全新的算法进行编码，更加高效，
+  具有更高的性价比。
+  
+  - MP3 
+  一种音频压缩技术，其全称是动态影像专家压缩标准音频层面3，它被设计用来大幅度地降低议品数据量。利用MP3技术，将音乐以1:10甚至1:12的压缩率，压缩成容量较小的文件，而对于大多数用户来说，重放的音质和最初的不压缩音频相比没有明显下降。
+  
+  - AC3
+  是Dolby实验室所发展的有损音频编码格式。AC3被广泛应用于5.1声道，是DolbyProLogic的继承者，不同的地方在于AC3提供了6个独立的声道而Pro Logic混合其环绕声道。
+  
+  ### 1.3 多媒体播放组件
+  Android 多媒体播放组件：
+  - MediaPlayer 播放控制
+  - MediaCodec 音视频比编解码
+  - OMX 多媒体部分采用的编解码标准
+  - StageFright: 作为一个框架，替代之前的OpenCore,主要做了一个OMX层，仅仅对OpenCore的omx-component部分做了引用。StageFright是在MediaPlayerService这一层加入的，和OpenCore是并列的。StageFright在Android中是以共享库的形式存在的(libstagefright.so)其中的module-NuPlayer/AwesomePlayer可用来播放音视频。NuPlayer/AwesomePlayer提供了许多API,可以让上层的应用程序(Java/JNI)调用。
+  - AudiTrack 音频播放
+  iOS 多媒体播放组件
+  - VideoToolBox
+  它是一个底层框架，提供对硬件编码器和解码器的直接访问。它位视频压缩和解压缩提供服务，并用于CoreVideo像素缓冲区中存储的栅格之间的转换。这些服务是以会话对象的形式(压缩，解压缩和像素传输)，作为核心基础(CF)类型提供的。不需要直接访问硬件编码器和解码器的应用程序都不需要直接使用VideoToolBox.
+  - AudioToolBox
+  这个框架可以将比较短的声音注册到System Sound 服务上。注册到System Sound服务器上的声音被称为System Sounds.它必须满足下面几个条件。
+    - 播放时间不能超过30s
+    - 数据必须是PCM或者IMA4流格式
+    - 必须被打包成.caf、.wav、.aiff其中之一的格式
+  - AVPlayer 
+  既可以用来播放音频也可以用来播放视频，在使用AVPlayer的时候，我们需要导入AVFoundation.framework框架，再引入头文件#import<AVFoundation/AVFoundation.h>
+  
+  ### 1.4 常见的多媒体框架及解决方案
+  - VLC：Video LAN Client,是一款自由，开源的跨平台多媒体播放器及框架。
+  - FFmpeg: 多媒体解决方案，不是多媒体框架，广泛用于音视频开发中。
+  - GStreamer: 一套构建流媒体应用的开源多媒体框架。
+  
+  ### 1.5 相关知识点
+  #### 1.5.1 帧率
+  帧率用于测量显示帧数的量度。所谓的测量单位为每秒显示帧数。
+  
+  每秒显示帧数(fps)或者帧率表示图形处理起处理场时每秒能够更新的次数。高帧率可以得到更流畅、更逼真的动画。一般来说，30fps就是可以接受的，但是将性能提升至60fps则可以明显提升交互感和逼真感，但是超过75fps就不容易察觉有明现的流畅度提升了。如果帧率超过屏幕刷新率，则只会浪费图像处理能力，因为监视器不能以这么快的速度更新，这样超过刷新率的帧率、就浪费掉了。
+  
+  #### 1.5.2 分辨率
+  视频分辨率是指视频成像产品所形成的图像大小或尺寸。
+  
+  #### 1.5.3 刷新率
+  刷新率是指屏幕每秒画面被刷新的次数，刷新率分为垂直刷新率和水平刷新率，一般提到的刷新率通常指垂直刷新率。垂直刷新率表示屏幕上图像每秒重绘多少次，也就是每秒屏幕刷新的次数，以Hz(赫兹)为单位。刷新率越高，图像就越稳定，图像显示就越自然清晰，对眼睛的影响也越小。刷新率越低，图像闪烁和抖动得就越厉害，眼睛疲劳得就越快，一般来说，如能达到80Hz以上的刷新率，就可以完全消除图像闪烁的抖动感，眼睛也不太容易疲劳。
+  
+  #### 1.5.4 编码格式
+  编码的目的是压缩数据量，采用编码算法压缩冗余数据。常用的编码格式有如下这两种。
+  - MPEG(MPEG-2、MPEG-4)
+  - H.26X(H.263、H.264/AVC、H.265/HEVC)
+  
+  #### 1.5.5 封装格式
+  把编码后的音视频数据以一定格式封装到一个容器，封装格式有MKV、AVI、TS等。
+  
+  #### 1.5.6 码率
+  码率也就是比特率，比特率是单位时间播放连续的媒体的比特数量。比特率越高，带宽消耗得越多。比特就是二进制里面最小得单位，要么是0，要么是1。
+  
+  文件大小(b) = 码率(b/s)x时长(s)
+  
+  #### 1.5.7 画质与码率
+  视频质量和码率，编码算法都有关系。
+  
+  #### 1.5.8 DTS与PTS
+  - DTS 主要用于标示读入内存中的比特流在什么时候开始送入解码器中进行解码。
+  
+  - PTS 主要用于度量解码后的视频帧什么时候被显示出来。
+  
+  #### 1.5.9 YUV与RGB
+  - YUV 是被欧洲电视系统所采用的一种颜色编码方法，是PAL和SECAM模拟彩色电视制式采用的颜色空间模型。其中的Y、U、V几个字母不是英文单词的首字母，其中Y代表亮度，UV代表色差，U和V是构成颜色的两个分量。
+  
+  - RGB 是一种颜色空间模型，通过对红,绿,蓝3个颜色通道的变化以及它们相互之间的叠加来得到各式各样的颜色，RGB即代表红、绿、蓝3个通道的颜色。
+  
+  #### 1.5.10 视频帧及音频帧
+  视频帧：
+  - I帧表示关键帧，你可以理解为这一帧画面的完整保留，解码时只需要本帧数据就可以完成。
+  - P帧表示的是这一帧和之前的一个关键帧的差别，解码时需要用之前缓存的画面跌加上本帧定义的差别生成最终画面。
+  - B帧是双向差别帧，也就是B帧记录的是本帧与前后帧的差别，换言之，要解码B帧，不仅要取得之前的缓存画面，还要解码之后的画面，通过前后画面数据与本帧数据的叠加取得最终的画面。B帧压缩率高，但是解码时CPU会比较吃力。
+  
+  音频帧：
+  - 对PCM来说，它根本就不需要帧的概念，根据采样率和采样精度就可以播放。
+  - AMR 帧比较简单，它规定每20ms的音频是1帧，每一帧音频都是独立的，有可能采用不同的编码算法以及不同的编码参数。
+  - MP3 帧较复杂一些，包含了更多的信息，比如采样率，比特率等各种参数。具体如下：音频数据帧个数由文件大小和帧长决定，每一帧的长度可能不固定，也可能固定，由比特率决定，每一帧又分为帧头和数据实体两部分，帧头记录了MP3的比特率，采样率，版本等信息，每一帧之间相互独立。
+  
+  #### 1.5.11 量化精度
+  量化精度表示可以将模拟信号分成多少个等级，量化精度越高，音乐的声压振幅越接近原生音乐。量化精度的单位是bit(比特),CD标准的量化精度是16bit,DVD标准的量化精度是24bit。也可理解为一个采样点用多少bit表示(8/16/24/32bit)。
+  
+  #### 1.5.12 采样率
+  采样率指每秒音频采样点个数(8000/44100Hz),采样率单位用Hz(赫兹)表示。
+  
+  ## 第二章 常用的系统播放器
+  ### 2.1 状态图及生命周期
+  - MediaPlayer的状态图
+  - Idle状态
+  - End状态
+  - Error状态
+  - Initialized状态
+  - Prepared状态
+  - Started状态
+  - Paused状态
+  - Stopped状态
+  - PlaybackCompleted状态
+  1. MediaPlayer的状态图
+  ![0d16779d.png](:storage\\e83093db-91ce-47a3-9533-88982dfde450\\0d16779d.png)
+  
+  途中弧代表播放控制且驱动MediaPlayer状态进行过度。有两种类型的弧，单箭头弧表示的是同步
+  函数调用，双箭头弧表示的是异步函数调用。
+  
+  2. Idle状态及End状态
+  
+  在MediaPlayer创建实例或者调用reset函数后，播放器就被创建了，这时处于Idle状态，调用release函数后，就会变成End状态，在这两种状态之间的就是MediaPlayer的生命周期。
+  
+  3. Error状态
+  
+  在构造一个新MediaPlayer或者调用reset函数后，上层应用程序调用getCurrentPosition、getVideoHeight、getDuration、 getVideoWidth、
+  setAudioStreamType(int)、setLooping(boolean)、setVolume(float、float)、
+  pause、start、stop、seekTo(int)、prepare、prepareAsync这些函数会出错。如果调用reset函数后再调用它们，用户提供的回调函数OnErrorListener.onError将触发MediaPlayer状态到Error状态，所以一旦不再使用MediaPlayer,就需要调用release函数，以便MediaPlayer资源得到合理使放。
+  
+  当MediaPlayer处于End状态时，它将不能再被使用，这时不能再回到MediaPlayer的其它状态，因为本次生命周期已经终止。
+     
+  由于支持的音视频格式分辨率过高，输入数据流超时，或者其他各种各样的原因将导致播放失败。在这种错误的条件下，如果用户事先通过setOnErrorListener 注册过OnErrorListener,当player内部调用OnErrorListener.onError回调函数时，将会返回错误信息。一旦有错误，MediaPlayer会进入Error(错误)状态，为了重新使用MediaPlayer,调用reset函数，这时将重新恢复到Idle(就绪)状态，所以需要给MediaPlayer设置错误监听，出错后就可以从播放器内部返回的信息中找到错误原因。
+  
+  4. Initialized状态
+  
+  当调用setDataSource(FileDescriptor)、setDataSource(String)、setDataSource(Context,Uri)、setDataSource(FileDescriptor、long、long)其中一个函数时，将传递MediaPlayer的Idle状态变成Initialized(初始化)状态，如果setDataSource在非Idle状态时调用，会抛出StateException异常。当重载setDataSource时，需要抛出ArgumentException和IOException这两个异常。
+  
+  5. Prepared状态
+  
+  MediaPlayer有两种途径到达Prepared状态，一种是同步方法，另一种是异步方式。同步方式主要使用本地音视频文件，异步方式主要使用网络数据，需要缓冲数据。调用prepare（同步函数）将传递MediaPlayer的Initialized状态变成Prepared状态，或者调用prepareAsync(异步函数)将传递MediaPlayer的Initialized状态变成Preparing状态，最后到Prepared状态。如果应用层事先注册过setOnPreparedListener,播放器内部将回调用户设置的OnPreparedListener中的onPrepared回调函数。注意，Preparing是一个瞬间状态。
+  
+  6. Started状态
+  
+  在MediaPlayer进入Prepared状态后，上层应用即可设置一些属性，如音视频的音量、screenOnWhilePlaying,looping等。在播放控制开始之前，必须调用start函数并成功返回，MediaPlayer的状态开始由Prepared状态变成Startted状态。当处于Started状态时，如果用户实事先注册过setOnBufferingUpdateListener, 播放器内部会开始回调OnBufferingUpdateListener.OnBufferingUpdate,这个回调函数主要使应用程序保持跟踪音视频流的buffering（缓冲）status,如果MediaPlayer已经处于Started状态，再调用Start函数是没有任何作用的。
+  
+  7. Paused状态
+  
+  MediaPlayer 在播放控制时可以是Paused(暂停)和Stopped(停止)状态的，且当前的播放时进度条可以被调整，当调用MediaPlayer.pause函数时，MediaPlayer开始由Started状态变成Paused状态，这个从Started状态到Paused状态的过程是瞬间的，反之在播放器内部是异步过程。在状态更新并调用isPlaying函数前，将有一些耗时。已经缓冲过的数据流，也要耗费数秒。
+  
+  当start函数从Paused状态恢复回来时，playback恢复之前暂停时的位置，接着开始播放，这时MediaPlayer的Paused状态又变成Started状态。如果MediaPlayer已经处于Paused状态，这时再调用Pause函数是没有任何作用的，将保持Paused状态。
+  
+  8. Stopped状态
+  
+  
+  ### 2.2 从创建到setDataSource过程
+  
+  ### 2.3 开始prepare后的流程
+  
+  ### 2.4 C++中MediaPlayer的C/S架构
+  
+  
+'''
+linesHighlighted: [
+  34
+]
+isStarred: false
+isTrashed: false
