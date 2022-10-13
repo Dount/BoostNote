@@ -1,5 +1,5 @@
 createdAt: "2022-09-07T06:32:45.069Z"
-updatedAt: "2022-09-08T09:06:17.895Z"
+updatedAt: "2022-09-15T11:48:50.112Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "Android 音视频开发"
@@ -158,8 +158,65 @@ content: '''
   
   8. Stopped状态
   
+  当调用stop函数时，MediaPlayer无论正处于Started、Paused、Prepared或PlaybackCompleted中的哪种状态，都将进入Stopped状态。一旦处于Stopped状态，playback将不能开始，直到重新调用prepare或prepareAsync函数，且处于Prepared状态时才可以开始。如果MediaPlayer 已经处于Stopped状态了，这时再调用stop函数是没有任何作用的，将保持Stopped状态。
+  在Seek操作完成后，如果事先在MediaPlayer注册了。setOnSeekCompleteListener,播放器内部将回调OnSeekComplete,onSeekComplete函数，当然seekTo函数也可以在其他状态下被调用，如Prepared、Paused及PlaybackCompleted状态。
+  
+  9. PlaybackCompleted状态
+  
+  当前播放的位置可以通过getCurrentPosition函数获取，通过getCurrentPosition函数，可以跟踪播放器的播放进度。
+  当MediaPlayer播放到数据流的末尾时，一次播放过程完成。在MediaPlayer中事先调用setLooping(boolean)并设置为true,表示循环播放，MediaPlayer依然处于Started状态。如果调用setLooping(boolean)并设置为false(表示不循环播放)，并且事先在MediaPlayer上注册过setOnCompletionListener,播放器内部将回调OnCompletion.OnCompletion函数，这就表明MediaPlayer开始进入PlaybackCompleted状态，当处于PlaybackCompleted状态时，调用start函数，将重启播放器从头开始播放数据。
   
   ### 2.2 从创建到setDataSource过程
+  1. SurfaceTexture
+  与SurfaceView不同的是，SurfaceTexture在接受图像之后，不需要显示出来。Surface Texture不需要显示到屏幕上，因此我们可以用SurfaceTexture接受解码出来的图像流，然后从它之中取得图像帧的副本进行处理，处理完毕后再从给另一个SurfaceView进行展示。
+  
+  2. Surface
+  处理被屏幕排序的原生的Buffer，Android中的Surface就是一个用来画图形(graphic)或图像(image)的地方。对于View及其子类，都是画在Surface上的，各Surface对象通过SurfaceFlinger合成到frameBuffer.每个Surface都是双缓冲的(实际上就是两个线程，一个渲染线程，一个UI更新线程),它有一个backBuffer和一个frontBuffer。在Surface中创建的Canvas对象，可用来管理Surface绘图操作，Canvas对应Bitmap,存储Surface中的内容。
+  
+  3. SurfaceView
+  在Camera,MediaRecorder,MediaPlayer中SurfaceView经常被用来显示图像。它是View的子类，实现了Parcelable接口，其中内嵌了一个专门用于绘制的Surface,SurfaceView可以控制这个Surface的格式和尺寸，以及Surface的绘制位置，可以理解Surface就是管理数据的地方，SurfaceView就是展示数据的地方。
+  
+  4. SurfaceHolder
+  它是一个管理SurfaceHolder的容器。SurfaceHolder是一个接口，其可以理解为一个Surface的监听器。通过回调函数addCallback（SurfaceHolder.Callback callback）监听Surface的创建，通过获取Surface中的Canvas对象，把它锁定。得到的Canvas对象在完全修改Surface中的数据后使放同步锁，并提交改变Surface的状态及图像，展示新的图像数据。
+  
+  ![be124454.png](:storage\\e83093db-91ce-47a3-9533-88982dfde450\\be124454.png)
+  
+  从时序图可以看到，通过getService从ServiceManager获取对应的MediaPlayerService，然后调用native_setup函数创建播放器，接着调用setDataSource把URL地址传入底层。当准备号后，通过setDisplay传入SurfaceHolder,以便将解码出的数据放大SurfaceHolder中的Surface。最后显示在SurfaceView上。
+  
+  #### 2.2.2 创建过程
+  当外部调用MediaPlayer.create(this,"http://www.xxx.mp4")时，进入MediaPlayer的创建过程。
+  ![0bbb782c.png](:storage\\e83093db-91ce-47a3-9533-88982dfde450\\0bbb782c.png)
+  
+  以上代码可以总结为，当MediaPlayer通过create的方式创建播放器时，内部new出MediaPlayer对象，并setDataSource，做好prepare的动作。这时外部只需调用start函数，
+  就能播放音视频资源了。实例化MediaPlayer有如下两种方式。
+  
+  1. 可以使用直接new 方式
+  ```
+  MediaPlayer mp = new MediaPlayer();
+  ```
+  2. 也可以使用create的方式
+  ```
+  MediaPlayer mp = MediaPlayer.create(this,R.raw.test);
+  //这时就不用调用setDataSource了
+  ```
+  MediaPlayer 的构造
+  ![a918e0fd.png](:storage\\e83093db-91ce-47a3-9533-88982dfde450\\a918e0fd.png)
+  在介绍native_setup之前，请注意一般都在静态代码块中加载.so文件的，在MediaPlayer中有一段静态代码块，用于加载和链接库文件media_jni.so.早于构造函数，在加载类时就执行。一般全局性的数据，变量都可以放在这里。
+  ```
+  static{
+    System.loadLibrary("media_jni");
+    native_init();
+  }
+  ```
+  ![3e109dcb.png](:storage\\e83093db-91ce-47a3-9533-88982dfde450\\3e109dcb.png)
+  上面这种方式是通过JNI调用Java层的MediaPlayer类，然后拿到mNativeContext的指针，接着调用了MediaPlayer.java中的静态方法postEventFromNative,把Native的事件回调到Java层，使用EventHandler post事件回到主线成中，用软引用指向原生的MediaPlayer,以保证Native代码是安全的。
+  ![d09f3a69.png](:storage\\e83093db-91ce-47a3-9533-88982dfde450\\d09f3a69.png)
+  之前我们在Java层的MediaPlayer.java 文件的构造函数中，分析到最后有一个native_setup
+  ,在android_media_MediaPlayer.cpp中找到对应的函数。
+  ![188c0fba.png](:storage\\e83093db-91ce-47a3-9533-88982dfde450\\93eebd4e.png)
+  可以看到会设置一些回调用的listener及创建C++中的MediaPlayer对象。
+  
+  
   
   ### 2.3 开始prepare后的流程
   
