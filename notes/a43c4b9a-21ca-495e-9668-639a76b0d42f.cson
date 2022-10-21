@@ -1,0 +1,32 @@
+createdAt: "2022-10-13T01:51:42.299Z"
+updatedAt: "2022-10-13T05:36:10.740Z"
+type: "MARKDOWN_NOTE"
+folder: "bfd1eca2e356e7181dfa"
+title: "Jitsi Meet 开发学习"
+tags: []
+content: '''
+  # Jitsi Meet 开发学习
+  
+  ## 1.概述
+  
+  1. Jitsi Meet 使用Reach Native框架
+  
+  ## 2.调试Jitsi Meet官方demo(需要翻墙软件支持)
+  
+  1. [Jitsi Meet](https://meet.jit.si/) 首先在浏览器中创建一个房间。
+  2. 手机下载翻墙软件，支持翻墙
+  3. 下载google play
+  4. 下载jitsi meet 软件。
+  5. 将浏览器中创建房间的url 粘贴到settings 会议中服务器url中。
+  6. 点击recent 进入会议，并输入在房间中的姓名，确定入会。
+  
+  ## 3.利用Jitsi Meet 本身SDK构建Demo
+  
+  
+  ## 4.构建定制的Jitsi SDK
+  
+  
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false
