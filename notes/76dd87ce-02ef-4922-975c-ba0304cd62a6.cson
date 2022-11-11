@@ -1,5 +1,5 @@
 createdAt: "2022-10-24T05:28:37.339Z"
-updatedAt: "2022-10-28T09:08:01.469Z"
+updatedAt: "2022-11-11T09:13:48.324Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "React Natvie 学习"
@@ -40,7 +40,7 @@ content: '''
   
   Flutter使用Engine来绘制Widget(部件)，即Flutter显示的单元，并且Dart代码会通过AOT编译为平台的原生代码，进而与平台直接通信，不需要JavaScript引擎的桥接，也不需要原生平台的Dalvik虚拟机。
   
-  ![294d8c0b.png](:storage\\76dd87ce-02ef-4922-975c-ba0304cd62a6\\294d8c0b.png)
+  ![c8a6f4d8.png](:storage\\76dd87ce-02ef-4922-975c-ba0304cd62a6\\c8a6f4d8.png)
   Flutter的Widget采用现代响应式框架构建，而Widget是不可变的，仅支持一帧，并且每一帧上的内容不能直接更新，需要通过Widget的状态来间接更新。在Flutter中，无状态和有状态Widget的核心特性是相同的，Flutter会重新构建视图的每一帧，通过State对象，Flutter就可以跨帧存储状态数据并恢复它。
   
   ## 1.4 对比与分析
@@ -66,28 +66,326 @@ content: '''
   ![ebe5bcb8.png](:storage\\76dd87ce-02ef-4922-975c-ba0304cd62a6\\ebe5bcb8.png)
   
   ## 第三章 React Native 基础语法
-  ### 3.1 JSX语法
-  在React和React Native应用开发中，不一定非要使用JSX,也可以使用JavaScript进行开发。不过，因为JSX在定义上类似HTML这种树形结构，所以使用JSX可以极大地提高阅读和开发效率，减少代码维护的成本。在React开发中，React的核心机制之一就是可以在内存中创建虚拟DOM元素，进而减少对实际DOM的操作从而提升性能。
+  ### 3.1 React基础
+  #### 3.1.1 组件
+  在React中分为**函数式组件**,**Class组件**
+  1. 在语法上区别：
+  - 函数式组件是一个纯函数，它是需要接受props参数并且返回一个React元素就可以了。
+  - 类组件是需要继承React.Component的，而且class组件需要创建render并且返回React元素，语法上来讲更复杂。
+  
+  2. 调用方式
+  - 函数式组件可以直接调用，返回一个新的React元素；
+  - 类组件在调用时是需要创建一个实例的，然后通过调用实例里的render方法来返回一个React元素。
+  
+  3. 状态管理
+  - 函数式组件没有this,生命周期,state状态
+  - 类组件有this,生命周期，有react hook作为状态
+  
+  4. 性能
+  - 函数式组件不需要创建实例，渲染的时候就执行一下，得到返回的react元素后就直接把中间量全部都销毁。
+  - 类组件需要创建类组件的实例，而且不能销毁。性能消耗比较大。
+  
+  函数式组件:
   ```
-  export default class App extends Component<Props> {
+  import React from 'react';
+  import { Text } from 'react-native';
+  
+  const Cat = () => {
+    return (
+      <Text>Hello, I am your cat!</Text>
+    );
+  }
+  
+  export default Cat;
+  ```
+  类组件
+  ```
+  import React, { Component } from 'react';
+  import { Text } from 'react-native';
+  
+  class Cat extends Component {
     render() {
       return (
-        <View style={styles.container}>
-          <Text style={styles.welcome}>
-            你好，React-native
+        <Text>Hello, I am your cat!</Text>
+      );
+    }
+  }
+  
+  export default Cat;
+  ```
+  
+  #### 3.1.2 JSX 
+  实际上，JSX仅仅只是React.createElement(component,props,.....children)函数的语法糖。
+  ```
+  <MyButton color="blue" shadowSize={2}>
+    Click Me
+  </MyButton>
+  
+  会编译为
+  
+  React.createElement(
+    MyButton,
+    {color: 'blue', shadowSize: 2},
+    'Click Me'
+  )
+  ```
+  1. React必须在作用域内
+  由于JSX会编译为React.createElement调用形式，所以React库也必须包含在JSX代码作用域内。
+  ```
+  import React from 'react';
+  import CustomButton from './CustomButton';
+  ```
+  
+  2. 在JSX类型中使用点语法
+  ```
+  import React from 'react';
+  
+  const MyComponents = {
+    DatePicker: function DatePicker(props) {
+      return <div>Imagine a {props.color} datepicker here.</div>;
+    }
+  }
+  
+  function BlueDatePicker() {
+    return <MyComponents.DatePicker color="blue" />;
+  }
+  
+  ```
+  3. 用户定义的组件必须以大写字母开头
+  
+  ```
+  以小写字母开头的元素代表一个 HTML 内置组件，比如 <div>或者<span>会生成相应的字符串 'div' 或者 'span' 传递给 React.createElement（作为参数）。
+  大写字母开头的元素则对应着在 JavaScript 引入或自定义的组件，如<Foo/>会编译为 React.createElement(Foo)。
+  
+  import React from 'react';
+  
+  // 正确！组件需要以大写字母开头：
+  function Hello(props) {
+    // 正确！ 这种 <div> 的使用是合法的，因为 div 是一个有效的 HTML 标签：
+    return <div>Hello {props.toWhat}</div>;
+  }
+  
+  function HelloWorld() {
+    // 正确！React 知道 <Hello /> 是一个组件，因为它是大写字母开头的：
+    return <Hello toWhat="World" />;
+  }
+  ```
+  4. 在运行时选择类型
+  
+  ```
+  import React from 'react';
+  import { PhotoStory, VideoStory } from './stories';
+  
+  const components = {
+    photo: PhotoStory,
+    video: VideoStory
+  };
+  
+  function Story(props) {
+    // 正确！JSX 类型可以是大写字母开头的变量。
+    const SpecificStory = components[props.storyType];
+    return <SpecificStory story={props.story} />;
+  }
+  ```
+  #### 3.1.4 自定义组件
+  我们把包含着其他组件的组件称为父组件或父容器。这里Cafe是一个父组件，而每个Cat则是子组件。
+  ```
+  import React from 'react';
+  import { Text, TextInput, View } from 'react-native';
+  
+  const Cat = () => {
+    return (
+      <View>
+        <Text>I am also a cat!</Text>
+      </View>
+    );
+  }
+  
+  const Cafe = () => {
+    return (
+      <View>
+        <Text>Welcome!</Text>
+        <Cat />
+        <Cat />
+        <Cat />
+      </View>
+    );
+  }
+  
+  export default Cafe;
+  ```
+  #### 3.1.5 props属性
+  1. Props作为组件的参数可以实现定制的效果。
+  ```
+  import React from 'react';
+  import { Text, View } from 'react-native';
+  
+  const Cat = (props) => {
+    return (
+      <View>
+        <Text>Hello, I am {props.name}!</Text>
+      </View>
+    );
+  }
+  
+  const Cafe = () => {
+    return (
+      <View>
+        <Cat name="Maru" />
+        <Cat name="Jellylorum" />
+        <Cat name="Spot" />
+      </View>
+    );
+  }
+  
+  export default Cafe;
+  ```
+  props作为父子组件沟通的桥梁，为组件之间的通信和传值提供了重要手段。
+  ```
+  import React, { Component } from 'react';
+  import { Text } from 'react-native';
+  import PropTypes from 'prop-types';
+  
+  class Child extends Component {
+  
+    constructor(props){
+      super(props);
+      this.state={
+        counter:props.age||0
+      }
+    }
+    render() {
+      return (
+        <Text>Hello, {this.props.name},{this.props.age}</Text>
+      );
+    }
+  }
+  Child.propTypes={
+    name:PropTypes.string.isRequired,
+    age:PropTypes.number
+  }
+  Child.defaultProps = {
+    age:0
+  }
+  export default Child;
+  ```
+  如果父组件需要向子组件传递数据，只需要在组件中引入子组件，然后使用组件提供的props属性。
+  ```
+  import React, { Component } from 'react';
+  import { Text } from 'react-native';
+  import Child from './Child.js'
+  
+  class Cat extends Component {
+  
+    render() {
+      return (
+        <view>
+        <Child name = "jack" age={30} />
+        <Child name = "tom" age={20} />
+        </view>
+      );
+    }
+  }
+  
+  export default Cat;
+  ```
+  子组件props接收的数据格式由PropTypes进行检测，如果是必传参数，且还需要在组件之间进行数据传递时，props使用PropTypes来保证传递数据的类型和格式，当向props传入无效数据时，JavaScript的控制台会给出警告提示。
+  
+  2. if语句以及for循环不能在JSX中直接使用，但可以在JSX以外使用。
+  ```
+  function NumberDescriber(props) {
+    let description;
+    if (props.number % 2 == 0) {
+      description = <strong>even</strong>;
+    } else {
+      description = <i>odd</i>;
+    }
+    return <div>{props.number} is an {description} number</div>;
+  }
+  ```
+  3. Props默认值为True
+  
+  #### 3.1.6 state状态
+  1. 函数式组件
+  使用React的useState Hook来为组件添加状态。
+  ```
+  import React, { useState } from "react";
+  import { Button, Text, View } from "react-native";
+  
+  const Cat = (props) => {
+    const [isHungry, setIsHungry] = useState(true);
+  
+    return (
+      <View>
+        <Text>
+          I am {props.name}, and I am {isHungry ? "hungry" : "full"}!
+        </Text>
+        <Button
+          onPress={() => {
+            setIsHungry(false);
+          }}
+          disabled={!isHungry}
+          title={isHungry ? "Pour me some milk, please!" : "Thank you!"}
+        />
+      </View>
+    );
+  }
+  
+  const Cafe = () => {
+    return (
+      <>
+        <Cat name="Munkustrap" />
+        <Cat name="Spot" />
+      </>
+    );
+  }
+  
+  export default Cafe;
+  ```
+  
+  2. Class组件
+  ```
+  import React, { Component } from "react";
+  import { Button, Text, View } from "react-native";
+  
+  class Cat extends Component {
+    state = { isHungry: true };
+  
+    render() {
+      return (
+        <View>
+          <Text>
+            I am {this.props.name}, and I am
+            {this.state.isHungry ? " hungry" : " full"}!
           </Text>
-          <Text style={styles.instructions}>
-            To get started, edit App.js
-          </Text>
-          <Text style={styles.instructions}>
-            {instructions}
-          </Text>
+          <Button
+            onPress={() => {
+              this.setState({ isHungry: false });
+            }}
+            disabled={!this.state.isHungry}
+            title={
+              this.state.isHungry ? "Pour me some milk, please!" : "Thank you!"
+            }
+          />
         </View>
       );
     }
   }
+  
+  class Cafe extends Component {
+    render() {
+      return (
+        <>
+          <Cat name="Munkustrap" />
+          <Cat name="Spot" />
+        </>
+      );
+    }
+  }
+  
+  export default  Cafe;
   ```
-  在上述代码中，组件的render()方法主要用于页面的渲染操作，它返回的是一个视图对象，之所以没有看到创建对象和设置属性的代码，是因为JSX提供的JSXTransformer可以帮助我们把代码中的XML-Like语法编译转换成JavaScript代码。借助JSX语法，开发者不仅可以用它来创建视图对象、样式和布局，还可以用它构建视图的树形结构。并且JSX语法的可读性也非常好，非常适合前端页面开发。
+  
   ### 3.2 语法基础
   #### 3.2.1 let和const命令
   ```
@@ -122,6 +420,312 @@ content: '''
     };
   }
   ```
+  ### 3.3 Flexbox布局
+  #### 3.3.1 Flexbox布局简介
+  Flexbox布局的主要思想是让容器有能力使其子项目改变其宽度，高度，并以最佳方式填充可用空间。
+  Flexbox布局属性分为**决定子组件属性**和**决定组件自身属性**
+  决定子组件属性：flexwrap,alignltems,flexDirection
+  决定组件自身属性:alignSelf和flex
+  
+  #### 3.3.2 Flex属性
+  flex属性决定元素在主轴上如何填满可用区域。整个区域会根据每个元素设置的 flex 属性值被分割成多个部分。
+  ```
+  import React from "react";
+  import { StyleSheet, Text, View } from "react-native";
+  
+  const Flex = () => {
+    return (
+      <View style={[styles.container, {
+        // Try setting `flexDirection` to `"row"`.
+        flexDirection: "column"
+      }]}>
+        <View style={[styles.style1]} />
+        <View style={[styles.style2]} />
+        <View style={[styles.style3]} />
+      </View>
+    );
+  };
+  
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 20,
+    },
+    style1:{
+      flex: 1,
+      backgroundColor: "red",
+    },
+    style2:{
+      flex: 2,
+      backgroundColor: "darkorange",
+    },
+    style3:{
+      flex: 3,
+      backgroundColor: "green",
+    },
+      
+  });
+  
+  export default Flex;
+  ```
+  #### FlexDirection属性
+  FlexDirection属性表示布局中子组件的排列方向，取值包括column,column-reverse,row,row-reverse,默认值为column.
+  ```
+  import React, { useState } from "react";
+  import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+  
+  const FlexDirectionBasics = () => {
+    
+    return (
+      <View style={styles.container}>
+          <Text style={styles.view_one}>视图1</Text>
+          <Text style={styles.view_two}>视图2</Text>
+      </View>
+    );
+  };
+  
+  
+  const styles = StyleSheet.create({
+    container: {
+      flexDirection :'column',
+      flex:1,
+      justifyContent:'center',
+      alignItems:'center',
+      backgroundColord:'#F5FCFF',
+    },
+    view_one:{
+      height:200,
+      width:200,
+      textAlign:'center',
+      fontSize:28,
+      backgroundColor:'red',
+    },
+    view_two:{
+      height:200,
+      width:200,
+      textAlign:'center',
+      fontSize:28,
+      backgroundColor:'green',
+    },
+    
+  });
+  
+  export default FlexDirectionBasics;
+  ```
+  #### FlexWrap属性
+  FlexWrap属性主要用于控制子组件是单行还是多行显示。取值包括wrap,nowrap,wrap-reverse.
+  ```
+  import React, { useState } from "react";
+  import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+  
+  const FlexDirectionBasics = () => {
+    
+    return (
+      <View style={styles.container}>
+          <Text style={styles.view}>视图1</Text>
+          <Text style={styles.view}>视图2</Text>
+          <Text style={styles.view}>视图3</Text>
+      </View>
+    );
+  };
+  
+  
+  const styles = StyleSheet.create({
+    container: {
+      flex:1,
+      paddingTop:200,
+      justifyContent:'center',
+      alignItems:'center',
+      backgroundColor:'#F5FCFF',
+      flexDirection:'row',
+      flexWrap:'wrap'
+    },
+    view:{
+      height:150,
+      width:150,
+      alignSelf:'center',
+      alignItems:'center',
+      fontSize:28,
+      backgroundColor:'red'
+    },
+    
+  });
+  
+  export default FlexDirectionBasics;
+  ```
+  #### justify Content属性
+  justifyContent定义在容器内部主轴方向上如何排布子组件
+  
+  - flex-start: 默认值，从容器主轴起始位置开始排布
+  - flex-end: 从容器主轴末尾位置开始排布
+  - center: 子组件居中排布
+  - space-between: 子组件之间等间距，不会在主轴两端设置额外的边距
+  - space-around: 子组件之间等间距，且主轴两边各留出1/2间距值
+  - space-evenly: 子组件与主轴两边的边距均相等
+  ```
+  import React, { useState } from "react";
+  import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+  
+  const FlexDirectionBasics = () => {
+    
+    return (
+      <View style={styles.container}>
+          <Text style={styles.view}>视图1</Text>
+      </View>
+    );
+  };
+  const styles = StyleSheet.create({
+    container: {
+      flex:1,
+      backgroundColor:'#F5FCFF',
+      justifyContent:'center',
+      alignItems:'center',
+      flexWrap:'wrap'
+    },
+    view:{
+      height:150,
+      width:150,
+      textAlign:'center',
+      fontSize:28,
+      backgroundColor:'red'
+    },
+    
+  });
+  
+  export default FlexDirectionBasics;
+  ```
+  #### Align Item属性
+  alignItems定义在容器副轴(主轴交叉轴)方向上如何排布子组件。该效果与justifyContent是类似的。
+  
+  - stretch: 默认值，组件副轴方向尺寸，取该行整体的最大尺寸。此属性生效，对应组件在容器副轴方向不可设置固定尺寸值
+  - flex-start: 从组件所在行的副轴方向起点开始布局
+  - flex-end: 从组件所在行的副轴方向终点开始布局
+  - center: 在组件所在行副轴方向居中
+  - baseline: 在组件所在行的副轴方向基线对齐。每个子组件可以设置自身基线以便父容器用于布局
+  
+  #### Align Self属性
+  alignItems定义可以让子组件在父容器中在副轴方向独立于整体的排布方式而拥有单独的排布方式。 取值与AlignItem 类似
+  
+  #### Align Content属性
+  当子组件排布支持换行(flexWrap: true)时，通过alignContent属性定义多行内容在副轴方向上的排布方式。
+  
+  - flex-start: 副轴方向起点对齐
+  - flex-end: 副轴方向终点对齐(终点指该行子组件最大的尺寸位置)
+  - stretch: 副轴方向铺满整行(副轴方向设置固定尺寸，则此属性不生效)
+  - center: 副轴方向居中排布
+  - space-between: 贴紧两边，等行间距排布
+  - space-around: 两边留白，等行间距。留白为行间距一半。
+  
+  ## 第四章 React技术详解
+  ### 4.1 React简介
+  ![51fb59e2.png](:storage\\76dd87ce-02ef-4922-975c-ba0304cd62a6\\51fb59e2.png)
+  在React框架中，为了解决页面元素的更新问题，React底层设计了一个虚拟DOM,此虚拟DOM与页面真是DOM进行映射，当数据变化时，React就会重新构建整个DOM树，并通过底层的diff算法找到DOM的差异部分，然后浏览器只需要更新变化的部分即可。虚拟DOM是React框架中一个比较核心的内容，是React出色性能的根本。
+  
+  在React框架中，有一个比较重要的概念，即数据的单向流动，数据默认从父节点传递到子节点。具体来说，父节点数据通过props传递到子节点，如果父节点的props值发生改变，那么其所有的子节点也会执行重新渲染操作。
+  
+  ### 4.2 高阶组件
+  #### 4.2.1 定义和实现
+  高阶组件，就是一个接收React组件作为参数，并返回一个新的React组件的组件。也就是说，高阶组件通过包裹被传入的React组件，经过一系列处理，最终返回一个相对增强的React组件。
+  #### 4.2.2 分类
+  #### 4.2.3 命名与参数
+  
+  ### 4.3 组件通信
+  #### 4.4.1 父子组件通信
+  - 父组件向子组件通信
+  父组件通过props将值传递给子组件，子组件则通过this.props得到父组件传递的数据，当子组件接收到父组件传递的数据后再进行相应的处理。
+  ```
+  import React, { Component } from 'react';
+  import { Text } from 'react-native';
+  import Child from './Child.js'
+  class Cat extends Component {
+  constructor(props){
+      super(props);
+      this.state={
+        parms:'fater send msg to child'
+      }
+    }
+    render() {
+      return (
+        <view>
+        <Child parms={this.state.parms} />
+        </view>
+      );
+    }
+  }
+  export default Cat;
+  ```
+  ```
+  import React, { Component } from 'react';
+  import { Text } from 'react-native';
+  
+  class Child extends Component {
+  
+    render() {
+      return (
+        <Text>{this.props.parms}</Text>
+      );
+    }
+  }
+  
+  export default Child;
+  ```
+  - 子组件向父组件传递数据，可以使用回调函数和自定义时间两种方式，
+  ```
+  import React, { Component } from 'react';
+  import { Text } from 'react-native';
+  import Child from './Child.js'
+  
+  class Cat extends Component {
+  
+  constructor(props){
+      super(props);
+      this.state={}
+    }
+  
+    onClickSon = (msgFromSon) =>{
+       console.log(msgFromSon)
+    }
+    
+    render() {
+      return (
+        <view>
+        <Child onClickSon={this.onClickSon} />
+        </view>
+      );
+    }
+  }
+  
+  export default Cat;
+  ```
+  ```
+  import React, { Component } from 'react';
+  import { Text,TouchableOpacity} from 'react-native';
+  
+  class Child extends Component {
+  
+  render() {
+      return (
+        <TouchableOpacity onPress={()=>this.props.onClickSon('I am you son')}>
+          <Text>david</Text>
+        </TouchableOpacity>
+      );
+    }
+  }
+  
+  export default Child;
+  ```
+  #### 4.4.2 跨级组件通信
+  #### 4.4.3 非嵌套组件通信
+  
+  ### 4.5 事件处理
+  #### 4.5.1 事件监听与处理
+  #### 4.5.2 event事件与this关键字
+  #### 4.5.3 EventEmitter在React Native中的应用
+  
+  
+  ## 文献
+  [React 基础 · React Native 中文网](https://reactnative.cn/docs/intro-react
+  [深入 JSX – React](https://zh-hans.reactjs.org/docs/jsx-in-depth.html)
 '''
 linesHighlighted: []
 isStarred: false
