@@ -1,5 +1,5 @@
 createdAt: "2022-10-24T05:28:37.339Z"
-updatedAt: "2022-11-11T09:13:48.324Z"
+updatedAt: "2022-11-21T09:15:45.135Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "React Natvie 学习"
@@ -722,11 +722,326 @@ content: '''
   #### 4.5.2 event事件与this关键字
   #### 4.5.3 EventEmitter在React Native中的应用
   
+  ## 第五章 React Native组件详解
+  ### 5.1 基础组件
+  #### 5.1.1 Text
+  - selectable:用户是否可以长按选择文本实现复制和粘贴操作，默认为false.
+  - adjustisFontSizeToFit: 字体是否随着样式的限制而自动缩放，**仅对IOS有效**。
+  - allowFontScaling:控制字体是否要根据系统的字体大小来缩放。
+  - minimumFontScale:当adjustisFontSizeToFit为true时，可以使用此属性指定字体的最小缩放比，**仅对IOS有效**。
+  - onLayout:当挂载或者布局发生变化后执行此函数。
+  - onLongPress:当文本组件被长按以后触发此函数。
+  - onPress:当文本组件被点击后调用此函数。
+  - numberOfLines:用于设置文本最大显示行数，文本过长时会裁剪文本。
+  - ellipsizeMode:当文本组件无法全部显示所需要显示的字符串时，此属性会指定省略号显示的位置。
+  - selectionColor:文本被选择时的高亮颜色，**仅对Android有效**
+  - suppressHighlighting:文本被按下时是否显示视觉效果，**仅对iOS有效**。
+  - textShadowOffset: 字体阴影效果。
+  - fontSize: 字体大小。
+  - fontStyle: 字体样式，常见的取值有normal,itallic.
+  - fontWeight: 字体粗细，支持normal,bold和100~900的取值。
+  - lineHeight:文本行高度。
+  - textAlign: 文本对齐方式，支持auto,left,right,center和justify取值。
+  - textDecorationLine: 文本横线样式，支持的取值有none、underline、line-through和underline line-through样式。
+  - textDecorationColor: 文本装饰线条的颜色。
+  - textDecorationStyle: 文本装饰线条的自定义样式。
+  - writingDirection: 文字显示的方向。
+  - textAlignVertical:垂直方向上文本对齐的方式，支持auto,top,bottom和center方式。
+  - letterSpacing:每个字符之间的距离。
+  
+  **Text组件默认使用的特有的文件布局，如果想要文本内容居中显示，还需要在Text组件外面再套一层View组件**
+  #### 5.1.2 TextInput
+  - allowFontScaling:控制字体是否需要根据系统的字体大小进行缩放。
+  - autoCapitalize:控制是否需要将输入的字符切换为大写。
+  - autoCorrect:是否关闭拼写自动修正。
+  - autoFocus:是否自动获得焦点。
+  - blurOnSubmit: 是否在文本框内容提交的时候失去焦点，单行输入框默认情况下为true，多行则为false.
+  - caretHidden:是否隐藏光标。
+  - clearButtonMode: 是否要在文本框右侧显示清除按钮，**仅在iOS的单行输入模式下有效**。
+  - clearTextOnFocus: 是否在每次开始输入的时候清除文本框的内容。**仅对IOS有效** 
+  - dataDetectorTypes: 将输入的内容转换为指定的数据类型，可选值有phoneNumber,link,address,calendarEvent,none和all.
+  - defaultValue: 定义TextInput组件中的字符串默认值。
+  - disableFullScreenUI:是否开启全屏文本输入模式，默认为false.
+  - editable:控制文本框是否可编辑。
+  - inlineImageLeft: 指定一个图片放之在输入框的左侧，**仅对Android有效**.图片必须放置在/android/app/src/main/res/drawable目录下。
+  - inlineImagePadding: 给左侧的图片设置padding样式，**仅对Android有效**。
+  - keyboardAppearance: 指定软键盘的颜色，**仅对iOS有效**。
+  - keyboardType:指定弹出软键盘的类型，支持number-pad,decimal-pad,numeric,email-address和phone-pad等键盘类型。
+  - maxLength:限制文本框中的字符个数。
+  - multiline:控制文本框是否可以输入多行文字。
+  - numberOfLines:输入框的行数，需要multiline属性为true时才有效。
+  - onBlur:文本框失去焦点时的回调函数。
+  - onChange:文本框内容发生变化时的回调函数，它的回调接收一个event参数，可以通过event.nativeEvent.text获取用户输入的内容。
+  - onChangeText:文本框内容发生变化时的回调函数，onChangeText的回调函数返回的内容和onChange类型，不过onChangesText可以直接返回用户输入的内容。
+  - onContentSizeChange:文本框内容长度发生变化时调用此函数。
+  - onEndEditing:文本输入结束后的回调函数。
+  - onFocus:文本输入框获取焦点时的回调函数。
+  - onKeyPress:当指定的键被按下时的回调函数。
+  - onLayout:当组件加载或者布局发生变化时调用。
+  - onSelectionChange:长按选择文本内容，选择范围发生变化调用此函数。
+  - onSubmitEditing:当软键盘的确定/提交按钮被按下时调用此函数。
+  - placeholder:文本输入框的默认占位字符串。
+  - placeholderTextColor:文本输入框占位字符串显示的文字颜色。
+  - returnKeyLabel:是否显示软键盘的确认按钮，**仅对Android有效**。
+  - returnKeyType:决定确定按钮显示的内容，支持done,go,next,search和send等取值。
+  - secureTextEntry:是否显示文本框输入的文字，如果为true,可以实现类似密码的显示效果。
+  - selection:设置选中文字的范围。
+  - selectionColor:设备输入框高亮时的颜色，包括光标的颜色。
+  - selectTextOnFocus:如果为true,获取焦时所有文字都会被选中。
+  - spellCheck:是否禁用拼写检查的样式，**仅对iOS有效**
+  
+  #### 5.1.3 Image
+  使用Image组件加载图片时只需要设置source属性即可，如果加载的是网络图片需要添加uri标识。
+  
+  Image组件的图片宽和高都为0，使用Image组件加载图片时需要为图片指定宽和高，否则图片无法显示。
+  
+  resizeMode 取值有5种，cover,contain,stretch,repeat,center.
+  - cover 在保持图片宽度比的前提下缩放图片，直到宽度和高度都大于等于容器视图的尺寸。
+  - contain 在保持图片宽高比的前提下缩放图片，直到宽度和高度都小于等于容器视图的尺寸。
+  - strectch 拉伸图片且不维持图片的宽高比，直到宽度和高度都刚好填满容器。
+  - repeat 在维持原始尺寸的前提下，重复平铺图片直到填满容器。
+  - center 居中且不拉伸的显示图片。
+  
+  除了支持一些常用的style样式外，image组件还支持以下常用属性。
+  - blurRadius 为图片添加一个指定半径的模糊滤镜。
+  - onLayout 当元素加载或者布局改变的时候调用此函数。
+  - onLoad 图片加载成功后调用此回调函数。
+  - onLoadEnd 图片加载结束后调用此回调函数，不论成功还是失败。
+  - onLoadStart 开始加载图片时调用此函数。
+  - source: 图片源数据，支持本地图片和网络图片。
+  - onError:加载错误时的回调函数。
+  - accessibilityLabel: 设置一段文字，当用户与图片交互时，读屏器会朗读设置的文字，**仅对IOS有效**.
+  - accessible: 当此属性为true时，标识图片是一个启用了无障碍功能的元素，**仅对IOS有效**。
+  - defaultSource: 默认显示的图片，仅对iOS有效。
+  - onPartialLoad: 如果图片支持逐步加载，则在逐步加载的过程种会调用此方法,**仅对IOS有效**。
+  
+  #### 5.1.4 ActivityIndicator
+  - animating: 是否需要显示指示器。默认为true.
+  - color: 加载指示器的前景颜色。默认为灰色.
+  - size: 指示器的大小。支持small和large两种值，对于Android来说还支持设定具体的数值。
+  - hidesWhenStopped: 在animating为false的时候，决定是否隐藏指示器。
+  
+  #### 5.1.5 Switch
+  - disabled 是否禁用此组件的交互。
+  - onValueChange 当值发生改变时调用此回调函数。
+  - ios_backgroundColor 当Switch组件为false或禁用切换时的默认背景颜色，**仅对iOS有效**。
+  - thumbColor 开关按钮上图形按钮的背景颜色。
+  - tintColor 开关按钮关闭时的边框颜色。
+  - value 开关按钮是否被打开，默认为false。
+  
+  ### 5.2 容器组件
+  #### 5.2.1 View组件
+  - onStartShouldSetReponder: 设置视图是否需要响应touch start事件。
+  - accessibilityHint: 可访问的提示内容，帮助用户进行正常操作。
+  - accessible: 视图是否启用无障碍功能，默认情况下，所有可触摸操作的元素都是无障碍功能元素。
+  - accessibilityLabel: 设置当用户与此元素交互时读屏器阅读的文字，这是针对视力障碍人士的辅助功能。
+  - hitSlop:定义触摸事件在距离视图有多远以内可以触发。
+  - onAccessibilityTap: 当accessible属性未true时，如果用户对一个已选中的无障碍元素做了一个双击手势，系统会调用此函数。
+  - onLayout:当组件挂载或者布局发生变化时调用。
+  - onMagicTap:当accessible属性为true时，如果用户做了一个双指轻触手势，系统会调用此函数。
+  - onMoveShouldSetResponder:当视图发生滑动响应事件时就会调用此函数。
+  - onMoveShouldSetResponderCapture:如果父视图想要阻止子视图响应滑动触摸事件，就可以设置此方法并返回true.
+  - onResponderGrant:视图响应触摸事件时会执行此函数。
+  - onResponderMode:当用户正在屏幕上移动手指时调用这个函数。
+  - onResponderReject:一个响应器处于活跃状态时，将不会响应另一个视图的请求。
+  - onResponderRelease:触摸事件结束时调用此函数。
+  - onResponderTerminate:请求当前视图成为事件的响应者。
+  - onResponderTerminationRequest:其他某个视图想要成为事件的响应者，并要求当前视图放弃对事件的响应时就会调用此函数，如果允许使放响应就返回true。
+  - pointerEvents:控制当前视图是否可以作为触控事件的目标，取值有auto,none,box-none和box-only.
+  - collapsable:如果一个View只用于布局它的子组件，则它可能从原生磨具树移除。将此属性设为false可以禁用这个优化，以确保对应视图在原生结构中存在。
+  
+  #### 5.2.2 ScrollView组件
+  作为一个容器组件，ScrollView必须有一个确定的高度才能正常工作。如果不知道容器的准确高度，可以将ScrollView组件的样式设置为{flex:1},让其自动填充父容器的空余空间。
+  - keyboardDismissMode: 控制用户拖拽滚动视图时是否需要隐藏软键盘，取值有none,on-drag和interactive。interactive仅对iOS有效。
+  
+  - keyboardShouldPersistTaps: 控制当界面有软键盘时点击Scrollview后是否需要收起软键盘，取值有never,always和handled。
+  - onContentSizeChange: 在ScrollView内部可滚动内容发生变化时调用。
+  - onMomentumScrollBegin: 滚动动画开始时调用此函数。
+  - onMomentumScrollEnd:滚动动画结束时调用此函数。
+  - onScroll：滚动过程中调用此函数，每帧最多调用一次。
+  - onScrollBeginDrag:开始拖动视图时调用此函数。
+  - onScrollEngDrag:停止拖动视图时调用此函数。
+  - paginEnabled:当值为true时，滚动条会停在滚动视图指定的位置上，可以用于水平分页。
+  - refreshControl: 用于垂直视图时提供下拉刷新功能。
+  - scrollEnabled:控制内容是否可滚动。
+  - showsHorizontalScrollIndicator:是否显示水平方向上的滚动条。
+  - showsVerticalScrollIndicator:是否显示垂直方向上的滚动条。
+  - stickyHeaderIndices:决定某个成员会在滚动之后固定在屏幕顶端。
+  - overScrollMode:覆盖默认的overScroll模式，支持的取值有auto,always和never.
+  - horizontal:设置ScrollView组件横向显示。
+  - decelerationRate:设置视图滚动的速度。
+  - directionalLockEnabled:锁定视图滚动的方向。
+  - indicatorStyle:设置滚动条的样式，支持的取值有default、black和white.
+  - scrollsToTop:点击状态栏的时候视图会滚动到顶部。
+  - snapToAlignment:定义停驻点与滚动视图之间的关系，支持的取值有start,center和end.
+  
+  在React Native官方提供的组件中，FlatList组件也能够实现滚动效果。不同的是，FlatList只是惰性的渲染子元素，即子元素只在将要出现在屏幕中时才开始渲染，而ScrollView会把所有子元素一次性全部渲染出来，开发时可以根据需要合理地进行选取。
+  
+  #### 5.2.3 WebView组件
+  #### 5.2.4 TouchableOpacity组件
+  在React Native应用开发中，点击和触摸都是比较常见的交互行为，不过并不是所有的组件都支持点击事件。
+  为了给这些不具备点击响应的组件绑定点击事件，React Native提供了Touchable系列组件。事实上，Touchable系列组件并不单指某一个组件，而是由TouchableWithoutFeedback,TouchableOpacity,TouchableHighlight和
+  TouchableNativeFeedback组件组成。
+  
+  其中，TouchableWithoutFeedback不带反馈效果，其他3个组件都是带有触摸反馈效果的，可以理解为其他3个组件是TouchableWithoutFeedback组件的扩展，它们的具体含义和作用如下。
+  - TouchableWithoutFeedback: 无反馈性触摸，用户点击时页面无任何视觉效果。
+  - TouchableHighlight: 高亮触摸，在用户点击组件时产生高亮效果。
+  - TouchableOpacity: 透明触摸，在用户点击组件时产生透明效果。
+  - TouchableNativeFeedback: 仅适用于Android平台的触摸响应组件，会在用户点击后产生水波纹的视觉效果。
+  
+  TouchableOpacity组件提供了很多有用的属性和方法。
+  - activeOpacity:设置用户点击组件时透明度值，取值范围为0到1，默认为0.2.
+  - tvParallaxProperties: **此属性仅对AppleTV 有效**，主要用于控制Apple TV的视差的效果。
+  - hasTVPreferredFocus: **此属性仅对AppleTV 有效**，判断是否获取焦点。
+  - setOpacityTo(): 设置组件的不透明度值，伴随由过度动画。
+  
+  ### 5.3 列表组件
+  #### 5.3.1 VirtualizedList组件
+  #### 5.3.2 FlatList组件
+  FlatList组件使用非常简单，FlatList组件适用于加载长列表数据，只需要给FlatList组件提供data和renderItem两个属性即可。data表示数据源，renderItem表示每行的绘制方法。
+  - ItemSeparatorComponent:行与行之间的分割线，不会出现在第一行之间和最后一行之后。
+  - ListEmptyComponent:列表的尾部组件，通常用于上拉加在操作。
+  - ListHeaderComponent:列表的头部组件，通常用于下拉刷新操作。
+  - columnWrapperStyle: 多列布局，如果设置此属性，则可以在每行容器上设置单独的样式。
+  - data: data属性表示FlatList的数据源，目前只支持普通数组。如果需要使用其他特殊数据，则可以使用VirtualizedList组件。
+  - extraData: 如果列表需要有除data以外的数据源，请在此属性中指定。
+  - getItem: 获取每个Item对象。
+  - getItemCount: 获取Item的数量
+  - getItemLayout: 可选优化，用于避免动态测量内容尺寸带来的开销，不够前提是可以提前知道被包裹内容的高度。
+  - horizontal:设置为true则变为水平布局模式，默认为垂直布局。
+  - initialNumToRender:指定开始渲染的元素数量，最好刚刚够填满一个屏幕，这样可以保证用最短的时间将视图可见的内容呈现给用户。同时，首次渲染的元素不会再滑动过程中被卸载，从而保证用户在执行返回顶部的操作时，不需要重新渲染首批元素，提高渲染的效率。
+  - initialScrollIndex:指定渲染开始的index.
+  - keyExtractor:此函数用于为给定的item生成一个不重复的key.key的作用是使React能够区分同类元素的不同个体，以便在刷新时能够确定其变化的位置，减少重新渲染的开销。
+  - legacylmplementation:设置为true,则使用旧的ListView方式实现。
+  - numColumns:多列布局样式，只能在非水平模式下使用。组件内元素必须使等高的，并且暂时还无法支持瀑布流布局。
+  - onEndReached: 当列表滚动到距离内容最底部、不足设定的距离时触发。
+  - onEndReachedThreshold: 用于决定当内容距离容器的最底不还有设定的距离时触发此函数。
+  - onRefresh: 设置此属性后，FlatList组件会在列表头部添加一个标准的RefreshControl控件，以便实现下拉刷新功能。
+  - renderItem: 根据行数据data 渲染每一行的视图。
+  - onViewableItemsChanged:在可见行元素变化时调用，可见范围和变化频率等参数的配置需要设置viewabilityconfig属性。
+  - scrollToEnd: 滚动到底部，如果不设置getItemLayout属性，页面可能会比较卡顿。
+  - scrollToIndex: 滚动到指定的列表位置，如果不设置getItemLayout属性，则无法跳转到当前可视区域以外的位置。
+  - scrollToItem: 滚动到指定item的位置，如果不设置getItemLayout属性，页面可能会比较卡顿。
+  - scrollToOffset: 滚动指定距离的位置。
+  
+  #### 5.3.3 SectionList组件
+  SectionList是一个列表组件，不同于FlatList组件，SectionList组件主要用于开发列表分组，吸顶悬浮等功能。只需要提供renderItem、renderSectionHeader和sections等必要的属性。
+  
+  - ItemSeparatorComponent: 行与行之间的分隔线组件，不会出现第一行之前和最后一行之后。
+  - ListEmptyComponent: 当列表为空时渲染，可以是一个React组件类，也可以是一个渲染函数或是一个已经渲染的某个元素。
+  - SectionSeparatorComponent: 在每个section的顶部和底部渲染，有别于ItemSeparator Component,它仅在列表项之间渲染。
+  - renderItem: 用来渲染每一个section中的每一个列表项视图。
+  - renderSectionHeader: 用来渲染每个section的头部视图，再iOS设备上，headers元素默认会粘连在ScrollView视图的顶部。
+  - sections:用来渲染视图的数据源，类似于FlatList中的data属性。
+  - stickySectionHeadersEnabled：当section把它的前一个section的可视区推离
+  
+  核心函数：
+  - scrollToLocation():将可视区内位于特定sectionIndex或itemIndex位置的列表项，滚动到可视区的指定位置。
+  - recordInteraction():通知列表发生了某个事件，以便使列表重新计算可视区域。比如，当用户点击某个列表项或触发一个导航动作时，就可以调用这个方法。
+  - flashScrollIndicators(): 只在滚动的时候短暂地显示滚动指示器。
+  
+  ### 5.4 平台组件
+  #### 5.4.1 ViewPagerAndroid组件
+  #### 5.4.2 SafeAreaView组件
+  #### 5.4.3 segmentedControlIOS
+  
+  
+  ## 第六章 React Native API
+  ### 6.1 基础API
+  #### 6.1.1 AppRegistry
+  AppRegistry使应用程序JavaScript代码的运行入口，是最基本的API。
+  通常，运行一个React Native应用大致会经历如下过程：应用程序的根组件使用AppRegistry.registerComponent()注册自己，然后原生系统加载应用的代码及资源包，并在加载完成之后调用AppRegistry.runApplication()来真正运行应用。
+  
+  除了registerComponent()方法外，AppRegistry还提供以下常用方法。
+  - registerConfig():注册指定的配置。
+  - registerRunnable(): 注册进程。
+  - registerSection():注册一个切片。
+  - getAppKeys():获取所有注册的线程。
+  - getRegistry():获取所有注册的信息。
+  - runApplication():启动React Native应用。
+  - unmountAppLicationComponentAtRootTag():销毁应用。
+  
+  #### 6.1.2 AppState
+  在React Native开发中，经常会遇到前后台状态切换的场景。为了监控应用的运行状态，React Native提供了AppState.通过AppState开发者可以很容易地获取应用的当前状态。
+  
+  在AppState中，应用的状态被分为active,background和inactive.
+  - active 表示应用处于前台运行状态。
+  - background 表示应用处于后台运行中。
+  - inactive 表示应用处于前后台切换过程中或处在系统的多任务视图中。
+  
+  AppState还支持事件监听，事件监听需要用到addEventLiatener()和removeEventListener两个方法。
+  
+  #### 6.1.3 NetInfo
+  
+  #### 6.1.4 AsyncStorage
+  AsyncStorage是一个异步、持久化的数据存储API,它以键值对的方式保存数据，其作用等价于iOS的NSUserDefaluts或Android的SharedPreferences.由于AsyncStorage的操作是全局的，所以官方建议开发者先对AsyncStorage进行封装后再使用，而不是直接使用。方法如下：
+  - getItem(): 根据键值来获取结果，并将获取的结果返回给回调函数。
+  - setItem(): 根据键值来保存value的值，完成后调用回调函数。
+  - removeItem():根据键值删除某个值，并将结果返回给回调函数。
+  - mergeItem():将已有的值和新的值进行合并，合并的结果会返回给回调函数。
+  - clear():清除所有的AsyncStorage保存的数据。
+  - getAllKeys(): 获取所有本应该用可以访问的数据，并将结果返回给回调函数。
+  - flushGetRequests():清除所有进行中的查询操作。
+  - multiGet():获取key所包含的所有字段的值，并将结果以回调函数的方式传递给一个键值数组。
+  - multiRemove(): 删除所有key字段名数组中的数据，并将结果返回给回调函数。
+  - multiMerge():将输入的值和已有的值合并，合并的对象要求是数组格式，合并的结果会返回给回调函数。
+  
+  #### 6.1.5 DeviceEventEmitter
+  在移动应用开发中，如果两个相互独立的组件或进程之间要进行通信，最简单的方式就是使用广播。DeviceEventEmitter是React Native官方提供的用以实现事件发送和接收的API,其作用类似于原生系统的广播
+  
+  DeviceEventEmitter.addlistener()方法注册需要监听的事件，而事件发送方则使用DevcieEventEmitter.emit函数发送事件。DeviceEventEmitter.remove()方法用来移除监听事件。
+  
+  ### 6.2 屏幕相关API
+  #### 6.2.1 Dimensions
+  Dimensions是官方提供的一个用于获取屏幕尺寸的API,主要用于帮助开发者获取屏幕的宽和高的信息。Dimensions的使用比较简单，只需要使用get()方法即可获取宽和高的信息。
+  除了get()方法外，Dimensions还提供了如下几个方法。
+  - set():设置屏幕的宽高数据。
+  - addEventListener():添加屏幕事件监听处理，当Dimensions对象内的属性改变时触发。
+  - removeEventListener():移除屏幕事件监听处理。
+  
+  #### 6.2.2 PixelRatio
+  PixelRatio是一个用于获取设备像素密度的API.所谓设备像素，指的是物理像素和设备独立像素之间的比值。事实上，React Native中，使用PixelRatio.get()方法即可获取设备的像素密度。
+  
+  | 设备像素密度 | 设备|
+  | ---- | ------- |
+  | 1    | mdpi Android 设备     | 
+  | 1.5   | hdpi Android 设备    | 
+  | 2  | iPhone4/5s/5c/5s/6/7/8以及xhdpi Android设备    |
+  | 3    | 6Plus/6sPlus/7Plus/X/XS/Max 以及xxhdpi Android设备| 
+  | 3.5    | Nexus 6/Pixel XL,2XL Android设备 | 
+  
+  为了让一个图片在不同分辨率的设备上显示相同的效果，就需要使用PixelRatio.getPixelSizeForLayoutSize()方法对图片进行适配。
+  除getPixelSizeForLayoutSize()方法外，还提供了如下几个方法。
+  - get():获取设备的像素密度。
+  - getFontScale():返回字体大小缩放比例。
+  - roundToNearestPixel():将布局代下设置为与整数想
+  
+  ### 6.3 动画API
+  #### 6.3.1 requestAnimationFrame
+  #### 6.3.2 LayoutAnimation
+  #### 6.3.3 Animated
+  
+  ### 6.4 平台API
+  #### 6.4.1 BackHandler
+  BackHandler 用于监听Android设备返回事件的API。
+  通过addEventListener方法添加事件监听和使用，removeEventListener方法移除事件监听。对于Android环境来说，如果要退出应用，还可以使用BackHandler提供的exitApp()方法。
+  
+  #### 6.4.2 PermissionsAndroid
+  PermissionsAndroid是React Native为了适配Android 6.0及以上版本的动态权限问题而退出的API，仅对Android 平台有效。
+  - check(): 检测用户是否授权过某个动态权权限。
+  - request():弹出提示框向用户请求某项动态权限。
+  - requestMultiple():弹出提示框向用户请求多个动态权限。
+  
+  #### 6.4.4 PushNotificationIOS
+  
+  
   
   ## 文献
   [React 基础 · React Native 中文网](https://reactnative.cn/docs/intro-react
   [深入 JSX – React](https://zh-hans.reactjs.org/docs/jsx-in-depth.html)
 '''
-linesHighlighted: []
+linesHighlighted: [
+  995
+]
 isStarred: false
 isTrashed: false
