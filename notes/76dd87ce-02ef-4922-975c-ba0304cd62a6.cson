@@ -1,5 +1,5 @@
 createdAt: "2022-10-24T05:28:37.339Z"
-updatedAt: "2022-11-21T09:15:45.135Z"
+updatedAt: "2022-11-29T09:30:33.491Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "React Natvie 学习"
@@ -1033,12 +1033,151 @@ content: '''
   - requestMultiple():弹出提示框向用户请求多个动态权限。
   
   #### 6.4.4 PushNotificationIOS
+  PushNotificationIOS是React Native官方提供的本地推送通知API，其作用类似于原生iOS系统的NSNotification.借助此API,开发者可以穷送地实现诸如权限控制以及修改应用图标角标数的任务。
   
+  ### 7 React Native 开发进阶
+  #### 7.1 组件生命周期详解
+  #### 7.1.1 组件生命周期基础知识
+  在React Native应用开发中，组件的生命周期指组件初始化并挂载到虚拟DOM为开始。到组件从虚拟DOM卸载为终结的整个过程，整个生命周期如图7-1所示。
+  ![faa0f351.png](:storage\\76dd87ce-02ef-4922-975c-ba0304cd62a6\\faa0f351.png)
+  在React Native组件的生命周期大体可以分为3个阶段，即挂载,更新,卸载。其中，挂载和更新阶段都会调用render方法绘制视图。
+  
+  挂载阶段是指从组件的实例被创建到将其插入DOM的过程。挂载阶段涉及的生命周期方法如下：
+  - defaultPros(): 此阶段主要用于初始化一些默认属性，在ES6语法中，则统一使用static成员来定义。
+  - constructor(): 此方法是组件的构造方法，可以在此阶段对组件的一些状态进行初始化。不同于defaultProps(),此方法定义的变量可以通过this.setState进行修改。
+  - componentWillMount():在挂载前被立即调用。它在render()方法之前被执行，因此在此方法中设置state不会导致重新渲染。
+  - render():此方法主要用于渲染组件，返回JSX或其它组件构成DOM.同时，此方法应尽量保持纯净，只渲染组件不修改状态。
+  - componentDidMount():此方法在挂载结束之后立即调用，即在render()方法后被执行。开发者可以在此方法中获取元素或者子组件，也可以在此方法中执行网络请求操作。
+  
+  更新阶段是指应用程序正常运行起来。更新阶段涉及的生命周期函数如下：
+  - componentWillReceiveProps(): 在挂载的组件接收到新的props时被调用。它接收一个Object类型的参数nextProps，然后调用this.setState()来更新组件的状态。
+  
+  - shouldComponentUpdate(): 当组件接收到新的props或state时此方法就会被调用。此方法默认返回true,用来保证数据变化时组件能够重新渲染。当然，开发者也可以重载此方法来决定组件是否需要执行重新渲染。
+  
+  - componentWillUpdate(): 如果shouldComponentUpdate()方法返回为true,则此方法会在组件重新渲染前被调用。
+  
+  - componentDidUpdate(): 在组件重新渲染完成后被调用，可以在此函数中得到渲染完成之后的通知。
+  
+  销毁阶段是指组件从挂载阶段到将其从DOM中删除的过程，是组件生命周期的终点。
+  - componentWillUnmount(): 在组件卸载和销毁之前被立即调用。可以在此方法中执行必要的清理工作，如关掉计时器，取消网络请求和清除创建的DOM元素等。
+  
+  在组件的整个生命周期中，每一个生命周期函数并不是只被调用一次，有的生命周期函数在真个生命周期阶段可能被调用多次。
+  
+  ![74c2a419.png](:storage\\76dd87ce-02ef-4922-975c-ba0304cd62a6\\74c2a419.png)
+  
+  #### 7.1.2 虚拟DOM
+  React中的组件并不是真实的DOM节点，而是存在于内存之中的一种数据结构，叫作虚拟DOM上。
+  再将实际发生变动的部分反映在真实DOM上，而这一过程的核心就是**DOMdiff**算法(深度优优先遍历)。它可以减少不必要的DOM渲染，极大地提高组件的渲染性能。
+  ```
+  <ul class="list">
+  <li>item1</li>
+  <li>item2</li>
+  </ul>
+  ```
+  现在，假如将代码中的内容item2修改为item3.根据虚拟DOM局部刷新的原理，当数据发生改变时，必然引起DOM树结构的改变。此时系统会构建一个新的虚拟DOM树，并将其与之前的虚拟DOM树进行对比，然后将变化的部分通知给真实的DOM树，进而刷新界面。
+  
+  在React 开发中，直接操作DOM通常是很慢的，而JavaScript对象操作却很快。之所以比较快，是因为使用JavaScript对象可以很容易地表示DOM节点。DOM节点通常由标签、属性和子节点组成。
+  
+  #### 7.1.3 虚拟DOM与生命周期
+  ![15f67b6e.png](:storage\\76dd87ce-02ef-4922-975c-ba0304cd62a6\\15f67b6e.png)
+  
+  #### 7.2 状态管理
+  #### 7.2.1 Flux
+  #### 7.2.2 Redux
+  #### 7.2.3 MobX
+  #### 7.2.4 MobX与Redux的对比
+  
+  #### 7.3 第三方库
+  #### 7.3.1 NativeBase
+  #### 7.3.2 React-native-elements
+  #### 7.3.3 React-navigation
+  #### 7.3.4 react-native-snap-carousel
+  #### 7.3.5 react-native-image-picker
+  #### 7.3.6 react-native-video
+  
+  #### 7.4 自定义组件
+  #### 7.4.1 组件的导入和导出
+  #### 7.4.2 自定义弹框组件
+  #### 7.4.3 自定义单选组件
+  #### 7.4.4 自定义评分组件
+  
+  ### 8 网络与通信
+  #### 8.1 网络请求
+  #### 8.1.1 XMLHTTPRequest
+  XMLHTTP是Ajax网页开发技术的重要组成部分，除了支持XML格式之外，XMLHTTP还支持其它格式的数据，如JSON或纯文本。XMLHttpRequset则可以向服务器发送请求并接收数据，是用于在后台与服务器交换数据的对象。
+  
+  XMLHttpRequest对象提供了完全访问HTTP的能力，开发者可以使用它实现POST和GET请求。XMLHttpRequest可以同步或异步地返回Web服务器的响应,并且能够以文本或者DOM文档的方式返回响应数据。
+  #### 8.1.2 Fetch
+  Fetch是一种简化XMLHttpRequest网络请求操作的API。
+  Fetch使用Promise方式回调请求结果。Promise是ES6的核心内容之一，可以有效地解决多层级链式调用问题。目前，几乎所有的现代浏览器都支持Fetch请求。
+  
+  Fetch发送请求
+  ```
+  fetch('https://mywebsite.com/mydata.json');
+  ```
+  Fetch还有可选的第二个参数，可以用来定制HTTP请求一些参数。你可以指定header参数，或者指定使用POST方法，又或是提交数据等。
+  ```
+  fetch('https://mywebsite.com/endpoint/', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      firstParam: 'yourValue',
+      secondParam: 'yourOtherValue'
+    })
+  });
+  ```
+  处理服务器的响应数据
+  Promise方式：
+  ```
+  function getMoviesFromApiAsync() {
+    return fetch(
+      'https://facebook.github.io/react-native/movies.json'
+    )
+      .then((response) => response.json())
+      .then((responseJson) => {
+        return responseJson.movies;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+  ```
+  async/await方式：
+  ```
+  // 注意这个方法前面有async关键字
+  async function getMoviesFromApi() {
+    try {
+      // 注意这里的await语句，其所在的函数必须有async关键字声明
+      let response = await fetch(
+        'https://facebook.github.io/react-native/movies.json'
+      );
+      let responseJson = await response.json();
+      return responseJson.movies;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  ```
+  #### 8.1.3 async-await
+  async函数主要由两部分构成，即async和await。async-await是generator函数的语法糖，async函数使用async关键字进行标识，函数内部使用await来表示异步。相较于普通的generator语法。async函数对以下4点进行了改进。
+  - 内置执行器: generator函数的执行必须依靠执行器，而async函数自带执行器，调用方式跟普通函数的调用一样。
+  - 更广的适用性: co模块约定，yield命令后面只能是thunk函数或Promise对象，而async函数的await命令后面则可以是Promise或者原始类型的值。
+  - **返回值为Promise**：async函数的返回值是Promise对象，比generator函数返回的iterator对象方便，可以直接使用then函数调用返回的结果。
+  
+  #### 8.2 Promise
+  
+  
+  #### 8.3 与原生交互
   
   
   ## 文献
   [React 基础 · React Native 中文网](https://reactnative.cn/docs/intro-react
   [深入 JSX – React](https://zh-hans.reactjs.org/docs/jsx-in-depth.html)
+  [史上最全React-Native第三方库 - 掘金](https://juejin.cn/post/7046016631788535816)
+  [React-Native第三方库](https://reactnative.directory/)
 '''
 linesHighlighted: [
   995
