@@ -1,0 +1,34 @@
+createdAt: "2022-12-02T05:40:16.261Z"
+updatedAt: "2022-12-03T06:55:09.045Z"
+type: "MARKDOWN_NOTE"
+folder: "bfd1eca2e356e7181dfa"
+title: "React Native架构学习"
+tags: []
+content: '''
+  # React Native架构学习
+  
+  ![b94b8732.png](:storage\\017ebe64-e0e9-481a-b15a-d4f3afa40d90\\b94b8732.png)
+  
+  从上到下可以分为四层，分别是**JS代码层**，**JS引擎层**，**通信层**，**原生层**。
+  
+  最上面的JS代码层提供了React.js支持，React.js的JSX代码转换为JS代码运行在JavaScriptCore提供的JavaScript运行时环境中，通信层将JavaScript于Native层连接起来；通信层又可以分为三部分，其中Shadow Tree用来定义UI效果及交互功能，Native Methods提供Native功能、他们之间的相互通信使用的是**JSON异步消息**。
+  
+  JS Thread:主要负责React、JS的执行,输出App的视图信息(结构，样式，属性)
+  
+  ## 线程模型
+  - JS Thread: 主要负责React,JS的执行，输出App的视图信息(结构，样式，属性)
+  - Shadow Thread: 根据JS线程的视图信息，创建出用于布局计算的ShadowTree;
+  - Main Thread:根据ShadowTree提供的完整视图信息，负责真实Native View的创建
+  
+  ## 启动流程
+  启动流程主要做了两件事情：1.准备环境，2.调用JS侧的入口函数。
+  
+  准备环境：在后台创建上下文，初始化通信桥，加载JSBundle,初始化JS执行环境。
+  
+  调用JS侧的入口函数：调用AppRegistry.js的runApplication方法，为一次Native到JS的调用。
+  
+  ![141f750b.png](:storage\\017ebe64-e0e9-481a-b15a-d4f3afa40d90\\141f750b.png)
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false
