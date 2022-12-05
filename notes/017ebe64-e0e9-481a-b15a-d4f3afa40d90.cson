@@ -1,5 +1,5 @@
 createdAt: "2022-12-02T05:40:16.261Z"
-updatedAt: "2022-12-03T06:55:09.045Z"
+updatedAt: "2022-12-05T14:09:02.661Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "React Native架构学习"
@@ -13,21 +13,35 @@ content: '''
   
   最上面的JS代码层提供了React.js支持，React.js的JSX代码转换为JS代码运行在JavaScriptCore提供的JavaScript运行时环境中，通信层将JavaScript于Native层连接起来；通信层又可以分为三部分，其中Shadow Tree用来定义UI效果及交互功能，Native Methods提供Native功能、他们之间的相互通信使用的是**JSON异步消息**。
   
-  JS Thread:主要负责React、JS的执行,输出App的视图信息(结构，样式，属性)
-  
   ## 线程模型
-  - JS Thread: 主要负责React,JS的执行，输出App的视图信息(结构，样式，属性)
-  - Shadow Thread: 根据JS线程的视图信息，创建出用于布局计算的ShadowTree;
-  - Main Thread:根据ShadowTree提供的完整视图信息，负责真实Native View的创建
+  - JS Thread: JS代码的执行线程，将源码通过Metro打包后，生成一个JSBundle的文件，然后传给JS引擎进行解析
+  - Shadow Thread: 创建Shadow Tree来模拟React结构树(类似虚拟DOM)，再由Yoga引擎将Flexbox等样式，解析成原生平台的布局方式。
+  - Main Thread:主要负责原生线程(NativeUI)和调用原生模块(Native Modules)
   
-  ## 启动流程
-  启动流程主要做了两件事情：1.准备环境，2.调用JS侧的入口函数。
+  ## 通过启动流程看架构设计
+  ![4d064e67.png](:storage\\017ebe64-e0e9-481a-b15a-d4f3afa40d90\\4d064e67.png)
   
-  准备环境：在后台创建上下文，初始化通信桥，加载JSBundle,初始化JS执行环境。
+  通过Metro打包工具将React中JS代码打包成JS Bundle文件，然后通过JSCore进行解析。并通过JSON数据传递到Bridge,然后再将JSON数据传递到主线程，若其中设计UI的渲染，主线程会去调用Shadow线程(Yoga Engine)进行解析，然后将解析后的数据再传递回主线程。
   
-  调用JS侧的入口函数：调用AppRegistry.js的runApplication方法，为一次Native到JS的调用。
+  Yoga Engine的作用：可以将React中JS代码解析成为原生的代码形式。
   
-  ![141f750b.png](:storage\\017ebe64-e0e9-481a-b15a-d4f3afa40d90\\141f750b.png)
+  
+  ## 通过渲染流程看架构设计
+  
+  ![31b8b913.png](:storage\\017ebe64-e0e9-481a-b15a-d4f3afa40d90\\31b8b913.png)
+  
+  ![ee7a7c79.png](:storage\\017ebe64-e0e9-481a-b15a-d4f3afa40d90\\ee7a7c79.png)
+  
+  ## 通过线程模型看架构设计
+  ![53277ca1.png](:storage\\017ebe64-e0e9-481a-b15a-d4f3afa40d90\\53277ca1.png)
+  - 过程1: 交互触发主线程，主线程收集相关数据，以JSON的形式传递到Bridge,后Bridge再传递给JS线程并作出响应。响应后的数据再由JSON的形式传递到Bridge中，最终再由Bridge传递到主线程。
+  - 过程2：若JS线程传递到Bridge中的数据涉及UI的渲染，这时Bridge将数据传递到Shadow线程，然后通过各种计算，将得到的结果传递到主线程进行渲染。
+  - 过程3：若JS线程传递到Bridge中的数据涉及调用原生模块，这时Bridge将数据传递到Native Modules.经过处理再传回Bridge中，最终由Bridge传递到主线程中。
+  
+  Bridge的特点：异步，序列化，批处理。
+  
+  ## 通过应用角度看架构设计
+  ![3afe9411.png](:storage\\017ebe64-e0e9-481a-b15a-d4f3afa40d90\\3afe9411.png)
 '''
 linesHighlighted: []
 isStarred: false
