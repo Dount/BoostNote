@@ -1,5 +1,5 @@
 createdAt: "2022-12-02T05:40:16.261Z"
-updatedAt: "2022-12-05T14:09:02.661Z"
+updatedAt: "2022-12-06T14:08:24.038Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "React Native架构学习"
@@ -42,6 +42,49 @@ content: '''
   
   ## 通过应用角度看架构设计
   ![3afe9411.png](:storage\\017ebe64-e0e9-481a-b15a-d4f3afa40d90\\3afe9411.png)
+  
+  ## 新架构
+  
+  ![45da8927.png](:storage\\017ebe64-e0e9-481a-b15a-d4f3afa40d90\\45da8927.png)
+  
+  三大改动:
+  1. JavaScript层：
+  - 支持React16+的新特征
+  - 增强JS静态类检查(CodeGen)
+  - 引入JSI，允许替换不同的JavaScript引擎
+  2. Bridge层：
+  - 划分成Fabric和TurboModules两部分，分别负责UI管理与Native模块
+  
+  3. Native层：
+  - 精简核心模块，将非核心部分拆分出去，作为社区模块，独立更新维护
+  
+  ### CodeGen
+  - CodeGen是FaceBook推出的代码生成工具
+  - 通过CodeGen,自动将Flow或者TypeScript等有静态类型的JS代码翻译成Fabric和TurboModules使用的接口文件。
+  - 加入类型约束后的作用。（减少了数据类型错误）（减少了数据验证次数，提高了通信性能）
+  
+  ### JSI(JavaScript Interface)
+  ![92498223.png](:storage\\017ebe64-e0e9-481a-b15a-d4f3afa40d90\\92498223.png)
+  JSI是一个用C++写成的轻量级框架。其作用主要有两个：
+  1. 通过JSI，可以实现JS引擎的更换
+  2. 通过JSI，可以通过JS直接调用Native
+  - JS对象可以直接获取C++对象(Host Object)引用，从而允许JS与Native的直接调用
+  - 减少不必要的线程通信
+  - 省去了序列化和反序列化的成本
+  - 减轻了通信压力，提高了通信性能。
+  
+  ### Fabric
+  - Fabric是整个架构中的新UI层
+  - 简化了之前渲染
+  
+  ### Turbo Modules
+  - 通过JSI，可以让JS直接调用Native模块，实现同步操作，省去消息队列和JSON序列化。
+  - 实现Native模块按需加载，减少启动时间，提高性能。
+  
+  ### 新架构-启动过程
+  ![461b49ef.png](:storage\\017ebe64-e0e9-481a-b15a-d4f3afa40d90\\461b49ef.png)
+  
+  
 '''
 linesHighlighted: []
 isStarred: false
