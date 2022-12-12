@@ -1,5 +1,5 @@
 createdAt: "2022-12-03T07:27:22.525Z"
-updatedAt: "2022-12-03T07:31:43.533Z"
+updatedAt: "2022-12-09T14:17:27.292Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "热修复 Tinker 使用学习"
@@ -7,11 +7,88 @@ tags: []
 content: '''
   # 热修复 Tinker 使用学习
   
+  ## Tinker 原理图
+  ![00a2fe85.png](:storage\\7af9052c-2f14-4b8c-b5ff-202ffa40f556\\00a2fe85.png)
+  
+  ## Tinker 流程图
+  ![43b8b6ac.png](:storage\\7af9052c-2f14-4b8c-b5ff-202ffa40f556\\43b8b6ac.png)
+  
+  ## 什么是dex文件
+  ### 知识背景
+  
+  1. DVM
+    DVM是Dalvik Virtual Machine的简称，是Android4.4及以前使用的虚拟机，所有Android程序都运行在Android系统进程中，每个进程对应着一个Dalvik虚拟机实例。JVM和DVM都提供了对对象生命周期管理，堆栈管理，安全和异常管理及垃圾回收等重要功能。但是DVM却不能和JVM一样能直接运行Java字节码，它只能运行.dex文件，而这个.dex文件则是由Java字节码通过Android的dx工具生成的文件。
+  
+  2. ART
+    ART是Android Runtime，在Android5.0开始使用ART虚拟机来替代Dalvik虚拟机，为什么Google要换Android程序运行的虚拟机呢 因为ART虚拟机更优秀。前面说Dalvik虚拟机会在APP打开时去运行.dex文件，而这个是实时的，也就是JIT特性(Just In Time)，这也就会导致在启动APP时会先将.dex文件转换成机器码，这就导致了APP启动慢的问题。而ART虚拟机有个很好的特性叫做AOT(ahead of time)，这个特性可以在安装APK的时候将dex直接处理成可直接供ART虚拟机使用的机器码，ART虚拟机将.dex文件转换成可直接运行的.oat文件，而且ART虚拟机天生支持多dex，所以ART虚拟机可以很大提升APP的冷启动速度。
+  
+  
+  结论：
+  - .class文件是运行在Java虚拟机(JVM)
+  - .dex文件是运行在android上Davlik和ART虚拟机
+  - dex里面包含了所有app代码
+  - dex文件是由很多.class 文件经过翻译、重构、解释、压缩并通过dX工具处理完成后得到。
+  
+  ### dex与反编译
+  1. 下载apk文件，然后解压 ，得到 class.dex 文件
+  2. 用dex2jar 把 class.dex 还原成 classes-dex2jar.jar 文件
+  3. 用jd-gui.exe 把 classes-dex2jar.jar 文件打开，就可以看到源码了。
+  
+  ## Class 文件修复原理
+  ![fd68cb6f.png](:storage\\7af9052c-2f14-4b8c-b5ff-202ffa40f556\\fd68cb6f.png)
+  ### Android Dex 文件的加载过程
+  ![c4f71b63.png](:storage\\7af9052c-2f14-4b8c-b5ff-202ffa40f556\\c4f71b63.png)
+  使用DexClassLoader去加载dex文件，DexClassLoader会将这个任务委派给DexPathList中的makeDexElements方法，在makeDexElements中调用了native层的 c++方法去真正的加载dex文件，然后返回DexFile的对象，通过这个对象构建一个Element的对象，然后将这个Element添加到dexElements的数组中。
+  
+  ### Class文件的查找过程
+  ![1fdd6fcf.png](:storage\\7af9052c-2f14-4b8c-b5ff-202ffa40f556\\1fdd6fcf.png)
+  DexClassLoader通过findClass去查找一个类，同样它也是委派给DexPathList的findClass去查找，在DexPathList的findClass中会去遍历我们上面创建的dexElements数组，然后在每个dex中去查找相应的类，找到之后就返回，不再向后查找。
+  
+  ### 补丁包的合并过程
+  ![fb45a068.png](:storage\\7af9052c-2f14-4b8c-b5ff-202ffa40f556\\fb45a068.png)
+  Patch拿下来之后，会开启一个Service，把Patch包和Bug Dex合并，并置于tinker的文件加载路径中。
+  
+  ### 补丁包的加载流程
+  ![6f265a6a.png](:storage\\7af9052c-2f14-4b8c-b5ff-202ffa40f556\\6f265a6a.png)
+  读取到有合并后的补丁dex，通过反射得到DexPathList中的dexElements数组，并将新的dex放在数组的最前面，完成修复。
+  
+  ## 资源文件修复
+  
+  ### Resource类对象的构建过程
+  ![4e2d3c8c.png](:storage\\7af9052c-2f14-4b8c-b5ff-202ffa40f556\\4e2d3c8c.png)
+  
+  所有的资源文件是通过Resource类获取到的，创建一个Resource对象需要三个参数AssetManager、DisplayMetrics和Configuration，后两个参数都是全局单例的，直接通过getResources().getDisplayMetrics(),getResources().getConfiguration()就可以，而一个AssetManager对象的关键就在于addAssetPath方法以指定resource目录的路径，直接newInstance后通过反射拿到addAssetPath，invoke传参一个resDir目录即可得到对应的AssetManager对象。
+  
+  ### 补丁加载过程
+  ![c1238fc0.png](:storage\\7af9052c-2f14-4b8c-b5ff-202ffa40f556\\c1238fc0.png)
+  先将Patch中的Resource和原有Resource合并，而后保存到本地->通过当前的Activity线程去获取到所有已加载的apk（loadedApk）->将所有loadedApk的resDir目录都替换成新的Resource目录->创建新的resDir目录对应的AssetManager对象->替换原有全部的Resource对象里的AssetManager，即可完成修复。
+  
+  
+  ## 动态库链接库修复
+  
+  ### Android里面关于so的加载两种方式
+  1. System.loadLibrary
+  这种方式传入的是so的名字，会直接从系统的目录去加载so文件，系统的路径包括/data/data/${package_name}/lib、/system/lib、/vender/lib等这类路径。
+  
+  2. System.load
+  这种方式传入的是so的绝对路径，直接从这个路径加载so文件。Tinker的so文件热更新的原理就是通过方式二，直接加载新的so实现的。
+  
+  ![102103bf.png](:storage\\7af9052c-2f14-4b8c-b5ff-202ffa40f556\\102103bf.png)
+  
+  - 补丁生成
+  生成补丁时比较新旧so文件使用BSdiff算法生成补丁包。
+  - 补丁合成
+  下发补丁成功后根据BSpatch算法将补丁包和旧的library合成新的library并保存在tinker下面的目录下：/data/data/${package_name}/tinker/lib。
+  - 补丁加载
+  通过System.load加载该目录下面的so文件。
   
   ### 文献
-  
+  [Android热修复Tinker原理分析_CEMETERY1的博客-CSDN博客_android tinker 原理](https://blog.csdn.net/Xiangxue155/article/details/106503374/)
+  [Android DEX 基础 - 赵彦军 - 博客园](https://www.cnblogs.com/zhaoyanjun/p/5736305.html)
+  [tinker/tinker-sample-android at master · Tencent/tinker · GitHub](https://github.com/Tencent/tinker/tree/master/tinker-sample-android)
   [Tinker使用指南_你缺少想象力的博客-CSDN博客_tinker使用](https://blog.csdn.net/IT_XF/article/details/80910336)
   [Android Tinker 基本使用教程_netb_xyz的博客-CSDN博客_tinker使用教程](https://blog.csdn.net/u012364659/article/details/108279540)
+  [Tinker热修复原理探究 - 简书](https://www.jianshu.com/p/fd9ed8b720ef)
 '''
 linesHighlighted: []
 isStarred: false

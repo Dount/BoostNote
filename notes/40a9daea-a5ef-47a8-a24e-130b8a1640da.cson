@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2022-10-21T06:35:37.065Z"
+updatedAt: "2022-12-10T12:49:34.896Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android"
@@ -20,16 +20,12 @@ content: '''
   3）void  onLowMemory()
   内存不够时触发
   4）void  onTerminate()
-  当终止程序时调用 但是不能保证一定调用
+  当终止程序时调用 但是不能保证一定调用(虚拟机上会触发)
   5）void onTrimMemory()
   内存清理时触发
   
   ### 1.2 实例展示
   ```
-  /**
-   * @author ljcheng
-   * @date 2019/6/29
-   */
   public class MyApplication extends Application {
   
       private static String TAG = "MyApplication";
@@ -126,11 +122,6 @@ content: '''
   import android.os.IBinder;
   import android.support.annotation.Nullable;
   
-  /**
-   * Created by zejian
-   * Time 2016/9/29.
-   * Description:service simple demo
-   */
   public class SimpleService extends Service {
   
       /**
@@ -302,11 +293,6 @@ content: '''
   import android.support.annotation.Nullable;
   import android.util.Log;
   
-  /**
-   * Created by zejian
-   * Time 2016/10/2.
-   * Description:绑定服务简单实例--服务端
-   */
   public class LocalService extends Service{
       private final static String TAG = "wzj";
       private int count;
@@ -398,11 +384,6 @@ content: '''
   
   import com.zejian.ipctest.R;
   
-  /**
-   * Created by zejian
-   * Time 2016/10/2.
-   * Description:绑定服务实例--客户端
-   */
   public class BindActivity extends Activity {
       protected static final String TAG = "wzj";
       Button btnBind;
@@ -532,11 +513,6 @@ content: '''
   import android.os.Messenger;
   import android.util.Log;
   
-  /**
-   * Created by zejian
-   * Time 2016/10/3.
-   * Description:Messenger服务端简单实例,服务端进程
-   */
   public class MessengerService extends Service {
   
       /** Command to the service to display a message */
@@ -595,12 +571,6 @@ content: '''
   import android.widget.Button;
   
   import com.zejian.ipctest.R;
-  
-  /**
-   * Created by zejian
-   * Time 2016/10/3.
-   * Description: 与服务器交互的客户端
-   */
   public class ActivityMessenger extends Activity {
       /**
        * 与服务端交互的Messenger
@@ -3684,24 +3654,25 @@ content: '''
   [jeanboy_jeanboydev_CSDN博客-Android进阶,Java基础,Android进阶领域博主](https://blog.csdn.net/freekiteyu/article/list/1)
   [成功入职字节跳动的小姐姐告诉你，Android面试吃透这一篇就没有拿不到的offer！_Stay Hungry Stay Foolish-CSDN博客](https://blog.csdn.net/qq_29966203/article/details/105455615)
   
+  
+  
 '''
 linesHighlighted: [
-  2403
-  2391
-  2252
-  1843
-  1649
-  1514
-  1511
-  1247
-  1214
-  2999
-  2917
-  1031
-  3883
-  3810
   1
-  21
+  3782
+  3855
+  1001
+  2887
+  2969
+  1184
+  1217
+  1481
+  1484
+  1619
+  1813
+  2222
+  2361
+  2373
 ]
 isStarred: false
 isTrashed: false
