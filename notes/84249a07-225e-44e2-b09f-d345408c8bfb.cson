@@ -1,5 +1,5 @@
 createdAt: "2022-10-21T02:03:09.378Z"
-updatedAt: "2022-10-21T02:04:20.887Z"
+updatedAt: "2022-12-25T13:15:43.445Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "IOS"
@@ -7,6 +7,41 @@ tags: []
 content: '''
   # IOS
   [toc]
+  
+  ## 一、基础知识
+  ### import和include,@class有什么区别
+  #import是Objective-C导入头文件的关键字， #include是c/c++导入头文件的关键字，使用#import头文件会自动只导入一次，不会重复导入。
+  
+  @class告诉编译器某个类的声明，当执行时，才去查看类的实现文件，可以解决头文件的相互包含。
+  
+  #import<>用来包含系统的头文件，#import用来包含用户头文件。
+  
+  ### frame和bounds有什么不同
+  frame指的是，该view在父view坐标系统中的位置和大小。
+  bounds指的是，该view在本身坐标系统中的位置和大小。
+  
+  ### Objective-C的类可以多重继承吗？
+  Objective-C的类不可以多重继承，可以实现多个接口(协议);
+  
+  ### Category是什么？
+  分类是ios开发常用的一种模式，它可以让我们在不知道原有类内部结构的情况下添加属性，方法。合理的运行分类可以将代码很好的进行解耦，让代码更加清晰明了。
+  
+  ### @property的本质是什么？
+  @property = ivar+getter+setter;
+  ivar(实例变量)，getter+setter(存取方法)
+  属性property作为Objective-C的一项特性，主要的作用就在于封装对象中的数据。Objective-C对象通常会把其所需要的数据保存为各种实例变量。
+  
+  ### @property中有哪些属性关键字?
+  1. 原子性:nonatomic特质
+  2. 读/写权限:readwrite(读写),readonly(只读)
+  3. 内存管理语义:assign,strong,weak,unsafe_unretained,copy
+  4. 方法名:getter,setter
+  
+  ### 什么情况使用weak关键字，相比assign有什么不同
+  weak作用OC对象，assign作用基本数据类型，OS对象。
+  weak不会产生野指针问题，因为weak修饰的对象释放后，指针会自动被置nil,之后再向该对象发消息也不会崩溃
+  assign如果修饰对象，会产生野指针问题，如果修饰基本数据类型则是安全的。修饰的对象释放后，指针不会自动被置空，此时向对象发消息会崩溃。
+  
   
   
   ## 面试题参考文献
@@ -17,6 +52,9 @@ content: '''
   
   [GitHub - iOSputao/iOS-: 一些面试题总结，希望对你有帮助，同时希望你能来一起完善它！](https://github.com/iOSputao/iOS-)
   
+  [整理一篇很全面的iOS面试题 - 简书](http://events.jianshu.io/p/002fdea2c963)
+  
+  [iOS Category的使用_Tuski-的博客-CSDN博客_category 怎样用ios](https://blog.csdn.net/streamery/article/details/103441441?spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-3-103441441-blog-90675680.pc_relevant_3mothn_strategy_and_data_recovery&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-3-103441441-blog-90675680.pc_relevant_3mothn_strategy_and_data_recovery&utm_relevant_index=4)
 '''
 linesHighlighted: []
 isStarred: false

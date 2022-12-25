@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2022-12-10T12:49:34.896Z"
+updatedAt: "2022-12-24T14:51:51.390Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android"
@@ -3637,18 +3637,53 @@ content: '''
   ```
   
   
-  ### 22. 参考文献
+  ### 22.6 参考文献
   [Android的注解（Annotation）学习之路 - 走看看](http://t.zoukankan.com/hahayixiao-p-13772011.html#jieandshi)
   [Android 注解入门以及自定义注解 - 知乎](https://zhuanlan.zhihu.com/p/464896408)
   [Android注解-看这篇文章就够了_Zephyr Cai的博客-CSDN博客_android 注解](https://blog.csdn.net/caizehui/article/details/105003999)
   
   
+  ## 23. 屏幕适配方案
   
+  ### dp与px的转换
+  因为ui设计师给你的设计图是以px为单位的，Android开发则是使用dp作为单位的，那么需要进行转换：
+  ![76aa4aff.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\76aa4aff.png)
+  ```
+  density=dpi/160
+  dp= px/density
+  ```
   
+  ### 23.1 dimen 基于dp的适配（smallestWidth适配）
+  这种适配依据的是最小宽度限定符。指的是Android会识别屏幕可用高度和宽度的最小尺寸的dp值（其实就是手机的宽度值），然后根据识别到的结果去资源文件中寻找对应限定符的文件夹下的资源文件。
   
+  某手机的屏幕分辨率是 1080 * 1920，屏幕像素密度是 480 dpi，通过计算，
   
+  它的最大宽度对应的 dp 值是：1080 / (480 / 160) = 360 dp,根据这个 360 dp 值，系统会去寻找 value-sw360dp 的文件夹以及对应的资源文件并使用它。
   
+  如果没有 value-sw360dp 文件夹，系统会向下寻找，比如离 360 dp 最近的只有 value-sw350dp，那么Android就会选择 value-sw350dp 文件夹下面的资源文件。
   
+  如下面我这里将会以 360 dp 作为基准.
+  
+  ![ba1d4f0e.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\ba1d4f0e.png)
+  
+  接下来，我们创建一个value-sw480dp 文件夹并在其中创建 dimens.xml 文件：
+  ![9e2db153.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\9e2db153.png)
+  
+  在基准尺寸的基础上计算得
+  ```
+  dp_2 = (480 / 基准) x 2 = (480 / 360) x 2 = 2.6667 dp
+  
+  2为density
+  ```
+  
+  ### 23.2 修改手机的设备密度 density
+  
+  ### 23.3 参考文献
+  
+  [Android屏幕适配和方案【整理】 - HaiyuKing - 博客园](https://www.cnblogs.com/whycxb/p/9755012.html)
+  [Android 最全面的屏幕适配方案 - 简书](https://www.jianshu.com/p/746fa1ba313c)
+  [【Android】之屏幕适配_一场雪ycx的博客-CSDN博客_android 屏幕适配](https://blog.csdn.net/yang553566463/article/details/127029556)
+  [Android中px、dp、dpi、density解释和计算方式 - 简书](https://www.jianshu.com/p/e9125d51045f)
   
   ## 面试题参考文献
   [jeanboy_jeanboydev_CSDN博客-Android进阶,Java基础,Android进阶领域博主](https://blog.csdn.net/freekiteyu/article/list/1)
@@ -3659,8 +3694,6 @@ content: '''
 '''
 linesHighlighted: [
   1
-  3782
-  3855
   1001
   2887
   2969
@@ -3673,6 +3706,8 @@ linesHighlighted: [
   2222
   2361
   2373
+  3817
+  3890
 ]
 isStarred: false
 isTrashed: false
