@@ -1,11 +1,11 @@
 createdAt: "2019-09-09T02:28:24.506Z"
-updatedAt: "2019-09-09T06:39:29.727Z"
+updatedAt: "2023-01-03T13:42:19.079Z"
 type: "MARKDOWN_NOTE"
 folder: "855b282e2a555b697afd"
-title: "Ⅱ. Drawable Animation （帧动画）使用详解"
+title: "二. Drawable Animation （帧动画）使用详解"
 tags: []
 content: '''
-  # Ⅱ. Drawable Animation （帧动画）使用详解
+  # 二. Drawable Animation （帧动画）使用详解
   
   [Android 基础动画之帧动画详解 - 简书](https://www.jianshu.com/p/2b74d1ed06b0)
   
@@ -17,7 +17,7 @@ content: '''
   
   如下图就是帧动画的源码文件：
   
-  ![AnimationDrawable class](https://raw.githubusercontent.com/OCNYang/Android-Animation-Set/master/README_Res/animation_drawable.jpg?token=AQ83MlWYnnPDJoSwlBJmUrqALx9-eZQEks5awY-CwA%3D%3D)  
+  ![cfe088d6.png](:storage\\8eaadbb6-35ed-42fc-af8a-2269c595325c\\cfe088d6.png)
   
   可以看见实际的真实父类就是 Drawable。
   

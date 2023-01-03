@@ -1,11 +1,11 @@
 createdAt: "2019-09-12T02:42:15.687Z"
-updatedAt: "2019-09-12T02:42:17.628Z"
+updatedAt: "2023-01-03T14:16:40.021Z"
 type: "MARKDOWN_NOTE"
 folder: "855b282e2a555b697afd"
-title: "Ⅶ. Animate View State Changes / 视图状态动画"
+title: "七. Animate View State Changes / 视图状态动画"
 tags: []
 content: '''
-  # Ⅶ. Animate View State Changes / 视图状态动画
+  # 七. Animate View State Changes / 视图状态动画
   
   ## 介绍
   
@@ -13,7 +13,7 @@ content: '''
   
   咱先看一下实现的一种效果图(点击时Z轴抬高):
   
-  ![点击时Z轴抬高](https://raw.githubusercontent.com/OCNYang/Android-Animation-Set/master/README_Res/view_state_change_animation.gif?token=AQ83MkyhlHVruXxcDTI07XfPKKW_ja9Tks5axLfpwA%3D%3D)  
+  ![dff138ef.png](:storage\\963cb55a-99e8-4560-aefa-e54642b3997a\\dff138ef.png)
   
   ## 使用
   

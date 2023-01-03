@@ -1,11 +1,11 @@
 createdAt: "2019-09-06T09:52:44.091Z"
-updatedAt: "2019-09-11T10:00:48.903Z"
+updatedAt: "2023-01-03T13:42:37.265Z"
 type: "MARKDOWN_NOTE"
 folder: "855b282e2a555b697afd"
-title: "Ⅰ. View Animation（视图动画）使用详解"
+title: "一.View Animation（视图动画）使用详解"
 tags: []
 content: '''
-  # Ⅰ. View Animation（视图动画）使用详解
+  # 一.View Animation（视图动画）使用详解
   
   [View 动画几种特殊使用场景](https://github.com/OCNYang/Android-Animation-Set/blob/master/view-animation/ViewAnimationUseTips.md)
   
@@ -17,7 +17,7 @@ content: '''
   
   如下是视图动画相关的类继承关系：
   
-  ![视图动画相关的类继承关系](https://raw.githubusercontent.com/OCNYang/Android-Animation-Set/master/README_Res/view_animation_class.png?token=AQ83MggSP_dWoz60_jMj1OXBnKWS5hJMks5awhndwA%3D%3D)
+  ![57f9047e.png](:storage\\acf59dc1-c59d-4078-8fce-ede99d14327c\\57f9047e.png)
   
   | java 类名 | xml 关键字 | 描述信息 |
   | :-----: | :------- | :----- |

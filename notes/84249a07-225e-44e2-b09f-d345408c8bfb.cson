@@ -1,5 +1,5 @@
 createdAt: "2022-10-21T02:03:09.378Z"
-updatedAt: "2022-12-25T13:15:43.445Z"
+updatedAt: "2022-12-28T13:51:51.880Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "IOS"
@@ -42,7 +42,128 @@ content: '''
   weak不会产生野指针问题，因为weak修饰的对象释放后，指针会自动被置nil,之后再向该对象发消息也不会崩溃
   assign如果修饰对象，会产生野指针问题，如果修饰基本数据类型则是安全的。修饰的对象释放后，指针不会自动被置空，此时向对象发消息会崩溃。
   
+  ### 浅拷贝和深拷贝的区别
+  浅拷贝:只复制指向对象的指针，而不复制引用对象本身。
+  深拷贝:复制引用对象本身。内存中存在了两份独立对象本身。
   
+  ### @synthesize和@dynamic分别有什么作用？
+  @synthesize的语义是如果你没有手动实现setter方法和getter方法，那么编译器会自动为你加上这两个方法。
+  @dynamic告诉编译器，属性的setter与getter方法由用户自己实现，不自动生成。
+  
+  ### 常见的Objective-C的数据类型有哪些
+  Objective-C的数据类型有NSString,NSNumber,NSArray,NSMutableArray.NSData等等，这些都是class,创建后便是对象
+  
+  ### id声明的对象有什么特性
+  id声明的对象具有运行时的特性，即可以指向任意类型的Objective-C的对象。
+  
+  ### Object-C如何对内存管理的
+  Objective-C的内存管理主要有三种方式ARC(自动内存计数)、手动内存计数、内存池
+  1. 自动内存计数ARC,由Xcode自动在App编译阶段，在代码中添加内存管理代码。
+  2. 手动内存计算MRC,遵循内存谁申请，谁释放，谁添加，谁释放的原则。
+  3. 内存释放池Release Pool:把需要释放的内存统一放在一个池子中，当池子被抽干后，池子中所有的内存空间也被自动释放掉。
+  
+  ### OC是动态运行时语音的意思
+  主要是将数据类型的确定由编译时，推迟到了运行时。简单来说，运行时机制使我们直到运行时才去决定一个对象的类别，以及调用该类别对象指定方法。
+  
+  ### 什么时候用delete,什么时候用Notification
+  Delegate(委托模式)，1对1的反向消息通知功能。
+  Notification(通知模式)，只想要把消息发送出去，告知某些状态的变化。但是并不关心谁想要知道这个。
+  
+  ### 什么是KVO 和 KVC
+  1. KVC键值编码是一种通过字符串间接访问对象的方式（属性赋值）
+  ```
+  stu.name = @"张三" // 点语法给属性赋值
+  [stu setValue:@"张三" forKey:@"name"]; // 通过字符串使用KVC方式给属性赋值
+  stu1.nameLabel.text = @"张三";
+  [stu1 setValue:@"张三" forKey:@"nameLabel.text"]; // 跨层赋值
+  ```
+  2. KVO键值观察机制,他提供了观察某一属性变化的方法，极大的简化了代码。
+  KVO只能被KVC触发，包括使用setValue:forKey:方法和点语法。
+  ```
+  // 通过下方方法为属性添加KVO观察
+  
+  (void)addObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options context:(nullable void *)context;
+  // 当被观察的属性发送变化时，会自动触发下方方法
+  
+  (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
+  
+  ```
+  
+  ### ViewController生命周期
+  ```
+  按照执行顺序排列：
+  1. initWithCoder：通过nib文件初始化时触发。
+  2. awakeFromNib：nib文件被加载的时候，会发生一个awakeFromNib的消息到nib文件中的每个对象。
+  3. loadView：开始加载视图控制器自带的view。
+  4. viewDidLoad：视图控制器的view被加载完成。
+  5. viewWillAppear：视图控制器的view将要显示在window上。
+  6. updateViewConstraints：视图控制器的view开始更新AutoLayout约束。
+  7. viewWillLayoutSubviews：视图控制器的view将要更新内容视图的位置。
+  8. viewDidLayoutSubviews：视图控制器的view已经更新视图的位置。
+  9. viewDidAppear：视图控制器的view已经展示到window上。
+  10. viewWillDisappear：视图控制器的view将要从window上消失。
+  11. viewDidDisappear：视图控制器的view已经从window上消失。
+  ```
+  
+  ### OC中的反射机制
+  1. class反射
+  ```
+  通过类名的字符串形式实例化对象。
+  Class class = NSClassFromString(@"student");
+  Student *stu = [[class alloc] init];
+  将类名变为字符串。
+  Class class =[Student class];
+  NSString className = NSStringFromClass(class);
+  ```
+  
+  2. SEL的反射
+  ```
+  通过方法的字符串形式实例化方法。
+  SEL selector = NSSelectorFromString(@"setName");
+  [stu performSelector:selector withObject:@"Mike"];
+  将方法变成字符串。
+  NSStringFromSelector(@selector(setName:));
+  ```
+  
+  ### 怎么检查内存泄漏
+  1). 静态分析 analyze。
+  2). instruments工具里面有个leak可以动态分析。
+  
+  ### 什么是懒加载
+  懒加载就是只在用到的时候才去初始化。也可以理解成延时加载。
+  如tableView中图片的加载显示了, 一个延时加载, 避免内存过高,一个异步加载,避免线程堵塞提高用户体验。
+  
+  ### delegate和notification的区别
+  1). 二者都用于传递消息，不同之处主要在于一个是一对一的，另一个是一对多的。
+  2). notification通过维护一个array，实现一对多消息的转发。
+  3). delegate需要两者之间必须建立联系，不然没法调用代理的方法；notification不需要两者之间有联系。
+  
+  ### IOS中常用的数据存储方法有哪些
+  数据存储有四种方案：NSUserDefault、KeyChain、文件、数据库。
+  其中File有三种方式：writeToFile:atomically:、Plist、NSKeyedAchiever（归档）
+  数据库包括：SQLite、FMDB、CoreData
+  
+  ### iOS的沙盒目录结构
+  1. AppName.app 目录：这是应用程序的程序包目录，包含应用程序的本身。由于应用程序必须经过签名，所以您在运行时不能对这个目录中的内容进行修改，否则可能会使应用程序无法启动。
+  
+  2. Documents：您应该将所有的应用程序数据文件写入到这个目录下。这个目录用于存储用户数据。iCloud备份目录。（这里不能存缓存文件，否则上架不被通过）
+  3. Library 目录：这个目录下有两个子目录：
+  - Preferences 目录：包含应用程序的偏好设置文件。您不应该直接创建偏好设置文件，而是应该使用NSUserDefaults类来取得和设置应用程序的偏好.
+  - Caches 目录：用于存放应用程序专用的支持文件，保存应用程序再次启动过程中需要的信息。可创建子文件夹。可以用来放置您希望被备份但不希望被用户看到的数据。该路径下的文件夹，除Caches以外，都会被iTunes备份。
+  
+  4. tmp：存放临时文件，不会被备份，而且这个文件下的数据有可能随时被清除的可能。
+  
+  ### iOS多线程技术有哪几种方法
+  ```
+  pthread、NSThread、GCD、NSOperation
+  ```
+  
+  ### GCD与NSOperation的区别
+  ```
+  GCD 和 NSOperation 都是用于实现多线程：
+  GCD 基于C语言的底层API，GCD主要与block结合使用，代码简洁高效。
+  NSOperation 属于Objective-C类，是基于GCD更高一层的封装。复杂任务一般用NSOperation实现。
+  ```
   
   ## 面试题参考文献
   

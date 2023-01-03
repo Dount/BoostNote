@@ -1,11 +1,11 @@
 createdAt: "2019-09-11T10:00:10.608Z"
-updatedAt: "2019-09-11T10:00:54.660Z"
+updatedAt: "2023-01-03T13:59:45.768Z"
 type: "MARKDOWN_NOTE"
 folder: "855b282e2a555b697afd"
-title: "Ⅵ. Transition Animation / 转场动画 & 共享元素"
+title: "六. Transition Animation / 转场动画 & 共享元素"
 tags: []
 content: '''
-  # Ⅵ. Transition Animation / 转场动画 & 共享元素
+  # 六. Transition Animation / 转场动画 & 共享元素
   
   [Github项目解析（九）-->实现Activity跳转动画的五种方式 - 一片枫叶的专栏 - CSDN博客](https://blog.csdn.net/qq_23547831/article/details/51821159)
   
@@ -36,9 +36,9 @@ content: '''
   
   这里先看一张官方的效果图：  
   
-  ![共享元素转场动画](https://raw.githubusercontent.com/OCNYang/Android-Animation-Set/master/README_Res/transition_animation.gif?token=AQ83MnpsS0QFIfOphNBZ--ahkoxDvan1ks5axHvFwA%3D%3D)  
+  ![97608276.png](:storage\\16df756b-d8ac-45ad-b851-8b8555e7712b\\97608276.png)![b6cad8e3.png](:storage\\16df756b-d8ac-45ad-b851-8b8555e7712b\\b6cad8e3.png)
   
-  ![共享元素转场动画 过程细化](https://raw.githubusercontent.com/OCNYang/Android-Animation-Set/master/README_Res/SceneTransition.png?token=AQ83Mn28u76WmQPF2MNnecm8kmcNCzVbks5axHv_wA%3D%3D)  
+  ![5026183d.png](:storage\\16df756b-d8ac-45ad-b851-8b8555e7712b\\5026183d.png)
   
   对转场动画更加详细的介绍可以查看[官方介绍](https://developer.android.com/training/transitions/index.html)。
   
@@ -57,15 +57,11 @@ content: '''
   
   这里我们直接介绍通过 Transitions 实现的切换效果。
   
-  ![transition_A_to_B](https://raw.githubusercontent.com/OCNYang/Android-Animation-Set/master/README_Res/transition_A_to_B.png?token=AQ83Mhs5y3VQZ-RwFXpL_62sYpQiKMOOks5axHwcwA%3D%3D)
+  ![af6a5540.png](:storage\\16df756b-d8ac-45ad-b851-8b8555e7712b\\af6a5540.png)
   
   当从 Activity A 切换到  Activity B 的时候，Activity 布局的内容会按照预先定义好的动画来执行过渡动画。
   在 android.transition 包中，已经有三种现成的动画可以用: Explode，Slide 和 Fade。所有这些过渡都会跟踪 
   Activity 布局中可见的目标 Views，驱动这些 Views 按照过渡的规则产生响应的动画效果。
-  
-  | Explode | Slide |　Fade　|
-  | :-----: | :----: | :----: |
-  | ![transition_explode](https://raw.githubusercontent.com/OCNYang/Android-Animation-Set/master/README_Res/transition_explode.gif?token=AQ83Ml7jMuekilxc7547E0ytJLeYkm8wks5axHxcwA%3D%3D) | ![transition_slide](https://raw.githubusercontent.com/OCNYang/Android-Animation-Set/master/README_Res/transition_slide.gif?token=AQ83Mr2PgHwzU2Rkmqzeo9tvvrIRz36gks5axHx_wA%3D%3D) | ![transition_fade](https://raw.githubusercontent.com/OCNYang/Android-Animation-Set/master/README_Res/transition_fade.gif?token=AQ83Mn7qK6FrN9Yshyb0L0LHdWw04fMnks5axHyNwA%3D%3D) |
   
   你可以在 xml 中创建这些过渡效果，也可以通过代码来创建。对于 Fade 过渡效果来说，它看起来是这样子的：
   

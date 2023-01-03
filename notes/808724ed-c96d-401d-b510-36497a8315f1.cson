@@ -1,11 +1,11 @@
 createdAt: "2019-09-11T03:42:42.204Z"
-updatedAt: "2019-09-11T03:52:07.999Z"
+updatedAt: "2023-01-03T13:48:29.517Z"
 type: "MARKDOWN_NOTE"
 folder: "855b282e2a555b697afd"
-title: "Ⅳ. Ripple Effect / Touch Feedback / 触摸反馈动画"
+title: "四. Ripple Effect / Touch Feedback / 触摸反馈动画"
 tags: []
 content: '''
-  # Ⅳ. Ripple Effect / Touch Feedback / 触摸反馈动画
+  # 四. Ripple Effect / Touch Feedback / 触摸反馈动画
   
   ## 1. 简介
   
@@ -13,7 +13,7 @@ content: '''
   这是 Android 5.0 默认的触摸反馈动画。水波纹动画通过新的 RippleDrawable 类实现。水波纹效果可以配置在 
   View 边界的末端或超出 View 的边界。例如，下面的图片序列说明了在一个按钮上触摸时的水波纹效果动画：
   
-  ![ripple animation](https://raw.githubusercontent.com/OCNYang/Android-Animation-Set/master/README_Res/ripple_anim.png?token=AQ83MkxOkkejeBUg73SWQOLGYXjGTObCks5awyZAwA%3D%3D)  
+  ![13504381.png](:storage\\808724ed-c96d-401d-b510-36497a8315f1\\13504381.png)  
   
   刚开始在按钮上触摸时会出现左边第一张图片所示，剩下的图片说明了水波纹效果是怎样扩散到按钮边界的。
   当水波纹动画完成，View 恢复到初始状态。默认的水波纹动画不超过一秒，但可以自定义动画的长度。
@@ -49,7 +49,7 @@ content: '''
   ```    
   有边界的效果如下：  
   
-  ![ripple effect](https://raw.githubusercontent.com/OCNYang/Android-Animation-Set/master/README_Res/ripple_effect.gif?token=AQ83MtFDtMFUA3OYNYZ2PV6y8Lij2wJ9ks5awyZVwA%3D%3D)  
+  ![de0c8268.png](:storage\\808724ed-c96d-401d-b510-36497a8315f1\\de0c8268.png) 
   
   ## 3. 自定义 Ripple
   

@@ -1,11 +1,11 @@
 createdAt: "2020-08-17T14:09:01.144Z"
-updatedAt: "2020-10-15T12:39:25.918Z"
+updatedAt: "2023-01-03T12:30:44.669Z"
 type: "MARKDOWN_NOTE"
 folder: "8b201a0d43bb3b317af3"
-title: "1.自定义View基础——"
+title: "1.自定义View基础"
 tags: []
 content: '''
-  # 1.自定义View基础——
+  # 1.自定义View基础
   
   ## 1.1 AndroidView体系
   
