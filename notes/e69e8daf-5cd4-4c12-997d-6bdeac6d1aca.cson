@@ -1,5 +1,5 @@
 createdAt: "2019-08-22T02:26:48.080Z"
-updatedAt: "2020-10-23T01:49:57.725Z"
+updatedAt: "2023-01-05T11:41:14.021Z"
 type: "MARKDOWN_NOTE"
 folder: "8b201a0d43bb3b317af3"
 title: "12.自定义View进阶——事件分发机制原理"
@@ -151,7 +151,7 @@ content: '''
   >
   > 绿色箭头方向表示事件回传方向。
   
-  ![](http://ww2.sinaimg.cn/large/005Xtdi2jw1f88i0q8uozj30nm0kqwhm.jpg)
+  ![78f7adda.png](:storage\\e69e8daf-5cd4-4c12-997d-6bdeac6d1aca\\78f7adda.png)
   
   
   > **注意: 上图显示分发流程仅仅是一个示意流程，并不代表实际情况，如果按照实际情况绘制，会导致流程图非常复杂和混乱，在纠结了好久之后做了一个艰难的决定，采用这样一个简化后的流程。**
@@ -205,7 +205,7 @@ content: '''
   
   如果事件被View1消费掉了则事件会回传告诉上层View这个事件已经被我解决了，上层View就无需再响应了。
   
-  ![](http://ww2.sinaimg.cn/large/005Xtdi2jw1f88ll27wv9j30nm0kqtbo.jpg)
+  ![eff6918d.png](:storage\\e69e8daf-5cd4-4c12-997d-6bdeac6d1aca\\eff6918d.png)
   
   > 注意：这张图中的事件回传路径才是正确的路径。
   
@@ -237,7 +237,7 @@ content: '''
   
   > 上层的View有权拦截事件，不传递给下层View，例如 ListView 滑动的时候，就不会将事件传递给下层的子 View。
   
-  ![](http://ww4.sinaimg.cn/large/005Xtdi2jw1f88p3r45vfj30nm0kqn00.jpg)
+  ![3c769732.png](:storage\\e69e8daf-5cd4-4c12-997d-6bdeac6d1aca\\3c769732.png)
   
   > 注意：可以看到，如果上层拦截了事件，下层View将接收不到事件信息。
   
@@ -294,9 +294,8 @@ content: '''
   [更简单的学习Android事件分发](http://www.idtkm.com/customview/customview11/)<br/>
   《安卓开发艺术探索》
   
+  
 '''
-linesHighlighted: [
-  135
-]
+linesHighlighted: []
 isStarred: false
 isTrashed: false
