@@ -64,6 +64,11 @@
       "key": "bfd1eca2e356e7181dfa",
       "color": "#2BA5F7",
       "name": "课程"
+    },
+    {
+      "key": "c3bf24344ddc9bd2af22",
+      "color": "#30D5C8",
+      "name": "Android Framework"
     }
   ],
   "version": "1.0"
