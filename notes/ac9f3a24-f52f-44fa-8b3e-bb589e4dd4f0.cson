@@ -1,10 +1,25 @@
 createdAt: "2023-01-08T15:07:09.915Z"
-updatedAt: "2023-01-08T15:07:31.627Z"
+updatedAt: "2023-01-09T14:00:09.052Z"
 type: "MARKDOWN_NOTE"
 folder: "c3bf24344ddc9bd2af22"
 title: "ActivityManagerService"
 tags: []
-content: "# ActivityManagerService"
+content: '''
+  # ActivityManagerService
+  
+  ## 什么是ActivityManagerService
+  ActivityManagerService承担了Android四大组件的启动、切换、调度以及进程的管理工作，掌握了所有应用的创建、启动、管理，是Android中最核心的服务。
+  ![f28b35a4.png](:storage\\ac9f3a24-f52f-44fa-8b3e-bb589e4dd4f0\\f28b35a4.png)
+  
+  ## 四大组件与AMS的通讯方式
+  Activity最后通过调用ActivityManagerProxy，然后通过Binder机制同ActivityManagerService通讯，因为两种属于不同的进行（AMS属于系统进程）。
+  ![e9083b4a.png](:storage\\ac9f3a24-f52f-44fa-8b3e-bb589e4dd4f0\\e9083b4a.png)
+  
+  
+  ## 文献
+  
+  [Android-MS/ams.md at master · xiangjiana/Android-MS · GitHub](https://github.com/xiangjiana/Android-MS/blob/master/android/ams.md)
+'''
 linesHighlighted: []
 isStarred: false
 isTrashed: false

@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2023-01-08T14:53:28.448Z"
+updatedAt: "2023-01-09T14:38:44.970Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android"
@@ -2328,7 +2328,6 @@ content: '''
   1. 一类用来声明实现了Parcelable接口的数据类型，以供其他AIDL文件使用那些非默认支持的数据类型。
   2. 一类是用来定义接口方法，声明要暴露哪些接口给客户端调用，定向Tag就是用来标注这些方法的参数值。
   
-  
   #### 9.2.7 AIDL定向Tag
   定向Tag表示在跨进程通信中数据的流向，用于标注方法的参数值，分为 in、out、inout 三种。
   in:表示数据只能由客户端流向服务端。
@@ -2337,11 +2336,19 @@ content: '''
   **注意**
   如果AIDL方法接口的参数值类型是：基本数据类型、String、CharSequence或者其他AIDL文件定义的方法接口，那么这些参数值的定向 Tag 默认是且只能是 in，所以除了这些类型外，其他参数值都需要明确标注使用哪种定向Tag。
   
-  #### 9.2.8 使用AIDL的Demo
-  [Android AIDL 使用 - 妖久 - 博客园](https://www.cnblogs.com/tangZH/p/10775848.html)
+  #### 9.2.8 使用AIDL的步骤
+  
+  服务端：
+  1. 服务端创建.aidl的文件，也就是双方沟通的接口
+  2. 定义跟客服端沟通的接口已经可能的数据类，比如序列化parcelable的类，基础类
+  3. build 声场接口文件
+  4. 赋值定义好的接口aidl文件和可能用的bean类给到客服端
+  5. 创建一个Service提供接口类的存根
+  客服端：
+  1. 目录java平级创建aidl文件夹，将服务端给到的aidl文件拷贝
+  2. 客服端bindservice，然后进行通信
   
   #### 9.2.9 AIDL的工作原理
-  [Android：学习AIDL，这一篇文章就够了(下) - 简书](https://www.jianshu.com/p/0cca211df63c)
   **在客户端与服务端通信的过程中，真正协助发挥作用的是通过AIDL编译出来的.java文件。AIDL文件的目的就是为了生成.java文件**。
   1. 客户端分析
   Proxy类是.java中的核心。其中transact是客户端和服务端通信的核心方法。调用这个方法之后，客户端将会挂起当前线程，等候服务端执行完相关任务后通知并接收返回的 reply 数据流。
@@ -2361,6 +2368,12 @@ content: '''
   
   3. 客户端与服务端使用AIDL进行 IPC 的工作流程
   ![2491431-425990373820aaf6.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\4a0f8f69.png)
+  
+  #### 9.2.10 文献
+  [Android：学习AIDL，这一篇文章就够了(上) - 简书](https://www.jianshu.com/p/a8e43ad5d7d2)
+  [Android：学习AIDL，这一篇文章就够了(下) - 简书](https://www.jianshu.com/p/0cca211df63c)
+  [Android中AIDL的基本使用 - 简书](https://www.jianshu.com/p/7b8bb36ad109)
+  [Android AIDL 使用 - 妖久 - 博客园](https://www.cnblogs.com/tangZH/p/10775848.html)
   
   ## 10、Binder学习(★★★)
   
@@ -3355,11 +3368,6 @@ content: '''
   2. Bitmap内存未释放问题
   3. Service 中的内存泄漏
   
-  #### 
-  
-  
-  
-  
   ### 17.  参考文献
   [内存泄漏的场景_wanghong940821的博客-CSDN博客](https://blog.csdn.net/wanghong940821/article/details/79439569?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~all~sobaiduend~default-2-79439569.nonecase&utm_term=oom%20%E5%87%BA%E7%8E%B0%E7%9A%84%E6%9C%89%E5%93%AA%E4%BA%9B%E5%9C%BA%E6%99%AF&spm=1000.2123.3001.4430)
   [Android开发——告诉你Adapter应该写在Activity里面还是外面 - 齐天大猴子 - 博客园](https://www.cnblogs.com/qitian1/p/6461501.html)
@@ -3367,13 +3375,21 @@ content: '''
   ## 18 ANR的场景(★★★★★)
   
   ### 18.1 发生ANR的原因
-  Android系统中，ActivityManagerService(简称AMS)和WindowManagerService(简称WMS)会检测App的响应时间，如果App在特定时间无法相应屏幕触摸或键盘输入时间，或在主线程(UI线程)里面做了太多的阻塞耗时操作, 例如文件读写, 数据库读写, 网络查询等等就会出现ANR。
+  Android系统中，ActivityManagerService(简称AMS)和WindowManagerService(简称WMS)会检测App的响应时间，如果App在特定时间无法相应屏幕触摸或键盘输入时间，或在主线程(UI线程)里面做了太多的阻塞耗时操作,系统会向用户显示一个对话框，这个对话框称作“应用程序无响应”（ANR：Application Not Responding）对话框。用户可以选择“等待”而让程序继续运行，也可以选择“强制关闭”。
   
   ### 18.2 ANR的条件
   InputDispatching Timeout：5秒内无法响应屏幕触摸事件或键盘输入事件
   BroadcastQueue Timeout ：在执行前台广播（BroadcastReceiver）的onReceive()函数时10秒没有处理完成，后台为60秒。
   Service Timeout ：前台服务20秒内，后台服务在200秒内没有执行完毕。
   ContentProvider Timeout ：ContentProvider执行超时，20s
+  
+  #### 18.2.1 ANR出现的场景
+  1. 当前事件没有机会处理，例如UI线程正在响应另外的事件，当前事件被某个事件给阻塞掉了；
+  2. 当前事件正在处理 但是由于耗时太长没有能及时的完成;
+  3. 在BroadcastReceiver里做耗时的操作或计算；
+  4. CPU使用过高；
+  5. 发生了死锁；
+  6. 耗时操作的动画需要大量的计算工作，可能导致CPU负载过重。
   
   ### 18.3 ANR分析办法
   
@@ -3382,17 +3398,24 @@ content: '''
   
   #### 18.3.2 通过traces文件 查看
   通过ADB将记录AND的log,traces.txt文档导出，可以查看ANR的原因，进程id，包名，以及具体行数,
+  ```
+  $adb pull data/anr/traces.txt .
+  ```
   
   #### 18.3.3 通过DDMS Update Thread工具查看
   通过DDMS Update Threads工具查看该进程下的所有线程状态。需要注意的是main线程中的调用栈信息，以及线程状态，正常情况下main线程应当是处于空闲等待状态，如果长时间处于处理某一个任务时就会导致其他被发送到主线程的事件无法被及时处理，导致ANR,如果线程状态是MONITOR状态，就可能是ANR。(JVM中10种线程状态)。
   
+  ### 18.3.4 Traceview
+  Traceview是分析工具，用于定位应用代码中的耗时操作。
+  ### 18.3.5 Systrace 
+  Android4.1新增的应用性能数据采样和分析工具
+  
   ### 18.4 ANR的处理
-  #### 18.4.1 Thread方式
-  开辟单独的子线程来处理耗时阻塞事务，通过继承Thread或实现Runnable接口。
-  #### 18.4.2 使用AsyncTask
-  通过AsyncTask异步执行。继承AsyncTask,在doInBackground中实现耗时操作，然后在onProgressUpdate或onPostExecute回调方法中实现接收结果，最后通过执行execute执行AsyncTask。
-  #### 18.4.3 使用Handler,HandlerThread
-  通过Handler,HandlerThread来对UI进行更新。
+  1. 开辟单独的子线程来处理耗时阻塞事务，通过继承Thread或实现Runnable接口。
+  2. 使用AsyncTask,通过AsyncTask异步执行。继承AsyncTask,在doInBackground中实现耗时操作，然后在onProgressUpdate或onPostExecute回调方法中实现接收结果，最后通过执行execute执行AsyncTask。
+  3. 使用Handler,HandlerThread来对UI进行更新。
+  4. Activity的onCreate和onResume回调中尽量避免耗时的代码，应该尽可能的做比较少的事情
+  5. BoadcastReceiver中onReceive代码也要尽量减少耗时
   
   ### 18.5 参考文献
   [Android App优化之ANR详解 - 简书](https://www.jianshu.com/p/6d855e984b99)
@@ -3782,14 +3805,13 @@ content: '''
   ## 面试题参考文献
   [jeanboy_jeanboydev_CSDN博客-Android进阶,Java基础,Android进阶领域博主](https://blog.csdn.net/freekiteyu/article/list/1)
   [成功入职字节跳动的小姐姐告诉你，Android面试吃透这一篇就没有拿不到的offer！_Stay Hungry Stay Foolish-CSDN博客](https://blog.csdn.net/qq_29966203/article/details/105455615)
-  
-  
+  [Android-MS/android at master · xiangjiana/Android-MS · GitHub](https://github.com/xiangjiana/Android-MS/tree/master/android)
+  [【Android】_许佳佳233的博客-CSDN博客](https://blog.csdn.net/double2hao/category_6004761.html)
   
 '''
 linesHighlighted: [
   1
   1001
-  2887
   1184
   1217
   1481
@@ -3797,10 +3819,11 @@ linesHighlighted: [
   1619
   1813
   2222
-  2361
-  2373
-  3955
-  3882
+  2901
+  2375
+  2387
+  3898
+  3971
 ]
 isStarred: false
 isTrashed: false
