@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2023-01-09T14:38:44.970Z"
+updatedAt: "2023-01-12T11:55:17.913Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android"
@@ -117,7 +117,7 @@ content: '''
   ```
   package com.zejian.ipctest.service;
   
-  import android.app.Service;
+  import android.app.Service;a'd'b
   import android.content.Intent;
   import android.os.IBinder;
   import android.support.annotation.Nullable;
@@ -1004,6 +1004,7 @@ content: '''
   [关于Android Service真正的完全详解，你需要知道的一切_zejian的博客-CSDN博客_android service](https://blog.csdn.net/javazejian/article/details/52709857)
   [](https://mp.weixin.qq.com/s/w1xiDiaOJTmxdcmQlCt0bg?)
   [【Android】Service前台服务的使用 - 简书](https://www.jianshu.com/p/5505390503fa)
+  [【Android】跨进程通信——AIDL、之Service基本细节使用之：精通_虚妄狼的博客-CSDN博客_android service 跨进程](https://blog.csdn.net/qq_42470947/article/details/104088260)
   
   ### 2.19 在Service中启动Activity（★★）
   如果直接通过Intent的方式启动Activity，会报AndroidRuntimeException异常。
@@ -3808,22 +3809,21 @@ content: '''
   [Android-MS/android at master · xiangjiana/Android-MS · GitHub](https://github.com/xiangjiana/Android-MS/tree/master/android)
   [【Android】_许佳佳233的博客-CSDN博客](https://blog.csdn.net/double2hao/category_6004761.html)
   
+  
 '''
 linesHighlighted: [
   1
-  1001
-  1184
-  1217
-  1481
-  1484
-  1619
-  1813
-  2222
-  2901
-  2375
-  2387
-  3898
-  3971
+  3900
+  3973
+  2388
+  2376
+  2902
+  1814
+  1620
+  1485
+  1482
+  1218
+  1185
 ]
 isStarred: false
 isTrashed: false
