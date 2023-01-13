@@ -1,5 +1,5 @@
 createdAt: "2023-01-08T15:07:09.915Z"
-updatedAt: "2023-01-09T14:00:09.052Z"
+updatedAt: "2023-01-13T09:12:03.818Z"
 type: "MARKDOWN_NOTE"
 folder: "c3bf24344ddc9bd2af22"
 title: "ActivityManagerService"
@@ -11,14 +11,28 @@ content: '''
   ActivityManagerService承担了Android四大组件的启动、切换、调度以及进程的管理工作，掌握了所有应用的创建、启动、管理，是Android中最核心的服务。
   ![f28b35a4.png](:storage\\ac9f3a24-f52f-44fa-8b3e-bb589e4dd4f0\\f28b35a4.png)
   
-  ## 四大组件与AMS的通讯方式
-  Activity最后通过调用ActivityManagerProxy，然后通过Binder机制同ActivityManagerService通讯，因为两种属于不同的进行（AMS属于系统进程）。
-  ![e9083b4a.png](:storage\\ac9f3a24-f52f-44fa-8b3e-bb589e4dd4f0\\e9083b4a.png)
+  ## AMS关联类
+  - ActivityManager：主要对运行中的Activity进行管理。管理工作实际并不是由ActivityManager来处理的，而是交由AMS来处理的。
+  - ActivityManagerNative ：简称AMN。是一个抽象类，其功能由他的子类AMS处理。其getDefault方法可得到ActivityManagerProxy（简称AMP）。ActivityManager通过AMP与AMN通信。
+  - ActivityManagerProxy：AMN的内部类、AMS的代理类。
+  - ActivityManagerService：系统服务，运行在SystemSever进程。AMS作为系统服务，很多API是不会暴露给ActivityManager的。
+  
+  ![1a871cc1.png](:storage\\ac9f3a24-f52f-44fa-8b3e-bb589e4dd4f0\\1a871cc1.png)
+  
+  1. AMS由ActivityManagerNative（以后简称AMN）类派生，而AMN由Binder派生，实现了IActivityManager接口。
+  2. AMP是AMN的内部类，它们都实现了IActivityManager接口，这样它们就可以实现代理模式。具体来讲是远程代理。
+  3. AMP和AMN是运行在两个进程中的，AMP是Client端，AMN则是Server端，而Server端中具体的功能都是由AMN的子类AMS来实现的，因此，AMP就是AMS在Client端的代理类。
+  4. AMN又实现了Binder类，这样AMP和AMS就可以通过Binder来进行进程间通信。
+  5. 客户端使用ActivityManager类。由于AMS是系统核心服务，很多API不能开放供客户端使用，所以设计者没有让ActivityManager直接加入AMS家族。在ActivityManager类内部通过调用AMN的getDefault函数得到一个ActivityManagerProxy对象，通过它可与AMS通信。
+  
+  ## AMS启动过程
+  
+  
   
   
   ## 文献
-  
   [Android-MS/ams.md at master · xiangjiana/Android-MS · GitHub](https://github.com/xiangjiana/Android-MS/blob/master/android/ams.md)
+  [安卓的ActivityManagerService_dev晴天的博客-CSDN博客_activitymanagerservice](https://blog.csdn.net/qq_38350635/article/details/114785334)
 '''
 linesHighlighted: []
 isStarred: false
