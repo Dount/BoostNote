@@ -1,5 +1,5 @@
 createdAt: "2023-01-08T15:07:09.915Z"
-updatedAt: "2023-01-13T09:12:03.818Z"
+updatedAt: "2023-02-02T07:51:20.379Z"
 type: "MARKDOWN_NOTE"
 folder: "c3bf24344ddc9bd2af22"
 title: "ActivityManagerService"
@@ -7,11 +7,11 @@ tags: []
 content: '''
   # ActivityManagerService
   
-  ## 什么是ActivityManagerService
+  ## 1.什么是ActivityManagerService
   ActivityManagerService承担了Android四大组件的启动、切换、调度以及进程的管理工作，掌握了所有应用的创建、启动、管理，是Android中最核心的服务。
   ![f28b35a4.png](:storage\\ac9f3a24-f52f-44fa-8b3e-bb589e4dd4f0\\f28b35a4.png)
   
-  ## AMS关联类
+  ## 2.AMS关联类
   - ActivityManager：主要对运行中的Activity进行管理。管理工作实际并不是由ActivityManager来处理的，而是交由AMS来处理的。
   - ActivityManagerNative ：简称AMN。是一个抽象类，其功能由他的子类AMS处理。其getDefault方法可得到ActivityManagerProxy（简称AMP）。ActivityManager通过AMP与AMN通信。
   - ActivityManagerProxy：AMN的内部类、AMS的代理类。
@@ -25,14 +25,213 @@ content: '''
   4. AMN又实现了Binder类，这样AMP和AMS就可以通过Binder来进行进程间通信。
   5. 客户端使用ActivityManager类。由于AMS是系统核心服务，很多API不能开放供客户端使用，所以设计者没有让ActivityManager直接加入AMS家族。在ActivityManager类内部通过调用AMN的getDefault函数得到一个ActivityManagerProxy对象，通过它可与AMS通信。
   
-  ## AMS启动过程
+  ## 3.AMS启动过程
+  AMS的启动是在SystemServer进程中启动的。即AMS运行在SystemServer进程。
+  在SystemServer中需要启动的服务有三种：
+  - 引导服务(BootstrapServices),主要开启了ActivityManagerService、PowerManagerService、PackageManagerService等服
+  - 核心服务(CoreServices),主要开启了DropBoxManagerService、BatteryService、UsageStatsService和WebViewUpdateService等服务
+  - 其他服务(OtherServices),主要启动了CameraService、AlarmManagerService、VrManagerService等服务。
+  ```
+  public final class SystemServer {
+      //zygote的主入口
+      public static void main(String[] args) {
+          new SystemServer().run();
+      }
+      public SystemServer() {
+          // Check for factory test mode.
+          mFactoryTestMode = FactoryTest.getMode();
+      }
+      private void run() {
+          ......
+          //加载本地系统服务库，并进行初始化
+          System.loadLibrary("android_servers");
+          nativeInit();
+          // 1、创建系统上下文
+          createSystemContext();
+          //初始化SystemServiceManager对象，下面的系统服务开启都需要调用SystemServiceManager.startService(Class<T>)，这个方法通过反射来启动对应的服务
+          mSystemServiceManager = new SystemServiceManager(mSystemContext);
+          //开启服务
+          try {
+              startBootstrapServices();
+              startCoreServices();
+              startOtherServices();
+          } catch (Throwable ex) {
+              Slog.e("System", "******************************************");
+              Slog.e("System", "************ Failure starting system services", ex);
+              throw ex;
+          }
+          ......
+      }
+      /*初始化系统上下文对象mSystemContext，并设置默认的主题,mSystemContext实际上是一个ContextImpl对象。
+      *调用ActivityThread.systemMain()的时候，会调用ActivityThread.attach(true)，而在attach()里面，则创建了Application对象，
+      *并调用了Application.onCreate()。
+      */
+      private void createSystemContext() {
+          ActivityThread activityThread = ActivityThread.systemMain();
+          mSystemContext = activityThread.getSystemContext();
+          mSystemContext.setTheme(android.R.style.Theme_DeviceDefault_Light_DarkActionBar);
+      }
+      //在这里开启了几个核心的服务，因为这些服务之间相互依赖，所以都放在了这个方法里面。
+      private void startBootstrapServices() {
+          ......
+          //初始化ActivityManagerService
+          mActivityManagerService = mSystemServiceManager.startService(
+                  ActivityManagerService.Lifecycle.class).getService();
+          mActivityManagerService.setSystemServiceManager(mSystemServiceManager);
+          //初始化PowerManagerService，因为其他服务需要依赖这个Service，因此需要尽快的初始化
+          mPowerManagerService = mSystemServiceManager.startService(PowerManagerService.class);
+          // 初始化DisplayManagerService
+          mDisplayManagerService = mSystemServiceManager.startService(DisplayManagerService.class);
+          // 2、systemServer进程加载到AMS中，并被它管理
+          mActivityManagerService.setSystemProcess();
+          ......
+      }
+      private void startOtherServices() {
+          // 3、将SettingProvider放到SystemServer进程中来运行
+          mActivityManagerService.installSystemProviders();
+          // 4、AMS是系统的核心服务，只有它准备好了，才能调用其他服务的SystemReady
+          mActivityManagerService.systemReady(new Runnable() {
+              @Override
+              public void run() {
+                  try {
+                      startSystemUi(context); // 启动systemUi，如此，状态栏就准备好了
+                  } catch (Throwable e) {
+                      reportWtf("starting System UI", e);
+                  }
+                  Watchdog.getInstance().start(); // 启动watchdog
+              }
+          });
+      }
+  }
   
   
+  public static ActivityThread systemMain() {
+      if (!ActivityManager.isHighEndGfx()) {
+        HardwareRenderer.disable(true); // 禁止硬件加速
+      } else {
+        HardwareRenderer.enableForegroundTrimming();
+      }
+      // 创建一个ActivityThread对象
+      ActivityThread thread = new ActivityThread();
+      thread.attach(true); // 调用attach函数，参数为true
+      return thread;
+  }
   
+  private void attach(boolean system) {
+          sCurrentActivityThread = this;
+          mSystemThread = system; // 判断是否为系统进程
+          if (!system) { // 应用进程的处理流程
+              ......
+          } else { //系统进程的处理流程，该情况只在systemServer中处理
+              // 设置DDMS时看到的systemserver进程名
+              android.ddm.DdmHandleAppName.setAppName("system_process",
+                      UserHandle.myUserId());
+              try {
+                  // Instrumentation类出现了
+                  mInstrumentation = new Instrumentation();
+                  // 初始化context，注意参数getSystemContext().mPackageInfo
+                  ContextImpl context = ContextImpl.createAppContext(
+                          this, getSystemContext().mPackageInfo);
+                  //makeApplication 方法中创建Application对象，一个进程支持多个Application
+                  // mInitialApplication用于保存Application对象
+                  mInitialApplication = context.mPackageInfo.makeApplication(true, null);
+                  mInitialApplication.onCreate(); //调用Application的Oncreate()
+              } catch (Exception e) {
+                  throw new RuntimeException(
+                          "Unable to instantiate Application():" + e.toString(), e);
+              }
+          }
+          // 注册Configuration变化时的回调通知
+          ViewRootImpl.addConfigCallback(new ComponentCallbacks2() {
+              @Override
+              public void onConfigurationChanged(Configuration newConfig) {
+              }
+              @Override
+              public void onLowMemory() {}
+              @Override
+              public void onTrimMemory(int level) {}
+          });
+      }
+  ```
+  ### 3.1 Attach中出现的重要成员类
+  1. Instrumentrain
+  Instrumentrain 是一个工具类，当他被启用时，系统先创建他，再通过他来创建其他组件。另外，系统和组件之间的交互也是通过Instrumentrain来传递，这样，Instrumentrain就能检测系统和这些组件的交互情况，在实际使用中，我们可以创建Instrumentrain的派生类来进行相应的处理。
+  
+  2. Application类
+  - Application类保存了一个全局的application状态，Application由AndroidManifest.xml中的标签声明；
+  - 在实际使用中需定义Application派生类；
+  - Application是Android中的一个概念，可以理解为一种容器，其内部包含四大组件，一个进程可以运行多个Application
+  
+  3. Context类
+  Context是一个接口，通过他可以获取并操作Application对应的资源、类，甚至包含于Application中的四大组件
+  ![1111.png](:storage\\ac9f3a24-f52f-44fa-8b3e-bb589e4dd4f0\\aa1ee246.png)
+  
+  ### 3.2 zygote->SystemServer->AMS和ActivityThread->ActivityManager解释
+  1. App(ActivityThread进程)和AMS(SystemServer进程)还有zygote进程属于三个独立的进程。
+  2. App与AMS通过Binder进行IPC通信，AMS与zygote通过Socket进行IPC通信。
+  3. AMS负责所有Activity的生命周期，若想打开一个App的话，需要AMS去通知zygote进程。
+  4. 任何一个Activity的启动都是由AMS和应用程序进程相互配合来完成。AMS服务统一调用系统中所有进程的Activity启动，而每个Activity的启动过程则由其所属的进程具体来完成。
+  
+  ## 4 Activity 启动流程
+  
+  ![a06cf9cf.png](:storage\\ac9f3a24-f52f-44fa-8b3e-bb589e4dd4f0\\a06cf9cf.png)
+  
+  ### 4.1 启动 MainActivity 五个步骤
+  一. Launcher通过Binder进程间通信机制通知ActivityManagerService,它要启动一个Activity。
+  
+  二. ActivityManagerService通过Binder进程间通信机制通知Launcher让其它Activity进入Paused状态。
+  
+  三. Launcher通过Binder进程间通信机制通知ActivityManagerService，它已经准备就绪进入Paused状态，于是ActivityManagerService就向zygote发送命令用来fork一个子进程，用来启动一个ActivityThread实例，即将要启动的Activity在这个ActivityThread实例中运行。
+  
+  四. ActivityThread通过Binder进程间通信机制将一个ApplicationThread类型的Binder对象传递给ActivityManagerService,以便ActivityManagerService能够通过这个Binder对象与ActivityThread通信，其通信内容分为三个阶段。
+  第一阶段：用于和应用进程交互的thread对象，进程调度优先级及oom_adj的值。
+  第二阶段: 为调用Application的bindApplication做准备,其目的是创建并初始化位于该进程的Anroid运行环境。
+  第三阶段：通知应用进程Activity的Service等组件，其中用于启动Activity的函数时ActivityStack realStartActivityLocked。
+  
+  五. ActivityManagerService通过Binder进程间通信机制通知ActivityThread，现在一切准备就绪，它可以真正执行Activity的启动操作了。
+  
+  ## 5 BroadCast 广播机制分析
+  
+  ### 5.1 概述
+  接收方式分为两类：
+  - 静态广播接收者：通过AndroidManifest.xml的标签来申明的BroadcastReceiver。
+  - 动态广播接收者：通过AMS.registerReceiver()方式注册的BroadcastReceiver，动态注册更为灵活，可在不需要时通过unregisterReceiver()取消注册。
+  
+  发送方式可分为三类：
+  - 普通广播：通过Context.sendBroadcast()发送，可并行处理
+  - 有序广播：通过Context.sendOrderedBroadcast()发送，串行处理
+  - Sticky广播：通过Context.sendStickyBroadcast()发送
+  
+  ### 5.2 注册广播
+  广播注册，对于应用开发来说，往往是在Activity/Service中调用registerReceiver()方法，而Activity或Service都间接继承于Context抽象类，真正干活是交给ContextImpl类。另外调用getOuterContext()可获取最外层的调用者Activity或Service。
+  
+  ### 5.2.1 ContextImpl
+  ```
+  public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
+      return registerReceiver(receiver, filter, null, null);
+  }
+  
+  public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter, String broadcastPermission, Handler scheduler) {
+      return registerReceiverInternal(receiver, getUserId(),
+              filter, broadcastPermission, scheduler, getOuterContext());
+  }
+  ```
+  其中broadcastPermission拥有广播的权限控制，scheduler用于指定接收到广播时onRecive执行线程，当scheduler=null则默认代表在主线程中执行，这也是最常见的用法
+  
+  ### 5.2.2 RegisterReceiverInternal
+  
+  ### 5.2.3 
+  
+  
+  ## 6 startService启动过程
   
   ## 文献
   [Android-MS/ams.md at master · xiangjiana/Android-MS · GitHub](https://github.com/xiangjiana/Android-MS/blob/master/android/ams.md)
   [安卓的ActivityManagerService_dev晴天的博客-CSDN博客_activitymanagerservice](https://blog.csdn.net/qq_38350635/article/details/114785334)
+  [Android 8.0 AMS分析的第一条线：SystemServer中的AMS的调用轨迹_yaoming168的博客-CSDN博客_systemserver进程和ams的关系](https://blog.csdn.net/yaoming168/article/details/51991570)
+  [Android Activity的启动流程分析：以Launcher启动一个Activity为例，分析应用进程的创建、Activity的启动，以及他们和AMS之间的交互_yaoming168的博客-CSDN博客](https://blog.csdn.net/yaoming168/article/details/52402963?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522167392590416800182188436%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=167392590416800182188436&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-1-52402963-null-null.blog_rank_default&utm_term=%E4%BB%A5am%E5%91%BD%E4%BB%A4%E5%90%AF%E5%8A%A8%E4%B8%80%E4%B8%AAActivity%E4%B8%BA%E4%BE%8B&spm=1018.2226.3001.4450)
+  [Android Broadcast广播机制分析 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/06/04/broadcast-receiver/)
+  [startService启动过程分析 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/03/06/start-service/)
 '''
 linesHighlighted: []
 isStarred: false

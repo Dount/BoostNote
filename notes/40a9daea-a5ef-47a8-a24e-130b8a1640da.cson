@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2023-01-12T11:55:17.913Z"
+updatedAt: "2023-02-01T07:28:45.726Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android"
@@ -3375,16 +3375,10 @@ content: '''
   
   ## 18 ANR的场景(★★★★★)
   
-  ### 18.1 发生ANR的原因
+  ### 18.1 发生ANR的具体表现
   Android系统中，ActivityManagerService(简称AMS)和WindowManagerService(简称WMS)会检测App的响应时间，如果App在特定时间无法相应屏幕触摸或键盘输入时间，或在主线程(UI线程)里面做了太多的阻塞耗时操作,系统会向用户显示一个对话框，这个对话框称作“应用程序无响应”（ANR：Application Not Responding）对话框。用户可以选择“等待”而让程序继续运行，也可以选择“强制关闭”。
   
-  ### 18.2 ANR的条件
-  InputDispatching Timeout：5秒内无法响应屏幕触摸事件或键盘输入事件
-  BroadcastQueue Timeout ：在执行前台广播（BroadcastReceiver）的onReceive()函数时10秒没有处理完成，后台为60秒。
-  Service Timeout ：前台服务20秒内，后台服务在200秒内没有执行完毕。
-  ContentProvider Timeout ：ContentProvider执行超时，20s
-  
-  #### 18.2.1 ANR出现的场景
+  ### 18.2 导致ANR的场景
   1. 当前事件没有机会处理，例如UI线程正在响应另外的事件，当前事件被某个事件给阻塞掉了；
   2. 当前事件正在处理 但是由于耗时太长没有能及时的完成;
   3. 在BroadcastReceiver里做耗时的操作或计算；
@@ -3392,36 +3386,141 @@ content: '''
   5. 发生了死锁；
   6. 耗时操作的动画需要大量的计算工作，可能导致CPU负载过重。
   
-  ### 18.3 ANR分析办法
+  ### 18.3 ANR的条件
+  InputDispatching Timeout：5秒内无法响应屏幕触摸事件或键盘输入事件
+  BroadcastQueue Timeout ：在执行前台广播（BroadcastReceiver）的onReceive()函数时10秒没有处理完成，后台为60秒。
+  Service Timeout ：前台服务20秒内，后台服务在200秒内没有执行完毕。
+  ContentProvider Timeout ：ContentProvider执行超时，20s
   
-  #### 18.3.1 通过logcat 查看
-  通过logcat查看记录了ANR发生的时间，以及线程的tid，而且log可以看出ANR的类型，CPU的使用情况。如果CPU使用量接近100%,说明当前设备很忙，有可能是CUP饥饿导致ANR，如果CPU使用量很少，可能主线程被Block,如果IOwait很高说明ANR有可能是主线程在进行I/O操作造成的。
-  
-  #### 18.3.2 通过traces文件 查看
-  通过ADB将记录AND的log,traces.txt文档导出，可以查看ANR的原因，进程id，包名，以及具体行数,
+  ### 18.4 ANR日志分析
+  通过ADB将记录ANR的log,traces.txt文档导出，可以查看ANR的原因，进程id，包名，以及具体行数
   ```
   $adb pull data/anr/traces.txt .
   ```
+  #### 18.4.1 CPU负载
+  ```
+  Load: 2.62 / 2.55 / 2.25
+  CPU usage from 0ms to 1987ms later (2020-03-10 08:31:55.169 to 2020-03-10 08:32:17.156):
+    41% 2080/system_server: 28% user + 12% kernel / faults: 76445 minor 180 major
+    26% 9378/com.xiaomi.store: 20% user + 6.8% kernel / faults: 68408 minor 68 major
+  ........省略N行.....
+  66% TOTAL: 20% user + 15% kernel + 28% iowait + 0.7% irq + 0.7% softirq
+  ```
+  ```
+  * 第一行：1、5、15 分钟内正在使用和等待使用CPU 的活动进程的平均数
+  * 第二行：表明负载信息抓取在ANR发生之后的0~1987ms。同时也指明了ANR的时间点：2020-03-10 08:31:55.169
+  * 中间部分：各个进程占用的CPU的详细情况
+  * 最后一行：各个进程合计占用的CPU信息。
+  ```
+  名词解释：
+  - user:用户态,kernel:内核态
+  - faults:内存缺页，minor——轻微的，major——重度，需要从磁盘拿数据
+  - iowait:IO使用（等待）占比
+  - irq:硬中断，softirq:软中断
   
-  #### 18.3.3 通过DDMS Update Thread工具查看
+  注意：
+  主要关注iowait关键字，若iowait占比很高，意为有很大可能是io耗时导致ANR。
+  
+  #### 18.4.2 内存信息
+  ```
+  Total number of allocations 476778　　进程创建到现在一共创建了多少对象
+  Total bytes allocated 52MB　进程创建到现在一共申请了多少内存
+  Total bytes freed 52MB　　　进程创建到现在一共释放了多少内存
+  Free memory 777KB　　　 不扩展堆的情况下可用的内存
+  Free memory until GC 777KB　　GC前的可用内存
+  Free memory until OOME 383MB　　OOM之前的可用内存
+  Total memory 当前总内存（已用+可用）
+  Max memory 384MB 进程最多能申请的内存
+  ```
+  注意：
+  1. 若Free memory until OOME的值很小，说明处于内存紧张状态，ANR可能由于应用占用过多内存。
+  2. 若ANR时间点前后，在LogCat日志中含有onTrimMemory，说明已经处于内存紧张状态。
+  
+  #### 18.4.3 堆栈消息
+  ```
+  suspend all histogram:  Sum: 2.834s 99% C.I. 5.738us-7145.919us Avg: 607.155us Max: 41543us
+  DALVIK THREADS (248):
+  "main" prio=5 tid=1 Native
+    | group="main" sCount=1 dsCount=0 flags=1 obj=0x74b17080 self=0x7bb7a14c00
+    | sysTid=2080 nice=-2 cgrp=default sched=0/0 handle=0x7c3e82b548
+    | state=S schedstat=( 757205342094 583547320723 2145008 ) utm=52002 stm=23718 core=5 HZ=100
+    | stack=0x7fdc995000-0x7fdc997000 stackSize=8MB
+    | held mutexes=
+    kernel: __switch_to+0xb0/0xbc
+    kernel: SyS_epoll_wait+0x288/0x364
+    kernel: SyS_epoll_pwait+0xb0/0x124
+    kernel: cpu_switch_to+0x38c/0x2258
+    native: #00 pc 000000000007cd8c  /system/lib64/libc.so (__epoll_pwait+8)
+    native: #01 pc 0000000000014d48  /system/lib64/libutils.so (android::Looper::pollInner(int)+148)
+    native: #02 pc 0000000000014c18  /system/lib64/libutils.so (android::Looper::pollOnce(int, int*, int*, void**)+60)
+    native: #03 pc 0000000000127474  /system/lib64/libandroid_runtime.so (android::android_os_MessageQueue_nativePollOnce(_JNIEnv*, _jobject*, long, int)+44)
+    at android.os.MessageQueue.nativePollOnce(Native method)
+    at android.os.MessageQueue.next(MessageQueue.java:330)
+    at android.os.Looper.loop(Looper.java:169)
+    at com.android.server.SystemServer.run(SystemServer.java:508)
+    at com.android.server.SystemServer.main(SystemServer.java:340)
+    at java.lang.reflect.Method.invoke(Native method)
+    at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:536)
+    at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:856)
+     
+    ........省略N行.....
+     
+    "OkHttp ConnectionPool" daemon prio=5 tid=251 TimedWaiting
+    | group="main" sCount=1 dsCount=0 flags=1 obj=0x13daea90 self=0x7bad32b400
+    | sysTid=29998 nice=0 cgrp=default sched=0/0 handle=0x7b7d2614f0
+    | state=S schedstat=( 951407 137448 11 ) utm=0 stm=0 core=3 HZ=100
+    | stack=0x7b7d15e000-0x7b7d160000 stackSize=1041KB
+    | held mutexes=
+    at java.lang.Object.wait(Native method)
+    - waiting on <0x05e5732e> (a com.android.okhttp.ConnectionPool)
+    at com.android.okhttp.ConnectionPool$1.run(ConnectionPool.java:103)
+    - locked <0x05e5732e> (a com.android.okhttp.ConnectionPool)
+    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1167)
+    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:641)
+    at java.lang.Thread.run(Thread.java:764)
+  
+  ```
+  | Java Thread 状态 | Cpp Thread 状态  | 说明                                     |
+  | ---------------- | ---------------- | ---------------------------------------- |
+  | TERMINATED       | ZOMBIE           | 线程死亡，终止运行                       |
+  | RUNNABLE         | RUNNING/RUNNABLE | 线程可运行或正在运行                     |
+  | TIMED_WAITING    | TIMED_WAIT       | 执行了带有超时参数的wait,sleep或join函数 |
+  | BLOCKED          | MONITOR          | 线程阻塞，等待获取对象锁                 |
+  | WAITING          | WAIT             | 执行了无超时参数的wait函数               |
+  | NEW              | INITIALIZING     | 新建，正在初始化，为其分配资源           |
+  | NEW              | STARTING         | 新建，正在启动                           |
+  | RUNNABLE         | NATIVE           | 正在执行JNI本地函数                      |
+  | WAITING          | VMWAIT           | 正在等待VM资源                           |
+  | RUNNABLE         | SUSPENDED        | 线程暂停，通常是由于GC或debug被暂停      |
+  |                  | UNKNOWN          | 未知状态                                 |
+  
+  注意：
+  main线程处于BLOCK,WAITING,TIMEWAITING状态，可以确定函数阻塞导致ANR.;
+  
+  
+  
+  ### 18.5 ANR其它分析方式
+  #### 18.5.3 通过DDMS Update Thread工具查看
   通过DDMS Update Threads工具查看该进程下的所有线程状态。需要注意的是main线程中的调用栈信息，以及线程状态，正常情况下main线程应当是处于空闲等待状态，如果长时间处于处理某一个任务时就会导致其他被发送到主线程的事件无法被及时处理，导致ANR,如果线程状态是MONITOR状态，就可能是ANR。(JVM中10种线程状态)。
   
-  ### 18.3.4 Traceview
+  ### 18.5.4 Traceview
   Traceview是分析工具，用于定位应用代码中的耗时操作。
-  ### 18.3.5 Systrace 
+  
+  ### 18.5.5 Systrace 
   Android4.1新增的应用性能数据采样和分析工具
   
-  ### 18.4 ANR的处理
+  ### 18.6 ANR的处理
   1. 开辟单独的子线程来处理耗时阻塞事务，通过继承Thread或实现Runnable接口。
   2. 使用AsyncTask,通过AsyncTask异步执行。继承AsyncTask,在doInBackground中实现耗时操作，然后在onProgressUpdate或onPostExecute回调方法中实现接收结果，最后通过执行execute执行AsyncTask。
   3. 使用Handler,HandlerThread来对UI进行更新。
   4. Activity的onCreate和onResume回调中尽量避免耗时的代码，应该尽可能的做比较少的事情
   5. BoadcastReceiver中onReceive代码也要尽量减少耗时
   
-  ### 18.5 参考文献
+  ### 18.7 参考文献
   [Android App优化之ANR详解 - 简书](https://www.jianshu.com/p/6d855e984b99)
   [Android应用ANR分析 - 简书](https://www.jianshu.com/p/30c1a5ad63a3)
   [理解Android ANR的触发原理 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/07/02/android-anr/)
+  [ANR日志分析汇总_yaoming168的博客-CSDN博客_anr日志分析](https://blog.csdn.net/yaoming168/article/details/119782869?spm=1001.2014.3001.5502)
   
   ## 19 ListView 与 RecycleView 学习 
   
@@ -3812,18 +3911,13 @@ content: '''
   
 '''
 linesHighlighted: [
-  1
-  3900
-  3973
-  2388
-  2376
-  2902
-  1814
   1620
   1485
   1482
   1218
   1185
+  4009
+  4082
 ]
 isStarred: false
 isTrashed: false
