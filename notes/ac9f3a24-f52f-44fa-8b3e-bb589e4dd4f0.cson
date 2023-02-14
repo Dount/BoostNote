@@ -1,5 +1,5 @@
 createdAt: "2023-01-08T15:07:09.915Z"
-updatedAt: "2023-02-02T07:51:20.379Z"
+updatedAt: "2023-02-14T07:47:42.464Z"
 type: "MARKDOWN_NOTE"
 folder: "c3bf24344ddc9bd2af22"
 title: "ActivityManagerService"
@@ -202,25 +202,48 @@ content: '''
   - 有序广播：通过Context.sendOrderedBroadcast()发送，串行处理
   - Sticky广播：通过Context.sendStickyBroadcast()发送
   
+  注册广播：
+  广播注册registerReceiver():默认将当前进程的主线程设置为scheuler. 再向AMS注册该广播相应信息, 根据类型选择加入mParallelBroadcasts或mOrderedBroadcasts队列.
+  
+  广播发送processNextBroadcast():根据不同情况调用不同的处理过程:
+  - 如果是动态广播接收者，则调用deliverToRegisteredReceiverLocked处理；
+  - 如果是静态广播接收者，且对应进程已经创建，则调用processCurBroadcastLocked处理；
+  - 如果是静态广播接收者，且对应进程尚未创建，则调用startProcessLocked创建进程。
+  
   ### 5.2 注册广播
   广播注册，对于应用开发来说，往往是在Activity/Service中调用registerReceiver()方法，而Activity或Service都间接继承于Context抽象类，真正干活是交给ContextImpl类。另外调用getOuterContext()可获取最外层的调用者Activity或Service。
+  ![注册广播.png](:storage\\ac9f3a24-f52f-44fa-8b3e-bb589e4dd4f0\\ba26dd41.png)
   
-  ### 5.2.1 ContextImpl
-  ```
-  public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
-      return registerReceiver(receiver, filter, null, null);
-  }
+  - 1:ContextImpI中广播注册接口
+  - 1.1:获取主线程对象
+  - 1.2:根据广播接收者，初始化一个广播分发者对象
+  - 1.2.1:对广播接收者和分发者以ArrayMap的形式管理，同时返回新创建的广播分发者对象
+  - 1.2.2:初始化一个ArrayMap
+  - 1.2.3:将广播接收者和分发者放入ArrayMap中。
+  - 1.3:通过AMP对象进一步调用注册接口 
+  - 1.3.1: 获取AMP对象(ActivityManagerProxy,AMN中的内部类,实现代理模式)。
+  - 1.3.1.1: 调用AMS中registerReciver的具体实现(AMS是AMN的具体实现)。
+  - 1.3.1.1.1: 获取当前App的进程信息。
+  - 1.3.1.1.2: 获取广播的action。
+  - 1.3.1.1.3: 查询用户的Sticky广播。
+  - 1.3.1.1.3.1: 根据action获取对应Sticky广播的Intent。
+  - 1.3.1.1.3.1.1: 初始化Sticky,Intent列表。
+  - 1.3.1.1.3.1.2: 将获取到的Sticky Intent，添加到列表中。
+  - 1.3.1.1.4: 获取已注册广播接收者队列
+  - 1.3.1.1.5: 若没有获取到，则新创建队列
+  - 1.3.1.1.6: 将新的广播接收者加入到队列中
+  - 1.3.1.1.7: 创建BroadcastFilter对象，并添加到接收者队列
+  - 1.3.1.1.8: 将BroadcastFilter，添加到接收者队列
+  - 1.3.1.1.9: 新BroadcastFilter，添加到ReceiverResolver队列
+  - 1.3.1.1.10: 若存在sticky broadcast,根据intent返回前台或后台广播队列
+  - 1.3.1.1.11: 创建新的BroadcastRecord
+  - 1.3.1.1.12: 将该广播加入到并行广播队列
+  - 1.3.1.1.13: 调度广播，发送BROADCAST_INTENT_MSG消息，触发处理下一个广播
   
-  public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter, String broadcastPermission, Handler scheduler) {
-      return registerReceiverInternal(receiver, getUserId(),
-              filter, broadcastPermission, scheduler, getOuterContext());
-  }
-  ```
-  其中broadcastPermission拥有广播的权限控制，scheduler用于指定接收到广播时onRecive执行线程，当scheduler=null则默认代表在主线程中执行，这也是最常见的用法
+  ### 5.2.3 广播发送和处理
+  ![99d6d204.png](:storage\\ac9f3a24-f52f-44fa-8b3e-bb589e4dd4f0\\99d6d204.png)
   
-  ### 5.2.2 RegisterReceiverInternal
   
-  ### 5.2.3 
   
   
   ## 6 startService启动过程
