@@ -1,5 +1,5 @@
 createdAt: "2023-01-08T15:07:09.915Z"
-updatedAt: "2023-02-14T07:47:42.464Z"
+updatedAt: "2023-02-16T11:25:58.706Z"
 type: "MARKDOWN_NOTE"
 folder: "c3bf24344ddc9bd2af22"
 title: "ActivityManagerService"
@@ -206,9 +206,9 @@ content: '''
   广播注册registerReceiver():默认将当前进程的主线程设置为scheuler. 再向AMS注册该广播相应信息, 根据类型选择加入mParallelBroadcasts或mOrderedBroadcasts队列.
   
   广播发送processNextBroadcast():根据不同情况调用不同的处理过程:
-  - 如果是动态广播接收者，则调用deliverToRegisteredReceiverLocked处理；
-  - 如果是静态广播接收者，且对应进程已经创建，则调用processCurBroadcastLocked处理；
-  - 如果是静态广播接收者，且对应进程尚未创建，则调用startProcessLocked创建进程。
+  - 如果是动态广播接收者，则调用deliverToRegisteredReceiverLocked处理(并行处理);
+  - 如果是静态广播接收者，且对应进程已经创建，则调用processCurBroadcastLocked处理(串行处理);
+  - 如果是静态广播接收者，且对应进程尚未创建，则调用startProcessLocked创建进程()。
   
   ### 5.2 注册广播
   广播注册，对于应用开发来说，往往是在Activity/Service中调用registerReceiver()方法，而Activity或Service都间接继承于Context抽象类，真正干活是交给ContextImpl类。另外调用getOuterContext()可获取最外层的调用者Activity或Service。
@@ -243,8 +243,32 @@ content: '''
   ### 5.2.3 广播发送和处理
   ![99d6d204.png](:storage\\ac9f3a24-f52f-44fa-8b3e-bb589e4dd4f0\\99d6d204.png)
   
+  #### 5.2.3.1 普通广播
   
+  - 广播发送端所在进程: 步骤1~2;
+  - system_server的binder线程: 步骤3~5;
+  - system_server的ActivityManager线程: 步骤6~11;
+  - 广播接收端所在进程的binder线程: 步骤12~13;
+  - 广播接收端所在进程的主线程: 步骤14~15,以及23;
+  - system_server的binder线程: 步骤24~25.
+  #### 5.2.3.2 串行广播
   
+  - 广播发送端所在进程: 步骤1~2;
+  - system_server的binder线程: 步骤3~5;
+  - system_server的ActivityManager线程: 步骤6~11;
+  - 广播接收端所在进程的binder线程: 步骤12~13;
+  - 广播接收端所在进程的主线程: 步骤14~15,以及23;
+  - system_server的binder线程: 步骤24~25.
+  
+  #### 5.2.3.3 广播处理
+  1. 当发送串行广播(ordered=true)的情况下：
+  - 静态注册的广播接收者(receivers)，采用串行处理；
+  - 动态注册的广播接收者(registeredReceivers)，采用串行处理；
+  2. 当发送并行广播(ordered=false)的情况下：
+  - 静态注册的广播接收者(receivers)，依然采用串行处理；
+  - 动态注册的广播接收者(registeredReceivers)，采用并行处理；
+  
+  静态注册的receivers始终采用串行方式来处理（processNextBroadcast）； 动态注册的registeredReceivers处理方式是串行还是并行方式, 取决于广播的发送方式(processNextBroadcast)。
   
   ## 6 startService启动过程
   
