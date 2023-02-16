@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2023-02-14T15:18:59.093Z"
+updatedAt: "2023-02-16T12:00:59.808Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android"
@@ -2318,14 +2318,17 @@ content: '''
   #### 9.2.8 使用AIDL的步骤 (★★★★★)
   
   服务端：
-  1. 服务端创建.aidl的文件，也就是双方沟通的接口
+  
+  1. 服务端创建.aidl的文件，也就是双方远程通信的接口方法以及自定义数据
   2. 定义跟客服端沟通的接口已经可能的数据类，比如序列化parcelable的类，基础类
-  3. build 声场接口文件
-  4. 赋值定义好的接口aidl文件和可能用的bean类给到客服端
+  3. build 生成相应的Java文件
+  4. 复制定义好的接口aidl文件和可能用的bean类给到客服端
   5. 创建一个Service提供接口类的存根
+  
   客服端：
+  
   1. 目录java平级创建aidl文件夹，将服务端给到的aidl文件拷贝
-  2. 客服端bindservice，然后进行通信
+  2. 客服端bindservice，拿到binder实例调用服务端方法，实现通信。
   
   #### 9.2.9 AIDL的工作原理 (★★★★★)
   **在客户端与服务端通信的过程中，真正协助发挥作用的是通过AIDL编译出来的.java文件。AIDL文件的目的就是为了生成.java文件**。
@@ -2346,13 +2349,14 @@ content: '''
   - 3，将需要回传的数据写入 reply 流，传回客户端。
   
   3. 客户端与服务端使用AIDL进行 IPC 的工作流程
-  ![2491431-425990373820aaf6.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\4a0f8f69.png)
+  ![522039c7.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\522039c7.png)
   
   #### 9.2.10 文献
   [Android：学习AIDL，这一篇文章就够了(上) - 简书](https://www.jianshu.com/p/a8e43ad5d7d2)
   [Android：学习AIDL，这一篇文章就够了(下) - 简书](https://www.jianshu.com/p/0cca211df63c)
   [Android中AIDL的基本使用 - 简书](https://www.jianshu.com/p/7b8bb36ad109)
   [Android AIDL 使用 - 妖久 - 博客园](https://www.cnblogs.com/tangZH/p/10775848.html)
+  [Binder系列9—如何使用AIDL - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2015/11/23/binder-aidl/)
   
   ## 10、Binder学习(★★★★★)
   
@@ -3890,8 +3894,8 @@ content: '''
   
 '''
 linesHighlighted: [
-  4059
-  3986
+  3989
+  4062
 ]
 isStarred: false
 isTrashed: false
