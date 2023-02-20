@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2023-02-16T12:00:59.808Z"
+updatedAt: "2023-02-20T15:32:20.545Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android"
@@ -2319,16 +2319,18 @@ content: '''
   
   服务端：
   
-  1. 服务端创建.aidl的文件，也就是双方远程通信的接口方法以及自定义数据
-  2. 定义跟客服端沟通的接口已经可能的数据类，比如序列化parcelable的类，基础类
+  1. 服务端创建.aidl的文件，也就是双方远程通信的接口方法
+  2. 定义跟客服端沟通的数据类，比如序列化parcelable的类，基础类
   3. build 生成相应的Java文件
-  4. 复制定义好的接口aidl文件和可能用的bean类给到客服端
-  5. 创建一个Service提供接口类的存根
+  4. 创建继承Service的自定义服务，并在Manifest.xml中注册
+  5. 声明.Stub类型变量（Binder类型），并实现接口方法
+  6. 重写onBind方法返回.Stub类型变量(Binder类型)
   
   客服端：
-  
-  1. 目录java平级创建aidl文件夹，将服务端给到的aidl文件拷贝
-  2. 客服端bindservice，拿到binder实例调用服务端方法，实现通信。
+  1. 将服务端定义好的接口aidl文件和数据类复制到客服端
+  2. 声明ServiceConnection类型变量，并完成bindService
+  3. 在onServiceConnected中通过.Stub.asInterface,获取到服务端binder实例。
+  4. 调用服务端binder实例，实现与服务端的通信。
   
   #### 9.2.9 AIDL的工作原理 (★★★★★)
   **在客户端与服务端通信的过程中，真正协助发挥作用的是通过AIDL编译出来的.java文件。AIDL文件的目的就是为了生成.java文件**。
@@ -3894,8 +3896,8 @@ content: '''
   
 '''
 linesHighlighted: [
-  3989
-  4062
+  3987
+  4060
 ]
 isStarred: false
 isTrashed: false
