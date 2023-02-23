@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2023-02-23T11:44:41.351Z"
+updatedAt: "2023-02-23T14:11:06.157Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android"
@@ -2333,24 +2333,155 @@ content: '''
   4. 调用服务端binder实例，实现与服务端的通信。
   
   #### 9.2.9 AIDL的工作原理 (★★★★★)
-  **在客户端与服务端通信的过程中，真正协助发挥作用的是通过AIDL编译出来的.java文件。AIDL文件的目的就是为了生成.java文件**。
-  1. 客户端分析
-  Proxy类是.java中的核心。其中transact是客户端和服务端通信的核心方法。调用这个方法之后，客户端将会挂起当前线程，等候服务端执行完相关任务后通知并接收返回的 reply 数据流。
-    1) transact() 方法的第一个参数是一个方法 ID ，这个是客户端与服务端约定好的给方法的编码，彼此一一对应。在AIDL文件转化为 .java 文件的时候，系统将会自动给AIDL文件里面的每一个方法自动分配一个方法 ID。
-    2) transact() 方法的第四个参数是一个 int 值，它的作用是设置进行 IPC 的模式，为 0 表示数据可以双向流通，即 reply 流可以正常的携带数据回来，如果为 1 的话那么数据将只能单向流通，从服务端回来的 reply 流将不携带任何数据。
-  Proxy类的工作流程：
-  - 1，生成 data 和 reply 数据流，并向 data 中存入客户端的数据。
-  - 2，通过 transact() 方法将它们传递给服务端，并请求服务端调用指定方法。
-  - 3，接收 reply 数据流，并从中取出服务端传回来的数据
+  **在客户端与服务端通信的过程中，真正协助发挥作用的是通过AIDL编译出来的.java文件。AIDL文件的目的就是为了生成.java文件，AIDL只是为了简化写.java文件**
   
-  2. 服务端分析
-  同样在.java文件中一个叫ontransact的方法是用来接收来客户端回传来的信息。
-  服务端的工作流程:
-  - 1，获取客户端传过来的数据，根据方法 ID 执行相应操作。
-  - 2，将传过来的数据取出来，调用本地写好的对应方法。
-  - 3，将需要回传的数据写入 reply 流，传回客户端。
+  ##### 9.2.9.1 关键Stub类
+  Stub类基本结构如下：
+  - 静态方法 asInterface(android.os.IBinder obj)
+  - 静态内部类 Proxy
+  - 方法 onTransact(int code, android.os.Parcel data, android.os.Parcel reply, int flags)
+  - 方法 asBinder()
+  - private的String类型常量DESCRIPTOR
+  - private的int类型常量TRANSACTION_connect
+  - private的int类型常量TRANSACTION_sendInMessage
   
-  3. 客户端与服务端使用AIDL进行 IPC 的工作流程
+  1. AsInterface类
+  ```
+          /**
+           * Cast an IBinder object into an com.gebilaolitou.android.aidl.IMyAidlInterface interface,
+           * generating a proxy if needed.
+           */
+          public static com.gebilaolitou.android.aidl.IMyAidlInterface asInterface(android.os.IBinder obj) {
+              //非空判断
+              if ((obj == null)) {
+                  return null;
+              }
+              // DESCRIPTOR是常量为"com.gebilaolitou.android.aidl.IMyAidlInterface"
+              // queryLocalInterface是Binder的方法，搜索本地是否有可用的对象
+              android.os.IInterface iin = obj.queryLocalInterface(DESCRIPTOR);
+              //如果有，则强制类型转换并返回
+              if (((iin != null) && (iin instanceof com.gebilaolitou.android.aidl.IMyAidlInterface))) {
+                  return ((com.gebilaolitou.android.aidl.IMyAidlInterface) iin);
+              }
+              //如果没有，则构造一个IMyAidlInterface.Stub.Proxy对象
+              return new com.gebilaolitou.android.aidl.IMyAidlInterface.Stub.Proxy(obj);
+          }
+  ```
+  主要的作用就是根据传入的Binder对象转换成客户端需要的IMyAidlInterface接口。如果客户端和服务端处于同一进程，那么queryLocalInterface()方法返回就是服务端Stub对象本身；如果是跨进程，则返回一个封装过的Stub.Proxy，也是一个代理类，在这个代理中实现跨进程通信。
+  
+  2. onTransact()方法解析 
+  ```
+  @Override
+          public boolean onTransact(int code, android.os.Parcel data, android.os.Parcel reply, int flags) throws android.os.RemoteException {
+              switch (code) {
+                  case INTERFACE_TRANSACTION: {
+                      reply.writeString(DESCRIPTOR);
+                      return true;
+                  }
+                  case TRANSACTION_connect: {
+                      data.enforceInterface(DESCRIPTOR);
+                      this.connect();
+                      reply.writeNoException();
+                      return true;
+                  }
+                  case TRANSACTION_sendInMessage: {
+                      data.enforceInterface(DESCRIPTOR);
+                      com.gebilaolitou.android.aidl.Message _arg0;
+                      if ((0 != data.readInt())) {
+                          _arg0 = com.gebilaolitou.android.aidl.Message.CREATOR.createFromParcel(data);
+                      } else {
+                          _arg0 = null;
+                      }
+                      this.sendInMessage(_arg0);
+                      reply.writeNoException();
+                      return true;
+                  }
+              }
+              return super.onTransact(code, data, reply, flags);
+          }
+  ```
+  code : 确定客户端请求的目标方法是什么。
+  data : 如果目标方法有参数的话，就从data取出目标方法所需的参数。
+  reply : 当目标方法执行完毕后，如果目标方法有返回值，就向reply中写入返回值。
+  
+  onTransact方法就是服务端处理的核心。接收到客户端的请求，并且通过客户端携带的参数，执行完服务端的方法，返回结果。
+  
+  3. Proxy类
+  ```
+  private static class Proxy implements com.gebilaolitou.android.aidl.IMyAidlInterface {
+              private android.os.IBinder mRemote;
+   
+              Proxy(android.os.IBinder remote) {
+                  mRemote = remote;
+              }
+              //Proxy的asBinder()返回位于本地接口的远程代理
+              @Override
+              public android.os.IBinder asBinder() {
+                  return mRemote;
+              }
+   
+              public java.lang.String getInterfaceDescriptor() {
+                  return DESCRIPTOR;
+              }
+  //连接
+              
+              @Override
+              public void connect() throws android.os.RemoteException {
+                  android.os.Parcel _data = android.os.Parcel.obtain();
+                  android.os.Parcel _reply = android.os.Parcel.obtain();
+                  try {
+                      _data.writeInterfaceToken(DESCRIPTOR);
+                      mRemote.transact(Stub.TRANSACTION_connect, _data, _reply, 0);
+                      _reply.readException();
+                  } finally {
+                      _reply.recycle();
+                      _data.recycle();
+                  }
+              }
+  //发送消息  客户端——> 服务器
+   
+              @Override
+              public void sendInMessage(com.gebilaolitou.android.aidl.Message message) throws android.os.RemoteException {
+                  android.os.Parcel _data = android.os.Parcel.obtain();
+                  android.os.Parcel _reply = android.os.Parcel.obtain();
+                  try {
+                      _data.writeInterfaceToken(DESCRIPTOR);
+                      if ((message != null)) {
+                          _data.writeInt(1);
+                          message.writeToParcel(_data, 0);
+                      } else {
+                          _data.writeInt(0);
+                      }
+                      mRemote.transact(Stub.TRANSACTION_sendInMessage, _data, _reply, 0);
+                      _reply.readException();
+                  } finally {
+                      _reply.recycle();
+                      _data.recycle();
+                  }
+              }
+          }
+  ```
+  connect和sendInMessage都是AIDL文件中声明的方法，是服务端跨进程远程调用的方法。
+  - android.os.Parcel_data和_reply是用来进行跨进程传输的"载体"。_data用来存储客户端流向服务端的数据，_reply用来存储服务端流向客户端的数据。
+  - 通过mRemote. transact()方法，将_data和_reply传过去
+  - 通过_reply.readException()来读取服务端执行方法的结果。
+  - 最后通过finally回收l_data和_reply
+  
+  4. 客户端与服务端使用AIDL进行 IPC 的工作流程
+  
+  Stub充当服务端角色，持有Binder实体（本地对象）。
+  
+  - 获取客户端传过来的数据，根据方法 ID 执行相应操作。
+  - 将传过来的数据取出来，调用本地写好的对应方法。
+  - 将需要回传的数据写入 reply 流，传回客户端。
+  
+  Proxy代理类充当客户端角色，持有Binder引用（句柄）。
+  
+  - 生成 _data 和 _reply 数据流，并向 _data 中存入客户端的数据。
+  - 通过 transact() 方法将它们传递给服务端，并请求服务端调用指定方法。
+  - 接收 _reply 数据流，并从中取出服务端传回来的数据。
+  
+  ![ab3caee4.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\ab3caee4.png)
   ![522039c7.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\522039c7.png)
   
   #### 9.2.10 文献
@@ -2361,6 +2492,8 @@ content: '''
   [Binder系列9—如何使用AIDL - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2015/11/23/binder-aidl/)
   [Android IPC —— AIDL的原理_休闲的灵魂的博客-CSDN博客_android aidl原理](https://blog.csdn.net/haazzz/article/details/116753360)
   [Android跨进程通信——AIDL原理解析_Jason_Lee155的博客-CSDN博客_android aidl原理](https://blog.csdn.net/Jason_Lee155/article/details/118243598)
+  [Android中AIDL的工作原理 - 简书](https://www.jianshu.com/p/e0c583ea9289)
+  
   ## 10、Binder学习(★★★★★)
   
   ### 10.1 Binder概述
@@ -3897,8 +4030,8 @@ content: '''
   
 '''
 linesHighlighted: [
-  4061
-  3988
+  4183
+  4110
 ]
 isStarred: false
 isTrashed: false
