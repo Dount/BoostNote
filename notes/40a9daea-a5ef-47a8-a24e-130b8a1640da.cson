@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2023-02-20T15:32:20.545Z"
+updatedAt: "2023-02-23T11:44:41.351Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android"
@@ -2359,7 +2359,8 @@ content: '''
   [Android中AIDL的基本使用 - 简书](https://www.jianshu.com/p/7b8bb36ad109)
   [Android AIDL 使用 - 妖久 - 博客园](https://www.cnblogs.com/tangZH/p/10775848.html)
   [Binder系列9—如何使用AIDL - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2015/11/23/binder-aidl/)
-  
+  [Android IPC —— AIDL的原理_休闲的灵魂的博客-CSDN博客_android aidl原理](https://blog.csdn.net/haazzz/article/details/116753360)
+  [Android跨进程通信——AIDL原理解析_Jason_Lee155的博客-CSDN博客_android aidl原理](https://blog.csdn.net/Jason_Lee155/article/details/118243598)
   ## 10、Binder学习(★★★★★)
   
   ### 10.1 Binder概述
@@ -3896,8 +3897,8 @@ content: '''
   
 '''
 linesHighlighted: [
-  3987
-  4060
+  4061
+  3988
 ]
 isStarred: false
 isTrashed: false
