@@ -1,5 +1,5 @@
 createdAt: "2019-08-05T07:13:40.715Z"
-updatedAt: "2019-08-05T07:28:48.460Z"
+updatedAt: "2023-02-25T15:22:13.033Z"
 type: "MARKDOWN_NOTE"
 folder: "a829d630b1a42b272c49"
 title: "ViewModel和LiveData"
@@ -33,4 +33,4 @@ content: '''
 '''
 linesHighlighted: []
 isStarred: false
-isTrashed: false
+isTrashed: true

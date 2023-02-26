@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2023-02-23T14:11:06.157Z"
+updatedAt: "2023-02-26T14:44:01.800Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android"
@@ -2482,6 +2482,7 @@ content: '''
   - 接收 _reply 数据流，并从中取出服务端传回来的数据。
   
   ![ab3caee4.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\ab3caee4.png)
+  
   ![522039c7.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\522039c7.png)
   
   #### 9.2.10 文献
@@ -2496,21 +2497,21 @@ content: '''
   
   ## 10、Binder学习(★★★★★)
   
-  ### 10.1 Binder概述
+  ### 10.1 Binder概述 (★★★★)
   Binder是跨进程通信(IPC)的桥梁
   - 从性能上:
-  共享内存虽然无需数据拷贝，但控制复杂。
-  Socket需要2次数据拷贝，传输效率低，开销大
+  共享内存方式虽然无需数据拷贝，但控制复杂。
+  Socket方式需要2次数据拷贝，传输效率低，开销大
   Binder,需要1次数据拷贝，性能上仅此共享内存
   - 从稳定性上：
   Binder采用C/S架构，需求控制架构较清晰。
-  共享内存虽然无需拷贝数据，控制比较复杂，难以使用。
+  共享内存方式虽然无需拷贝数据，控制比较复杂，难以使用。
   - 从安全性上：
   传统的IPC要发送类似的UID也只能放在数据包里，但也容易被拦截，恶意进攻，
   socket则需要暴露自己的ip和端口，这些恶意程序则可以进行任意接入。
   Binder 为每个 APP 分配 UID，进程的 UID 是鉴别进程身份的重要标志，因此安全性较高。
   
-  ### 10.2 进程隔离的概念
+  ### 10.2 进程隔离的概念(★★★★)
   - 操作系统中，进程与进程间内存是不共享的。两个进程就像两个平行的世界，A 进程没法直接访问 B 进程的数据.
   - 但是内核空间却是可共享的。Client进程向Server进程通信恰恰是利用内核空间来完成底层通信工作的。
   
@@ -2528,16 +2529,17 @@ content: '''
   
   ### 10.5 一次Binder IPC通信过程
   ![binder_main_request.jpg](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\2dadde28.jpg)
-  Step1：Service先注册服务，首先向ServiceManager注册服务，
-  Step2:  向Kernel(内核)中Binder驱动的全局链表binder_procs中插入服务端的信息
-  Step3:  向ServiceManager的svcinfo列表中缓存一下注册的服务。
-  Step4:  客户端通过ServiceManager向svcinfo列表中查询一下返回服务端的代理。
-  Step5:  客户端利用获取到的服务端代理，通过BinderProxy将请求发送给ServiceManager.
-  Step6:  使用内核方法copy_from_user()将参数拷贝到内核空间。
-  Step7:  这时候客户端进入等待状态。
-  Step8:  然后 Binder 驱动向binder_proc的 todo 队列里面插入一条事务.
-  Step9:  执行完之后把执行结果通过 copy_to_user() 将内核的结果拷贝到用户空间
-  Step10: 唤醒等待的客户端并把结果响应给客户端。
+  
+  Step1: Service先注册服务，首先向ServiceManager注册服务，
+  Step2: 向Kernel(内核)中Binder驱动的全局链表binder_procs中插入服务端的信息
+  Step3: 向ServiceManager的svcinfo列表中缓存一下注册的服务。
+  Step4: 客户端通过ServiceManager向svcinfo列表中查询一下返回服务端的代理。
+  Step5: 客户端利用获取到的服务端代理，通过BinderProxy将请求发送给ServiceManager.
+  Step6: 使用内核方法copy_from_user()将参数拷贝到内核空间。
+  Step7: 这时候客户端进入等待状态。
+  Step8: 然后 Binder 驱动向binder_proc的 todo 队列里面插入一条事务.
+  Step9: 执行完之后把执行结果通过 copy_to_user() 将内核的结果拷贝到用户空间
+  Step10:唤醒等待的客户端并把结果响应给客户端。
   
   ### 10.6 Binder 进程与线程
   ![process_thread.jpg](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\55fc103c.jpg)
@@ -2550,20 +2552,20 @@ content: '''
   [Android-ReadTheFuckingSourceCode/Android-Binder进程间通讯.md at master · jeanboydev/Android-ReadTheFuckingSourceCode · GitHub](https://github.com/jeanboydev/Android-ReadTheFuckingSourceCode/blob/master/article/android/framework/Android-Binder%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E8%AE%AF.md)
   [Binder系列—开篇 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2015/10/31/binder-prepare/)
   
-  ## 11、性能优化
+  ## 11、性能优化 (★★★★★)
   ### 11.1 内存优化
   #### 11.1.1 LeakCanary工具
   LeakCanary是Square公司基于MAT开发的一款监控Android内存泄漏的开源框架。其工作的原理是： 监测机制利用了Java的WeakReference和ReferenceQueue，通过将Activity包装到WeakReference中，被WeakReference包装过的Activity对象如果被回收，该WeakReference引用会被放到ReferenceQueue中，通过监测ReferenceQueue里面的内容就能检查到Activity是否能够被回收（在ReferenceQueue中说明可以被回收，不存在泄漏；否则，可能存在泄漏，LeakCanary是执行一遍GC，若还未在ReferenceQueue中，就会认定为泄漏）。
   
   如果Activity被认定为泄露了，就抓取内存dump文件(Debug.dumpHprofData)；之后通过HeapAnalyzerService.runAnalysis进行分析内存文件分析；接着通过HeapAnalyzer (checkForLeak—findLeakingReference---findLeakTrace)来进行内存泄漏分析。最后通过DisplayLeakService进行内存泄漏的展示。
   #### 11.1.2 Android Lint工具
-  Android Lint Tool 是Android Sutido种集成的一个Android代码提示工具，它可以给你布局、代码提供非常强大的帮助。硬编码会提示以级别警告，例如：在布局文件中写了三层冗余的LinearLayout布局、直接在TextView中写要显示的文字、字体大小使用dp而不是sp为单位，就会在编辑器右边看到提示。
+  Android Lint Tool 是Android Sutido中集成的一个Android代码提示工具，它可以给你布局、代码提供非常强大的帮助。硬编码会提示以级别警告，例如：在布局文件中写了三层冗余的LinearLayout布局、直接在TextView中写要显示的文字、字体大小使用dp而不是sp为单位，就会在编辑器右边看到提示。
   
   ### 11.2 APK瘦身(★★★★)
   #### 11.2.1 安装包的组成
   assets文件夹 存放一些配置文件，资源文件，assets不会自动生成对应的ID,而是通过AssetManager类的接口获取
   
-  res res是resource的缩写，这个目录存放资源文件，会自欧东生成对应的ID并映射到.R文件中，访问直接使用资源ID。
+  res 是resource的缩写，这个目录存放资源文件，会自动生成对应的ID并映射到.R文件中，访问直接使用资源ID。
   
   META-INF. 保存应用的签名信息，签名信息可以炎症APK文件的完整性.
   
@@ -2573,13 +2575,13 @@ content: '''
   
   resources.arsc 记录着资源文件和资源ID之间的映射关系，用来根据资源ID寻找资源。
   
-  #### 11.2.2 减少安装包大小
+  #### 11.2.2 减少安装包大小 (★★★★)
   
   代码混淆：使用IDE 自带的 proGuard 代码混淆器工具 ，它包括压缩、优化、混淆等功能。 
   资源优化：使用 Android Lint 删除冗余资源，资源文件最少化等。 
   图片优化: 利用 PNG优化工具 对图片做压缩处理。推荐目前最先进的压缩工具Googlek开源库zopfli。如果应用在0版本以上，推荐使用 WebP图片格式。 
   
-  ### 11.3 冷启动与热启动
+  ### 11.3 冷启动与热启动 (★★★★)
   
   **冷启动** 
   在启动应用时，系统中没有该应用的进程，这时系统会创建一个新的进程分配给该应用；
@@ -2888,7 +2890,7 @@ content: '''
   [EventBus 源码解析 EventBus 是一个 Android 事件发布/订阅框架，通过解耦发布者和订阅者简化 Android 事件传递，这里的事件可以理解 @codeKK 开源项目源码分析站](http://a.codekk.com/detail/Android/Trinea/EventBus%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90)
   [消息框架 EventBus 的实现原理](https://mp.weixin.qq.com/s?__biz=MzA3MzgzMzgyNw==&mid=2247483871&idx=1&sn=da92daf306552ba8dd621d3cc9a4c625&chksm=9f084dd3a87fc4c583dfd45bd337cf20198684f18d2b9160616376bf2fd998a2da3989075833&scene=158#rd)
   
-  ## 15 OKHttp
+  ## 15 OKHttp (★★★★)
   
   ### 15.1 OKHttp使用步骤
   1. 创建OkHttpClient对象
@@ -4020,6 +4022,10 @@ content: '''
   ### 25.2 文献
   [GitHub - OCNYang/Android-Animation-Set: Android 所有动画系列详尽教程。 Explain all animations in Android.](https://github.com/OCNYang/Android-Animation-Set)
   
+  ## 26. MVVM架构解析
+  ### 26.1 文献
+  [Android MVVM架构_绵绵思远道～的博客-CSDN博客](https://blog.csdn.net/weixin_53431933/article/details/126372227)
+  
   ## 面试题参考文献
   [jeanboy_jeanboydev_CSDN博客-Android进阶,Java基础,Android进阶领域博主](https://blog.csdn.net/freekiteyu/article/list/1)
   [成功入职字节跳动的小姐姐告诉你，Android面试吃透这一篇就没有拿不到的offer！_Stay Hungry Stay Foolish-CSDN博客](https://blog.csdn.net/qq_29966203/article/details/105455615)
@@ -4028,10 +4034,13 @@ content: '''
   
   
   
+  
+  
+  
 '''
 linesHighlighted: [
-  4183
-  4110
+  4192
+  4119
 ]
 isStarred: false
 isTrashed: false
