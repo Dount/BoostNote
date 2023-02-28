@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2023-02-26T14:44:01.800Z"
+updatedAt: "2023-02-28T16:20:14.766Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android"
@@ -3499,12 +3499,11 @@ content: '''
   Android系统中，ActivityManagerService(简称AMS)和WindowManagerService(简称WMS)会检测App的响应时间，如果App在特定时间无法相应屏幕触摸或键盘输入时间，或在主线程(UI线程)里面做了太多的阻塞耗时操作,系统会向用户显示一个对话框，这个对话框称作“应用程序无响应”（ANR：Application Not Responding）对话框。用户可以选择“等待”而让程序继续运行，也可以选择“强制关闭”。
   
   ### 18.2 导致ANR的场景
-  1. 当前事件没有机会处理，例如UI线程正在响应另外的事件，当前事件被某个事件给阻塞掉了；
-  2. 当前事件正在处理 但是由于耗时太长没有能及时的完成;
-  3. 在BroadcastReceiver里做耗时的操作或计算；
-  4. CPU使用过高；
-  5. 发生了死锁；
-  6. 耗时操作的动画需要大量的计算工作，可能导致CPU负载过重。
+  1. 当前事件正在处理 但是由于耗时太长没有能及时的完成;
+  2. 在BroadcastReceiver里做耗时的操作或计算；
+  3. CPU使用过高；
+  4. 发生了死锁；
+  5. 耗时操作的动画需要大量的计算工作；
   
   ### 18.3 ANR的条件
   InputDispatching Timeout：5秒内无法响应屏幕触摸事件或键盘输入事件
@@ -3776,7 +3775,7 @@ content: '''
   ContentProvider,socket,PIPE,message queue，等方式都要至少2次的内存拷贝。
   MMKV底层使用mmap实现，采用去中心化的架构，只需要将文件mmap到每个访问进程的内存空间，加上合适的进程锁，再处理好数据的通话，就能够实现多进程并发访问。
   
-  ## 22. 注解学习使用
+  ## 22. 注解学习使用 (★★★★)
   ### 22.1 什么是注解
   java 注解（Annotation）又称 Java 标注，是 JDK5.0 引入的一种注释机制。
   Java 语言中的类、方法、变量、参数和包等都可以标注。Java标注可以通过反射获取标注内容。在编译器生成类文件时，标注可以被嵌入到字节码中。
@@ -3886,7 +3885,7 @@ content: '''
   [Android注解-看这篇文章就够了_Zephyr Cai的博客-CSDN博客_android 注解](https://blog.csdn.net/caizehui/article/details/105003999)
   
   
-  ## 23. 屏幕适配方案
+  ## 23. 屏幕适配方案 (★★★★★)
   
   ### 23.1 dp与px的转换
   因为ui设计师给你的设计图是以px为单位的，Android开发则是使用dp作为单位的，那么需要进行转换：
@@ -3941,16 +3940,18 @@ content: '''
   - 构造方法
   一般要写三个甚至四个，这样写的原因，在不同的情况下创建View的方式不同，可能需要从xml文件中填充布局，也可能不需要，或者也需要一样style之类的，因此不同情况下，使用的构造可能存在差异
   - onMeasure 用于测量子控件的宽高
-  measureSpec: 在很大程度上决定了一个View的尺寸规格
-  模式: exactly,at_most,unspecified
-  常见的三个方法: makeMeasureSpec,getMode,getSize
+  measureSpec: 在很大程度上决定了一个View的尺寸规格，其模式有三种模式。
+  exactly(精确模式):在这种模式下，给定尺寸的值是多少，那么这个组件的长或宽就是多少。
+  at_most(最大模式):这个也就是父组件，能够给出的最大的空间，当前组件的长或宽最大只能为这么大，当然也可以比这个小。
+  unspecified(未指定模式):当前组件，可以随便用空间，不受限制。
+  
   - onSizeChanged 測量View大小
   - onLayout 用于摆放子控件在父控件中的位置
   getMeasureWidth方法: 在measure过程结束后就可以获取到了。
   getWidth方法:要在layout过程结束后才能获取到。
   在ViewGroup中重写onLayout的目的:设置当前View与其所有的子View,在ViewGroup父布局当中的位置。
   - onDraw 用于绘制需要的图形
-  绘制：主要通过canvas(画笔),paint(画布),matrix(变换矩阵)去绘制
+  绘制：主要通过canvas(画布),paint(画笔),matrix(变换矩阵)去绘制
   - invalidate 触发重新绘制，只能在主线程调用。
   - postInvalidate 直接调用去在子线程更新UI。
   - onAttachedToWindow 当View附加到窗体的时候调用该方法。
@@ -3992,11 +3993,10 @@ content: '''
   3. View动画改变的是 View 的绘制效果，View 的真正位置和相关属性并不会改变，这也就造成了点击事件的触发区域是动画前的位置而不是动画后的位置的原因。
   
   属性动画:
-  1. 属性动画作用对象不局限在 View 上，而是任何提供了 Getter 和 Setter 方法的对象的属性上。
+  1. 属性动画作用对象不局限在 View 上，而是通过 Getter 和 Setter 方法作用在对象属性上。
   2. 属性动画没有直接改变 View 状态的能力，而是通过动态改变 View 相关属性的方式来改变 View 的显示效果。
   3. 属性动画使用更方便，可以用更简洁的代码实现相关的动画效果。
-  4. 属性动画上手难度较高，对于 propertyName 需要自己去挖掘，或者自己通过 Wrapper 的方式去自定义 propertyName。
-  5. 属性动画是 Android3.0 以上系统提供的能力，在 3.0 以下需导入 nineoldandroids 三方库解决兼容性问题。
+  
   #### 25.1.4 触摸反馈动画
   所谓触摸反馈动画就是一种点击效果，作用在可点击的 View 上时，当有点击事件时会有涟漪般的反馈效果
   
@@ -4037,10 +4037,11 @@ content: '''
   
   
   
+  
 '''
 linesHighlighted: [
-  4192
-  4119
+  4120
+  4193
 ]
 isStarred: false
 isTrashed: false
