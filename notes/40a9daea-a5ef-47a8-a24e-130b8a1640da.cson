@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2023-02-28T16:20:14.766Z"
+updatedAt: "2023-03-01T05:18:19.390Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android"
@@ -4023,8 +4023,124 @@ content: '''
   [GitHub - OCNYang/Android-Animation-Set: Android 所有动画系列详尽教程。 Explain all animations in Android.](https://github.com/OCNYang/Android-Animation-Set)
   
   ## 26. MVVM架构解析
+  
+  ### 26.1 什么是MVVM
+  1. MVVM，是Model-View-ViewModel的简写，是M-V-VM三部分组成。它本质上就是MVC 的改进 版。MVVM 就是将其中的View 的状态和行为抽象化，其中ViewModel将视图 UI 和业务逻辑分 开，它可以取出 Model 的数据同时帮忙处理 View 中由于需要展示内容而涉及的业务逻辑。
+  
+  2. MVVM采用双向数据绑定，view中数据变化将自动反映到viewmodel上，反之，model中数据变化 也将会自动展示在页面上。把Model和View关联起来的就是ViewModel。ViewModel负责把Model 的数据同步到View显示出来，还负责把View的修改同步回Model
+  
+  ![e7bc288b.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\e7bc288b.png)
+  
+  ### 26.2 Model,View,ViewModel三个部分
+  Model: 数据层，包含数据实体和对数据实体的操作。
+  View: 界面层，对应于Activity,XML,负责数据显示以及用户交互。
+  ViewModel:关联层，作为中间桥梁去通知model数据层处理数据业务，并将结果回调给UI层处理UI逻辑。ViewModel中只有activity持有vm引用，vm是不持有view的引用的，所以vm的构造方 法中不能传入视图相关的对象。所以重点在于怎么通知view，可以通过观察者回调的方式。但是现 在一般是结合Jetpack来进行view的更新的。
+  
+  ### 26.3 MVVM核心构成
+  DataBinding:数据和UI双向绑定
+  LifeCycle:界面生命周期感知
+  ViewModel:业务逻辑
+  LiveData:可观察数据项
+  
+  ### 26.4 JetPack简介
+  Jetpack 是一个丰富的组件库，它的组件库按类别分为 4 类，分别是架构（Architecture)、界面（UI)、行为（behavior）、基础（foundation）。每个组件都可以单独使用，也可以配合在一起使-用。每个组件都给用户提供了一个标准，能够帮助开发者遵循最佳做法，减少样板代码并编写可在各种 Android 版本和设备中一致运行的代码，让开发者能够集中精力编写重要的业务代码。
+  #### 26.4.1 架构
+  Data Binding
+  以声明的方式将可观察数据绑定到界面元素，通常和ViewModel配会使用。
+  
+  Lifecycle
+  用于管理Activity和Fragment的生命周期，可以帮助开发者生成更易于维护的轻量级代码。
+  
+  LiveData
+  在底层数据库更改时通知视图。它是一个可观察的数据持有者，与常规observable不同，LiveData是有生命周期感知的。
+  
+  Navigation
+  用于处理应用内导航。
+  
+  Paging
+  可以帮助开发者一次加载和显示小块数据，按需加载部分数据可减少网络带宽和系统资源的使用。
+  
+  Room
+  友好、流畅的访问SQLite数据库。它在SQLite的基础上提供了一个抽象层，允许更强大的数据库访问。
+  
+  ViewModel
+  以生命周期的方式管理与界面相关的数据，通常和Data Binding！配合使用。者实现MVVM架构提供了强有力的支持。
+  
+  WorkManager
+  管理Android的后台作业，即使应用程序退出或设备重新启动也可以运延迟的异步任务。
+  
+  #### 26.4.2 界面
+  Animation＆Transitions
+  该框架包含用于常见效果的内置动画，并允许开发者定义动画和生命周期回调。
+  
+  Emoji Compatibility
+  即便用户没有更新Android系统也可以获取最新的表情符号。
+  
+  Fragment
+  组件化界面的基本单位。
+  
+  布局
+  在XML中声明UI元素或者在代码中实例化U元素。
+  
+  调色板
+  从调色板中提取出有用的信息。
+  #### 26.4.3 行为
+  Camerax
+  帮助开发简化相机应用的开发工作。它提供一致且易于使用的界面，适于大多数Android i设备，并可向后兼容至Android5.0（API21）
+  
+  Download Manager
+  处理长时间运行的HTTP下载的系统服务。
+  
+  媒体和播放
+  用于媒体播放和路由（包括Google Cast）的向后兼容API。
+  
+  通知
+  提供向后兼容的通知API，支持Wear和Auto
+  
+  权限
+  用于检查和请求应用权限的兼容性API。
+  
+  设置
+  创建交互式设置，建议使用AndroidX Preference Library库将用户可配置设置集成到应用中。
+  
+  分享操作
+  可以更轻松地实现友好的用户分享操作。
+  
+  切片
+  切片是一种U模板，创建可在应用外部显示应用数据的灵活界面元素。
+  
+  #### 26.4.4 基础
+  Android KTX
+  优化了Kotlin使用的Jetpack和Android平台API。帮助开发者以更简洁、更愉悦、更惯用的方式使用Kotlin进行Android开发。
+  
+  AppCompat
+  帮助较低版本的Android系统进行兼容。
+  
+  Auto
+  开发Android auto应用的组件，提供了适用于所有车辆的标准化界面和用户交互
+  
+  检测
+  从Android studio中快速检测基于Kotlin或Java的代码。
+  
+  多Dex处理
+  为具有多个Dex文件应用提供支持。
+  
+  安全
+  用于检查和请求应用权限的兼容性API。
+  
+  测试
+  用于单元和运行时界面测试的Android测试框架。
+  
+  TV
+  构建可使用户在大屏幕上体验沉浸式内容的应用。
+  
+  Wear OS
+  开发Wear应用的组件。
+  
+  
   ### 26.1 文献
   [Android MVVM架构_绵绵思远道～的博客-CSDN博客](https://blog.csdn.net/weixin_53431933/article/details/126372227)
+  [Android JetPack简介_Cola可洛的博客-CSDN博客](https://blog.csdn.net/qq_35892584/article/details/125955640)
   
   ## 面试题参考文献
   [jeanboy_jeanboydev_CSDN博客-Android进阶,Java基础,Android进阶领域博主](https://blog.csdn.net/freekiteyu/article/list/1)
@@ -4040,8 +4156,8 @@ content: '''
   
 '''
 linesHighlighted: [
-  4120
-  4193
+  4309
+  4236
 ]
 isStarred: false
 isTrashed: false
