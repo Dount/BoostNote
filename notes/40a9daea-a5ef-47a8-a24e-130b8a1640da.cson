@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2023-03-01T05:18:19.390Z"
+updatedAt: "2023-03-02T16:26:09.782Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android"
@@ -2485,7 +2485,18 @@ content: '''
   
   ![522039c7.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\522039c7.png)
   
-  #### 9.2.10 文献
+  #### 9.2.10 AIDL与HIDL (★★★★★)
+  AIDL和HIDL都是主要用于跨进程通信，本质是Binder通信。
+  
+  ##### 9.2.10 区别
+  - AIDL 生成java代码，客户端(client)对应Proxy,服务端(server)对应Stub。HIDL生成c++代码，客户端(client)对应BP(Binder Proxy),服务端(Server)对应BN(Binder Native).
+  - AIDL 常用于连接APP和Framework,HIDL则是用来连接Framework和HAL.
+  - AIDL 使用Binder通信，HIDL使用HwBinder通信，他们都是通过Binder驱动完成通信，只不过两个Binder域不一样。
+  
+  #### 9.2.11 为什么需要HIDL
+  目前Android系统生态是几乎每年google都会出一个Android大版本，而普通手机用户一部手机一般要用两三年，所以你会发现尽管Android系统已经升级到了10，马上11出来了，然后还是有很多用户依然使用的是Android 5，6，7等版本，对普通用户来说如果不更换手机就很难跟上Android版本，这是因为OEM厂商在同一设备上进行系统升级需要花费时间金钱成本很高，导致他们不愿意升级，成本高的原因是Android O之前Android Framework的升级需要OEM将HAL也进行对应升级，Framework和HAL是一起被编译成system.img，它们存在高耦合，针对这种情况google在Android O中引入了Treble计划，Treble的目的就是解耦Framework和HAL，就是通过HIDL来实现，Framework不再直接调用HAL，而是通过HIDL来间接使用HAL模块，每个HAL模块都可以对应一个HIDL服务，Framework层通过HwBinder创建HIDL服务，通过HIDL服务来获取HAL相关模块继而打开HAL下的设备，而最终HAL也从system.img中分离，被编进一个单独的分区vendor.img，从而简化了Android系统升级的影响与难度
+  
+  #### 9.2.11 文献
   [Android：学习AIDL，这一篇文章就够了(上) - 简书](https://www.jianshu.com/p/a8e43ad5d7d2)
   [Android：学习AIDL，这一篇文章就够了(下) - 简书](https://www.jianshu.com/p/0cca211df63c)
   [Android中AIDL的基本使用 - 简书](https://www.jianshu.com/p/7b8bb36ad109)
@@ -2494,6 +2505,7 @@ content: '''
   [Android IPC —— AIDL的原理_休闲的灵魂的博客-CSDN博客_android aidl原理](https://blog.csdn.net/haazzz/article/details/116753360)
   [Android跨进程通信——AIDL原理解析_Jason_Lee155的博客-CSDN博客_android aidl原理](https://blog.csdn.net/Jason_Lee155/article/details/118243598)
   [Android中AIDL的工作原理 - 简书](https://www.jianshu.com/p/e0c583ea9289)
+  [AIDL 和 HIDL_aidl hidl_bobuddy的博客-CSDN博客](https://blog.csdn.net/u010783226/article/details/122506828)
   
   ## 10、Binder学习(★★★★★)
   
@@ -4138,9 +4150,39 @@ content: '''
   开发Wear应用的组件。
   
   
-  ### 26.1 文献
+  ### 26.5 文献
   [Android MVVM架构_绵绵思远道～的博客-CSDN博客](https://blog.csdn.net/weixin_53431933/article/details/126372227)
   [Android JetPack简介_Cola可洛的博客-CSDN博客](https://blog.csdn.net/qq_35892584/article/details/125955640)
+  
+  ## 27. JNI 原理解析
+  ### 27.1 JNI概述
+  JNI（Java Native Interface，Java本地接口），用于打通Java层与Native(C/C++)层。这不是Android系统所独有的，而是Java所有。众所周知，Java语言是跨平台的语言，而这跨平台的背后都是依靠Java虚拟机，虚拟机采用C/C++编写，适配各个系统，通过JNI为上层Java提供各种服务，保证跨平台性。
+  
+  ### 27.2 JNI原理分析
+  #### 27.2.1 动态库的加载loadLibrary
+  1. System.loadLibrary和System.load都用于加载动态库，loadLibrary可以方便自动加载依赖库，load可以方便指定具体路径的动态库。
+  2. 无论哪种方式加载最终都会调用到LoadNativeLibrary方法。
+  - 通过dlopen打开动态共享库
+  - 通过dlsym获取JNI_ONLoad符号所对应的方法。
+  - 调用该加载库中的JNI_Onload方法，开始注册多个native方法。
+  
+  #### 27.2.2 静态注册与动态注册
+  JVM查找Native方法有两种方式：
+  1、当加载动态库到Jvm后当Native方法第一执行时根据其方法名去匹配对应C语言实现命名规则，这种方式叫静态注册。
+  2、通过JNI_OnLoad调用JNI提供的RegisterNatives函数，将JNINativeMethod结构体中本地函数注册到JVM中，这种方式叫动态注册。
+  
+  #### 27.2.3 JavaVM和JNIEnv
+  
+  JavaVM：是指进程虚拟机环境，每个进程有且只有一个JavaVM实例
+  
+  JNIEnv：是指线程上下文环境，每个线程有且只有一个JNIEnv实例，
+  
+  ### 27.3 文献
+  [Android JNI原理分析 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/05/28/android-jni/)
+  [JNI动态注册、静态注册实例及其实现原理分析 - 知乎](https://zhuanlan.zhihu.com/p/520523247)
+  [【Android】JNI静态与动态注册介绍_android jni 动态注册_后端码匠的博客-CSDN博客](https://blog.csdn.net/weixin_43874301/article/details/128129892)
+  [JNI静态注册与动态注册_jni动态注册_FlyerGo的博客-CSDN博客](https://blog.csdn.net/u012944685/article/details/124211418)
+  [JNI 静态注册/动态注册 - 简书](https://www.jianshu.com/p/873fc6ee4e51)
   
   ## 面试题参考文献
   [jeanboy_jeanboydev_CSDN博客-Android进阶,Java基础,Android进阶领域博主](https://blog.csdn.net/freekiteyu/article/list/1)
@@ -4156,8 +4198,8 @@ content: '''
   
 '''
 linesHighlighted: [
-  4309
-  4236
+  4270
+  4343
 ]
 isStarred: false
 isTrashed: false

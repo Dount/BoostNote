@@ -1,11 +1,11 @@
 createdAt: "2020-08-06T10:02:59.558Z"
-updatedAt: "2021-10-13T09:11:02.940Z"
+updatedAt: "2023-03-02T15:28:15.014Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
-title: "JNI学习"
+title: "JNI学习使用"
 tags: []
 content: '''
-  # JNI学习
+  # JNI学习使用
   [TOC]
   
   ## 1.JNI的使用
@@ -242,25 +242,9 @@ content: '''
   }
   ```
   
-  ### 3.5 JNI 实现原理
-  
-  1. native方法与普通方法的区别。 
-  native方法与普通方法 通过ACC_NATIVE区分开
-  java在执行普通的方法调用的时候，可以通过找方法表，再找到相应的code属性表，最终解释执行代码
-  
-  2. so库如何装在进内存。
-  在Java层，首先通过System.loadLibrary()将so库名传递到NativeLibrary类中。
-  NativeLibrary 中实现了很多Native方法，例如load,find.等
-  通过load方法又将库名传递到Native层中对应的方法中。(classLoader下的这个os::dll_load)
-  os::dll_load方法中通过dlopen库将so库最终加载到内存中。
-  
-  3. native方法怎么调用。
-  native层通过dlopen库将so库加载到内存后。
-  再使用dlsym库将调用so库中的方法。
-  
-  ### 3.6 SDK开发-----使用Cmake调用动态库
+  ### 3.5 SDK开发-----使用Cmake调用动态库
   为了方便后续打包，需要在Android工程文件下，另新建一个Module(Android Library)
-  #### 3.6.1 准备CmakeLists文件
+  #### 3.5.1 准备CmakeLists文件
   CmakeLists文件存放的位置：
   ![8fe76bf3.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\8fe76bf3.png)
   指定CPU架构
@@ -271,7 +255,7 @@ content: '''
   ![7f36b0a3.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\7f36b0a3.png)
   点击Build > Make module "sdk"
   
-  #### 3.6.2 CmakeLists文件内容
+  #### 3.5.2 CmakeLists文件内容
   
   注意：missing and no known rule to make it 找不到so的路径错误。
   ${CMAKE_SOURCE_DIR}，它指向的是最顶层CMakeLists.txt所在的文件夹的路径
@@ -284,8 +268,8 @@ content: '''
   ![f2c2aa74.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\f2c2aa74.png)
   
   ![2512d802.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\2512d802.png)
-  ### 3.7 SDK开发----- 打包jar文件并使用jar文件
-  #### 3.7.1 打包jar文件和so库
+  ### 3.6 SDK开发----- 打包jar文件并使用jar文件
+  #### 3.6.1 打包jar文件和so库
   需要在sdk的build.gradle中添加一个task，通过这个task来打包。
   ![f8368c50.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\f8368c50.png)
   编译后的so库文件
@@ -293,14 +277,14 @@ content: '''
   编译后的jar文件
   ![310b5e23.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\310b5e23.png)
   
-  #### 3.7.2 使用jar包和so库
+  #### 3.6.2 使用jar包和so库
   将jar包和so库分别libs和jniLibs目录下。
   ![9306dd36.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\9306dd36.png)
   在build.gradle文件中添加如下内容
   ![228908ed.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\228908ed.png)
   ![2f5157e0.png](:storage\\859c72a2-746f-42b4-a70c-d14cd95caecf\\2f5157e0.png)
   
-  ### 3.6 参考文献
+  ## 4 参考文献
   [JNI入门介绍（Android Studio 3.4）_黑白棋的博客-CSDN博客](https://blog.csdn.net/qq_41786131/article/details/91355438)
   
   [Java JNI实现原理初探_最帅惋红曲-CSDN博客_jni原理](https://blog.csdn.net/hackooo/article/details/48395765/)
@@ -325,8 +309,6 @@ content: '''
   
   [JNI函数语法_xice.android-CSDN博客](https://blog.csdn.net/xunice/article/details/34429285)
 '''
-linesHighlighted: [
-  76
-]
+linesHighlighted: []
 isStarred: false
 isTrashed: false
