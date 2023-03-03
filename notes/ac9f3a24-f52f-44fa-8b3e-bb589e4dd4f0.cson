@@ -1,5 +1,5 @@
 createdAt: "2023-01-08T15:07:09.915Z"
-updatedAt: "2023-02-16T11:25:58.706Z"
+updatedAt: "2023-03-03T16:16:30.766Z"
 type: "MARKDOWN_NOTE"
 folder: "c3bf24344ddc9bd2af22"
 title: "ActivityManagerService"
@@ -8,7 +8,7 @@ content: '''
   # ActivityManagerService
   
   ## 1.什么是ActivityManagerService
-  ActivityManagerService承担了Android四大组件的启动、切换、调度以及进程的管理工作，掌握了所有应用的创建、启动、管理，是Android中最核心的服务。
+  ActivityManagerService承担了Android四大组件的启动、切换、调度以及进程的管理工作，是Android中最核心的服务。
   ![f28b35a4.png](:storage\\ac9f3a24-f52f-44fa-8b3e-bb589e4dd4f0\\f28b35a4.png)
   
   ## 2.AMS关联类
@@ -22,8 +22,8 @@ content: '''
   1. AMS由ActivityManagerNative（以后简称AMN）类派生，而AMN由Binder派生，实现了IActivityManager接口。
   2. AMP是AMN的内部类，它们都实现了IActivityManager接口，这样它们就可以实现代理模式。具体来讲是远程代理。
   3. AMP和AMN是运行在两个进程中的，AMP是Client端，AMN则是Server端，而Server端中具体的功能都是由AMN的子类AMS来实现的，因此，AMP就是AMS在Client端的代理类。
-  4. AMN又实现了Binder类，这样AMP和AMS就可以通过Binder来进行进程间通信。
-  5. 客户端使用ActivityManager类。由于AMS是系统核心服务，很多API不能开放供客户端使用，所以设计者没有让ActivityManager直接加入AMS家族。在ActivityManager类内部通过调用AMN的getDefault函数得到一个ActivityManagerProxy对象，通过它可与AMS通信。
+  4. AMP和AMS可以通过Binder来进行进程间通信。
+  5. 客户端使用ActivityManager类。在ActivityManager类内部通过调用AMN的getDefault函数得到一个ActivityManagerProxy对象，通过它可与AMS通信。
   
   ## 3.AMS启动过程
   AMS的启动是在SystemServer进程中启动的。即AMS运行在SystemServer进程。
@@ -169,26 +169,22 @@ content: '''
   ### 3.2 zygote->SystemServer->AMS和ActivityThread->ActivityManager解释
   1. App(ActivityThread进程)和AMS(SystemServer进程)还有zygote进程属于三个独立的进程。
   2. App与AMS通过Binder进行IPC通信，AMS与zygote通过Socket进行IPC通信。
-  3. AMS负责所有Activity的生命周期，若想打开一个App的话，需要AMS去通知zygote进程。
-  4. 任何一个Activity的启动都是由AMS和应用程序进程相互配合来完成。AMS服务统一调用系统中所有进程的Activity启动，而每个Activity的启动过程则由其所属的进程具体来完成。
+  3. AMS负责所有Activity的生命周期，若想打开一个App的话，需要AMS和ActivityThread相互配合来完成。
   
   ## 4 Activity 启动流程
   
   ![a06cf9cf.png](:storage\\ac9f3a24-f52f-44fa-8b3e-bb589e4dd4f0\\a06cf9cf.png)
   
   ### 4.1 启动 MainActivity 五个步骤
-  一. Launcher通过Binder进程间通信机制通知ActivityManagerService,它要启动一个Activity。
+  一. Launcher通过ActivityManagerProxy,用Binder进程间通信，通知ActivityManagerService,它要启动一个Activity。(1~11)
   
-  二. ActivityManagerService通过Binder进程间通信机制通知Launcher让其它Activity进入Paused状态。
+  二. ActivityManagerService调用startActivity,并经过ActivityStack一系列调用处理后，通过Binder通信,通知Launcher让其它Activity进入Paused状态。(12~16)
   
-  三. Launcher通过Binder进程间通信机制通知ActivityManagerService，它已经准备就绪进入Paused状态，于是ActivityManagerService就向zygote发送命令用来fork一个子进程，用来启动一个ActivityThread实例，即将要启动的Activity在这个ActivityThread实例中运行。
+  三. Launcher再通过ActivityManagerProxy,用Binder通信,通知ActivityManagerService，它已经准备进入Paused状态，于是ActivityManagerService就向zygote发送命令用来fork一个子进程，用来启动一个ActivityThread实例，即将要启动的Activity在这个ActivityThread实例中运行。(17~24)
   
-  四. ActivityThread通过Binder进程间通信机制将一个ApplicationThread类型的Binder对象传递给ActivityManagerService,以便ActivityManagerService能够通过这个Binder对象与ActivityThread通信，其通信内容分为三个阶段。
-  第一阶段：用于和应用进程交互的thread对象，进程调度优先级及oom_adj的值。
-  第二阶段: 为调用Application的bindApplication做准备,其目的是创建并初始化位于该进程的Anroid运行环境。
-  第三阶段：通知应用进程Activity的Service等组件，其中用于启动Activity的函数时ActivityStack realStartActivityLocked。
+  四. ActivityThread通过Binder进程间通信机制将一个ApplicationThread类型的Binder对象传递给ActivityManagerService,以便ActivityManagerService能够通过这个Binder对象与ActivityThread通信。(25~27)
   
-  五. ActivityManagerService通过Binder进程间通信机制通知ActivityThread，现在一切准备就绪，它可以真正执行Activity的启动操作了。
+  五. ActivityManagerService通过Binder进程间通信，通知ActivityThread，现在一切准备就绪，它可以真正执行Activity的启动操作了。(28~35)
   
   ## 5 BroadCast 广播机制分析
   
@@ -276,9 +272,10 @@ content: '''
   [Android-MS/ams.md at master · xiangjiana/Android-MS · GitHub](https://github.com/xiangjiana/Android-MS/blob/master/android/ams.md)
   [安卓的ActivityManagerService_dev晴天的博客-CSDN博客_activitymanagerservice](https://blog.csdn.net/qq_38350635/article/details/114785334)
   [Android 8.0 AMS分析的第一条线：SystemServer中的AMS的调用轨迹_yaoming168的博客-CSDN博客_systemserver进程和ams的关系](https://blog.csdn.net/yaoming168/article/details/51991570)
-  [Android Activity的启动流程分析：以Launcher启动一个Activity为例，分析应用进程的创建、Activity的启动，以及他们和AMS之间的交互_yaoming168的博客-CSDN博客](https://blog.csdn.net/yaoming168/article/details/52402963?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522167392590416800182188436%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=167392590416800182188436&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-1-52402963-null-null.blog_rank_default&utm_term=%E4%BB%A5am%E5%91%BD%E4%BB%A4%E5%90%AF%E5%8A%A8%E4%B8%80%E4%B8%AAActivity%E4%B8%BA%E4%BE%8B&spm=1018.2226.3001.4450)
+  [Android Activity的启动流程分析：以Launcher启动一个Activity为例，分析应用进程的创建、Activity的启动，以及他们和AMS之间的交互_yaoming168的博客-CSDN博客](https://blog.csdn.net/yaoming168/article/details/52402963)
   [Android Broadcast广播机制分析 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/06/04/broadcast-receiver/)
   [startService启动过程分析 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/03/06/start-service/)
+  [Android activity启动流程分析 - 简书](https://www.jianshu.com/p/52276d5a979c)
 '''
 linesHighlighted: []
 isStarred: false

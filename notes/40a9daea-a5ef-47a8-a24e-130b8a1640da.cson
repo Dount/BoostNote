@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2023-03-02T16:26:09.782Z"
+updatedAt: "2023-03-03T16:30:37.507Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android"
@@ -2543,13 +2543,13 @@ content: '''
   ![binder_main_request.jpg](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\2dadde28.jpg)
   
   Step1: Service先注册服务，首先向ServiceManager注册服务，
-  Step2: 向Kernel(内核)中Binder驱动的全局链表binder_procs中插入服务端的信息
-  Step3: 向ServiceManager的svcinfo列表中缓存一下注册的服务。
+  Step2: ServiceManager,向Kernel(内核)中Binder驱动的全局链表中插入服务端的信息
+  Step3: 同时向svcinfo已注册服务列表中缓存一下注册的服务。
   Step4: 客户端通过ServiceManager向svcinfo列表中查询一下返回服务端的代理。
-  Step5: 客户端利用获取到的服务端代理，通过BinderProxy将请求发送给ServiceManager.
-  Step6: 使用内核方法copy_from_user()将参数拷贝到内核空间。
+  Step5: 客户端利用获取到的服务端代理，即BinderProxy，将请求发送给ServiceManager.
+  Step6: ServiceManager使用内核方法copy_from_user()将参数拷贝到内核空间。
   Step7: 这时候客户端进入等待状态。
-  Step8: 然后 Binder 驱动向binder_proc的 todo 队列里面插入一条事务.
+  Step8: 然后 Binder 驱动向全局链表队列里面插入一条事务.
   Step9: 执行完之后把执行结果通过 copy_to_user() 将内核的结果拷贝到用户空间
   Step10:唤醒等待的客户端并把结果响应给客户端。
   
