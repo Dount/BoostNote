@@ -1,5 +1,5 @@
 createdAt: "2023-01-08T15:07:09.915Z"
-updatedAt: "2023-03-03T16:16:30.766Z"
+updatedAt: "2023-03-06T16:19:33.607Z"
 type: "MARKDOWN_NOTE"
 folder: "c3bf24344ddc9bd2af22"
 title: "ActivityManagerService"
@@ -267,6 +267,17 @@ content: '''
   静态注册的receivers始终采用串行方式来处理（processNextBroadcast）； 动态注册的registeredReceivers处理方式是串行还是并行方式, 取决于广播的发送方式(processNextBroadcast)。
   
   ## 6 startService启动过程
+  ![4b0b6a91.png](:storage\\ac9f3a24-f52f-44fa-8b3e-bb589e4dd4f0\\4b0b6a91.png)
+  
+  启动流程:
+  1. Activity中的startService实际由ContextImpI中startService开始发起
+  2. 利用Binder通信，通过AMP向AMS发起startService请求。
+  3. AMS收到请求后，经由ActiveServes一系列的处理后，向zygote发送创建进程的请求。
+  4. zyfote通过fork出新的子进程ActivityThread。
+  5. ActivityThread 利用Binder通信，通过AMP调用AMS中attachApplicationLocked方法，进行一系列准备工作。
+  6. AMS再利用Binder通信，向ActivityThread调用scheduleCreateService方法，开始启动服务。
+  7. 通过handler发送CREATE_SERVICE消息，创建Service，并启动Service.OnCreadte方法。
+  
   
   ## 文献
   [Android-MS/ams.md at master · xiangjiana/Android-MS · GitHub](https://github.com/xiangjiana/Android-MS/blob/master/android/ams.md)
@@ -276,6 +287,9 @@ content: '''
   [Android Broadcast广播机制分析 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/06/04/broadcast-receiver/)
   [startService启动过程分析 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/03/06/start-service/)
   [Android activity启动流程分析 - 简书](https://www.jianshu.com/p/52276d5a979c)
+  [详解ActivityManagerService的启动流程 - 知乎](https://zhuanlan.zhihu.com/p/158808726?utm_id=0)
+  [Activity启动流程分析 - 简书](https://www.jianshu.com/p/93aa9330f477)
+  [startService源码主要流程解析_activeservices realstartservicelocked startservice_tinyvampirepudge的博客-CSDN博客](https://blog.csdn.net/qq_26287435/article/details/104905607)
 '''
 linesHighlighted: []
 isStarred: false
