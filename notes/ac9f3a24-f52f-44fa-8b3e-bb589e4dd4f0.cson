@@ -1,5 +1,5 @@
 createdAt: "2023-01-08T15:07:09.915Z"
-updatedAt: "2023-03-06T16:19:33.607Z"
+updatedAt: "2023-03-07T11:50:17.093Z"
 type: "MARKDOWN_NOTE"
 folder: "c3bf24344ddc9bd2af22"
 title: "ActivityManagerService"
@@ -278,6 +278,7 @@ content: '''
   6. AMS再利用Binder通信，向ActivityThread调用scheduleCreateService方法，开始启动服务。
   7. 通过handler发送CREATE_SERVICE消息，创建Service，并启动Service.OnCreadte方法。
   
+  ## 7. ANR时系统的处理过程
   
   ## 文献
   [Android-MS/ams.md at master · xiangjiana/Android-MS · GitHub](https://github.com/xiangjiana/Android-MS/blob/master/android/ams.md)
@@ -290,6 +291,7 @@ content: '''
   [详解ActivityManagerService的启动流程 - 知乎](https://zhuanlan.zhihu.com/p/158808726?utm_id=0)
   [Activity启动流程分析 - 简书](https://www.jianshu.com/p/93aa9330f477)
   [startService源码主要流程解析_activeservices realstartservicelocked startservice_tinyvampirepudge的博客-CSDN博客](https://blog.csdn.net/qq_26287435/article/details/104905607)
+  [理解Android ANR的信息收集过程 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/12/02/app-not-response/)
 '''
 linesHighlighted: []
 isStarred: false

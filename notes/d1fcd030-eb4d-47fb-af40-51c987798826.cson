@@ -1,0 +1,18 @@
+createdAt: "2023-03-07T11:46:02.560Z"
+updatedAt: "2023-03-07T11:46:48.393Z"
+type: "MARKDOWN_NOTE"
+folder: "c3bf24344ddc9bd2af22"
+title: "SurfaceFlinger"
+tags: []
+content: '''
+  # SurfaceFlinger
+  
+  
+  ## 文献
+  [SurfaceFlinger启动篇 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2017/02/11/surface_flinger/)
+  [SurfaceFlinger绘图篇 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2017/02/18/surface_flinger_2/)
+  
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

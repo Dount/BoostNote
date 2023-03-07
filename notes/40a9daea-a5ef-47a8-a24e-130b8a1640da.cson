@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2023-03-03T16:30:37.507Z"
+updatedAt: "2023-03-07T11:30:45.972Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android"
@@ -4177,12 +4177,32 @@ content: '''
   
   JNIEnv：是指线程上下文环境，每个线程有且只有一个JNIEnv实例，
   
-  ### 27.3 文献
+  #### 27.2.4 JNI加载过程
+  1. 通过loadLibrary 调用相应库中的JNI_OnLoad()方法。
+  2. 在JNI_OnLoad方法中，获取JNINativeMethod结构体中定义的Java函数。
+  3. 通过registerNativeMethods方法，将JNINativeMethod结构体中定义的Java函数，注册到JVM中。
+  
+  ### 27.4 文献
   [Android JNI原理分析 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/05/28/android-jni/)
   [JNI动态注册、静态注册实例及其实现原理分析 - 知乎](https://zhuanlan.zhihu.com/p/520523247)
   [【Android】JNI静态与动态注册介绍_android jni 动态注册_后端码匠的博客-CSDN博客](https://blog.csdn.net/weixin_43874301/article/details/128129892)
   [JNI静态注册与动态注册_jni动态注册_FlyerGo的博客-CSDN博客](https://blog.csdn.net/u012944685/article/details/124211418)
   [JNI 静态注册/动态注册 - 简书](https://www.jianshu.com/p/873fc6ee4e51)
+  
+  ## 28. 性能优化分析
+  
+  ### 28.1 稳定——内存优化
+  
+  ### 28.2 流畅——卡顿优化
+  
+  ### 28.3 节省——耗电优化
+  
+  ### 28.4 安装包——APK瘦身
+  
+  
+  ### 28.5 文献
+  [Android性能优化总结 - 蜗牛攀爬 - 博客园](https://www.cnblogs.com/wnpp/p/16065525.html)
+  [Android面试必会之性能优化 - 知乎](https://zhuanlan.zhihu.com/p/413283737)
   
   ## 面试题参考文献
   [jeanboy_jeanboydev_CSDN博客-Android进阶,Java基础,Android进阶领域博主](https://blog.csdn.net/freekiteyu/article/list/1)
@@ -4198,8 +4218,8 @@ content: '''
   
 '''
 linesHighlighted: [
-  4270
-  4343
+  4360
+  4287
 ]
 isStarred: false
 isTrashed: false

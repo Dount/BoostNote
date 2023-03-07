@@ -1,5 +1,5 @@
 createdAt: "2023-01-08T15:07:34.029Z"
-updatedAt: "2023-01-17T03:29:54.232Z"
+updatedAt: "2023-03-07T11:47:28.104Z"
 type: "MARKDOWN_NOTE"
 folder: "c3bf24344ddc9bd2af22"
 title: "WindowManagerService"
@@ -9,6 +9,8 @@ content: '''
   
   ## 文献
   [WMS介绍_yaoming168的博客-CSDN博客_wms介绍](https://blog.csdn.net/yaoming168/article/details/89418572)
+  [WMS—启动过程 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2017/01/08/windowmanger/)
+  [WMS—启动窗口(StartingWindow) - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2017/01/15/wms_starting_window/)
 '''
 linesHighlighted: []
 isStarred: false
