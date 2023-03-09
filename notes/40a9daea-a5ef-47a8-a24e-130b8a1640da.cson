@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2023-03-08T16:26:31.467Z"
+updatedAt: "2023-03-09T16:14:02.852Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android"
@@ -4216,10 +4216,39 @@ content: '''
   它有个Lint Tool工具，它会把Android源代码和lint.xml配置文件打包成一个文件之后，输出成lint output，并展现出具体在哪行代码有问题。
   
   ### 28.2 流畅——卡顿优化
+  UI问题的最大体现则是屏幕卡顿现象。造成卡顿的主要原因有以下两点：
+  - 绘制耗时过长，绘制一帧内容耗时太长。
+  - 主线程太忙，导致Vsync(Vertical Synchronization)信号到时还没准备好数据，导致丢帧。
+  
+  Android 4.1版本推出了Project Butter，其中VSYNC(垂直同步)则是解决刷新不同步的问题。可以简单地把它认为是一种定时中断，一旦收到VSYNC中断，CPU就开始处理各帧数据进行渲染。
+  
+  ### 28.2.1 绘制耗时过长
+  - 界面布局层级过深:
+  一个页面的Measure、Layout和draw过程都是通过递归来完成的，如果层级太深，每增加一层则会增加更多的页面显示时间。
+  - 复杂的布局:
+  对于View状态变化等情况的界面，当View发生变化时，都需要重新计算、创建、渲染，更新到屏幕上，如果布局很复杂，就很容易导致卡顿问题
+  - 过渡绘制:
+  有重叠的UI设置了多个背景，或者自定义View中draw方法在同一区域进行了重复绘制。
+  
+  ### 28.2.2 主线程繁忙
+  主线主要负责的工作如下：
+  - UI生命周期控制
+  - 系统事件处理
+  - 消息处理
+  - 界面布局
+  - 界面绘制
+  - 界面刷新
+  
+  如果以上主线程工作中加入复杂的数据处理，网络请求等耗时操作。那么可能会导致主线程被阻塞而不能及时响应VSync信号，出现卡顿丢帧的情况。
+  
+  ### 28.2.3 分析工具
+  
   
   ### 28.3 节省——耗电优化
   
   ### 28.4 安装包——APK瘦身
+  
+  ### 28.5 启动优化 
   
   
   ### 28.5 文献
@@ -4228,6 +4257,7 @@ content: '''
   [Android内存泄露检测工具 LeakCanary 使用 及 MAT分析 - 简书](https://www.jianshu.com/p/b58390442a00)
   [Android性能优化大全_朽木成才的博客-CSDN博客](https://blog.csdn.net/wang_yong_hui_1234/article/details/74331408)
   [史上最全Android性能优化方案解析_android 性能优化_嘴巴吃糖了的博客-CSDN博客](https://blog.csdn.net/YoungOne2333/article/details/126909794)
+  [Android 性能优化---绘制优化篇 - 知乎](https://zhuanlan.zhihu.com/p/455886476)
   
   ## 面试题参考文献
   [jeanboy_jeanboydev_CSDN博客-Android进阶,Java基础,Android进阶领域博主](https://blog.csdn.net/freekiteyu/article/list/1)
@@ -4243,8 +4273,8 @@ content: '''
   
 '''
 linesHighlighted: [
-  4312
-  4385
+  4335
+  4408
 ]
 isStarred: false
 isTrashed: false
