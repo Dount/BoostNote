@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2023-03-09T16:14:02.852Z"
+updatedAt: "2023-03-12T15:34:44.021Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android"
@@ -4242,14 +4242,86 @@ content: '''
   如果以上主线程工作中加入复杂的数据处理，网络请求等耗时操作。那么可能会导致主线程被阻塞而不能及时响应VSync信号，出现卡顿丢帧的情况。
   
   ### 28.2.3 分析工具
+  - Layout Inspector
+  Layout Inspector是Android studio自带的视图层次结构分析工具，通过Layout Inspector分析布局的层级结构，减少不必要的层级，避免过度绘制, 达到渲染优化的效果。
   
+  - Android Lint工具
+  将布局相关的扫描规则勾选上，然后根据Lint给出的结果，针对性的做出一些布局优化处理，达到渲染优化的效果。
   
-  ### 28.3 节省——耗电优化
+  - GPU 渲染模式分析工具
+  该工具在手机开发者选项中，通过设置打开开发人员选项，选择 GPU呈现模式分析，打开要分析的应用。
+  最终结果通过，滚动直方图的形式直观地显示渲染界面窗口帧所花费的时间，若一直超过红线，整个页面就会很卡，那么就需要针对性的做一些优化处理。
   
-  ### 28.4 安装包——APK瘦身
+  - 过渡绘制检测功能
+  该功能也同样在开发者选项中，通过设置打开开发人员选项，选择调试 GPU 过度绘制，打开要分析的应用。
+  最终结果通过对界面进行彩色编码来告诉我们哪些属于过度绘制，尤其注意红色表示过度绘制4次或者更多。
   
-  ### 28.5 启动优化 
+  ### 28.3 安装包——APK瘦身
+  从用户层面来说，面对动辄几十兆的APP来说在非WIFI情况下还是会犹豫要不要下载，不下载你就可能因此失去了一个用户。
+  从公司层面来讲，流量就是钱，减少APP的大小就显得尤为重要
   
+  #### 28.3.1 APK的构成
+  APK文件由一个ZIP存档组成，其中包含组成应用程序的，Java类文件，资源文件和被编译资源文件。
+  - META-INF/：包含CERT.SF和 CERT.RSA签名文件以及MANIFEST.MF 清单文件。
+  - assets/：包含应用可以使用AssetManager对象检索的应用资源。
+  - res/：包含未编译到的资源 resources.arsc。
+  - lib/：包含特定于处理器软件层的编译代码。该目录包含了每种平台的子目录，像armeabi，armeabi-v7a， arm64-v8a，x86，x86_64，和mips。
+  - resources.arsc：包含已编译的资源。该文件包含res/values/ 文件夹所有配置中的XML内容。打包工具提取此XML内容，将其编译为二进制格式，并将内容归档。此内容包括语言字符串和样式，以及直接包含在resources.arsc文件中的内容路径 ，例如布局文件和图像。
+  - classes.dex：包含以Dalvik / ART虚拟机可理解的DEX文件格式编译的类。
+  - AndroidManifest.xml：包含核心Android清单文件。该文件列出应用程序的名称，版本，访问权限和引用的库文件。该文件使用Android的二进制XML格式。
+  
+  #### 28.3.2 减少安装包大小
+  - 使用NimbleDroid 减少无用文件
+  是一个 Android 性能指标的系统，有两个方式。
+  通过静态分析：可以分析出APK安装包中所有文件在APK中所占整体比例。
+  通过动态分析：可以给出冷启动时间, 内存占用, 网络使用，磁盘输入/输出等报告，从这些分析报告中可以定位出具体的优化点。
+  
+  - ProGuard 代码混淆器工具 压缩代码资源
+  是Android Studio 自带的一种代码混淆器工具，其中包括：压缩，优化，混淆，预检四种功能。
+  压缩（Shrink）:用于检测和删除没有使用的类、字段、方法和属性
+  优化（Optimize）:对于字节码进行优化，并且移除无用指令。
+  混淆（Obfuscate）:增大反编译难度，随机对类，字段和方法进行重命名。
+  预检（Preverify）:主要是在Java平台上对处理后的代码进行预检。
+  
+  - lib中资源优化
+  为了支持不同指令集的情况，应用可能会包含armeabi-v8a、armeabi-v7a、x86的SO文件。从而导致整个应用会很大。
+  需要看具体业务情况，尽量使so库兼容v7或V8。
+  
+  ### 28.4 启动优化 
+  用户希望应用能够快速打开。启动时间过长的应用可能会令用户失望，最后用户直接卸载应用。
+  #### 28.4.1 启动方式
+  - 冷启动
+  应用从头开始(Zygote>fork>app),
+  在冷启动开始时，系统有三个任务，1.加载并启动应用，2.在启动后立即显示应用的空白启动窗口，3.创建应用进程。
+  创建了应用程序进程后，应用程序进程就负责接下来的阶段：1.创建应用的实体。2.启动主线程。3.创建主页面。4.绘制页面上的View。5.布局页面。6.执行首次的绘制。
+  
+  - 温启动
+  介于冷启动和热启动中间，应用进程还在，但activity已经从栈中退出销毁，再次启动应用需要通过onCreate（）重新创建 Activity。
+  
+  - 热启动
+  热启动时，系统将应用从后台拉回前台，应用程序的 Activity 在内存中没有被销毁，那么应用程序可以避免重复对象初始化，UI的布局和渲染。
+  
+  #### 28.4.2 启动时间测量
+  测量启动时间的目的有两个：
+  1. 找到需要优化的点，即哪里耗时严重
+  2. 启动优化效果验证，是否达到预期时间
+  
+  #### 28.4.3 时间测量方式
+  - 系统日志输出
+  在Android 4.4及以上版本，App启动时会在logcat输出一行日志，会打印出名为Displayed的值，此值代表从进程启动到在屏幕上完成对应Activity的绘制所经过的时间。
+  - adb命令
+  launch启动App
+  ![e7b8bc96.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\e7b8bc96.png)
+  点home键推到后台，再运行adb命令：
+  ![eae733a7.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\eae733a7.png)
+  点back键推到后台，再运行adb命令：
+  ![84aa771a.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\84aa771a.png)
+  
+  #### 28.4.4 优化方式
+  - 第一阶段的优化方向
+  Application执行阶段，在执行attachBaseContext和onCreate方法时，app显示黑白屏的的持续时间有多久，若时间过长需要优化。
+  - 第二阶段的优化方向
+  activity运行阶段，onCreate,onStart,onResume函数中不能进行耗时的工作。耗时操作尽量放在子线程中
   
   ### 28.5 文献
   [Android性能优化总结 - 蜗牛攀爬 - 博客园](https://www.cnblogs.com/wnpp/p/16065525.html)
@@ -4258,6 +4330,16 @@ content: '''
   [Android性能优化大全_朽木成才的博客-CSDN博客](https://blog.csdn.net/wang_yong_hui_1234/article/details/74331408)
   [史上最全Android性能优化方案解析_android 性能优化_嘴巴吃糖了的博客-CSDN博客](https://blog.csdn.net/YoungOne2333/article/details/126909794)
   [Android 性能优化---绘制优化篇 - 知乎](https://zhuanlan.zhihu.com/p/455886476)
+  [APK 瘦身记，如何实现高达 53% 的压缩效果 - 掘金](https://juejin.cn/post/6844903429609881613#heading-21)
+  [深入探索 Android 包体积优化（匠心制作-上） - 掘金](https://juejin.cn/post/6844904103131234311#heading-23)
+  [Android代码混淆配置：ProGuard_android proguard_迷路国王的博客-CSDN博客](https://blog.csdn.net/qq_42795723/article/details/126345454)
+  [性能调优——如何让你的APK瘦身到极致~ - 知乎](https://zhuanlan.zhihu.com/p/562555739)
+  [Android性能优化之APK瘦身详解_android apk瘦身_星月黎明的博客-CSDN博客](https://blog.csdn.net/qq_33209777/article/details/125832075)
+  
+  [Android：启动优化_android 启动优化_奋斗的小鹰的博客-CSDN博客](https://blog.csdn.net/qq_27246079/article/details/124910568)
+  [android启动优化_android 启动优化_hzulwy的博客-CSDN博客](https://blog.csdn.net/qq_36828822/article/details/125244867)
+  [Android 性能优化1——启动优化 - 简书](https://www.jianshu.com/p/c81531e95e42)
+  [Android性能优化系列篇（二）：启动优化 - 知乎](https://zhuanlan.zhihu.com/p/573370831)
   
   ## 面试题参考文献
   [jeanboy_jeanboydev_CSDN博客-Android进阶,Java基础,Android进阶领域博主](https://blog.csdn.net/freekiteyu/article/list/1)
@@ -4273,8 +4355,8 @@ content: '''
   
 '''
 linesHighlighted: [
-  4335
-  4408
+  4482
+  4409
 ]
 isStarred: false
 isTrashed: false
