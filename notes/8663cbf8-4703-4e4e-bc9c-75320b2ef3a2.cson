@@ -1,5 +1,5 @@
 createdAt: "2023-03-07T11:39:46.944Z"
-updatedAt: "2023-03-07T11:46:14.107Z"
+updatedAt: "2023-03-14T16:08:41.203Z"
 type: "MARKDOWN_NOTE"
 folder: "c3bf24344ddc9bd2af22"
 title: "DropBoxManagerService"
@@ -7,9 +7,45 @@ tags: []
 content: '''
   # DropBoxManagerService
   
+  DropBoxManagerService(简称DBMS) 主要用于记录 Android 运行过程中, 内核, 系统进程, 用户进程等出现严重问题时的 log。 Android系统启动过程SystemServer进程时，在startOtherServices()过程会启动DBMS服务
+  
+  ## 初始化DBMS
+  1. 监听存储设备可用空间低的广播
+  2. 监听开机完毕的广播
+  3. 监听Settings数据库变化广播
+  
+  开机过程中DBMS的初始化只是做了注册广播而已，当收到广播后才会去处理。
+  
+  ## init 方法
+  该方法主要功能：
+  1. 创建目录/data/system/dropbox
+  2. 检查dropbox目录下所有文件，获取文件名中的时间戳。
+  3. 删除后缀为tmp文件，删除时间戳为0的文件
+  
+  ## trimToFit 方法
+  dropbox对目录中的文件数量以及存储空间大小是有规定的，当超出限制会调用trimToFit方法进行瘦身。
+  1. 文件最长保存时长为3天
+  2. 最大文件个数为1000
+  3. 分配dropbox空间的最大值5M
+  
+  ## add 方法
+  每当系统中有一些事件需要记录时，都会调用AMS.addErrorToDropBox()来触发DBMS工作。
+  - crash: AMS.handleApplicationCrashInner过程
+  - anr: AMS.appNotResponding()过程；
+  - watchdog: Watchdog.run()过程;
+  - native_crash: 当调用NativeCrashReporter.run()的过程;
+  - wtf: 当调用Log.wtf()或者Log.wtfQuiet()的过程；
+  - lowmem: 当内存较低时，触发AMS.reportMemUsage()过程；
+  
+  触发这些事件后，最终都会调用DropBoxManagerService.add方法将数据写入到存储目录中。
+  
+  
   
   ## 文献
   [DropBoxManager启动篇 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/06/12/DropBoxManagerService/)
+  [Android开发这么久你竟然还不知道Dropbox？_dropboxmanagerservice system_server_wtf_IT_熊的博客-CSDN博客](https://blog.csdn.net/servermanage/article/details/102550977)
+  [Android DropBoxManagerService原理分析_glearn.的博客-CSDN博客](https://blog.csdn.net/u011733869/article/details/81264527)
+  [android开发分享【Android】【源码分析】系统各类异常日志收集服务（DropBoxManagerService）-猴子技术宅](https://www.ssfiction.com/adkf/895131.html)
 '''
 linesHighlighted: []
 isStarred: false
