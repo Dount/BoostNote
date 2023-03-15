@@ -1,11 +1,23 @@
 createdAt: "2023-01-08T15:07:34.029Z"
-updatedAt: "2023-03-07T11:47:28.104Z"
+updatedAt: "2023-03-15T11:16:10.890Z"
 type: "MARKDOWN_NOTE"
 folder: "c3bf24344ddc9bd2af22"
 title: "WindowManagerService"
 tags: []
 content: '''
   # WindowManagerService 
+  
+  ## 概述
+  在Android中， WindowManagerService负责对系统中的所有窗口进行管理。所谓的管理大致包括对窗口进行创建、删除，以及更换窗口的焦点。
+  
+  ## 作用
+  - 为所有窗口分配Surface: 
+  客户端向WMS添加一个窗口的过程，其实就是WMS为其分配一块Surface的过程，一块块Surface在WMS的管理下有序的排布在屏幕上。Window的本质就是Surface，用于管理Surface的显示顺序、尺寸、位置和窗口动画。
+  
+  - 输入系统相关：
+  WMS是派发系统按键和触摸消息的最佳人选，当接收到一个触摸事件，它需要寻找一个最合适的窗口来处理消息，而WMS是窗口的管理者，系统中所有的窗口状态和信息都由WMS进行管理。
+  
+  
   
   ## 文献
   [WMS介绍_yaoming168的博客-CSDN博客_wms介绍](https://blog.csdn.net/yaoming168/article/details/89418572)
