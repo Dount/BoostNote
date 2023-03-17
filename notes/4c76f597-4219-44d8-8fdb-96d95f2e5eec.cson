@@ -1,5 +1,5 @@
 createdAt: "2020-10-22T14:35:24.656Z"
-updatedAt: "2021-04-12T06:31:56.600Z"
+updatedAt: "2023-03-16T08:24:46.165Z"
 type: "MARKDOWN_NOTE"
 folder: "bfd1eca2e356e7181dfa"
 title: "kotlin 零基础到进阶"
@@ -977,8 +977,6 @@ content: '''
   Kotlin为Java SDK中的java.net.URL类增加了两个扩展方法，即readBytes和readText
   
 '''
-linesHighlighted: [
-  23
-]
+linesHighlighted: []
 isStarred: false
 isTrashed: false
