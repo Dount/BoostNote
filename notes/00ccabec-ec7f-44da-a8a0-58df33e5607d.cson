@@ -1,5 +1,5 @@
 createdAt: "2023-01-08T15:07:34.029Z"
-updatedAt: "2023-03-17T09:28:06.393Z"
+updatedAt: "2023-03-18T08:12:09.057Z"
 type: "MARKDOWN_NOTE"
 folder: "c3bf24344ddc9bd2af22"
 title: "WindowManagerService"
@@ -35,8 +35,9 @@ content: '''
   
   ## 启动过程
   1. SystemServer中，优先启动引导服务，核心服务，其它服务。WMS属于其它服务的一种。
-  2. 在WMS启动先，会先启动IMS,并将IMS对象作为参数赋值到WMS中，
-  3. 
+  2. 在WMS启动先，会先启动IMS,并将IMS对象作为参数赋值到WMS中，后续WMS处理输入事件时会与IMS进行交互。
+  3. WMS的main方法中，
+  
   
   
   ## 文献
@@ -47,6 +48,8 @@ content: '''
   [Window与WMS通信过程-阿里云开发者社区](https://developer.aliyun.com/article/1113415)
   [Android进阶（四）Window和WindowManager_window.setcolor1 = () =>{_爬坑仰望天空的博客-CSDN博客](https://blog.csdn.net/www851903307/article/details/86686261)
   [WindowManagerService_橙子19911016的博客-CSDN博客](https://blog.csdn.net/xingyu19911016/article/details/128596245)
+  [WindowManagerService的启动 - 简书](https://www.jianshu.com/p/5e15dc18a05c)
+  
 '''
 linesHighlighted: []
 isStarred: false
