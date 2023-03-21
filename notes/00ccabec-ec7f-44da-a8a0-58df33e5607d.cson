@@ -1,5 +1,5 @@
 createdAt: "2023-01-08T15:07:34.029Z"
-updatedAt: "2023-03-21T09:13:33.311Z"
+updatedAt: "2023-03-21T16:05:46.298Z"
 type: "MARKDOWN_NOTE"
 folder: "c3bf24344ddc9bd2af22"
 title: "WindowManagerService"
@@ -51,15 +51,19 @@ content: '''
   7. WMS初始化屏幕显示信息后，最后通过WMS的SystemReady方法通知WMS初始化工作完成。
   
   ## WMS添加一个窗口
+  ![3f07ec12.png](:storage\\00ccabec-ec7f-44da-a8a0-58df33e5607d\\3f07ec12.png)
+  
   1. 对于不通类型的窗口添加过程不同，但是对于WMS处理部分，基本上是一样的。
   2. 通过WindowManager的addview方法，但实际会最终调用到WindowManagerGlobal中的addView方法中。
   3. WindowManagerGlobal对上层参数进行检查并进行相应的调整，同时初始化ViewRootImpl对象，将View交由ViewRootImpl管理。
-  4. 在ViewRootImpl会完成对View的测量，布局和绘制，并通过Binder与WMS进行跨进程通信。
-  5. 
+  4. 在ViewRootImpl会完成对View的测量，布局和绘制。
+  5. ViewRootImpl通过Binder与WMS进行跨进程通信,调用addToDisplay方法为窗口分配画布Surface,最终交给SurfaceFlinger，并绘制到屏幕上。
   
   ## WMS删除一个窗口
-  
-  
+  1. 通过WindowManager的removeView方法，但实际会最终调用到WindowManagerGlobal中的removeView方法中。
+  2. 在removeView方法会通过索引获取到对应的ViewRootImpl。然后调用ViewRootImpl的die方法。
+  3. 若当前View已绘制完成，直接删除。若View正在绘制则通过Handler异步的方式，将View添加到一个待删除列表中进行删除。
+  4. 删除将该View在索引表中删除。
   
   ## 文献
   [WMS介绍_yaoming168的博客-CSDN博客_wms介绍](https://blog.csdn.net/yaoming168/article/details/89418572)
@@ -67,7 +71,6 @@ content: '''
   [WMS—启动窗口(StartingWindow) - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2017/01/15/wms_starting_window/)
   [Android解析WindowManagerService（一）WMS的诞生 \\| BATcoder - 刘望舒](http://liuwangshu.cn/framework/wms/1-wms-produce.html)
   [Window与WMS通信过程-阿里云开发者社区](https://developer.aliyun.com/article/1113415)
-  [Android进阶（四）Window和WindowManager_window.setcolor1 = () =>{_爬坑仰望天空的博客-CSDN博客](https://blog.csdn.net/www851903307/article/details/86686261)
   [WindowManagerService_橙子19911016的博客-CSDN博客](https://blog.csdn.net/xingyu19911016/article/details/128596245)
   [WindowManagerService的启动 - 简书](https://www.jianshu.com/p/5e15dc18a05c)
   [Wms 启动流程分析和介绍-51CTO.COM](https://www.51cto.com/article/688925.html)
@@ -77,11 +80,13 @@ content: '''
   
   [WMS（一）：Window的添加过程_bug樱樱的博客-CSDN博客](https://blog.csdn.net/weixin_47933729/article/details/113738700)
   [WMS（二）：Window的删除过程_removewindow_bug樱樱的博客-CSDN博客](https://blog.csdn.net/weixin_47933729/article/details/113743864)
+  [Android进阶（四）Window和WindowManager_window.setcolor1 = () =>{_爬坑仰望天空的博客-CSDN博客](https://blog.csdn.net/www851903307/article/details/86686261)
   
   [深入理解WMS（一）：Window的创建过程_bug樱樱的博客-CSDN博客](https://blog.csdn.net/weixin_47933729/article/details/113659895)
   [深入理解WMS（二）：Dialog与Toast源码解析_android wms dialog_bug樱樱的博客-CSDN博客](https://blog.csdn.net/weixin_47933729/article/details/113687194)
   [深入理解WMS（三）：剖析Activity，View，Window之间的关系_bug樱樱的博客-CSDN博客](https://blog.csdn.net/weixin_47933729/article/details/113700352)
   [深入理解WMS（四）：从WMS的角度分析Activity之间的关系_bug樱樱的博客-CSDN博客](https://blog.csdn.net/weixin_47933729/article/details/113728775)
+  
   
 '''
 linesHighlighted: []
