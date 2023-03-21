@@ -1,5 +1,5 @@
 createdAt: "2023-01-08T15:07:34.029Z"
-updatedAt: "2023-03-18T09:55:22.672Z"
+updatedAt: "2023-03-21T09:13:33.311Z"
 type: "MARKDOWN_NOTE"
 folder: "c3bf24344ddc9bd2af22"
 title: "WindowManagerService"
@@ -25,6 +25,12 @@ content: '''
   - 输入系统相关：
   窗口并不具备有绘制的功能，因此每个窗口都需要有一块Surface来供自己绘制。为每个窗口分配Surface是由WMS来完成的。
   
+  ## Window分类
+  ![d602dccf.png](:storage\\00ccabec-ec7f-44da-a8a0-58df33e5607d\\d602dccf.png)
+  
+  1. Application Window(应用窗口)：例如Activity，Dialog；【取值范围为1~99】
+  2. Sub Window(子窗口)：不能独立存在，需要依附在其他窗口，例如PopupWindow【取值范围为1000~1999】
+  3. System Window(系统窗口)：例如Toast、输入法窗口、系统音量条窗口、系统错误窗口等【2000~2999】
   
   ## Window、WindowManager、WMS 关系
   ![c256833f.png](:storage\\00ccabec-ec7f-44da-a8a0-58df33e5607d\\c256833f.png)
@@ -40,8 +46,18 @@ content: '''
   2. 在WMS启动先，会先启动IMS,并将IMS对象作为参数赋值到WMS中，后续WMS处理输入事件时会与IMS进行交互。
   3. WMS的main方法中，获取DisplayThread的handler实例，在display线程中创建WMS实例对象。
   4. WMS实例对象创建完成后，display进入等待状态。
-  5. WMS开始初始化窗口管理策略，通过PWM(PhoneWindowManager)在ui线程中进行初始化，完成后通过Handler中notifyAll唤醒display线程。
-  6. WMS初始化屏幕显示信息后，最后再通过WMS通知初始化工作已经完成。
+  5. 调用WMS中OnInitReady方法，开始初始化窗口管理策略，通过PWM(PhoneWindowManager)在ui线程中进行初始化，完成后通过Handler中notifyAll唤醒display线程。
+  6. 完成初始化窗口管理策略后，WMS中displayReady方法初始化屏幕显示信息。
+  7. WMS初始化屏幕显示信息后，最后通过WMS的SystemReady方法通知WMS初始化工作完成。
+  
+  ## WMS添加一个窗口
+  1. 对于不通类型的窗口添加过程不同，但是对于WMS处理部分，基本上是一样的。
+  2. 通过WindowManager的addview方法，但实际会最终调用到WindowManagerGlobal中的addView方法中。
+  3. WindowManagerGlobal对上层参数进行检查并进行相应的调整，同时初始化ViewRootImpl对象，将View交由ViewRootImpl管理。
+  4. 在ViewRootImpl会完成对View的测量，布局和绘制，并通过Binder与WMS进行跨进程通信。
+  5. 
+  
+  ## WMS删除一个窗口
   
   
   
@@ -55,6 +71,17 @@ content: '''
   [WindowManagerService_橙子19911016的博客-CSDN博客](https://blog.csdn.net/xingyu19911016/article/details/128596245)
   [WindowManagerService的启动 - 简书](https://www.jianshu.com/p/5e15dc18a05c)
   [Wms 启动流程分析和介绍-51CTO.COM](https://www.51cto.com/article/688925.html)
+  
+  [Android WMS工作原理浅析（一）_惜许的博客-CSDN博客](https://blog.csdn.net/a734474820/article/details/125602626)
+  [Android WMS工作原理浅析（二）_惜许的博客-CSDN博客](https://blog.csdn.net/a734474820/article/details/125613810)
+  
+  [WMS（一）：Window的添加过程_bug樱樱的博客-CSDN博客](https://blog.csdn.net/weixin_47933729/article/details/113738700)
+  [WMS（二）：Window的删除过程_removewindow_bug樱樱的博客-CSDN博客](https://blog.csdn.net/weixin_47933729/article/details/113743864)
+  
+  [深入理解WMS（一）：Window的创建过程_bug樱樱的博客-CSDN博客](https://blog.csdn.net/weixin_47933729/article/details/113659895)
+  [深入理解WMS（二）：Dialog与Toast源码解析_android wms dialog_bug樱樱的博客-CSDN博客](https://blog.csdn.net/weixin_47933729/article/details/113687194)
+  [深入理解WMS（三）：剖析Activity，View，Window之间的关系_bug樱樱的博客-CSDN博客](https://blog.csdn.net/weixin_47933729/article/details/113700352)
+  [深入理解WMS（四）：从WMS的角度分析Activity之间的关系_bug樱樱的博客-CSDN博客](https://blog.csdn.net/weixin_47933729/article/details/113728775)
   
 '''
 linesHighlighted: []
