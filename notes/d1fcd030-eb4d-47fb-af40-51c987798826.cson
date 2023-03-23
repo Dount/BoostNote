@@ -1,5 +1,5 @@
 createdAt: "2023-03-07T11:46:02.560Z"
-updatedAt: "2023-03-07T11:46:48.393Z"
+updatedAt: "2023-03-23T16:23:57.826Z"
 type: "MARKDOWN_NOTE"
 folder: "c3bf24344ddc9bd2af22"
 title: "SurfaceFlinger"
@@ -7,11 +7,42 @@ tags: []
 content: '''
   # SurfaceFlinger
   
+  ## UI面是怎么显示到屏幕上的？
+  
+  ![2f30cbe0.png](:storage\\d1fcd030-eb4d-47fb-af40-51c987798826\\2f30cbe0.png)
+  
+  Android视图显示的流程是先通过CPU把UI组件计算成多维图形和纹理坐标，然后通过OPenGL调用GPU进行栅格化，并最终渲染到屏幕上。
+  进行以上对AndroidUI的绘制都需要在Surface画布上进行。
+  
+  ## 什么是Surface
+  Surface的本质**是一块或几块GraphicBuffer内存的管理类，并提供对buffer的管理方法**,每个Window都有一个Surface。
+  GraphicBuffer由SurfaceFlinger来进行分配。App从SurfaceFlinger中获取一块GraphicBuffer后，通过OpenGL将图形数据绘制到GraphicBuffer上。
+  然后SurfaceFlinger会把多个GraphicBuffer数据进行合成，最终OpenGL将合成后的数据通过调用FramebufferNativeWindow类的函数渲染到实际屏幕上去。
+  
+  android中Surface分为两种：1.Java层surface 2.Native层Surface
+  Java层产生Surface的主要有两个地方：ViewRoot和SurfaceView。
+  Native层主要由NativeWindow产生。
+  
+  
+  ## SurfaceFlinger 概述
+  SurfaceFinger位于Native层，是一个Binder系统服务, Android设备开机启动时就会带起SurfaceFlinger服务进程并完成一些初始化动作。
+  
+  该服务首先由init进程去解析surfaceflinger.rc,然后去执行/system/bin/surfaceflinger，最后启动SurfaceFlinger服务进程。
+  
+  ## SurfaceFlinger 功能
+  
   
   ## 文献
   [SurfaceFlinger启动篇 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2017/02/11/surface_flinger/)
   [SurfaceFlinger绘图篇 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2017/02/18/surface_flinger_2/)
   
+  [Android 12(S) 图像显示系统 - SurfaceFlinger的启动和消息队列处理机制（四） - 二的次方 - 博客园_android renderengine_蜜糖果果呀～的博客-CSDN博客](https://blog.csdn.net/m0_66532594/article/details/128047576)
+  [Android绘制机制 - 简书](https://www.jianshu.com/p/ebf8028eab19)
+  [Android GDI之SurfaceFinger_iteye_17349的博客-CSDN博客](https://blog.csdn.net/iteye_17349/article/details/82203205)
+  [基于Android10渲染Surface的创建过程 - 路饭网](https://www.45fan.com/article.php?aid=1D8giQDX3835nlDv#_label0)
+  [SurfaceFlinger简介_布列瑟农的秋天的博客-CSDN博客](https://blog.csdn.net/wlwl0071986/article/details/50954898)
+  [Android之SurfaceFlinger服务 - naray - 博客园](https://www.cnblogs.com/naray/p/15344164.html)
+  [Android 重学系列 SurfaceFlinger的概述 - 简书](https://www.jianshu.com/p/c954bcceb22a)
 '''
 linesHighlighted: []
 isStarred: false
