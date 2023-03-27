@@ -1,5 +1,5 @@
 createdAt: "2023-03-07T11:46:02.560Z"
-updatedAt: "2023-03-23T16:23:57.826Z"
+updatedAt: "2023-03-27T15:44:11.062Z"
 type: "MARKDOWN_NOTE"
 folder: "c3bf24344ddc9bd2af22"
 title: "SurfaceFlinger"
@@ -29,20 +29,80 @@ content: '''
   
   该服务首先由init进程去解析surfaceflinger.rc,然后去执行/system/bin/surfaceflinger，最后启动SurfaceFlinger服务进程。
   
-  ## SurfaceFlinger 功能
+  ## SurfaceFlinger 的启动
+  1. 开机启动时，init进程解析这个surfaceflinger.rc文件
+  2. 在main_surfaceflinger.cpp文件中通过main函数首先调用createSurfaceFlinger()以及SurfaceFlinger构造函数，创建SurfaceFlinger对象。
+  3. 创建完SurfaceFlinger对象后，首先会立即执行到SurfaceFlinger::onFirstRef方法进行消息队列的初始化工作。其次调用SurfaceFlinger::init()，开始初始化绘图状态，显示设备，启动开机动画等工作。
+  4. 将SurfaceFlinger服务注册到Service Manager;
+  5. 调用run方法，开启无限循环，等客户端的信息并处理。
+  
+  ## SurfaceFlinger 消息队列处理机制
+  ![f355825c.png](:storage\\d1fcd030-eb4d-47fb-af40-51c987798826\\f355825c.png)
+  1. 当Surface绘制完成后会发出一个Invalidate的消息给Surfaceflinger的等待线程
+  2. 当waitForEvent接收到消息后就会交给onMessageReceivered去处理，
+  3. 在nMessageReceivered处理过程中会首先调用handleMessageTransaction处理之前对屏幕和应用程序窗口的改动，重新计算窗口的可见区域。
+  4. 其次调用handleMessageInvalidate，会根据图形缓冲区数据内容去更新脏区域。
+  5. handleMessageRefresh，合并和渲染输出。
+  6. 步骤完成后，继续等待下一个invalidate消息。
+  
+  ## Message/Handler/Looper 机制
+  ### 基本对象说明
+  - Message : 消息的载体，代表了一个事件，通过一个what字段来标记是什么事件
+  - MessageHandler/WeakMessageHandler 消息处理的接口(基类), 子类通过实现handleMessage来实现特定Message的处理逻辑。WeakMessageHandler包含了一个MessageHandler的弱指针
+  - LooperCallback/SimpleLooperCallback ： 用于Looper回调，实际上就是保存一个Looper_callbackFunc指针的包装基类。在Looper::addFd()方法添加监测的fd时来设置回调。
+  - Looper核心类，它其中维护着一个消息/监测的fd队列，当用户调用pollOnce或pollAll时，就会去判断是否有消息要处理（调用对应的handler::handleMessage）或监测对的fd有事件发生（回调对应的callback函数）
+  
+  ### 关键方法分析
+  
+  - Create Looper == 创建Looper的方法
+    直接调用Looper 构造函数：
+    调用Looper的静态函数 prepare() ：如果线程已经有对应的Looper，则直接返回，否则才会创建新的Looper。
+  
+  - Send Message == 发送消息的方法 
+    发送消息的方法有三种，sendMessage，sendMessageDelayed，sendMessageAtTime，最终都由sendMessageAtTime() 来实现。
+    sendMessageAtTime中根据时间将message封装成MessageEnvlope，并插入到对应的位置上。
+    然后决定是否要唤醒Looper，分两种情况：1.如果Looper正在派发message，则不需要唤醒Looper。2.如果是插在消息队列的头部，则需要立即唤醒Looper
+  
+  - Add 监听 == 添加监听的方法
+    addFd方法把要监测的事件、事件标识、回调函数指针、以及参数封装成一个Request对象。
+    通过把Request对象添加到mRequests列表中
+    
+  - Poll Looper == 轮询处理的方法
+    要让Looper运行起来才能处理消息。Looper提供了接口：pollOnce()
+    如果Looper中没有任何要处理的event/message,则会阻塞在epoll_wait() 等待事件到来。
+    调用流程：pollOnce()  -> pollInner() -> epoll_wait()
+    若event数量大于0时会唤醒epoll_wait,同时会将message封装成response对象，并加入到mResponses队列中。
+    然后 开始遍历消息队列，判断是否有消息到了处理时间了，并调用消息对应的handler->handleMessage(message)。
+    同样会遍历mResponses队列，并回调对应的response.request.callback->handleEvent(fd, events, data)。
+    最后消息处理完后，将消息从队列中移除。
+    每个fd事件回调完，也会被从mRequests列表中移除。
+  
+  ### 基本运行机制
+  ![4d4e2a7e.png](:storage\\d1fcd030-eb4d-47fb-af40-51c987798826\\4d4e2a7e.png)
+  1. 创建消息Message并指定指定MessageHandler， 调用sendMessage()把消息传递给Looper。
+  2. Looper根据Message 和 MessageHandler创建MessageEnvelope 。然后将MessageEnvelope 添加到Looper的消息队列 mMessageEnvelopes 中。
+  3. Native Looper除了处理Message之外，还可以监听指定的文件描述符。
+  4. 通过addFd() 添加要监听的fd到epoll的监听队列中，并将传进来的fd，ident，callback，data 封装成Request 对象，然后加入到Looper 的mRequests 中。
+  5. 外部逻辑（可以是某一个Thread）不断调用poolOnce-> pollInner() -> epoll_wait()阻塞，等待事件发生或超时
+  6. 当该fd有事件发生时，epoll_wait()会返回epoll event，然后从mRequests中找到对应的request对象，并加上返回的epoll event 类型（EPOLLIN、EPOLLOUT…）封装成Response对象，加入到mResponses 中。
+  7. 然后在需要处理Responses的时候，从mResponses遍历取出Response进行处理。
+  8. 同样遍历消息队列 mMessageEnvelopes中的消息进行处理
+  9. 如此不断循环
   
   
   ## 文献
   [SurfaceFlinger启动篇 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2017/02/11/surface_flinger/)
   [SurfaceFlinger绘图篇 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2017/02/18/surface_flinger_2/)
-  
   [Android 12(S) 图像显示系统 - SurfaceFlinger的启动和消息队列处理机制（四） - 二的次方 - 博客园_android renderengine_蜜糖果果呀～的博客-CSDN博客](https://blog.csdn.net/m0_66532594/article/details/128047576)
-  [Android绘制机制 - 简书](https://www.jianshu.com/p/ebf8028eab19)
-  [Android GDI之SurfaceFinger_iteye_17349的博客-CSDN博客](https://blog.csdn.net/iteye_17349/article/details/82203205)
-  [基于Android10渲染Surface的创建过程 - 路饭网](https://www.45fan.com/article.php?aid=1D8giQDX3835nlDv#_label0)
   [SurfaceFlinger简介_布列瑟农的秋天的博客-CSDN博客](https://blog.csdn.net/wlwl0071986/article/details/50954898)
+  
+  [Android Native -- Message/Handler/Looper机制（原理篇） - 二的次方 - 博客园](https://www.cnblogs.com/roger-yu/p/15099541.html)
+  [Android Native -- Message/Handler/Looper机制（应用篇） - 二的次方 - 博客园](https://www.cnblogs.com/roger-yu/p/15100416.html)
+  
   [Android之SurfaceFlinger服务 - naray - 博客园](https://www.cnblogs.com/naray/p/15344164.html)
+  [Android绘制机制 - 简书](https://www.jianshu.com/p/ebf8028eab19)
   [Android 重学系列 SurfaceFlinger的概述 - 简书](https://www.jianshu.com/p/c954bcceb22a)
+  [基于Android10渲染Surface的创建过程 - 路饭网](https://www.45fan.com/article.php?aid=1D8giQDX3835nlDv#_label0)
 '''
 linesHighlighted: []
 isStarred: false
