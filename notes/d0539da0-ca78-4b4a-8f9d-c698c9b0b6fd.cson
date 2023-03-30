@@ -1,5 +1,5 @@
 createdAt: "2023-03-16T07:57:36.947Z"
-updatedAt: "2023-03-17T05:18:53.097Z"
+updatedAt: "2023-03-30T03:14:57.409Z"
 type: "MARKDOWN_NOTE"
 folder: "d93d185dcf894dbad7b3"
 title: "MOSDK 使用教程"
@@ -22,6 +22,7 @@ content: '''
   - Android studio 4.2 以上版本
   - Android SDK (版本取决于目标平台)。
   - Java Development Kit (JDK)
+  - implementation 'com.squareup.okhttp3:okhttp:版本号'(>=3.12.10)
   - 有效的摩云平台环境与登录账号。
   
   ### 2.2 工程配置
@@ -100,6 +101,7 @@ content: '''
   | max_join_mt     | 最大与会终端数 |
   | bHighDefinition | 是否高清       |
   | virtualConfId   | 虚拟会议室ID   |
+  | members         | 添加会议成员(164号) |
   
   #### 2.3.4 结束会议
   ```
@@ -238,7 +240,7 @@ content: '''
   | meeting_id     | 视频会议唯一id |
   | MoyRspListener | 监听接口       |
   
-  #### 2.3.19 校验会议名称
+  #### 2.3.19 校验会议名称(Deprecated)
   ```
   validConfName(String name, MoyRspListener)
   ```
@@ -312,7 +314,6 @@ content: '''
   | mute           | true：哑音 false：取消哑音                            |
   | forceMute      | true:强制哑音，成员无法自己解除 false：默认不强制哑音 |
   | MoyRspListener | 监听接口                                              |
-  
   #### 2.3.27 修改会议名称 
   ```
   confNameChanged(String confId, String name, MoyRspListener)
@@ -388,6 +389,25 @@ content: '''
   | UpdateInfo     | 版本信息 |
   | MoyRspListener | 监听接口 |
   
+  #### 2.3.35 开启/关闭摄像头
+  ```
+  MoyCtrl.pausePublishStream(boolean pauseOrResume)
+  ```
+  | 参数          | 说明                                |
+  | ------------- | ----------------------------------- |
+  | pauseOrResume | true：关闭摄像头  false：恢复摄像头 |
+  
+  #### 2.3.36 邀请终端入会
+  ```
+  MoyCtrl.inviteMember(String confid, int bitrate, String[] members, MoyRspListener listener)
+  ```
+  | 参数           | 说明                                      |
+  | -------------- | ----------------------------------------- |
+  | confid         | 会议号                                    |
+  | bitrate        | 会议码率(可以在ReqConfInfoResult中获取到) |
+  | MoyRspListener | 监听接口                                  |
+  
+  
   ### 2.4 事件说明
   API 响应通知监听
   MoyRspListener
@@ -458,16 +478,12 @@ content: '''
   #### 2.5.8 getVtConfList-ReqVtMeetingResult
   | 参数                  | 说明         |
   | --------------------- | ------------ |
-  | success               | 1：成功 0：失败     |
   | total                 | 总数         |
   | virtual_meeting_rooms | 虚拟会议数组 |
-  | error_code            | 错误码       |
-  | description           | 结果描述     |
   
   #### 2.5.9 confShareLink-ReqMeetingLinkResult
   | 参数     | 说明      |
   | -------- | --------- |
-  | success | 1：成功 0：失败 |
   | conf_link | 会议分享链接  |
   
   #### 2.5.10 validConfName-ConfValidConfNameResult
