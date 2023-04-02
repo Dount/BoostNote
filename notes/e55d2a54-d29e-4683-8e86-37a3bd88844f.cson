@@ -1,0 +1,58 @@
+createdAt: "2023-04-02T15:28:31.959Z"
+updatedAt: "2023-04-02T15:39:18.300Z"
+type: "MARKDOWN_NOTE"
+folder: "537068cf3ce988a4b28a"
+title: "清单"
+tags: []
+content: '''
+  # 清单
+  
+  ## 自我介绍
+  
+  ## JAVA 
+  - Byte和位Bit的关系
+  - String,StringBuffer,StringBuilder的区别
+  - final,finally和finalize区别 
+  - ==和equals有什么区别?equals和hashCode有什么联系
+  - Array和ArrayList的区别
+  - 什么是面向对象
+  - 什么是面向过
+  - 简述面向对象的特性
+  - 列举Object类的方法
+  - 接口和抽象类有什么区别
+  - 内部类与外部类的关系
+  - 静态内部类与非静态内部类区别
+  - 匿名内部类
+  - 异常有哪些分类？出现的原因是什么？
+  - 有哪些异常处理方式?
+  - 简述一下集合主要有哪些类和接口，各自有什么特点
+  - Collection和Collections有什么区别 
+  - List和Set比较
+  - List,Set,Map有什么区别？
+  - HashMap的特点
+  - HashMap的实现方式
+  - HashMap的哈希冲突
+  - HashMap的哈希冲突解决
+  - 负载因子为什么是0.75
+  - HashMap为什么不安全？
+  - ConcurrentHashMap的特点
+  - 迭代器是什么?
+  - 有哪些线程安全的集合类？
+  
+  ## 项目中遇到的问题：
+  1. 沟通问题
+  遇到不清楚的需求，及时主动了解其内容表述。以免耽误进度。
+  遇到向别人解释其功能含义时，尽量以时序图或流程图说明和表述。
+  遇到BUG或不可抗力问题时，及时反馈。并记录流转过程。
+  2. 优先级问题
+  在遇到工作安排时，一定要问清优先顺序，以免耽误，
+  若同时开展多个工作时，一定要向领导请示，优先程度。
+  若同时解决多个BUG时，优先解决问题严重BUG。
+  3. 技术问题
+  遇到技术瓶颈，及时向同事或领导，寻求帮助。以免耽误进度。
+  在技术问题处理之后，用时序图或流程图记录处理方案。
+  
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false
