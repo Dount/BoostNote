@@ -1,5 +1,5 @@
 createdAt: "2023-04-02T15:28:31.959Z"
-updatedAt: "2023-04-02T15:39:18.300Z"
+updatedAt: "2023-04-03T16:03:46.267Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "清单"
@@ -38,7 +38,13 @@ content: '''
   - ConcurrentHashMap的特点
   - 迭代器是什么?
   - 有哪些线程安全的集合类？
-  
+  - 创建线程有哪几种实现方式？分别有什么优缺点？
+  - 线程有哪些状态
+  - 什么是线程安全问题，如何解决
+  - 使用volatile的背景
+  - volatile的特性
+  - 说一说synchronized关键字的作用
+  - Lock接口有哪些方法
   ## 项目中遇到的问题：
   1. 沟通问题
   遇到不清楚的需求，及时主动了解其内容表述。以免耽误进度。
