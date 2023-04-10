@@ -1,5 +1,5 @@
 createdAt: "2019-10-16T02:39:38.018Z"
-updatedAt: "2023-04-08T15:38:54.837Z"
+updatedAt: "2023-04-10T16:21:54.573Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Java"
@@ -1176,18 +1176,68 @@ content: '''
   1. 对于数据类型是基本数据类型的成员变量，由于基础数据类型是值传递的，所以是直接将属性值赋值给新的对象。
   2. 对于数据类型是引用数据类型的成员变量，如成员变量是某个数组、某个类的对象等，深拷贝会新建一个对象空间，然后拷贝里面的内容，所以它们指向了不同的内存空间。改变其中一个，不会对另外一个也产生影响。
   
-  ## 反射与注解
-  ### 简述反射的基本概念，优缺点和使用场景
-  1.在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法，对于任意一个对象，都能够调用它的任意一个方法和属性；这种动态获取的信息以及动态调用对象的方法的功能称为Java的反射机制。
-  2.优点是运行时动态获取类的全部信息，缺点是破坏了类的封装性，泛型的约束性。
-  3.是框架的核心灵魂，动态代理设计模式采用了反射机制，还有 Spring、Hibernate 等框架也大量使用到了反射机制。
+  ## JAVA反射（★★）
+  ### 概述 
+  JAVA反射机制是在运行状态中，
   
-  ### 获取Class对象有哪几种方式？能通过Class对象获取类的哪些信息？
-  1.通过类名.class
-  2.通过对象.getClass()
-  3.通过Class.forName(类的全限名);
-  4.可以通过Class对象获取类的成员变量，方法或构造器。带declared的可以获取到类的private修饰的一个或全部成员变量，方法，构造器，不带declared的方法只能获取到类的public修饰的成员变量、方法或构造器，包括父类public修饰的成员变量、方法或构造器。
+  对于任意一个类，都能够知道这个类的所有属性和方法；
   
+  对于任意一个对象，都能够调用它的任意一个属性和方法；
+  
+  这种动态获取的信息以及动态调用对象的方法的功能称为 java语言的反射机制。
+  
+  ### 反射原理
+  
+  Java反射机制的原理主要是通过Class类来实现的。Class类是Java中反射机制的核心类，它可以在运行时动态地获取一个类的信息。Class类的实例对象可以通过三种方式获取：
+  
+  1. 使用Class.forName()方法获取Class对象。
+  2. 使用类名.class获取Class对象。
+  3. 使用对象.getClass()方法获取Class对象。
+  
+  获取到Class对象之后，就可以通过该对象来获取类的属性和方法，创建实例对象等。
+  
+  ### 关键类
+  
+  #### Constructor
+  通过java.lang.reflect.Constructor来操作类的构造方法
+  | 方法                                   | 含义                       |
+  | -------------------------------------- | -------------------------- |
+  | getConstructors()                      | 获得类的所有public构造方法 |
+  | getDeclaredConstructors()              | 获得类的所有构造方法       |
+  | getConstructor(Class[] parameterTypes) | 获得类的特定public构造方法 |
+  | getDeclaredConstructor(Class[] params) | 获取类的特定构造方法       |
+  
+  #### Field
+  通过java.lang.reflect.Field来获取和修改成员属性，其中getField和getDeclaredField的核心区别就是是否指定类型为public.
+  | 方法                                   | 含义                       |
+  | -------------------------------------- | -------------------------- |
+  | getFields()                            | 获得类的所有public属性     |
+  | getDeclaredFields()                    | 获得类的所有属性           |
+  | getField(String name)                  | 获得类的特定public属性     |
+  | getDeclaredField(String name)          | 获取类的特定属性           |
+  
+  #### Method
+  通过java.lang.reflect.Method来执行成员方法
+  | 方法                                                   | 含义                       |
+  | ------------------------------------------------------ | -------------------------- |
+  | getMethods()                                           | 获得类的所有public成员方法 |
+  | getDeclaredMethods()                                   | 获得类的所有成员方法       |
+  | getMethod(String name, Class[] parameterTypes)         | 获得类的特定public成员方法 |
+  | getDeclaredMethod(String name, Class[] parameterTypes) | 获取类的特定成员方法       |
+  
+  #### Class类的原理
+  Java程序在编译完成后，会把所有class文件中所包含的类的基本元信息装载到JVM内存中，以Class类的形式保存，每一个Class类对象代表一个具体类的基本元信息。我们的反射就是在Class类的基础上进行的，Class类对象存储着类的所有相关信息，就像镜子，故称“反射”。。
+  
+  
+  [理解Java反射机制 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2015/07/18/java-reflection/)
+  [Java-反射机制（超详解）_java反射机制原理详解__GGBond_的博客-CSDN博客](https://blog.csdn.net/weixin_52533007/article/details/123312217)
+  [面试官你要这么问我Java反射原理，我就笑了 - 知乎](https://zhuanlan.zhihu.com/p/142593317)
+  [java反射机制原理详解_java的反射机制是怎么实现的_哥哥笑哈哈的博客-CSDN博客](https://blog.csdn.net/m0_56863607/article/details/129275027)
+  ## JAVA注解（★★）
+  
+  
+  
+  [Java注解(Annotation) - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/01/23/java-annotation/)
   ## Stream流
   
   ### 简单说说File对象表示的是什么？File类有哪些常用的方法？
@@ -1248,10 +1298,10 @@ content: '''
   
 '''
 linesHighlighted: [
-  1379
-  1336
-  1380
-  1321
+  1366
+  1425
+  1381
+  1424
 ]
 isStarred: false
 isTrashed: false
