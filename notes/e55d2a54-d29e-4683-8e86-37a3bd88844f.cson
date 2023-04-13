@@ -1,5 +1,5 @@
 createdAt: "2023-04-02T15:28:31.959Z"
-updatedAt: "2023-04-10T15:25:31.935Z"
+updatedAt: "2023-04-12T15:43:52.720Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "清单"
@@ -68,6 +68,24 @@ content: '''
   - java对象引用
   - 浅复制和深复制的区别
   - 反射与注解
+  
+  ## Android 
+  - Application中五个公开的方法
+  - Android中什么是Context
+  - Service
+  - Service - 扩展Binder类
+  - 关于启动服务与绑定服务间的转换问题
+  - 服务Service与线程Thread的区别
+  - Activity与Fragment生命周期
+  - Activity生命周期
+  - 锁定屏与解锁屏幕时Activity生命周期
+  - 两个Activity之间切换
+  - 保存与恢复 onSaveInstanceState() onRestoreInstanceState()
+  - Activity 启动模式
+  - Task任务栈
+  - Android横竖瓶切换Activity生命周期 
+  - Android - 系统启动过程
+  
   
   ## 项目中遇到的问题：
   1. 沟通问题

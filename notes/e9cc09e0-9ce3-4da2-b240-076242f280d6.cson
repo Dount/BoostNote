@@ -1,5 +1,5 @@
 createdAt: "2019-10-16T02:39:38.018Z"
-updatedAt: "2023-04-10T16:21:54.573Z"
+updatedAt: "2023-04-11T15:30:40.435Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Java"
@@ -1228,16 +1228,11 @@ content: '''
   #### Class类的原理
   Java程序在编译完成后，会把所有class文件中所包含的类的基本元信息装载到JVM内存中，以Class类的形式保存，每一个Class类对象代表一个具体类的基本元信息。我们的反射就是在Class类的基础上进行的，Class类对象存储着类的所有相关信息，就像镜子，故称“反射”。。
   
-  
   [理解Java反射机制 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2015/07/18/java-reflection/)
   [Java-反射机制（超详解）_java反射机制原理详解__GGBond_的博客-CSDN博客](https://blog.csdn.net/weixin_52533007/article/details/123312217)
   [面试官你要这么问我Java反射原理，我就笑了 - 知乎](https://zhuanlan.zhihu.com/p/142593317)
   [java反射机制原理详解_java的反射机制是怎么实现的_哥哥笑哈哈的博客-CSDN博客](https://blog.csdn.net/m0_56863607/article/details/129275027)
-  ## JAVA注解（★★）
   
-  
-  
-  [Java注解(Annotation) - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/01/23/java-annotation/)
   ## Stream流
   
   ### 简单说说File对象表示的是什么？File类有哪些常用的方法？
@@ -1298,10 +1293,10 @@ content: '''
   
 '''
 linesHighlighted: [
-  1366
-  1425
-  1381
-  1424
+  1361
+  1420
+  1376
+  1419
 ]
 isStarred: false
 isTrashed: false
