@@ -1,5 +1,5 @@
 createdAt: "2023-04-02T15:28:31.959Z"
-updatedAt: "2023-04-12T15:43:52.720Z"
+updatedAt: "2023-04-16T16:03:23.403Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "清单"
@@ -85,6 +85,23 @@ content: '''
   - Task任务栈
   - Android横竖瓶切换Activity生命周期 
   - Android - 系统启动过程
+  - Android中实现IPC通信的8种方式
+  - 序列化与反序列化的知识
+  - AIDL 知识
+  - AIDL概述
+  - 使用AIDL的步骤 
+  - AIDL的工作原理
+  - 客户端与服务端使用AIDL进行 IPC 的工作流程
+  - AIDL与HIDL 区别
+  - Binder概述
+  - 进程隔离的概念
+  - Binder驱动概念
+  - 一次Binder IPC通信过程
+  - 冷启动与热启动
+  - Handler,MessageQueue与Looper关系
+  - Handler工作流程
+  - OOM内存泄漏 案列分析
+  - 内存泄漏和内存溢出的区别
   
   
   ## 项目中遇到的问题：

@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2023-04-13T15:58:09.691Z"
+updatedAt: "2023-04-16T16:00:34.553Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android"
@@ -2178,9 +2178,9 @@ content: '''
   
   ## 8、Android - Activity 启动过程 (参考ActivityManagerService)
   
-  ## 9、IPC (★★★★★) 
+  ## 9、IPC 
   
-  ### 9.1 Android中实现IPC通信的8种方式
+  ### 9.1 Android中实现IPC通信的8种方式 (★★) 
   1. 使用Bundle ----> 用于android四大组件间的进程间通信
   2. 使用SharePreference ---->用于单线程读写
   3. 使用Messenger ---->用于可存放在message中的数据的传递
@@ -2189,9 +2189,9 @@ content: '''
   6. Socket方法----> 这种方式也可以实现 但是不常用
   7. BroadCase ----> 不关心何时发来广播，大多也不关心是谁发送的，只管接收特定类型的消息(应用场景比较单一)
   
-  ### 9.2 AIDL 知识 (★★★★★)
+  ### 9.2 AIDL 知识 
   
-  #### 9.2.1 序列化与反序列化的知识
+  #### 9.2.1 序列化与反序列化的知识 (★★)
   
   序列化
   - 将对象或数据结构转化为字节序列的过程
@@ -2280,7 +2280,7 @@ content: '''
   
   **Parcel是一个容器，它主要用于存储序列化数据，然后可以通过Binder在进程间传递这些数据**
   
-  #### 9.2.4 AIDL的概述
+  #### 9.2.4 AIDL概述
   在Android系统中，每个进程都运行在一块独立的内存中，在其中完成自己的各项活动，与其他进程都分隔开来。可是有时候我们又有应用间进行互动的需求，比较传递数据或者任务委托等，AIDL就是为了满足这种需求而诞生的。
   **通过AIDL，可以在一个进程中获取另一个进程的数据和调用其暴露出来的方法，从而满足进程间通信的需求**。
   
@@ -2309,19 +2309,19 @@ content: '''
   服务端：
   
   1. 服务端创建.aidl的文件，也就是双方远程通信的接口方法
-  2. 定义跟客服端沟通的数据类，比如序列化parcelable的类，基础类
+  2. 定义跟客服端沟通的数据类，比如序列化parcelable类，基础类
   3. build 生成相应的Java文件
   4. 创建继承Service的自定义服务，并在Manifest.xml中注册
   5. 声明.Stub类型变量（Binder类型），并实现接口方法
-  6. 重写onBind方法返回.Stub类型变量(Binder类型)
+  6. 重写onBind方法并返回.Stub类型变量(Binder类型)
   
   客服端：
-  1. 将服务端定义好的接口aidl文件和数据类复制到客服端
+  1. 将服务端定义好的aidl文件和数据类复制到客服端
   2. 声明ServiceConnection类型变量，并完成bindService
   3. 在onServiceConnected中通过.Stub.asInterface,获取到服务端binder实例。
   4. 调用服务端binder实例，实现与服务端的通信。
   
-  #### 9.2.9 AIDL的工作原理 (★★★★★)
+  #### 9.2.9 AIDL的工作原理 (★★★)
   **在客户端与服务端通信的过程中，真正协助发挥作用的是通过AIDL编译出来的.java文件。AIDL文件的目的就是为了生成.java文件，AIDL只是为了简化写.java文件**
   
   ##### 9.2.9.1 关键Stub类
@@ -2456,33 +2456,32 @@ content: '''
   - 通过_reply.readException()来读取服务端执行方法的结果。
   - 最后通过finally回收l_data和_reply
   
-  4. 客户端与服务端使用AIDL进行 IPC 的工作流程
+  #### 9.2.10 客户端与服务端使用AIDL进行 IPC 的工作流程  (★★★★★)
   
-  Stub充当服务端角色，持有Binder实体（本地对象）。
+  Stub类充当服务端角色，持有Binder实体（本地对象）。
   
-  - 获取客户端传过来的数据，根据方法 ID 执行相应操作。
-  - 将传过来的数据取出来，调用本地写好的对应方法。
-  - 将需要回传的数据写入 reply 流，传回客户端。
+  - 获取客户端传过来的_data数据流。并调用本地方法处理。
+  - 将需要传回客户端的数据写入_reply流，通过Binder发送_reply流到客户端。
   
   Proxy代理类充当客户端角色，持有Binder引用（句柄）。
   
   - 生成 _data 和 _reply 数据流，并向 _data 中存入客户端的数据。
-  - 通过 transact() 方法将它们传递给服务端，并请求服务端调用指定方法。
-  - 接收 _reply 数据流，并从中取出服务端传回来的数据。
+  - 通过 transact() 方法将_data数据流通过Binder传递到服务端，并通过Binder请求服务端调用指定方法。
+  - Binder通过回调，唤醒客户端准备接收从服务端传回来 _reply数据流。
   
   ![ab3caee4.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\ab3caee4.png)
   
   ![522039c7.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\522039c7.png)
   
-  #### 9.2.10 AIDL与HIDL (★★★★★)
+  #### 9.2.11 AIDL与HIDL (★★★★★)
   AIDL和HIDL都是主要用于跨进程通信，本质是Binder通信。
   
-  ##### 9.2.10 区别
+  #### 9.2.12 AIDL与HIDL 区别  (★★★★★)
   - AIDL 生成java代码，客户端(client)对应Proxy,服务端(server)对应Stub。HIDL生成c++代码，客户端(client)对应BP(Binder Proxy),服务端(Server)对应BN(Binder Native).
   - AIDL 常用于连接APP和Framework,HIDL则是用来连接Framework和HAL.
   - AIDL 使用Binder通信，HIDL使用HwBinder通信，他们都是通过Binder驱动完成通信，只不过两个Binder域不一样。
   
-  #### 9.2.11 为什么需要HIDL
+  #### 9.2.13 为什么需要HIDL
   目前Android系统生态是几乎每年google都会出一个Android大版本，而普通手机用户一部手机一般要用两三年，所以你会发现尽管Android系统已经升级到了10，马上11出来了，然后还是有很多用户依然使用的是Android 5，6，7等版本，对普通用户来说如果不更换手机就很难跟上Android版本，这是因为OEM厂商在同一设备上进行系统升级需要花费时间金钱成本很高，导致他们不愿意升级，成本高的原因是Android O之前Android Framework的升级需要OEM将HAL也进行对应升级，Framework和HAL是一起被编译成system.img，它们存在高耦合，针对这种情况google在Android O中引入了Treble计划，Treble的目的就是解耦Framework和HAL，就是通过HIDL来实现，Framework不再直接调用HAL，而是通过HIDL来间接使用HAL模块，每个HAL模块都可以对应一个HIDL服务，Framework层通过HwBinder创建HIDL服务，通过HIDL服务来获取HAL相关模块继而打开HAL下的设备，而最终HAL也从system.img中分离，被编进一个单独的分区vendor.img，从而简化了Android系统升级的影响与难度
   
   #### 9.2.11 文献
@@ -2496,16 +2495,16 @@ content: '''
   [Android中AIDL的工作原理 - 简书](https://www.jianshu.com/p/e0c583ea9289)
   [AIDL 和 HIDL_aidl hidl_bobuddy的博客-CSDN博客](https://blog.csdn.net/u010783226/article/details/122506828)
   
-  ## 10、Binder学习(★★★★★)
+  ## 10、Binder学习
   
   ### 10.1 Binder概述 (★★★★)
   Binder是跨进程通信(IPC)的桥梁
   - 从性能上:
   共享内存方式虽然无需数据拷贝，但控制复杂。
   Socket方式需要2次数据拷贝，传输效率低，开销大
-  Binder,需要1次数据拷贝，性能上仅此共享内存
+  Binder,需要1次数据拷贝，性能上仅次于共享内存
   - 从稳定性上：
-  Binder采用C/S架构，需求控制架构较清晰。
+  Binder采用C/S架构，架构比较清晰，控制简单。
   共享内存方式虽然无需拷贝数据，控制比较复杂，难以使用。
   - 从安全性上：
   传统的IPC要发送类似的UID也只能放在数据包里，但也容易被拦截，恶意进攻，
@@ -2524,23 +2523,23 @@ content: '''
   copy_from_user() //将数据从用户空间拷贝到内核空间
   copy_to_user() //将数据从内核空间拷贝到用户空间
   
-  ### 10.4 Binder驱动概念
+  ### 10.4 Binder驱动概念 (★★★)
   Android通过LKM（动态内核可加载模块）添加一个内核模块运行在内核空间，使得进程间通过这个模块作为桥梁，就可以完成通信了。
   Android 系统中，这个运行在内核空间的，负责进程间通信的内核模块叫做 Binder 驱动;
   
-  ### 10.5 一次Binder IPC通信过程
+  ### 10.5 一次Binder IPC通信过程 (★★★★)
   ![binder_main_request.jpg](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\2dadde28.jpg)
   
-  Step1: Service先注册服务，首先向ServiceManager注册服务，
-  Step2: ServiceManager,向Kernel(内核)中Binder驱动的全局链表中插入服务端的信息
-  Step3: 同时向svcinfo已注册服务列表中缓存一下注册的服务。
-  Step4: 客户端通过ServiceManager向svcinfo列表中查询一下返回服务端的代理。
+  Step1: 首先服务端先向ServiceManager注册服务，
+  Step2: 然后ServiceManager,向Kernel(内核)中Binder驱动的全局链表中插入服务端的信息
+  Step3: 同时向已注册服务列表中缓存一下注册的服务。
+  Step4: 客户端通过ServiceManager向已注册服务列表中查询服务端的代理。
   Step5: 客户端利用获取到的服务端代理，即BinderProxy，将请求发送给ServiceManager.
   Step6: ServiceManager使用内核方法copy_from_user()将参数拷贝到内核空间。
   Step7: 这时候客户端进入等待状态。
   Step8: 然后 Binder 驱动向全局链表队列里面插入一条事务.
   Step9: 执行完之后把执行结果通过 copy_to_user() 将内核的结果拷贝到用户空间
-  Step10:唤醒等待的客户端并把结果响应给客户端。
+  Step10: 最后唤醒等待的客户端并把结果响应给客户端。
   
   ### 10.6 Binder 进程与线程
   ![process_thread.jpg](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\55fc103c.jpg)
@@ -3016,14 +3015,13 @@ content: '''
   Handler接收和处理消息的对象。
   
   2. Looper:
-  每个线程只能有一个Looper。它的loop方法负责读取MessageQueue中的消息，读到消息后把消息发送给Handler进行处理。
+  每个线程只能有一个Looper。loop负责读取MessageQueue中的消息，读到消息后把消息发送给Handler进行处理。
   
   3. MessageQueue:
   消息队列，它采用先进先出的方式来管理Message。程序创建Looper对象时，会在它的构造方法中创建MessageQueue对象。
   
   4. Handler:
-  作用有两个发送消息和与处理消息,程序使用Handler发送消息，由Handler发送的消息必须被送到指定的MessageQueue;否则消息就没有在MessageQueue进行保存了。
-  而MessageQueue是由Looper负责管理的，如果希望Handler正常工作的话，就必须在当前线程中有一个Looper对象。
+  Handler作用有两个，1.发送消息到MessageQueue, 2.处理Looper从MessageQueue中获取的消息
   
   ### 16.1 Handler构造方法源码
   ```
@@ -3300,7 +3298,20 @@ content: '''
   首先，检测Message的callback是否为null，不为null就通过handleCallback方法来处理消息,接着会去检查mCallback是否为null，不为null，则调用mCallback的handleMessage回调方法来处理消息。
   最后如果以上条件都不成立的话，就会去调用Handler的handleMessage方法来处理消息。而 我们的Handler是在主线程创建的，也就是说Looper也是主线程的Looper，因此handleMessage内部处理最终都会在主线程上执行，
   
+  ### 16.4 Handler工作流程(★★)
   ![20160304230155772.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\c6c56a57.png)
+  
+  - Handler初始化：
+  1. 在主线程启动时会自动创建Looper，Looper创建时会同时创建MessageQueue消息队列，创建Looper、MessageQueue完成后，Looper会自动进入消息循环；
+  2. 在主线程里手动创建Handler对象，此时Handler对象会自动绑定主线程里的Looper、MessageQueue对象。
+  3. 非主线程创建Handler对象，首先创建Looper对象，其次调用Looper.prepare()启用Looper，最后再调用Looper.loop()让looper开始循环。
+  - 消息发送:
+  工作线程通过sendMessage或post发送消息到MessageQueue消息队列中。
+  - 消息循环:
+  Looper循环取出MessageQueue中的消息，并根据target属性把消息分发给处理消息的Handler对象。
+  - 消息处理:
+  Handler对象接收Looper循环器发来的消息，回调handlerMessage方法在主线程中执行UI操作。
+  
   
   ### 16.4 Handler总结
   Android中的Looper类主要作用是用来**封装消息循环和消息队列**，Handler是用来**向消息队列中插入消息的并对消息进行处理**。
@@ -3312,17 +3323,18 @@ content: '''
   Looper.myLooper(),获取当前**进程**的looper对象， 
   Looper.getMainLooper() 用于获取**主线程**的Looper对象。 
   
-  (3) 在非主线程中直接new Handler() 会报如下的错误:  Can't create handler inside thread that has not called Looper.prepare() 原因是非主线程中默认没有创建Looper对象，需要先调用Looper.prepare()启用Looper，然后再调用Looper.loop()。
+  (3) 在非主线程中直接new Handler() 会报如下的错误:  Can't create handler inside thread that has not called Looper.prepare() 原因是非主线程中默认没有创建Looper对象，需要先调用Looper.prepare()启用Looper，然后再调用Looper.loop()让looper开始循环。
   
   (4) Looper.loop():启动looper中的循环线程，Handler就会从消息队列里取消息并进行对应处理。 
   最后要注意的是写在Looper.loop()之后的代码不会被执行，这个函数内部应该是一个循环，当调用mHandler.getLooper().quit()后，loop()才会中止，其后的代码才能得以运行。
   
   ### 16.5 参考文献
   [深入Android的消息机制源码详解～Handler,MessageQueue与Looper关系_zejian的博客-CSDN博客](https://blog.csdn.net/javazejian/article/details/50791598)
+  [Handler 的工作流程-源码梳理_锅ke的博客-CSDN博客](https://blog.csdn.net/gh1026385964/article/details/106450516/)
   
   ## 17 OOM内存泄漏(★★★★)
   
-  内存泄漏原因：堆上分配的对象已经不会再使用，但是GC收集器无法对其进行回收，此对象被强应用所引用 。
+  内存泄漏原因：堆上分配的对象已经不会再使用，但此对象有引用，导致GC无法对其回收。
   
   ### 17.1 非静态内部类导致内存泄露（Handler泄漏）
   
@@ -3463,9 +3475,17 @@ content: '''
   2. Cursor，Stream、File：调用close()关闭；
   3. Bitmap：调用recycle()释放内存（2.3版本后无需手动）。
   
-  ### 17.6参考文献
+  ### 17.6 内存泄漏和内存溢出的区别 (★★)
+  内存泄漏和内存溢出是两码事。
+  内存溢出：是由于应用所消耗的内存或者应用申请的内存超出了虚拟机分配的内存，也就是内存不够用了
+  内存泄漏：是某个不再使用对象由于被其他实例引用，导致不能被GC回收，从而导致的内存不能释放。
+  
+  内存泄漏可能会引起内存溢出，因为如果内存泄漏严重，导致存在大量GC不能 回收的对象占用内存，内存占用会越来越高，导致其他对象不能被分配到内存，从而导致内存溢出。
+  
+  ### 17.7参考文献
   [内存泄漏的场景_wanghong940821的博客-CSDN博客](https://blog.csdn.net/wanghong940821/article/details/79439569?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~all~sobaiduend~default-2-79439569.nonecase&utm_term=oom%20%E5%87%BA%E7%8E%B0%E7%9A%84%E6%9C%89%E5%93%AA%E4%BA%9B%E5%9C%BA%E6%99%AF&spm=1000.2123.3001.4430)
   [Android开发——告诉你Adapter应该写在Activity里面还是外面 - 齐天大猴子 - 博客园](https://www.cnblogs.com/qitian1/p/6461501.html)
+  [单例模式引起的内存泄漏_单例模式内存泄露_cao_dayong的博客-CSDN博客](https://blog.csdn.net/cao_dayong/article/details/64447191)
   
   ## 18 ANR的场景(★★★★★)
   
@@ -4313,10 +4333,11 @@ content: '''
   
   
   
+  
 '''
 linesHighlighted: [
-  4441
-  4368
+  4459
+  4386
 ]
 isStarred: false
 isTrashed: false
