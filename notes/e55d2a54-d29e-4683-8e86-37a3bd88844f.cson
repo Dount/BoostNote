@@ -1,5 +1,5 @@
 createdAt: "2023-04-02T15:28:31.959Z"
-updatedAt: "2023-04-16T16:03:23.403Z"
+updatedAt: "2023-04-17T15:43:37.905Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "清单"
@@ -102,6 +102,11 @@ content: '''
   - Handler工作流程
   - OOM内存泄漏 案列分析
   - 内存泄漏和内存溢出的区别
+  - 发生ANR的具体表现
+  - 导致ANR的场景
+  - ANR日志分析
+  - ANR其它分析方式
+  - ANR的处理
   
   
   ## 项目中遇到的问题：

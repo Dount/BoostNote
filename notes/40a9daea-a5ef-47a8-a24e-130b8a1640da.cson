@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2023-04-16T16:00:34.553Z"
+updatedAt: "2023-04-18T15:55:00.852Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android"
@@ -3487,30 +3487,24 @@ content: '''
   [Android开发——告诉你Adapter应该写在Activity里面还是外面 - 齐天大猴子 - 博客园](https://www.cnblogs.com/qitian1/p/6461501.html)
   [单例模式引起的内存泄漏_单例模式内存泄露_cao_dayong的博客-CSDN博客](https://blog.csdn.net/cao_dayong/article/details/64447191)
   
-  ## 18 ANR的场景(★★★★★)
+  ## 18 ANR
   
-  ### 18.1 发生ANR的具体表现
-  Android系统中，ActivityManagerService(简称AMS)和WindowManagerService(简称WMS)会检测App的响应时间，如果App在特定时间无法相应屏幕触摸或键盘输入时间，或在主线程(UI线程)里面做了太多的阻塞耗时操作,系统会向用户显示一个对话框，这个对话框称作“应用程序无响应”（ANR：Application Not Responding）对话框。用户可以选择“等待”而让程序继续运行，也可以选择“强制关闭”。
+  ### 18.1 发生ANR的具体表现 (★★★★★)
+  Android系统中，ActivityManagerService(简称AMS)和WindowManagerService(简称WMS)会检测App的响应时间，如果App在特定时间无法相应屏幕触摸或键盘输入事件，或在主线程(UI线程)里面做了太多的阻塞耗时操作,系统会向用户显示一个对话框，这个对话框称作“应用程序无响应”（ANR：Application Not Responding）对话框。用户可以选择“等待”而让程序继续运行，也可以选择“强制关闭”。
   
-  ### 18.2 导致ANR的场景
-  1. 当前事件正在处理 但是由于耗时太长没有能及时的完成;
-  2. 在BroadcastReceiver里做耗时的操作或计算；
-  3. CPU使用过高；
-  4. 发生了死锁；
-  5. 耗时操作的动画需要大量的计算工作；
+  ### 18.2 导致ANR的场景 (★★★★★)
   
-  ### 18.3 ANR的条件
-  InputDispatching Timeout：5秒内无法响应屏幕触摸事件或键盘输入事件
-  BroadcastQueue Timeout ：在执行前台广播（BroadcastReceiver）的onReceive()函数时10秒没有处理完成，后台为60秒。
-  Service Timeout ：前台服务20秒内，后台服务在200秒内没有执行完毕。
-  ContentProvider Timeout ：ContentProvider执行超时，20s
+  - InputDispatching Timeout：5秒内无法响应屏幕触摸事件或键盘输入事件
+  - BroadcastQueue Timeout ：在执行前台广播（BroadcastReceiver）的onReceive()函数时10秒没有处理完成，后台为60秒。
+  - Service Timeout ：前台服务20秒内，后台服务在200秒内没有执行完毕。
+  - ContentProvider Timeout ：ContentProvider执行超时20秒。
   
-  ### 18.4 ANR日志分析
+  ### 18.3 ANR日志分析  (★★★★★)
   通过ADB将记录ANR的log,traces.txt文档导出，可以查看ANR的原因，进程id，包名，以及具体行数
   ```
   $adb pull data/anr/traces.txt .
   ```
-  #### 18.4.1 CPU负载
+  #### 18.3.1 CPU负载
   ```
   Load: 2.62 / 2.55 / 2.25
   CPU usage from 0ms to 1987ms later (2020-03-10 08:31:55.169 to 2020-03-10 08:32:17.156):
@@ -3534,7 +3528,7 @@ content: '''
   注意：
   主要关注iowait关键字，若iowait占比很高，意为有很大可能是io耗时导致ANR。
   
-  #### 18.4.2 内存信息
+  #### 18.3.2 内存信息
   ```
   Total number of allocations 476778　　进程创建到现在一共创建了多少对象
   Total bytes allocated 52MB　进程创建到现在一共申请了多少内存
@@ -3549,7 +3543,7 @@ content: '''
   1. 若Free memory until OOME的值很小，说明处于内存紧张状态，ANR可能由于应用占用过多内存。
   2. 若ANR时间点前后，在LogCat日志中含有onTrimMemory，说明已经处于内存紧张状态。
   
-  #### 18.4.3 堆栈消息
+  #### 18.3.3 堆栈消息
   ```
   suspend all histogram:  Sum: 2.834s 99% C.I. 5.738us-7145.919us Avg: 607.155us Max: 41543us
   DALVIK THREADS (248):
@@ -3610,24 +3604,19 @@ content: '''
   注意：
   main线程处于BLOCK,WAITING,TIMEWAITING状态，可以确定函数阻塞导致ANR.;
   
+  ### 18.4 ANR其它分析方式
+  #### 18.4.3 通过DDMS Update Thread工具查看
+  通过DDMS Update Threads工具查看该进程下的所有线程状态。通过线程状态分析哪个线程阻塞导致的ANR。
   
-  
-  ### 18.5 ANR其它分析方式
-  #### 18.5.3 通过DDMS Update Thread工具查看
-  通过DDMS Update Threads工具查看该进程下的所有线程状态。需要注意的是main线程中的调用栈信息，以及线程状态，正常情况下main线程应当是处于空闲等待状态，如果长时间处于处理某一个任务时就会导致其他被发送到主线程的事件无法被及时处理，导致ANR,如果线程状态是MONITOR状态，就可能是ANR。(JVM中10种线程状态)。
-  
-  ### 18.5.4 Traceview
+  ### 18.4.4 Traceview
   Traceview是分析工具，用于定位应用代码中的耗时操作。
   
-  ### 18.5.5 Systrace 
-  Android4.1新增的应用性能数据采样和分析工具
-  
-  ### 18.6 ANR的处理
+  ### 18.5 ANR的处理 (★★★★★)
   1. 开辟单独的子线程来处理耗时阻塞事务，通过继承Thread或实现Runnable接口。
-  2. 使用AsyncTask,通过AsyncTask异步执行。继承AsyncTask,在doInBackground中实现耗时操作，然后在onProgressUpdate或onPostExecute回调方法中实现接收结果，最后通过执行execute执行AsyncTask。
+  2. 使用AsyncTask,异步执行事务。继承AsyncTask,在doInBackground中实现耗时操作，然后在onProgressUpdate或onPostExecute回调方法中实现接收结果，最后通过执行execute执行AsyncTask。
   3. 使用Handler,HandlerThread来对UI进行更新。
-  4. Activity的onCreate和onResume回调中尽量避免耗时的代码，应该尽可能的做比较少的事情
-  5. BoadcastReceiver中onReceive代码也要尽量减少耗时
+  4. Activity的onCreate和onResume方法中尽量避免耗时操作。
+  5. BoadcastReceiver中onReceive方法中尽量避免耗时操作。
   
   ### 18.7 参考文献
   [Android App优化之ANR详解 - 简书](https://www.jianshu.com/p/6d855e984b99)
@@ -3771,9 +3760,8 @@ content: '''
   
   ## 22. 注解学习使用 (★★★★)
   ### 22.1 什么是注解
-  java 注解（Annotation）又称 Java 标注，是 JDK5.0 引入的一种注释机制。
-  Java 语言中的类、方法、变量、参数和包等都可以标注。Java标注可以通过反射获取标注内容。在编译器生成类文件时，标注可以被嵌入到字节码中。
-  Java 虚拟机可以保留标注内容，在运行时可以获取到标注内容 。
+  Java 注解（Annotation）又称 Java 标注，也被称为元数据，是 JDK5.0 引入的一种注释机制。
+  注解可以给Java 中的类、方法、变量、参数和包等都可以标注进行注解，相当于给它们添加了一些额外的辅助信息。Java编译器可以根据指令来解释注解,或者将注解放到编译后的class文件中，运行时可通过反射机制实现对这些元数据的访问。
   
   ### 22.2 注解与注释的区别
   - 定义不同
@@ -4336,8 +4324,8 @@ content: '''
   
 '''
 linesHighlighted: [
-  4459
-  4386
+  4373
+  4446
 ]
 isStarred: false
 isTrashed: false
