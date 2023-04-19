@@ -1,5 +1,5 @@
 createdAt: "2023-04-02T15:28:31.959Z"
-updatedAt: "2023-04-17T15:43:37.905Z"
+updatedAt: "2023-04-19T16:20:26.535Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "清单"
@@ -107,6 +107,14 @@ content: '''
   - ANR日志分析
   - ANR其它分析方式
   - ANR的处理
+  - 什么是注解
+  - 注解与注释的区别
+  - dimen 基于dp的适配（smallestWidth适配）
+  - 自定义View的分类
+  - 自定义View的主要方法
+  - Android 一共有多少种动画
+  - 什么是MVVM
+  - MVVM核心构成
   
   
   ## 项目中遇到的问题：

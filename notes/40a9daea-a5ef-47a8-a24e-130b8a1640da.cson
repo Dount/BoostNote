@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2023-04-18T15:55:00.852Z"
+updatedAt: "2023-04-19T16:19:17.796Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android"
@@ -3758,12 +3758,12 @@ content: '''
   ContentProvider,socket,PIPE,message queue，等方式都要至少2次的内存拷贝。
   MMKV底层使用mmap实现，采用去中心化的架构，只需要将文件mmap到每个访问进程的内存空间，加上合适的进程锁，再处理好数据的通话，就能够实现多进程并发访问。
   
-  ## 22. 注解学习使用 (★★★★)
-  ### 22.1 什么是注解
+  ## 22. 注解学习使用
+  ### 22.1 什么是注解  (★★)
   Java 注解（Annotation）又称 Java 标注，也被称为元数据，是 JDK5.0 引入的一种注释机制。
   注解可以给Java 中的类、方法、变量、参数和包等都可以标注进行注解，相当于给它们添加了一些额外的辅助信息。Java编译器可以根据指令来解释注解,或者将注解放到编译后的class文件中，运行时可通过反射机制实现对这些元数据的访问。
   
-  ### 22.2 注解与注释的区别
+  ### 22.2 注解与注释的区别 (★★)
   - 定义不同
     注解：元数据，它是一种描述数据的数据。
     注释：是对源代码说明的文字
@@ -3867,7 +3867,7 @@ content: '''
   [Android注解-看这篇文章就够了_Zephyr Cai的博客-CSDN博客_android 注解](https://blog.csdn.net/caizehui/article/details/105003999)
   
   
-  ## 23. 屏幕适配方案 (★★★★★)
+  ## 23. 屏幕适配方案 
   
   ### 23.1 dp与px的转换
   因为ui设计师给你的设计图是以px为单位的，Android开发则是使用dp作为单位的，那么需要进行转换：
@@ -3877,12 +3877,12 @@ content: '''
   dp= px/density
   ```
   
-  ### 23.2 dimen 基于dp的适配（smallestWidth适配）
-  这种适配依据的是最小宽度限定符。指的是Android会识别屏幕可用高度和宽度的最小尺寸的dp值（其实就是手机的宽度值），然后根据识别到的结果去资源文件中寻找对应限定符的文件夹下的资源文件。
+  ### 23.2 dimen 基于dp的适配（smallestWidth适配） (★★★)
+  最小宽度限定符适配。指的是Android会识别屏幕可用高度和宽度的最小尺寸的dp值（其实就是手机的宽度值），然后根据识别结果去寻找对应限定符文件夹下的资源文件。
   
   某手机的屏幕分辨率是 1080 * 1920，屏幕像素密度是 480 dpi，通过计算，
   
-  它的最大宽度对应的 dp 值是：1080 / (480 / 160) = 360 dp,根据这个 360 dp 值，系统会去寻找 value-sw360dp 的文件夹以及对应的资源文件并使用它。
+  它的最小尺寸的dp值是：1080 / (480 / 160) = 360 dp,根据这个 360 dp 值，系统会去寻找 value-sw360dp 的文件夹以及对应的资源文件并使用它。
   
   如果没有 value-sw360dp 文件夹，系统会向下寻找，比如离 360 dp 最近的只有 value-sw350dp，那么Android就会选择 value-sw350dp 文件夹下面的资源文件。
   
@@ -3909,8 +3909,8 @@ content: '''
   [【Android】之屏幕适配_一场雪ycx的博客-CSDN博客_android 屏幕适配](https://blog.csdn.net/yang553566463/article/details/127029556)
   [Android中px、dp、dpi、density解释和计算方式 - 简书](https://www.jianshu.com/p/e9125d51045f)
   
-  ## 24.自定义View(★★★★★)
-  ### 24.1 自定义View的分类
+  ## 24.自定义View
+  ### 24.1 自定义View的分类 (★★★)
   1. 继承View或者ViewGroup类
   重写onDraw方法，调用invalidate方法重新绘制View
   2. 自定义组合控件
@@ -3918,7 +3918,7 @@ content: '''
   3. 自定义扩展控件
   也就是继承现有的控件，在该控件的基础之上添加新的功能，如继承Button,tablayout
   
-  ### 24.2 主要方法
+  ### 24.2 自定义View的主要方法 (★★★)
   - 构造方法
   一般要写三个甚至四个，这样写的原因，在不同的情况下创建View的方式不同，可能需要从xml文件中填充布局，也可能不需要，或者也需要一样style之类的，因此不同情况下，使用的构造可能存在差异
   - onMeasure 用于测量子控件的宽高
@@ -3927,7 +3927,7 @@ content: '''
   at_most(最大模式):这个也就是父组件，能够给出的最大的空间，当前组件的长或宽最大只能为这么大，当然也可以比这个小。
   unspecified(未指定模式):当前组件，可以随便用空间，不受限制。
   
-  - onSizeChanged 測量View大小
+  - onSizeChanged 确定View大小
   - onLayout 用于摆放子控件在父控件中的位置
   getMeasureWidth方法: 在measure过程结束后就可以获取到了。
   getWidth方法:要在layout过程结束后才能获取到。
@@ -3944,7 +3944,17 @@ content: '''
   注意：onMeasure和onLayout最后都要调用requestLayout才能让改变生效，onDraw要调用invalidate才能让在主线程生效。
   postinvalidate在子线程调用才能生效。
   
-  ### 24.3 文献
+  ### 24.3 自定义View流程 (★★★)
+  | 步骤   | 关键字           | 作用                           |
+  | ---- | ------------- | ---------------------------- |
+  | 1    | 构造函数          | View初始化                      |
+  | 2    | onMeasure     | 测量View大小                     |
+  | 3    | onSizeChanged | 确定View大小                     |
+  | 4    | onLayout      | 确定子View布局(自定义View包含子View时有用) |
+  | 5    | onDraw        | 实际绘制内容                       |
+  | 6    | 提供接口          | 控制View或监听View某些状态。           |
+  
+  ### 24.4 文献
   Android自定义View基础-自定义View进阶——自定义View基础
   Android自定义View基础-自定义View进阶——分类与流程
   [安卓面试题之---自定义View - 灰信网（软件开发博客聚合）](https://www.freesion.com/article/634078192/)
@@ -4006,10 +4016,10 @@ content: '''
   
   ## 26. MVVM架构解析
   
-  ### 26.1 什么是MVVM
-  1. MVVM，是Model-View-ViewModel的简写，是M-V-VM三部分组成。它本质上就是MVC 的改进 版。MVVM 就是将其中的View 的状态和行为抽象化，其中ViewModel将视图 UI 和业务逻辑分 开，它可以取出 Model 的数据同时帮忙处理 View 中由于需要展示内容而涉及的业务逻辑。
+  ### 26.1 什么是MVVM (★★★)
+  1. MVVM，是Model-View-ViewModel的简写，是M-V-VM三部分组成。它本质上就是MVC 的改进版。MVVM就是将View的状态和行为抽象化，其中ViewModel将视图 UI 和业务逻辑分开，它可以取出Model的数据同时处理View中需要展示内容。
   
-  2. MVVM采用双向数据绑定，view中数据变化将自动反映到viewmodel上，反之，model中数据变化 也将会自动展示在页面上。把Model和View关联起来的就是ViewModel。ViewModel负责把Model 的数据同步到View显示出来，还负责把View的修改同步回Model
+  2. MVVM采用双向数据绑定，ViewModel负责把Model和View关联起来。负责把Model的数据同步到View显示出来，还负责把View的修改同步回Model。
   
   ![e7bc288b.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\e7bc288b.png)
   
@@ -4018,7 +4028,7 @@ content: '''
   View: 界面层，对应于Activity,XML,负责数据显示以及用户交互。
   ViewModel:关联层，作为中间桥梁去通知model数据层处理数据业务，并将结果回调给UI层处理UI逻辑。ViewModel中只有activity持有vm引用，vm是不持有view的引用的，所以vm的构造方 法中不能传入视图相关的对象。所以重点在于怎么通知view，可以通过观察者回调的方式。但是现 在一般是结合Jetpack来进行view的更新的。
   
-  ### 26.3 MVVM核心构成
+  ### 26.3 MVVM核心构成 (★★★)
   DataBinding:数据和UI双向绑定
   LifeCycle:界面生命周期感知
   ViewModel:业务逻辑
@@ -4324,8 +4334,8 @@ content: '''
   
 '''
 linesHighlighted: [
-  4373
-  4446
+  4456
+  4383
 ]
 isStarred: false
 isTrashed: false
