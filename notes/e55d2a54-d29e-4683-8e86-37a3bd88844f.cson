@@ -1,5 +1,5 @@
 createdAt: "2023-04-02T15:28:31.959Z"
-updatedAt: "2023-04-19T16:20:26.535Z"
+updatedAt: "2023-04-23T16:55:25.875Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "清单"
@@ -8,6 +8,15 @@ content: '''
   # 清单
   
   ## 自我介绍
+  我先自我介绍一下，19年2月份毕业参加工作，一直从事Android相关开发工作。目前有4年Android开发经验
+  第一份工作是在上海商泰汽车，担任Android开发工程师，主要围绕IVI车载信息娱乐系统开发，
+  第一年参与MirrorLink与SDL框架下用于手机与车载机互联几款应用程序。
+  第二年参与Android Framework的开发工作，自定义中间件Service模块，负责CTS测试与分析等工作。
+  之后由于疫情公司发展不景气导致整个部门被裁员。
+  
+  第二份工作是在苏州科达上海研发中心，担任移动终端开发工程师，主要围绕直播，云会议等应用程序或SDK开发。
+  第一年参与轨道交通通信系统的应用开发和基础音视频SDK的开发，同时也参与IOS应用程和SDK的开发。
+  第二年至今参与终端一体机定制应用开发和云会议SDK的开发。
   
   ## JAVA 
   - Byte和位Bit的关系
@@ -115,6 +124,31 @@ content: '''
   - Android 一共有多少种动画
   - 什么是MVVM
   - MVVM核心构成
+  - JNI概述
+  - JNI原理分析
+  - 动态库的加载loadLibrary
+  - 静态注册与动态注册
+  - JavaVM和JNIEnv
+  - JNI加载过程
+  - 稳定——内存优化
+  - 流畅——卡顿优化
+  - 安装包——APK瘦身
+  - 启动优化 
+  - 崩溃与ANR的区别
+  - Java 崩溃处理
+  - Navite 崩溃处理
+  - Window PhoneWindow DecorView 的关系
+  - 事件分发，拦截，消费
+  - View 事件相关的各个方法调用顺序
+  - ViewGroup 中子View重叠时如何分配
+  
+  ## Android Framework
+  - 什么是ActivityManagerService
+  - AMS关联类
+  - AMS启动过程
+  - zygote，SystemServer，AMS，ActivityThread 的关系
+  - Activity 启动流程
+  - startService启动过程
   
   
   ## 项目中遇到的问题：

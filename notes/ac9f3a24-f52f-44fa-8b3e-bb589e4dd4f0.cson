@@ -1,5 +1,5 @@
 createdAt: "2023-01-08T15:07:09.915Z"
-updatedAt: "2023-03-14T15:35:31.827Z"
+updatedAt: "2023-04-23T16:56:18.683Z"
 type: "MARKDOWN_NOTE"
 folder: "c3bf24344ddc9bd2af22"
 title: "ActivityManagerService"
@@ -166,7 +166,7 @@ content: '''
   Context是一个接口，通过他可以获取并操作Application对应的资源、类，甚至包含于Application中的四大组件
   ![1111.png](:storage\\ac9f3a24-f52f-44fa-8b3e-bb589e4dd4f0\\aa1ee246.png)
   
-  ### 3.2 zygote->SystemServer->AMS和ActivityThread->ActivityManager解释
+  ### 3.2 zygote，SystemServer，AMS，ActivityThread 的关系
   1. App(ActivityThread进程)和AMS(SystemServer进程)还有zygote进程属于三个独立的进程。
   2. App与AMS通过Binder进行IPC通信，AMS与zygote通过Socket进行IPC通信。
   3. AMS负责所有Activity的生命周期，若想打开一个App的话，需要AMS和ActivityThread相互配合来完成。
@@ -175,7 +175,6 @@ content: '''
   
   ![a06cf9cf.png](:storage\\ac9f3a24-f52f-44fa-8b3e-bb589e4dd4f0\\a06cf9cf.png)
   
-  ### 4.1 启动 MainActivity 五个步骤
   一. Launcher通过ActivityManagerProxy,用Binder进程间通信，通知ActivityManagerService,它要启动一个Activity。(1~11)
   
   二. ActivityManagerService调用startActivity,并经过ActivityStack一系列调用处理后，通过Binder通信,通知Launcher让其它Activity进入Paused状态。(12~16)
@@ -184,7 +183,7 @@ content: '''
   
   四. ActivityThread通过Binder进程间通信机制将一个ApplicationThread类型的Binder对象传递给ActivityManagerService,以便ActivityManagerService能够通过这个Binder对象与ActivityThread通信。(25~27)
   
-  五. ActivityManagerService通过Binder进程间通信，通知ActivityThread，现在一切准备就绪，它可以真正执行Activity的启动操作了。(28~35)
+  五. ActivityManagerService通过Binder进程间通信，通知ActivityThread，现在一切准备就绪，可以执行onCreate方法启动Activity了。(28~35)
   
   ## 5 BroadCast 广播机制分析
   
@@ -199,42 +198,15 @@ content: '''
   - Sticky广播：通过Context.sendStickyBroadcast()发送
   
   注册广播：
-  广播注册registerReceiver():默认将当前进程的主线程设置为scheuler. 再向AMS注册该广播相应信息, 根据类型选择加入mParallelBroadcasts或mOrderedBroadcasts队列.
+  - 就是在AndroidManifest文件中注册广播接收器相关信息(BroadcastReceiver和intent-filter)，然后在应用安装的时候通过PKMS(PackageManagerService)进行解析，来完成注册。
+  - 把BroadcastReceiver包装成一个Binder对象，然后创建一个包含BroadcastReceiver和IntentFilter的BroadcastFilter对象，最后将BroadcastFilter对象加入到AMS中的mReceiverResolver变量中
   
-  广播发送processNextBroadcast():根据不同情况调用不同的处理过程:
-  - 如果是动态广播接收者，则调用deliverToRegisteredReceiverLocked处理(并行处理);
-  - 如果是静态广播接收者，且对应进程已经创建，则调用processCurBroadcastLocked处理(串行处理);
-  - 如果是静态广播接收者，且对应进程尚未创建，则调用startProcessLocked创建进程()。
-  
-  ### 5.2 注册广播
-  广播注册，对于应用开发来说，往往是在Activity/Service中调用registerReceiver()方法，而Activity或Service都间接继承于Context抽象类，真正干活是交给ContextImpl类。另外调用getOuterContext()可获取最外层的调用者Activity或Service。
-  ![注册广播.png](:storage\\ac9f3a24-f52f-44fa-8b3e-bb589e4dd4f0\\ba26dd41.png)
-  
-  - 1:ContextImpI中广播注册接口
-  - 1.1:获取主线程对象
-  - 1.2:根据广播接收者，初始化一个广播分发者对象
-  - 1.2.1:对广播接收者和分发者以ArrayMap的形式管理，同时返回新创建的广播分发者对象
-  - 1.2.2:初始化一个ArrayMap
-  - 1.2.3:将广播接收者和分发者放入ArrayMap中。
-  - 1.3:通过AMP对象进一步调用注册接口 
-  - 1.3.1: 获取AMP对象(ActivityManagerProxy,AMN中的内部类,实现代理模式)。
-  - 1.3.1.1: 调用AMS中registerReciver的具体实现(AMS是AMN的具体实现)。
-  - 1.3.1.1.1: 获取当前App的进程信息。
-  - 1.3.1.1.2: 获取广播的action。
-  - 1.3.1.1.3: 查询用户的Sticky广播。
-  - 1.3.1.1.3.1: 根据action获取对应Sticky广播的Intent。
-  - 1.3.1.1.3.1.1: 初始化Sticky,Intent列表。
-  - 1.3.1.1.3.1.2: 将获取到的Sticky Intent，添加到列表中。
-  - 1.3.1.1.4: 获取已注册广播接收者队列
-  - 1.3.1.1.5: 若没有获取到，则新创建队列
-  - 1.3.1.1.6: 将新的广播接收者加入到队列中
-  - 1.3.1.1.7: 创建BroadcastFilter对象，并添加到接收者队列
-  - 1.3.1.1.8: 将BroadcastFilter，添加到接收者队列
-  - 1.3.1.1.9: 新BroadcastFilter，添加到ReceiverResolver队列
-  - 1.3.1.1.10: 若存在sticky broadcast,根据intent返回前台或后台广播队列
-  - 1.3.1.1.11: 创建新的BroadcastRecord
-  - 1.3.1.1.12: 将该广播加入到并行广播队列
-  - 1.3.1.1.13: 调度广播，发送BROADCAST_INTENT_MSG消息，触发处理下一个广播
+  ### 5.2 注册广播流程
+  - Activity/Service中调用registerReceiver()方法，最终调用ContextImpl的registerReceiverInternal方法。
+  - registerReceiverInternal调用LoadedApk的方法，将广播接收者封装成一个实现了IIntentReceiver接口的Binder对象,即ReceiverDispatcher。
+  - 获取AMP代理类对象，通过Binder通信，调用AMS的registerReceiverWithFeature方法将ReceiverDispatcher，传递给ActivityManagerService，用于广播的跨进程通信。
+  - registerReceiverWithFeature方法中，将用来描述注册的广播接收者BroadcastFilter 添加到mReceiverResolver中。
+  - 当AMS接收到广播时就可以从mReceiverResolver中找到对应的广播接收者了。
   
   ### 5.2.3 广播发送和处理
   ![99d6d204.png](:storage\\ac9f3a24-f52f-44fa-8b3e-bb589e4dd4f0\\99d6d204.png)
@@ -270,13 +242,10 @@ content: '''
   ![4b0b6a91.png](:storage\\ac9f3a24-f52f-44fa-8b3e-bb589e4dd4f0\\4b0b6a91.png)
   
   启动流程:
-  1. Activity中的startService实际由ContextImpI中startService开始发起
-  2. 利用Binder通信，通过AMP向AMS发起startService请求。
-  3. AMS收到请求后，经由ActiveServes一系列的处理后，向zygote发送创建进程的请求。
-  4. zyfote通过fork出新的子进程ActivityThread。
-  5. ActivityThread 利用Binder通信，通过AMP调用AMS中attachApplicationLocked方法，进行一系列准备工作。
-  6. AMS再利用Binder通信，向ActivityThread调用scheduleCreateService方法，开始启动服务。
-  7. 通过handler发送CREATE_SERVICE消息，创建Service，并启动Service.OnCreadte方法。
+  1. Activity中的startService实际由ContextImpI中startService开始发起,利用Binder通信，通过AMP向AMS发起startService请求。
+  2. AMS收到请求后，经由ActiveService一系列的处理后，向zygote发送请求fork出子进程ActivityThread.
+  3. ActivityThread 利用Binder通信，通过AMP调用AMS中attachApplicationLocked方法进行准备工作。
+  4. AMS再利用Binder通信，向ActivityThread调用scheduleCreateService方法,通过handler发送CREATE_SERVICE消息，创建Service，并启动Service.OnCreadte方法。
   
   ## 7. ANR时系统的处理过程
   只要发生ANR,最终都会调用AMS.appNotResponding方法。
@@ -298,7 +267,13 @@ content: '''
   [安卓的ActivityManagerService_dev晴天的博客-CSDN博客_activitymanagerservice](https://blog.csdn.net/qq_38350635/article/details/114785334)
   [Android 8.0 AMS分析的第一条线：SystemServer中的AMS的调用轨迹_yaoming168的博客-CSDN博客_systemserver进程和ams的关系](https://blog.csdn.net/yaoming168/article/details/51991570)
   [Android Activity的启动流程分析：以Launcher启动一个Activity为例，分析应用进程的创建、Activity的启动，以及他们和AMS之间的交互_yaoming168的博客-CSDN博客](https://blog.csdn.net/yaoming168/article/details/52402963)
+  
   [Android Broadcast广播机制分析 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/06/04/broadcast-receiver/)
+  [Android S动态广播注册流程(广播1)_android 动态注册广播_yun_hen的博客-CSDN博客](https://blog.csdn.net/yun_hen/article/details/124415431)
+  [Android 11 广播的注册、发送和接收流程分析_安卓11 广播mwipeesims_guojingbu的博客-CSDN博客](https://blog.csdn.net/guojingbu/article/details/117627348)
+  [Android 9.0系统源码_广播（一）广播的注册_android判断广播是否注册_AFinalStone的博客-CSDN博客](https://blog.csdn.net/abc6368765/article/details/125573433)
+  [Android学习笔记 - 广播的注册与接收_android 注册广播_HaveFun_Wine的博客-CSDN博客](https://blog.csdn.net/HaveFun_Wine/article/details/128471652)
+  
   [startService启动过程分析 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/03/06/start-service/)
   [Android activity启动流程分析 - 简书](https://www.jianshu.com/p/52276d5a979c)
   [详解ActivityManagerService的启动流程 - 知乎](https://zhuanlan.zhihu.com/p/158808726?utm_id=0)

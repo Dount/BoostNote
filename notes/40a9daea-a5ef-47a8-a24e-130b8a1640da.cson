@@ -1,5 +1,5 @@
 createdAt: "2019-09-26T02:02:22.087Z"
-updatedAt: "2023-04-19T16:19:17.796Z"
+updatedAt: "2023-04-22T14:24:17.339Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "Android"
@@ -3500,10 +3500,12 @@ content: '''
   - ContentProvider Timeout ：ContentProvider执行超时20秒。
   
   ### 18.3 ANR日志分析  (★★★★★)
-  通过ADB将记录ANR的log,traces.txt文档导出，可以查看ANR的原因，进程id，包名，以及具体行数
+  针对Android10以下机器，通过ADB将记录ANR的log,traces.txt文档导出，可以查看ANR的原因，进程id，包名，以及具体行数
   ```
   $adb pull data/anr/traces.txt .
   ```
+  针对Android 10以上机器，通过adb提供bugreport命令获取压缩包，其中包含anr和tombstones两种文件。
+  
   #### 18.3.1 CPU负载
   ```
   Load: 2.62 / 2.55 / 2.25
@@ -4135,29 +4137,29 @@ content: '''
   [Android JetPack简介_Cola可洛的博客-CSDN博客](https://blog.csdn.net/qq_35892584/article/details/125955640)
   
   ## 27. JNI 原理解析
-  ### 27.1 JNI概述
+  ### 27.1 JNI概述 （★★）
   JNI（Java Native Interface，Java本地接口），用于打通Java层与Native(C/C++)层。这不是Android系统所独有的，而是Java所有。众所周知，Java语言是跨平台的语言，而这跨平台的背后都是依靠Java虚拟机，虚拟机采用C/C++编写，适配各个系统，通过JNI为上层Java提供各种服务，保证跨平台性。
   
-  ### 27.2 JNI原理分析
-  #### 27.2.1 动态库的加载loadLibrary
-  1. System.loadLibrary和System.load都用于加载动态库，loadLibrary可以方便自动加载依赖库，load可以方便指定具体路径的动态库。
+  ### 27.2 JNI原理分析 
+  #### 27.2.1 动态库的加载loadLibrary （★★★★★）
+  1. System.loadLibrary和System.load都用于加载动态库，loadLibrary可以自动加载依赖库，load可以指定具体路径的动态库。
   2. 无论哪种方式加载最终都会调用到LoadNativeLibrary方法。
-  - 通过dlopen打开动态共享库
-  - 通过dlsym获取JNI_ONLoad符号所对应的方法。
-  - 调用该加载库中的JNI_Onload方法，开始注册多个native方法。
+  - 通过dlopen打开动态库
+  - 通过dlsym获取动态库中JNI_ONLoad函数指针。
+  - 调用JNI_Onload方法，开始注册JNI方法
   
-  #### 27.2.2 静态注册与动态注册
+  #### 27.2.2 静态注册与动态注册 （★★★★★）
   JVM查找Native方法有两种方式：
-  1、当加载动态库到Jvm后当Native方法第一执行时根据其方法名去匹配对应C语言实现命名规则，这种方式叫静态注册。
-  2、通过JNI_OnLoad调用JNI提供的RegisterNatives函数，将JNINativeMethod结构体中本地函数注册到JVM中，这种方式叫动态注册。
+  1、当加载动态库到Jvm后,Native方法第一次执行时根据其方法名去匹配对应C语言实现命名规则，这种方式叫静态注册。
+  2、通过JNI_OnLoad调用JNI提供的registerNativeMethods方法函数，将JNINativeMethod结构体中本地函数注册到JVM中，这种方式叫动态注册。
   
-  #### 27.2.3 JavaVM和JNIEnv
+  #### 27.2.3 JavaVM和JNIEnv （★★★★★）
   
   JavaVM：是指进程虚拟机环境，每个进程有且只有一个JavaVM实例
   
   JNIEnv：是指线程上下文环境，每个线程有且只有一个JNIEnv实例，
   
-  #### 27.2.4 JNI加载过程
+  #### 27.2.4 JNI加载过程 （★★★★★）
   1. 通过loadLibrary 调用相应库中的JNI_OnLoad()方法。
   2. 在JNI_OnLoad方法中，获取JNINativeMethod结构体中定义的Java函数。
   3. 通过registerNativeMethods方法，将JNINativeMethod结构体中定义的Java函数，注册到JVM中。
@@ -4171,13 +4173,13 @@ content: '''
   
   ## 28. 性能优化分析
   
-  ### 28.1 稳定——内存优化
+  ### 28.1 稳定——内存优化（★★★★★）
   
   Android中的内存优化总的来说就是开源和节流，开源就是扩大内存，节流就是避免内存泄漏。
   
   #### 28.1.1 扩大内存方式
   1. 清单文件中的Application下添加largeHeap="true"这个属性,让应用能申请使用更多的内存.
-  2. 同一个应用下开启多个进程，如启动一个Service在另个进程，通过AIDL与客户端通信.
+  2. 同一个应用下开启多个进程，如,启动一个Service在另个进程，通过AIDL与客户端通信.
   
   #### 28.1.2 内存泄漏检测方式
   
@@ -4185,7 +4187,7 @@ content: '''
   Android Profiler分为三大模块： cpu、内存 、网络。其中Memory Profiler 是Android Profiler中的一个组件，它可以帮助您识别内存泄漏和内存溢出。
   
   #### 28.1.2 LeakCanary + MAT 工具
-  LeakCanary专为Android设计的内存泄露检测库，首先将依赖引入项目中。其次运行APP，在遇到内存泄漏后，LeakCanary会有弹框提示，并且会将堆内存dump成hprof文件。
+  LeakCanary专为Android设计的内存泄露检测库，首先将依赖引入项目中。其次运行APP，在遇到内存泄漏后，LeakCanary会有弹框提示，并会将堆内存dump成hprof文件。
   然后将hprof文件导入MAT工具中进行分析。
   
   #### 28.1.3 Android Lint工具
@@ -4193,33 +4195,41 @@ content: '''
   
   它有个Lint Tool工具，它会把Android源代码和lint.xml配置文件打包成一个文件之后，输出成lint output，并展现出具体在哪行代码有问题。
   
-  ### 28.2 流畅——卡顿优化
+  ### 28.2 流畅——卡顿优化 （★★★★★）
   UI问题的最大体现则是屏幕卡顿现象。造成卡顿的主要原因有以下两点：
-  - 绘制耗时过长，绘制一帧内容耗时太长。
-  - 主线程太忙，导致Vsync(Vertical Synchronization)信号到时还没准备好数据，导致丢帧。
   
-  Android 4.1版本推出了Project Butter，其中VSYNC(垂直同步)则是解决刷新不同步的问题。可以简单地把它认为是一种定时中断，一旦收到VSYNC中断，CPU就开始处理各帧数据进行渲染。
+  界面绘制：主要原因是界面布局层级深、布局复杂、过度绘制，由于这些原因导致卡顿场景更多出现在UI和启动后的初始界面以及页面绘制上。
   
-  ### 28.2.1 绘制耗时过长
-  - 界面布局层级过深:
-  一个页面的Measure、Layout和draw过程都是通过递归来完成的，如果层级太深，每增加一层则会增加更多的页面显示时间。
-  - 复杂的布局:
-  对于View状态变化等情况的界面，当View发生变化时，都需要重新计算、创建、渲染，更新到屏幕上，如果布局很复杂，就很容易导致卡顿问题
-  - 过渡绘制:
-  有重叠的UI设置了多个背景，或者自定义View中draw方法在同一区域进行了重复绘制。
+  数据处理：一般分为三种情况，一是在UI线程中处理数据，二是数据处理占用 CPU 高，导致主线程阻塞，三是内存增加导致GC频繁，从而引起卡顿。
   
-  ### 28.2.2 主线程繁忙
-  主线主要负责的工作如下：
-  - UI生命周期控制
-  - 系统事件处理
-  - 消息处理
-  - 界面布局
-  - 界面绘制
-  - 界面刷新
+  ### 28.2.1 界面绘制优化
+  - 通过减少冗余或者嵌套布局来降低视图层次结构。比如使用约束布局代替线性布局和相对布局。
+  - 用 ViewStub 替代在启动过程中不需要显示的 UI 控件。
+  - 使用自定义 View 替代复杂的 View 叠加。
+  - 减少嵌套层次和控件个数。
+  - 减少过度绘制
   
-  如果以上主线程工作中加入复杂的数据处理，网络请求等耗时操作。那么可能会导致主线程被阻塞而不能及时响应VSync信号，出现卡顿丢帧的情况。
+  **ViewStub 是布局优化的方式之一，适用于一些延迟加载的场景，ViewStub本身是一个不可见不占用位置的 View，资源消耗比较小，只有调用了ViewStub.inflate()的时候加载布局，布局才会实例化。**
   
-  ### 28.2.3 分析工具
+  ### 28.2.2 数据处理优化
+  - 主线程中不要直接操作数据库，数据库的操作应该放在子线程中完成。
+  - sharepreference 尽量使用 apply，少使用 commit，可以使用 MMKV 框架来代替 sharepreference。
+  - 网络请求回来的数据解析尽量放在子线程中。
+  - 不要在 activity 的 onResume 和 onCreate 中进行耗时操作。
+  
+  sharepreference 两种提交方式是commit和apply，区别在于：
+  1.commit 返回boolean类型的值，提示是否提交成功，而apply没有返回值；
+  2.commit 直接写入磁盘，apply先写入内存，然后异步写入磁盘；
+  
+  commit是同步提交，返回值告诉我们是否提交成功；apply是异步提交，效率高，无法确定是否提交成功。
+  
+  ### 28.2.3 卡顿问题定位工具
+  - dumpsys gfxinfo 
+  记录动画帧相关性能信息，其帧信息可以对卡顿问题进行分类
+  
+  - BlockCanary 
+  检测主线程上的各种卡顿问题
+  
   - Layout Inspector
   Layout Inspector是Android studio自带的视图层次结构分析工具，通过Layout Inspector分析布局的层级结构，减少不必要的层级，避免过度绘制, 达到渲染优化的效果。
   
@@ -4227,14 +4237,14 @@ content: '''
   将布局相关的扫描规则勾选上，然后根据Lint给出的结果，针对性的做出一些布局优化处理，达到渲染优化的效果。
   
   - GPU 渲染模式分析工具
-  该工具在手机开发者选项中，通过设置打开开发人员选项，选择 GPU呈现模式分析，打开要分析的应用。
-  最终结果通过，滚动直方图的形式直观地显示渲染界面窗口帧所花费的时间，若一直超过红线，整个页面就会很卡，那么就需要针对性的做一些优化处理。
+  该工具在手机开发者选项中，通过设置打开开发人员选项，选择 GPU渲染模式分析，打开要分析的应用。
+  最终结果通过，滚动直方图的形式显示渲染界面窗口帧所花费的时间，若一直超过红线，整个页面就会很卡，那么就需要针对性的做一些优化处理。
   
   - 过渡绘制检测功能
   该功能也同样在开发者选项中，通过设置打开开发人员选项，选择调试 GPU 过度绘制，打开要分析的应用。
   最终结果通过对界面进行彩色编码来告诉我们哪些属于过度绘制，尤其注意红色表示过度绘制4次或者更多。
   
-  ### 28.3 安装包——APK瘦身
+  ### 28.3 安装包——APK瘦身 （★★★★★）
   从用户层面来说，面对动辄几十兆的APP来说在非WIFI情况下还是会犹豫要不要下载，不下载你就可能因此失去了一个用户。
   从公司层面来讲，流量就是钱，减少APP的大小就显得尤为重要
   
@@ -4249,23 +4259,15 @@ content: '''
   - AndroidManifest.xml：包含核心Android清单文件。该文件列出应用程序的名称，版本，访问权限和引用的库文件。该文件使用Android的二进制XML格式。
   
   #### 28.3.2 减少安装包大小
-  - 使用NimbleDroid 减少无用文件
-  是一个 Android 性能指标的系统，有两个方式。
-  通过静态分析：可以分析出APK安装包中所有文件在APK中所占整体比例。
-  通过动态分析：可以给出冷启动时间, 内存占用, 网络使用，磁盘输入/输出等报告，从这些分析报告中可以定位出具体的优化点。
   
-  - ProGuard 代码混淆器工具 压缩代码资源
-  是Android Studio 自带的一种代码混淆器工具，其中包括：压缩，优化，混淆，预检四种功能。
-  压缩（Shrink）:用于检测和删除没有使用的类、字段、方法和属性
-  优化（Optimize）:对于字节码进行优化，并且移除无用指令。
-  混淆（Obfuscate）:增大反编译难度，随机对类，字段和方法进行重命名。
-  预检（Preverify）:主要是在Java平台上对处理后的代码进行预检。
+  - 去除无用资源，使用shrinkResources来删除库文件中无用的资源，配合proguard压缩代码资源。
+  - 减少第三库的使用，宁愿参照去实现，也不要多引入一个第三方库。
+  - 避免使用枚举，一个单独的枚举可以将apk增加1.0 到1.4 KB大小，累积下来可能会增加相当大的APK体积。
+  - 使用WebP文件格式，WebP格式提供有损压缩以及透明度，可以提供比JPEG或PNG更好的压缩效果。
+  - 精简drawable，只保留一套drawable图片资源，使用多个dimens.xml文件来适配不同的手机尺寸。
+  - lib中资源优化，so库尽量兼容v7或V8。
   
-  - lib中资源优化
-  为了支持不同指令集的情况，应用可能会包含armeabi-v8a、armeabi-v7a、x86的SO文件。从而导致整个应用会很大。
-  需要看具体业务情况，尽量使so库兼容v7或V8。
-  
-  ### 28.4 启动优化 
+  ### 28.4 启动优化 （★★★★★）
   用户希望应用能够快速打开。启动时间过长的应用可能会令用户失望，最后用户直接卸载应用。
   #### 28.4.1 启动方式
   - 冷启动
@@ -4275,7 +4277,7 @@ content: '''
   
   - 温启动
   介于冷启动和热启动中间，应用进程还在，但activity已经从栈中退出销毁，再次启动应用需要通过onCreate（）重新创建 Activity。
-  
+  比如按Home键后，又继续使用其他APP，时间久了或者打开的应用多了，之前应用的Activity有可能被回收了，但是进程还在。
   - 热启动
   热启动时，系统将应用从后台拉回前台，应用程序的 Activity 在内存中没有被销毁，那么应用程序可以避免重复对象初始化，UI的布局和渲染。
   
@@ -4286,8 +4288,8 @@ content: '''
   
   #### 28.4.3 时间测量方式
   - 系统日志输出
-  在Android 4.4及以上版本，App启动时会在logcat输出一行日志，会打印出名为Displayed的值，此值代表从进程启动到在屏幕上完成对应Activity的绘制所经过的时间。
-  - adb命令
+  在Android 4.4及以上版本，App启动时会在logcat输出一行日志，会打印出名为Displayed的值，此值代表从进程启动到屏幕上完成对应Activity绘制所经过的时间。
+  - adb am start 命令启动APP
   launch启动App
   ![e7b8bc96.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\e7b8bc96.png)
   点home键推到后台，再运行adb命令：
@@ -4296,10 +4298,22 @@ content: '''
   ![84aa771a.png](:storage\\40a9daea-a5ef-47a8-a24e-130b8a1640da\\84aa771a.png)
   
   #### 28.4.4 优化方式
-  - 第一阶段的优化方向
-  Application执行阶段，在执行attachBaseContext和onCreate方法时，app显示黑白屏的的持续时间有多久，若时间过长需要优化。
-  - 第二阶段的优化方向
-  activity运行阶段，onCreate,onStart,onResume函数中不能进行耗时的工作。耗时操作尽量放在子线程中
+  - Application.onCreate()
+  onCreate主要是做SDK初始化和App状态判断，
+  
+  sdk优化:
+  sdk的懒加载，再使用到的时候才去初始化，不全部放到在Application初始化。
+  sdk放到子线程中初始化.
+  
+  业务代码的优化：
+  尽量不要在OnCreate中初始化ContentProvider,因为其是在Application.attachBaseContext就会初始化其ContentProvider.onCreate()方法，会加长Application启动时间。
+  尽量不要在OnCreate中初始化SharedPreferences,如果涉及IO操作，Applicaion阻塞时间会较长。
+  
+  - Activity.onCreate()
+  需要根据具体情况优化，常见优化有：
+  1. setContentVIew()耗时，这时要优化布局，减少布局背景的重复渲染、减少层级、对于不一定显示的布局用ViewStub加载。
+  2. initView()初始化View时不要做耗时操作，比如一些IO操作、播放器等采用懒加载，也可以通过多线程提前加载。
+  3. 主页面的ViewPager+Fragment可以通过懒加载按需加载Fragment。
   
   ### 28.5 文献
   [Android性能优化总结 - 蜗牛攀爬 - 博客园](https://www.cnblogs.com/wnpp/p/16065525.html)
@@ -4313,11 +4327,43 @@ content: '''
   [Android代码混淆配置：ProGuard_android proguard_迷路国王的博客-CSDN博客](https://blog.csdn.net/qq_42795723/article/details/126345454)
   [性能调优——如何让你的APK瘦身到极致~ - 知乎](https://zhuanlan.zhihu.com/p/562555739)
   [Android性能优化之APK瘦身详解_android apk瘦身_星月黎明的博客-CSDN博客](https://blog.csdn.net/qq_33209777/article/details/125832075)
+  [Android 流畅度评估及卡顿定位、优化_糖冰橙的博客-CSDN博客](https://blog.csdn.net/tt75281920/article/details/120119088?spm=1001.2014.3001.5501)
+  [简单可行的安装包/APK瘦身方案 - 知乎](https://zhuanlan.zhihu.com/p/31769858?from_voters_page=true)
+  
   
   [Android：启动优化_android 启动优化_奋斗的小鹰的博客-CSDN博客](https://blog.csdn.net/qq_27246079/article/details/124910568)
   [android启动优化_android 启动优化_hzulwy的博客-CSDN博客](https://blog.csdn.net/qq_36828822/article/details/125244867)
   [Android 性能优化1——启动优化 - 简书](https://www.jianshu.com/p/c81531e95e42)
   [Android性能优化系列篇（二）：启动优化 - 知乎](https://zhuanlan.zhihu.com/p/573370831)
+  [Android性能优化之启动速度优化](https://www.yii666.com/blog/383575.html)
+  [Android启动优化 - 简书](https://www.jianshu.com/p/20ef8ddb22f5)
+  
+  ## 29. 崩溃
+  ### 29.1 崩溃与ANR的区别 （★★）
+  崩溃:崩溃是指在应用内引发了未处理的异常,如Nullpointer异常，非法状态异常等，Android中的崩溃分为两种，Java崩溃和Native崩溃。
+  ANR:ANR表示应用程序无响应,如应用程序是否在UI线程上阻塞，导致系统无法处理用户输入事件。
+  
+  **崩溃不同于ANR，ANR不会在所有情况下都崩溃。**
+  
+  ### 29.2 Java 崩溃处理 （★★）
+  1. 自定义异常捕获类，实现UncaughtExceptionHandler接口，实现uncaughtException方法。
+  2. 将捕获的异常交给自己处理，或者交给系统自己处理。
+  3. 自己处理给将日志保存，或将日志上传
+  
+  ### 29.3 Navite 崩溃处理 （★★）
+  当程序中的 native 代码发生崩溃时，系统会在 /data/tombstones/ 目录下保存一份详细的崩溃日志信息
+  
+  发生崩溃的具体方法和行数可以用 Android/SDK/NDK 提供的工具 linux-android-addr2line 来进一步定位。
+  
+  ### 29.4 线上崩溃日志获取
+  快速的实现方式就是集成第三方 SDK。目前比较成熟，采用也比较多的就是腾讯的 Bugly。
+  Bugly 基本能够满足线上版本捕获 crash 的所有需求，包括 Java 层和 Native 层的 crash 都可以获取相应的日志。并且每天 Bugly 都会邮件通知上一天的崩溃日志，方便测试和开发统计 bug 的分布以及崩溃率。
+  
+  ### 文献
+  [快速锁定 APP 崩溃问题~](https://www.zhihu.com/tardis/bd/art/556954450?source_id=1001)
+  [Android性能优化（四）卡顿优化-布局优化-崩溃优化 - 知乎](https://zhuanlan.zhihu.com/p/562674854)
+  [Android 平台 Native Crash 问题分析与定位_android native崩溃_不入流Android开发的博客-CSDN博客](https://blog.csdn.net/m0_70749039/article/details/126041622)
+  [Android App异常崩溃处理详解 - 知乎](https://zhuanlan.zhihu.com/p/610135847)
   
   ## 面试题参考文献
   [jeanboy_jeanboydev_CSDN博客-Android进阶,Java基础,Android进阶领域博主](https://blog.csdn.net/freekiteyu/article/list/1)
@@ -4334,8 +4380,8 @@ content: '''
   
 '''
 linesHighlighted: [
-  4456
-  4383
+  4486
+  4413
 ]
 isStarred: false
 isTrashed: false
