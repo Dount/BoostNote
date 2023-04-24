@@ -1,5 +1,5 @@
 createdAt: "2023-04-02T15:28:31.959Z"
-updatedAt: "2023-04-23T16:55:25.875Z"
+updatedAt: "2023-04-24T16:14:17.007Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "清单"
@@ -149,6 +149,9 @@ content: '''
   - zygote，SystemServer，AMS，ActivityThread 的关系
   - Activity 启动流程
   - startService启动过程
+  - 注册广播流程
+  - 广播发送和处理
+  - ANR时系统的处理过程
   
   
   ## 项目中遇到的问题：
