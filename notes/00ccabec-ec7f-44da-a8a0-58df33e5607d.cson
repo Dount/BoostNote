@@ -1,5 +1,5 @@
 createdAt: "2023-01-08T15:07:34.029Z"
-updatedAt: "2023-03-21T16:05:46.298Z"
+updatedAt: "2023-04-25T16:05:45.339Z"
 type: "MARKDOWN_NOTE"
 folder: "c3bf24344ddc9bd2af22"
 title: "WindowManagerService"
@@ -14,13 +14,13 @@ content: '''
   ![3515b8b8.png](:storage\\00ccabec-ec7f-44da-a8a0-58df33e5607d\\3515b8b8.png)
   
   - 窗口管理
-  WMS是窗口的管理者，它负责窗口的启动、添加和删除，另外，窗口的大小和层级也是由WMS进行管理的。窗口管理的核心成员有DisplayContent、WindowToken和WindowState。
+  WMS是窗口的管理者，它负责窗口的启动、添加和删除，另外，窗口的大小和层级也是由WMS进行管理的。
   
   - 窗口动画
-  窗口间进行切换时，使用窗口动画可以显得更炫一些，窗口动画由WMS的动画子系统来负责，动画子系统的管理者为WindowAnimator。
+  窗口动画由WMS的动画子系统来负责，动画子系统的管理者为WindowAnimator。
   
   - 输入系统的中转站
-  通过对窗口的触摸从而产生触摸事件，InputManagerService（IMS）会对触摸事件进行处理，它会寻找一个最合适的窗口来处理触摸反馈信息，WMS是窗口的管理者，因此，WMS“理所应当”的成为了输入系统的中转站。
+  通过对窗口触摸从产生的触摸事件，通过WMS中转站将触摸事件交给InputManagerService进行处理。
   
   - 输入系统相关：
   窗口并不具备有绘制的功能，因此每个窗口都需要有一块Surface来供自己绘制。为每个窗口分配Surface是由WMS来完成的。
@@ -36,19 +36,17 @@ content: '''
   ![c256833f.png](:storage\\00ccabec-ec7f-44da-a8a0-58df33e5607d\\c256833f.png)
   
   Window:它是一个抽象类，具体实现类为 PhoneWindow ，它对 View 进行管理。Window是View的容器，View是Window的具体表现内容。创建一个Window，通过windowManager完成。
-  WindowManager:是用来添加、删除、更新Window（具体是View）的，与WMS通过Binder来进行跨进程通信，将具体的工作交由WMS来处理。
+  WindowManager:是用来添加、删除、更新Window中的View，与WMS通过Binder来进行跨进程通信，将具体的工作交由WMS来处理。
   WindowsManagerService:是在SystemServer进程中的，WindowManger中的所有操作都是由WMS来最终完成的。
   
   ## 启动过程
   ![682341f0.png](:storage\\00ccabec-ec7f-44da-a8a0-58df33e5607d\\682341f0.png)
   
   1. SystemServer中，优先启动引导服务，核心服务，其它服务。WMS属于其它服务的一种。
-  2. 在WMS启动先，会先启动IMS,并将IMS对象作为参数赋值到WMS中，后续WMS处理输入事件时会与IMS进行交互。
-  3. WMS的main方法中，获取DisplayThread的handler实例，在display线程中创建WMS实例对象。
-  4. WMS实例对象创建完成后，display进入等待状态。
-  5. 调用WMS中OnInitReady方法，开始初始化窗口管理策略，通过PWM(PhoneWindowManager)在ui线程中进行初始化，完成后通过Handler中notifyAll唤醒display线程。
-  6. 完成初始化窗口管理策略后，WMS中displayReady方法初始化屏幕显示信息。
-  7. WMS初始化屏幕显示信息后，最后通过WMS的SystemReady方法通知WMS初始化工作完成。
+  2. 在WMS启动时，会先启动IMS,并将IMS对象作为参数赋值到WMS中，后续WMS处理输入事件时会与IMS进行交互。
+  3. WMS的main方法中，获取DisplayThread的handler实例，在display线程中创建WMS实例对象，然后display进入等待状态。
+  4. 调用WMS实例中OnInitReady方法，开始初始化窗口管理策略，通过PWM(PhoneWindowManager)在ui线程中进行初始化，完成后，通过Handler中notifyAll唤醒display线程。
+  5. 完成初始化窗口管理策略后，调用WMS实例中displayReady方法初始化屏幕显示信息，然后调用WMS实例中SystemReady方法完成初始化工作完成。
   
   ## WMS添加一个窗口
   ![3f07ec12.png](:storage\\00ccabec-ec7f-44da-a8a0-58df33e5607d\\3f07ec12.png)

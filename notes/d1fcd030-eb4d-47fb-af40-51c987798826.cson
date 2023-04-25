@@ -1,5 +1,5 @@
 createdAt: "2023-03-07T11:46:02.560Z"
-updatedAt: "2023-03-27T15:44:11.062Z"
+updatedAt: "2023-04-25T15:21:53.279Z"
 type: "MARKDOWN_NOTE"
 folder: "c3bf24344ddc9bd2af22"
 title: "SurfaceFlinger"
@@ -17,7 +17,7 @@ content: '''
   ## 什么是Surface
   Surface的本质**是一块或几块GraphicBuffer内存的管理类，并提供对buffer的管理方法**,每个Window都有一个Surface。
   GraphicBuffer由SurfaceFlinger来进行分配。App从SurfaceFlinger中获取一块GraphicBuffer后，通过OpenGL将图形数据绘制到GraphicBuffer上。
-  然后SurfaceFlinger会把多个GraphicBuffer数据进行合成，最终OpenGL将合成后的数据通过调用FramebufferNativeWindow类的函数渲染到实际屏幕上去。
+  然后SurfaceFlinger会把多个GraphicBuffer数据进行合成，最终OpenGL将合成后的数据通过调用FramebufferNativeWindow类渲染到实际屏幕上去。
   
   android中Surface分为两种：1.Java层surface 2.Native层Surface
   Java层产生Surface的主要有两个地方：ViewRoot和SurfaceView。
@@ -26,8 +26,6 @@ content: '''
   
   ## SurfaceFlinger 概述
   SurfaceFinger位于Native层，是一个Binder系统服务, Android设备开机启动时就会带起SurfaceFlinger服务进程并完成一些初始化动作。
-  
-  该服务首先由init进程去解析surfaceflinger.rc,然后去执行/system/bin/surfaceflinger，最后启动SurfaceFlinger服务进程。
   
   ## SurfaceFlinger 的启动
   1. 开机启动时，init进程解析这个surfaceflinger.rc文件
@@ -40,10 +38,10 @@ content: '''
   ![f355825c.png](:storage\\d1fcd030-eb4d-47fb-af40-51c987798826\\f355825c.png)
   1. 当Surface绘制完成后会发出一个Invalidate的消息给Surfaceflinger的等待线程
   2. 当waitForEvent接收到消息后就会交给onMessageReceivered去处理，
-  3. 在nMessageReceivered处理过程中会首先调用handleMessageTransaction处理之前对屏幕和应用程序窗口的改动，重新计算窗口的可见区域。
+  3. 在onMessageReceivered处理过程中会首先调用handleMessageTransaction处理之前对屏幕和应用程序窗口的改动，重新计算窗口的可见区域。
   4. 其次调用handleMessageInvalidate，会根据图形缓冲区数据内容去更新脏区域。
-  5. handleMessageRefresh，合并和渲染输出。
-  6. 步骤完成后，继续等待下一个invalidate消息。
+  5. 最后handleMessageRefresh，合并和渲染输出。
+  6. 步骤完成后，进入ThreadLoop,继续等待下一个invalidate消息。
   
   ## Message/Handler/Looper 机制
   ### 基本对象说明

@@ -1,5 +1,5 @@
 createdAt: "2023-04-02T15:28:31.959Z"
-updatedAt: "2023-04-24T16:14:17.007Z"
+updatedAt: "2023-04-25T16:11:30.920Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "清单"
@@ -152,7 +152,19 @@ content: '''
   - 注册广播流程
   - 广播发送和处理
   - ANR时系统的处理过程
-  
+  - UI面是怎么显示到屏幕上的？
+  - 什么是Surface
+  - SurfaceFlinger 概述
+  - SurfaceFlinger 的启动
+  - SurfaceFlinger 消息队列处理机制
+  - 初始化DBMS
+  - DBMS 三个主要方法
+  - WMS的概述
+  - 窗口可创建数
+  - Window、WindowManager、WMS 关系
+  - WMS启动过程
+  - WMS添加一个窗口
+  - WMS删除一个窗口
   
   ## 项目中遇到的问题：
   1. 沟通问题
