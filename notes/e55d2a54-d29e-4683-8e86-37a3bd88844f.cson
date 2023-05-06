@@ -1,5 +1,5 @@
 createdAt: "2023-04-02T15:28:31.959Z"
-updatedAt: "2023-04-25T16:11:30.920Z"
+updatedAt: "2023-05-05T06:11:36.769Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "清单"
@@ -19,152 +19,1253 @@ content: '''
   第二年至今参与终端一体机定制应用开发和云会议SDK的开发。
   
   ## JAVA 
-  - Byte和位Bit的关系
-  - String,StringBuffer,StringBuilder的区别
-  - final,finally和finalize区别 
-  - ==和equals有什么区别?equals和hashCode有什么联系
-  - Array和ArrayList的区别
-  - 什么是面向对象
-  - 什么是面向过
-  - 简述面向对象的特性
-  - 列举Object类的方法
-  - 接口和抽象类有什么区别
-  - 内部类与外部类的关系
-  - 静态内部类与非静态内部类区别
-  - 匿名内部类
-  - 异常有哪些分类？出现的原因是什么？
-  - 有哪些异常处理方式?
-  - 简述一下集合主要有哪些类和接口，各自有什么特点
-  - Collection和Collections有什么区别 
-  - List和Set比较
-  - List,Set,Map有什么区别？
-  - HashMap的特点
-  - HashMap的实现方式
-  - HashMap的哈希冲突
-  - HashMap的哈希冲突解决
-  - 负载因子为什么是0.75
-  - HashMap为什么不安全？
-  - ConcurrentHashMap的特点
-  - 迭代器是什么?
-  - 有哪些线程安全的集合类？
-  - 创建线程有哪几种实现方式？分别有什么优缺点？
-  - 线程有哪些状态
-  - 什么是线程安全问题，如何解决
-  - 使用volatile的背景
-  - volatile的特性
-  - 说一说synchronized关键字的作用
-  - Lock接口有哪些方法
-  - 线程池是什么
-  - 为什么需要线程池
-  - 创建线程池的方法有哪些
-  - CAS的概念
-  - 为什么使用CAS
-  - CAS有什么问题
-  - 什么是ABA
-  - 如何解决ABA问题
-  - 讲一讲wait、sleep、yield、join方法的区别
-  - wait，sleep的区别
-  - 进程和线程有什么区别
-  - Java 内存区域
-  - Java内存模型
-  - JMM存在的必要性
-  - JMM的三个特征
-  - JVM中类加载的过程
-  - 加载，链接，初始化
-  - 初始化顺序
-  - 类加载器的分类
-  - 类加载器的代理模式-双亲委托机制
-  - java对象引用
-  - 浅复制和深复制的区别
-  - 反射与注解
+  ### Byte和位Bit的关系
+  bit:    Binary digit（二进制数位）的缩写,意为“位”或“比特”，是计算机运算的基础； 
+  byte:    意为字节"是计算机文件大小的基本计算单位； 
+  关系:   1Byte=8bit   (简写:  1B=8b)
+  ### String,StringBuffer,StringBuilder的区别
+  运行速度上的区别
+  String < StringBuffer < StringBuilder
+  String 的操作是一个不断创建新的对象并且将旧的对象通过GC回收的一个过程，所以执行速度很慢。
+  StringBuffer与StringBuilder的对象是变量，对变量进行操作就是直接对该对象进行更改，所以速度要比String快很多。
+  
+  线程安全上的区别
+  String 是线程安全的。因为String是final修饰的类，是不可变的。
+  StringBuffer是线程安全的，因为使用了Synchronized关键字进行修饰。
+  StringBuilder是线程不安全的。
+  
+  三者的使用总结
+  String：适用于少量的字符串操作的情况；
+  StringBuilder：适用于单线程下在字符缓冲区进行大量操作的情况；
+  StringBuffer：适用多线程下在字符缓冲区进行大量操作的情况。
+  ### final,finally和finalize区别 
+  1. final可以修饰类，方法和变量，被final修饰的类不可继承，被final修饰的方式不可重写，被final修饰的变量引用不可变，引用的内容可以更改。
+  2. finally用于try-catch 代码块中，无论是否发生异常最后都将被执行，作用是释放资源。
+  3. finalize 是Object类的方法，在对象被垃圾回收之前将调用一次，一般用于资源的释放。
+  ### ==和equals有什么区别?equals和hashCode有什么联系
+  1. 如果是引用类型，==比较的是两个对象的引用是否完全相同，如果是基本类型，比较的是两个基本类型的数值是否相同。
+  2. 如果没有重写的话，equals默认按照==进行比较，如果重写了equals() 方法，则按照对应的规则比较。
+  3. 两个对象如果相等，那么它们的hashCode值必须相等，但两个对象的hashCode值相等时，它们不一定相同。
+  ### Array和ArrayList的区别
+  1. Array长度在定义之后就不会改变了，而ArrayList长度可变的，可以自动化扩容。
+  2. Array可以存储基本类型和对象类型，ArrayList只能包含对象类型
+  ### 什么是面向对象
+  当解决一个问题的时候，面向对象会把事物抽象成对象的概念，就是说这个问题里面有哪些对象，然后给对象赋一些属性和方法，然后让每个对象去执行自己的方法，问题得到解决。
+  
+  ### 什么是面向过
+  当解决一个问题的时候，面向过程会把事情拆分成，一个个函数和数据。然后按照一定的顺序执行，等方法执行完了，问题得到解决。
+  
+  ### 简述面向对象的特性
+  1) 封装：例如成员变量私有，然后提供公有的get/set方法来获取值/赋值，封装的核心思想是合理隐藏，合理暴露。可以提高安全性，实现代码的组件化
+  2) 继承：一种子类到父类的关系，可以提高代码的复用性，相同代码可写到父类，子类的功能更加强大，不仅得到了父类的功能，还有自己的功能。
+  3) 多态：同一个类型的对象执行相同的行为，在不同的状态下表现出不同的特征。多态可以降低类之间的耦合度，便于扩展和维护。
+  
+  ### 列举Object类的方法
+  1) equals(Object obj):判断其他对象是否与当前对象相等。
+  2) toString():打印当前对象的字符串表示
+  3) wait():导致当前线程等待，等待其它线程唤醒，会释放锁。
+  4) notify()/notifyAll():随机唤醒一个/全部线程
+  5) hashCode():返回当前对象的hashCode值。
+  6) finalize():当垃圾回收期要回收对象前调用。
+  7) clone:创建并返回对象的一个副本.
+  
+  ### 接口和抽象类有什么区别
+  相同点：
+  1. 都不能被实例化 
+  2. 接口的实现类或抽象类的子类，都只有实现了方法后才能实例化。
+  
+  不同点：
+  1. 实现接口的关键字为implements，继承抽象类的关键字为extends。
+  2. 一个类可以实现多个接口，但一个类只能继承一个抽象类。所以，使用接口可以间接地实现多重继承。
+  3. 抽象类中可以有非抽象方法，接口中只能有抽象的方法。
+  4. 接口中抽象方法前不能加abstract关键字，也不能加final,private,protected关键字来防止抽象方法的继承。只能用public
+  5. 抽象类中抽象方法前必须加abstract关键字。
+  
+  ### 内部类与外部类的关系
+  对于**普通内部类**，内部类的创建依赖外部类的实例对象，在没有外部类实例之前是无法创建内部类的。
+  **静态内部类**的创建并不依赖于外部类的创建。
+  
+  ### 静态内部类与非静态内部类区别
+  静态内部类可以有静态成员，而非静态内部类则不能有静态成员，但允许有静态常量。
+  静态内部类可以访问外部类的静态方法和属性，不可以访问外部类的非静态变量。而非静态内部类的非静态成员可以访问外部类的非静态变量。
+  静态内部类的创建不依赖于外部类，而非静态内部类必须依赖于外部类的创建。
+  
+  ### 匿名内部类
+  匿名内部类是局部内部类的一种简化形式.本质上是一个对象,是实现了该接口或继承了该抽象类的子类对象
+  语法格式：new 类名或者接口名(){重写方法;};
+  
+  1. 匿名内部类没有访问修饰符(没有名字)。
+  2. 匿名内部类可以在类中被创建，也可以在方法中被创建。
+  3. 匿名内部类可以继承一个具体类，或继承一个抽象类，也可以实现一个接口。
+  4. 匿名内部类继承了具体类，可以不必重写所有方法，如果继承了接口或抽象类，那么匿名类必须实现所有的抽象方法。
+  5. 匿名内部类中不能存在任何静态成员或方法。
+  6. 匿名内部类是没有构造方法的，因为它没有类名。
+  7. 匿名内部类中可以有被final修饰的静态常量。
+  
+  ### 异常有哪些分类？出现的原因是什么？
+  1.Throwable是所有错误和异常的父类,Throwable分为Error和Exception.
+  2.Error指Java程序运行错误。出现Error通常是因为系统的内容部错误或资源耗尽，Error不能在运行过程中被动态处理，如果程序运行中出现Error, 系统只能记录错误的原因和安全终止。
+  3.Exception指java程序运行异常，Exception又分为RuntimeException和IoExcetion,RuntimeException指在Java虚拟机正常运行期间抛出的异常，可以被捕获并处理，例如空指针异常，数组越界等。IoExcetion指编译阶段强制要求捕获并处理的异常，例如IO异常，SQL异常等。
+  
+  ### 有哪些异常处理方式?
+  第一种方式：在方法声明的位置上，使用throws关键字，抛给上一级。谁调用我，我就抛给谁。
+  第二种方式：使用try…catch语句进行异常的捕捉。
+  
+  ### 简述一下集合主要有哪些类和接口，各自有什么特点
+  
+  1. 主要有两个接口Collection和Map.
+  2. Collection包括List,Set和Queue
+  3. Map以key-value键值对的形式存储元素,包括：HashMap、LinkedHashMap和TreeMap。
+  
+  ### Collection和Collections有什么区别 
+  1. Collection是一个集合接口，它包括List有序结合，Set无序集合，Queue队列等。
+  2. Collections则是Collection的一个工具类，为Collection类型的对象提供了很多方便的方法，例如addAll 可以直接对Collection集合批量的添加元素，shuffle可以随机打乱List集合的元素顺序，sort可以对List集合进行默认或按比较器进行排序。
+  
+  ### List和Set比较
+  List,Set都是继承自Collection接口,两者最重要的区别在于List中允许插入重复元素，Set中不允许插入重复元素。
+  List特点：元素有顺序，元素可重复; 
+  - ArrayList底层通过数组实现，线程不安全，插入移除元素慢，随机访问快。
+  - Vector是线程安全的ArrayList，但效率较低。
+  - LinkedList底层通过双向链表实现，插入移除元素快，随机访问慢，顺序访问快。
+  - Stack继承自Vector，实现一个后进先出的堆栈。
+  
+  Set特点：元素无顺序(HashSet)，元素不可重复，重复元素会覆盖掉，
+  - HashSet底层其实就是HashMap，利用了key来保证元素唯一性，(无顺序)
+  - LinkedHashSet可以按照key的操作顺序排序,即保证元素添加的自然顺序。
+  - TreeSet支持按照默认或指定的排序规则排序,即保证元素的自然顺序。
+  
+  
+  ### List,Set,Map有什么区别？
+  1. List是有序，可重复，有索引的集合，继承了Collection集合全部功能除了Collection的三种遍历方式外，可用索引遍历。
+  2. Set是无序，不可重复的集合，Set的实现类LinkedHashSet和TreeSet是有序的，LinkedHashSet可以按照元素插入的顺序排序，也可以按照元素操作的时间排序，TreeSet可以按照默认的比较规则或者自定义的比较规则排序。
+  3. Map是无序，以Key-value的键值对形式存储元素的集合。键不可重复，重复的键对应的值会覆盖之前的值。
+  
+  ### HashMap的特点
+  1. HashMap基于Map接口实现，元素以键值对的方式存储，　
+  2. HashMap允许空键和空值（但空键只有一个，且放在第一位）
+  3. HashMap中key不允许重复。
+  4. HashMap是无序的，顺序会不定时改变。
+  5. HashMap是线程不安全的。
+  6. HashMap的初始容量为16,填充因子默认是0.75。
+  
+  ### HashMap的实现方式
+  1. JDK1.8之前，HashMap的底层是数组加链表实现，数组中的每个元素都是一个单链表，链表中每个元素都是Entry的一个实例，其中有四个属性key,value,hash,next,HashMap在查找数据时，根据hash值可以快速定位到数组的小标，然后对链表进行遍历查找。
+  2. JDK1.8之后，HashMap底层改为数组+链表+红黑树，当链表长度超过阈值8时，将链表转换为红黑树，使得性能上进一步得到提升。
+  
+  ### HashMap的哈希冲突
+  HashMap的实现使用一个数组，每个数组项里面有一个链表的方式来实现，因为HashMap使用key的hashCode来寻找存储位置，不同的key可能具有相同的hashCode.如果在插入时发现存储地址已经被相同的hashCode占用，则导致了哈希冲突。
+  
+  ### HashMap的哈希冲突解决
+  1.8之前
+  HashMap采用链地址法的方式，即，将相同hashcode值的对象组成一个链表，放在数组的某一项中。
+  1.8之后
+  HashMap同样采用链地址法的方式解决冲突，不同点在于如果链表长度大于8，会将链表转换为红黑树的形式。
+  
+  ### 负载因子为什么是0.75
+  负载因子代表着HashMap的填充度，负载因子越大，填充的元素就越多，空间利用率就越高。但是发生碰撞冲突的机会就越大，链表的长度越来越长，查找的效率就会降低。负载因子越小，填充的元素就越少，发生碰撞冲突的机会就越少。因此0.75属于时间和空间成本上一种折衷的设定。
+  
+  ### HashMap为什么不安全？
+  1. JDK7时多线程下扩容会造成死循环。
+  2. 多线程的put可能导致数据丢失。
+  3. put和get并发时可能导致get为null，数据被覆盖。
+  
+  ### ConcurrentHashMap的特点
+  1. HashMap功能基本一致，主要是为了解决HashMap线程不安全问题；
+  2. 不允许空值和空键
+  3. jdk1.7之前ConcurrentHashMap通过使用分段锁来实现线程安全，内部细分为很多Segment数据段，每个Segment的数据段单独进行加锁操作，这样多个线程对多个不同的段的操作是不会相互影响的。Segment是数组和链表结构，每个Segment里面都包含一个HashEntry数组，每个HashEntry都是一个链表结构的数据，若进行修改必须先获得对应的Segment锁，若发生hash冲突采用链表存储。
+  4. 因为在jdk1.7中还是数组加链表的方式，因此在查询的时候，仍然会遍历链表，导致效率很低。因此jdk1.8在遍历上采用红黑树的方式进行了优化。
+  5. jdk1.8中的ConcurrentHashMap将Segment块换成了Node，每个Node有自己的锁，每个Node里面包含一个HashEntry数组。若发生hash冲突，先使用链表存储，后面当链表长度超过8后会转换为红黑树来优化。
+  
+  ### 迭代器是什么?
+  1.迭代器实现了iterator接口，是用于遍历Collection集合元素的一个指针。
+  2.主要有三个方法
+    1）通过iterator()获得集合的迭代器
+    2）通过hasNext()判断集合当中是否还有元素，如果有返回true,没有则返回false. 初始化迭代器位于第一个元素之前。
+    3）通过next()获取集合的下一个元素，并向后移动一个元素的单位。
+  
+  ### 有哪些线程安全的集合类？
+  1. Vector,是线程安全的ArrayList,底层用数组实现，通过synchronized修饰方法保证线程安全。
+  2. HashTable是线程安全的HashMap,继承自Dictionary,通过synchronized修饰方法保证线程安全。性能较差
+  3. ConcurentHashMap,线程安全的HashMap,通过分段锁实现线程安全，性能较好。
+  
+  
+  ### 创建线程有哪几种实现方式？分别有什么优缺点？
+  1.继承Thread 类，重写run()方法
+    优点：编码简单，
+    缺点：不能继承其它类
+  2.实现Runnable接口，重写run()方法，并将该实现类作为参数传入Thread构造器。
+    优点：可以继承其它类，避免了单继承的局限性；适合多个相同程序代码的线程共享一个资源，实现解耦操作，代码和线程独立。
+    缺点：实现相对复杂
+  3.实现Callable接口，重写Call()方法，并包装成FutureTask对象，再作为参数传入Thread构造器。
+    优点:是相比方式二可以获取返回值。
+    缺点：实现复杂。
+  
+  4.通过线程池创建。
+  
+  ### 线程有哪些状态
+  1. New:用new操作创建一个新线程，此时程序还未开始运行线程中的代码
+  2. Runnable: 调用start()方法后进入可运行状态。
+  3. Blocked:阻塞状态，内部锁获取失败时进入阻塞状态。
+  4. Waiting:等待其他线程唤醒时进入等待状态。
+  5. Timed Waiting:计时等待，带超时参数的方法，例如Sleep(Long time)
+  6. Terminated:终止状态，线程正常运行完毕或未捕获异常终止。
+  
+  ### 什么是线程安全问题，如何解决
+  线程安全问题：当多个线程共享一个全局变量，对其做写操作时，可能会受到其他线程的干扰，从而引发线程安全问题，表现形式为数据的缺失，数据 不一致等。
+  
+  线程安全问题的解决思路：
+  
+  1. 尽量不使用共享变量，将不必要的共享变量变成局部变量来使用。
+  2. 使用synchronized关键字同步代码块，或者使用jdk包中提供的Lock为操作进行加锁。
+  3. 使用ThreadLocal为每一个线程建立一个变量的副本，各个线程间独立操作，互不影响。
+  
+  ### 使用volatile的背景
+  volatile主要是为了解决JMM中工作内存与主内存同步延迟现象导致的可见性问题，以及指令重排导致的可见性问题和有序性问题，则可以利用volatile关键字解决，因为volatile的另外一个作用就是禁止重排序优化。
+  
+  ### volatile的特性
+  1. 保证此变量对所有的线程的可见性。
+  保证被volatile修饰的共享变量对所有线程总数可见的，也就是当一个线程修改了一个被volatile修饰共享变量的值，新值总数可以被其他线程立即得知，**但是对于volatile变量运算操作在多线程环境并不保证安全性。**
+  
+  2. 禁止指令重排序优化。
+  volatile关键字通过内存屏障的方式实现禁止指令重拍优化，内存屏障是一个CPU的指令，他有两个作用，第一种保证特定操作的执行顺序，第二种保证某些变量的内存可见性（利用该特性实现volatile的内存可见性）。
+  
+  3. 保证特定操作的执行顺序：
+  由于编译器和处理器都能执行指令重排优化。如果在指令间插入一条内存屏障则会告诉编译器和CPU，不管什么指令都不能和这条内存屏障指令重排序，也就是说通过插入内存屏障禁止在内存屏障前后的指令执行重排序优化。
+  
+  4. 保证某些变量的内存可见性：
+  强制刷出各种CPU的缓存数据，因此任何CPU上的线程都能读取到这些数据的最新版本。
+  
+  5. 轻量级sychronized
+  在访问volatile变量时不会执行加锁操作，因此也就不会使执行线程阻塞，因此volatile变量是一种比sychronized关键字更轻量级的同步机制。
+  
+  ### 说一说synchronized关键字的作用
+  原子性：被synchronized修饰的类或对象的所有操作都是原子的，因为在执行操作之前必须先获得类或对象的锁，直到执行完才能释放。
+  可见性：synchronized对一个类或对象加锁时，一个线程如果要访问该类或对象必须先获得它的锁，而这个锁的状态对于其他任何线程都是可见的，并且在释放锁之前会将对变量的修改刷新到共享内存当中，保证资源变量的可见性。
+  有序性：synchronized保证了每个时刻都只有一个线程访问同步代码块，也就确定了线程执行同步代码块是分先后顺序的，保证了有序性。
+  
+  总结：能够保证同一时刻最多只有一个线程执行该段代码,以保证并发安全的效果
+  
+  ### Lock接口有哪些方法
+  1.lock()：给对象加锁。
+  2.tryLock()/tryLock(long time,TimeUnit unit)：尝试给对象加锁，成功返回true，可以无参也可以指定等待时间。
+  3.unlock()：释放锁，锁只能由持有者释放否则抛出异常。
+  4.newCondition()：创建条件对象，使用条件对象管理那些已经获得锁但不满足有效条件的线程，调用await()方法把线程进入等待集，调用sign()/signAll()解除阻塞。5.lockInterruptibly()：如果当前线程未被中断则获取该锁。
+  
+  ### volatile和synchronized的区别？
+  1.volatile仅能使用在变量级别；synchronized则可以使用在变量、方法、和类级别的。
+  2.volatile仅能实现变量的修改可见性，并不能保证原子性；而synchronized则可以保证变量的修改可见性和原子性。
+  3.volatile是一种轻量级的同步机制，在访问volatile修饰的变量时并不会执行加锁操作，线程不会阻塞，使用synchronized加锁会阻塞线程。
+  
+  ### synchronized和Lock有哪些区别？
+  1.synchronized是关键字，是JVM层面的，而Lock是一个接口，是JDK层面的.
+  2.synchronized会自动释放锁，而Lock必须手动释放锁。
+  3.synchronized是不可中断的，Lock可以中断也可以不中断。
+  4.synchronized能锁住方法和代码块，而Lock只能锁住代码块。
+  5.Lock可以使用读锁提高多线程读效率。
+  
+  ### 线程池是什么
+  线程池是一块缓存了一定线程数量的区域，用于复用线程和管理线程
+  
+  ### 为什么需要线程池
+  线程池通过重用现有的线程，可以在处理多个请求时分摊线程在创建和撤销过程中的开销。
+  当请求到达时不会出现等待线程而延迟任务的执行，提高了响应性。
+  通过调整线程池的大小，可以创建足够多的线程保持处理器处于忙碌状态，同时还可以防止线程过多导致内存资源耗尽。
+  
+  ### 创建线程池的方法有哪些
+  可以通过Executors的静态工厂方法创建线程池，内部通过重载ThreadExecutorPool不同的构造器创建线程池。
+  1.newFixedThreadPool:
+  作用：**创建一个定长线程池，可控制线程最大并发数，超出的线程会在队列中等待。**
+  
+  特征： 
+  （1）线程池中的线程处于一定的量，可以很好的控制线程的并发量 
+  （2）线程可以重复被使用，在显示关闭之前，都将一直存在 
+  （3）超出一定量的线程被提交时候需在队列中等待
+  
+  创建方式： 
+  （1）Executors.newFixedThreadPool(int nThreads)；//nThreads为线程的数量 
+  （2）Executors.newFixedThreadPool(int nThreads，ThreadFactory threadFactory)；//nThreads为线程的数量，threadFactory创建线程的工厂方式'
+  
+  2.newCachedThreadPool:
+  作用：**创建一个可缓存线程池，如果线程池长度超过处理需要，可灵活回收空闲线程，若无可回收，则新建线程。**
+  
+  特征： 
+  （1）线程池中数量没有固定，可达到最大值（Interger. MAX_VALUE） 
+  （2）线程池中的线程可进行缓存重复利用和回收（回收默认时间为1分钟） 
+  （3）当线程池中，没有可用线程，会重新创建一个线程
+  
+  创建方式： Executors.newCachedThreadPool();
+  
+  3.newSingleThreadExecutor:
+  作用：**创建一个单线程化的线程池，它只会用唯一的工作线程来执行任务，保证所有任务按照指定顺序(FIFO, LIFO, 优先级)执行。**
+  
+  特征： 
+  （1）线程池中最多执行1个线程，之后提交的线程活动将会排在队列中以此执行
+  
+  创建方式： 
+  （1）Executors.newSingleThreadExecutor() ； 
+  （2）Executors.newSingleThreadExecutor(ThreadFactory threadFactory)；// threadFactory创建线程的工厂方式
+  
+  4.newScheduledThreadPool:
+  作用：**创建一个定长线程池，支持定时及周期性任务执行。**
+  
+  特征： 
+  （1）线程池中具有指定数量的线程，即便是空线程也将保留 
+  （2）可定时或者延迟执行线程活动
+  
+  创建方式： 
+  （1）Executors.newScheduledThreadPool(int corePoolSize)；// corePoolSize线程的个数 
+  （2）newScheduledThreadPool(int corePoolSize, ThreadFactory threadFactory)；// corePoolSize线程的个数，threadFactory创建线程的工厂
+  
+  5.newSingleThreadScheduledExecutor
+  作用：**创建一个单线程执行程序，它可安排在给定延迟后运行命令或者定期地执行。**
+  
+  特征： 
+  （1）线程池中最多执行1个线程，之后提交的线程活动将会排在队列中以此执行 
+  （2）可定时或者延迟执行线程活动
+  
+  创建方式： 
+  （1）Executors.newSingleThreadScheduledExecutor() ； 
+  （2）Executors.newSingleThreadScheduledExecutor(ThreadFactory threadFactory) ；//threadFactory创建线程的工厂
+  
+  ### CAS的概念
+  CAS指Compare And Swap，比较并交换,
+  - 解决多线程并行情况下使用锁造成性能损耗的一种机制
+  - CAS 是一条 CPU 的原子指令
+  - 需要底层硬件支持
+  
+  CAS 操作包含三个操作数 —— 内存位置（V）、预期原值（A）和新值(B)。 如果内存位置的值与预期原值相匹配，那么处理器会自动将该位置值更新为新值 。否则，处理器不做任何操作。
+  在 Java 中，Java 并没有直接实现 CAS，CAS 相关的实现是通过 C++ 内联汇编的形式实现的，直到后来JNI的出现，使得Java通过C++方法实现CAS。
+  
+  
+  ### 为什么使用CAS
+  独占锁是一种悲观锁，synchronized 就是一种独占锁，会导致其它所有需要锁的线程挂起，等待持有锁的线程释放锁。
+  而另一个更加有效的锁就是乐观锁， CAS 就是一种乐观锁，所谓乐观锁就是，每次不加锁而是假设没有冲突而去完成某项操作，如果冲突就重试，直到成功为止。
+  
+  ### CAS有什么问题
+  1.CAS算法地实现有一个重要前提：需要取出内存中某时刻的数据，然后在下一刻进行比较、替换，但在这个时间差内数据可能已经发生了变化，导致ABA问题。
+  2.由于CAS操作的原子性来源于硬件的支撑，而硬件只支持单个变量的原子操作，因此CAS只能针对单个变量原子进行操作。
+  
+  ### 什么是ABA
+  线程1准备利用CAS修改变量值A，但是在修改之前，其他线程已经将A变成了B，然后又变成A，即A->B->A,线程1执行CAS的时候发现仍然为A，所以CAS会操作成功，但是其实目前这个A已经是其他线程修改的了，但是线程1并不知道，最终内存值变成了B，这就导致了ABA问题。
+  
+  ### 如何解决ABA问题
+  1. 在变量前面追加版本号：每次变量更新就把版本号加1，则A-B-A就变成1A-2B-3A。
+  2. atomic包下的AtomicStampedReference类：其compareAndSet方法首先检查当前引用是否等于预期引用，并且当前标志是否等于预期标志，如果全部相等，则以原子方式将该引用的该标志的值设置为给定的更新值。
+  
+  ### 讲一讲wait、sleep、yield、join方法的区别
+  1.wait是Object类的方法，调用wait方法的线程会进入等待(WAITING)状态，只有等待其他线程的通知或被中断后才会解除阻塞，调用wait方法释放锁资源。
+  2.sleep是Thread类的方法，调用sleep方法导致当前线程进入休眠状态，与wait不同的是该方法不会释放锁资源，进入的是计时等待(TIMED-WAITING)状态。
+  3.yiled是Thread类的方法，yiled方法使当前线程让出CPU时间片给优先级相同或更高的线程，回到就绪状态(Runnable)与其他线程一起重新竞争CPU时间片。
+  4.join是Thread类的方法，join方法使当前线程进入阻塞状态，当另一个线程结束时当前线程才能从阻塞状态转为就就绪状态(Runnable)。
+  
+  ### wait，sleep的区别
+  - wait, sleep的相同点
+  wait和sleep均能使线程处于等待状态
+  - 定义上区别
+  wait方法定义在Object里面，基于对象锁，所有的对象都能使用。
+  sleep方法定义在Thread里面，是基于当前线程。
+  - 条件区别
+  wait必须在同步环境（synchronized方法）下使用，否则会报IllegalMonitorStateException异常。
+  sleep方法可在任意条件下使用。
+  - 功能区别
+  wait/notify一起使用，用于线程间的通信，wait用于让线程进入等待状态，notify则唤醒正在等待的线程。
+  sleep用于暂停当前线程的执行，它会在一定时间内释放CPU资源给其他线程执行，超过睡眠时间则会正常唤醒。
+  - 锁的持有区别
+  在同步环境中调用wait方法会释放当前持有的锁
+  调用sleep则不会释放锁，一直持有锁（直到睡眠结束）
+  
+  ### 进程和线程有什么区别
+  - 进程是操作系统资源分配的基本单位，而线程是处理器任务调度和执行的基本单位。
+  - 一个进程至少有一个线程，线程是进程的一部分，所以线程也被称为轻权进程或者轻量级进程。
+  - 每个进程都有独立的地址空间，进程之间的切换会有较大的开销；线程可以看做轻量级的进程，同一个进程内的线程共享进程的地址空间，每个线程都有自己独立的运行栈和程序计数器，线程之间切换的开销小。
+  - 一个进程崩溃后，在保护模式下其他进程不会被影响，但是一个线程崩溃可能导致整个进程被操作系统杀掉，所以多进程要比多线程健壮。
+  
+  ### Java 内存区域
+  Java 内存区域和内存模型是不一样的东西，内存区域是指 Jvm 运行时将数据分区域存储，强调对内存空间的划分。
+  Java虚拟机(JVM)在运行程序时会把其自动管理的内存划分为以上几个区域，每个区域都有的用途以及创建销毁的时机，其中蓝色部分代表的是所有线程共享的数据区域，而绿色部分代表的是每个线程的私有数据区域。
+  
+  - 方法区:
+  方法区属于线程共享的内存区域，又称Non-Heap（非堆），主要用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据，根据Java 虚拟机规范的规定，当方法区无法满足内存分配需求时，将抛出OutOfMemoryError 异常。值得注意的是在方法区中存在一个叫运行时常量池(Runtime Constant Pool）的区域，它主要用于存放编译器生成的各种字面量和符号引用，这些内容将在类加载后存放到运行时常量池中，以便后续使用。
+  
+  - JVM堆:
+  Java 堆也是属于线程共享的内存区域，它在虚拟机启动时创建，是Java 虚拟机所管理的内存中最大的一块，主要用于存放对象实例，几乎所有的对象实例都在这里分配内存，注意Java 堆是垃圾收集器管理的主要区域，因此很多时候也被称做GC 堆，如果在堆中没有内存完成实例分配，并且堆也无法再扩展时，将会抛出OutOfMemoryError 异常。
+  
+  - 程序计数器:
+  属于线程私有的数据区域，是一小块内存空间，主要代表当前线程所执行的字节码行号指示器。字节码解释器工作时，通过改变这个计数器的值来选取下一条需要执行的字节码指令，分支、循环、跳转、异常处理、线程恢复等基础功能都需要依赖这个计数器来完成。
+  
+  - 虚拟机栈:
+  属于线程私有的数据区域，与线程同时创建，总数与线程关联，代表Java方法执行的内存模型。每个方法执行时都会创建一个栈桢来存储方法的的变量表、操作数栈、动态链接方法、返回值、返回地址等信息。每个方法从调用直结束就对于一个栈桢在虚拟机栈中的入栈和出栈过程，如下（图有误，应该为栈桢）：
+  
+  - 本地方法栈:
+  本地方法栈属于线程私有的数据区域，这部分主要与虚拟机用到的 Native 方法相关，一般情况下，我们无需关心此区域。
+  
+  ### Java内存模型
+  **本身是一种抽象的概念，并不真实存在，它描述的是一种规则，通过规则控制程序中各个变量在共享数据区域和私有数据区域的访问方式**
+  
+  - 主内存
+  主要存储的是Java实例对象，所有线程创建的实例对象都存放在主内存中，不管该实例对象是成员变量还是方法中的本地变量(也称局部变量)，当然也包括了共享的类信息、常量、静态变量。由于是共享数据区域，多条线程对同一个变量进行访问可能会发现线程安全问题。
+  
+  - 工作内存
+  主要存储当前方法的所有本地变量信息(工作内存中存储着主内存中的变量副本拷贝)，每个线程只能访问自己的工作内存，即线程中的本地变量对其它线程是不可见的，就算是两个线程执行的是同一段代码，它们也会各自在自己的工作内存中创建属于当前线程的本地变量，当然也包括了字节码行号指示器、相关Native方法的信息。注意由于工作内存是每个线程的私有数据，线程间无法相互访问工作内存，因此存储在工作内存的数据不存在线程安全问题。
+  
+  - 主内存与工作内存的操作方式
+  在主内存中的实例对象可以被多线程共享，倘若两个线程同时调用了同一个对象的同一个方法，那么两条线程会将要操作的数据拷贝一份到自己的工作内存中，执行完成操作后才刷新到主内存。
+  
+  ### JMM存在的必要性
+  由于JVM运行程序的实体是线程，而每个线程创建时JVM都会为其创建一个工作内存，用于存储线程私有数据，线程与主内存中主要过程是将变量从主内存拷贝到每个线程各自的工作内存，然后对变量进行操作，操作完成后再将变量写回主内存，**如果存在两个线程同时对一个主内存中的实例对象的变量进行操作就有可能诱发线程安全问题。**
+  
+  **为了解决类似上述的问题，JVM定义了一组规则，通过这组规则来决定一个线程对共享变量的写入，然后何时对另一个线程可见，这组规则也称为Java内存模型（即JMM）** 
+  
+  ### JMM的三个特征
+  #### 原子性
+  **原子性指的是一个操作是不可中断的，即使是在多线程环境下，一个操作一旦开始就不会被其他线程影响**,JMM中提供以下方式来保证原子性:
+  - 自带原子性保证：在java中，对基本数据类型的变量的读取和赋值操作是原子性操作。
+  - synchronized：synchronized可以防止多个线程并发的执行同一段代码，从结果上保证原子性。
+  - Lock锁：Lock锁保证原子性。
+  
+  #### 可见性
+  
+  **可见性指的是当一个线程修改了某个共享变量的值，其他线程是否能够马上得知这个修改的值**,JMM中提供以下方式来保证可见性:
+  - volatile：使用volatile关键字修饰一个变量可以保证变量的可见性。
+  - synchronized：使用synchronized可以保证共享变量的可见性。
+  - Lock锁：使用Lock可以保证共享变量的可见性。
+  
+  #### 有序性
+  **程序执行的顺序按照代码的先后顺序执行**，JMM中提供以下方式来保证有序性:
+  - happens-before原则是java内存模型中定义的两项操作之间的偏序关系。
+  - synchronized可以保证同一时间只有一个线程访问代码块。
+  - volatile可以保证变量不会被编译器重排序。
+  
+  ### JVM中类加载的过程
+  虚拟机把描述类的数据从Class文件加载到内存，并对数据进行校验，转换解析和初始化，最终形成可以被虚拟机直接使用的java类型
+  
+  #### 加载
+  1.JVM将.class文件读入内存，并为创建一个class对象。
+  2.任何类被使用时系统都会为其创建一个且仅有一个class对象。
+  3.这个class对象描述了这个类创建出来的对象的所有信息，比如构造方法，成员方法，成员变量等。
+  
+  #### 链接
+  将java类的二进制代码合并到JVM的运行状态之中。
+  
+  验证:验证class文件的字节流是否符合jvm规。
+  
+  准备:正式为类变量（static变量）分配内存并设置类变量初始值。
+  
+  解析:虚拟机常量池内的符号引用替换为直接引用的过程。
+  
+  #### 初始化
+  
+  **初始化顺序**
+  1、父类的静态变量
+  2、父类的静态代码块
+  3、子类的静态变量
+  4、子类的静态代码块
+  5、父类的非静态变量
+  6、父类的非静态代码块
+  7、父类的构造方法
+  8、子类的非静态变量
+  9、子类的非静态代码块
+  10、子类的构造方法
+  
+  ### 类加载器的分类
+  - 引导类加载器(bootstrap class loader)
+  （1）它用来加载 Java 的核心库(JAVA_HOME/jre/lib/rt.jar,sun.boot.class.path路径下的内容)，是用原生代码（C语言）来实现的，并不继承自java.lang.ClassLoader。
+  （2）加载扩展类和应用程序类加载器。并指定他们的父类加载器。
+  
+  - 扩展类加载器(extensions class loader)
+  （1）用来加载 Java 的扩展库(JAVA_HOME/jre/ext/* .jar，或java.ext.dirs路径下的内容) 。Java 虚拟机的实现会提供一个扩展库目录。该类加载器在此目录里面查找并加载 Java类。
+  （2）由sun.misc.Launcher$ExtClassLoader实现。
+  
+  - 应用程序类加载器(application class loader)
+  （1）它根据 Java 应用的类路径（classpath，java.class.path 路径下的内容）来加载 Java 类。一般来说，Java 应用的类都是由它来完成加载的。
+  （2）由sun.misc.Launcher$AppClassLoader实现。
+  
+  - 自定义类加载器
+  （1）开发人员可以通过继承 java.lang.ClassLoader类的方式实现自己的类加载器，以满足一些特殊的需求。
+  
+  ### 类加载器的代理模式-双亲委托机制
+  某个特定的类加载器接收到类加载的请求时，会将加载任务委托给自己的父类，直到最高级父类引导类加载器（bootstrap class loader），如果父类能够加载就加载，不能加载则返回到子类进行加载。如果都不能加载则报错。ClassNotFoundException
+  
+  ### java对象引用
+  强引用,软引用,弱引用,虚引用
+  
+  ### 浅复制和深复制的区别
+  - 浅拷贝
+  1. 对于数据类型是基本数据类型的成员变量，浅拷贝会直接进行值传递，也就是将该属性值复制一份给新的对象。因为是两份不同的数据，所以对其中一个对象的该成员变量值进行修改，不会影响另一个对象拷贝得到的数据。
+  2. 对于数据类型是引用数据类型的成员变量，如成员变量是某个数组、某个类的对象等，浅拷贝会进行引用传递，只将该成员变量的引用值（内存地址）复制一份给新对象。而实际上两个对象该成员变量都指向同一个实例。在这种情况下，在一个对象中修改该成员变量会影响另一个对象的成员变量值。
+  
+  - 深拷贝
+  深拷贝是整个独立的对象拷贝，会拷贝所有的属性,并拷贝属性指向的动态分配的内存。当对象和它所引用的对象一起拷贝时即发生深拷贝。深拷贝相比于浅拷贝速度较慢并且花销较大。
+  1. 对于数据类型是基本数据类型的成员变量，由于基础数据类型是值传递的，所以是直接将属性值赋值给新的对象。
+  2. 对于数据类型是引用数据类型的成员变量，如成员变量是某个数组、某个类的对象等，深拷贝会新建一个对象空间，然后拷贝里面的内容，所以它们指向了不同的内存空间。改变其中一个，不会对另外一个也产生影响。
+  
+  ### 反射与注解
+  #### 概述 
+  JAVA反射机制是在运行状态中，
+  
+  对于任意一个类，都能够知道这个类的所有属性和方法；
+  
+  对于任意一个对象，都能够调用它的任意一个属性和方法；
+  
+  这种动态获取的信息以及动态调用对象的方法的功能称为 java语言的反射机制。
+  
+  #### 反射原理
+  
+  Java反射机制的原理主要是通过Class类来实现的。Class类是Java中反射机制的核心类，它可以在运行时动态地获取一个类的信息。Class类的实例对象可以通过三种方式获取：
+  
+  1. 使用Class.forName()方法获取Class对象。
+  2. 使用类名.class获取Class对象。
+  3. 使用对象.getClass()方法获取Class对象。
+  
+  获取到Class对象之后，就可以通过该对象来获取类的属性和方法，创建实例对象等。
   
   ## Android 
-  - Application中五个公开的方法
-  - Android中什么是Context
-  - Service
-  - Service - 扩展Binder类
-  - 关于启动服务与绑定服务间的转换问题
-  - 服务Service与线程Thread的区别
-  - Activity与Fragment生命周期
-  - Activity生命周期
-  - 锁定屏与解锁屏幕时Activity生命周期
-  - 两个Activity之间切换
-  - 保存与恢复 onSaveInstanceState() onRestoreInstanceState()
-  - Activity 启动模式
-  - Task任务栈
-  - Android横竖瓶切换Activity生命周期 
-  - Android - 系统启动过程
-  - Android中实现IPC通信的8种方式
-  - 序列化与反序列化的知识
-  - AIDL 知识
-  - AIDL概述
-  - 使用AIDL的步骤 
-  - AIDL的工作原理
-  - 客户端与服务端使用AIDL进行 IPC 的工作流程
-  - AIDL与HIDL 区别
-  - Binder概述
-  - 进程隔离的概念
-  - Binder驱动概念
-  - 一次Binder IPC通信过程
-  - 冷启动与热启动
-  - Handler,MessageQueue与Looper关系
-  - Handler工作流程
-  - OOM内存泄漏 案列分析
-  - 内存泄漏和内存溢出的区别
-  - 发生ANR的具体表现
-  - 导致ANR的场景
-  - ANR日志分析
-  - ANR其它分析方式
-  - ANR的处理
-  - 什么是注解
-  - 注解与注释的区别
-  - dimen 基于dp的适配（smallestWidth适配）
-  - 自定义View的分类
-  - 自定义View的主要方法
-  - Android 一共有多少种动画
-  - 什么是MVVM
-  - MVVM核心构成
-  - JNI概述
-  - JNI原理分析
-  - 动态库的加载loadLibrary
-  - 静态注册与动态注册
-  - JavaVM和JNIEnv
-  - JNI加载过程
-  - 稳定——内存优化
-  - 流畅——卡顿优化
-  - 安装包——APK瘦身
-  - 启动优化 
-  - 崩溃与ANR的区别
-  - Java 崩溃处理
-  - Navite 崩溃处理
-  - Window PhoneWindow DecorView 的关系
-  - 事件分发，拦截，消费
-  - View 事件相关的各个方法调用顺序
-  - ViewGroup 中子View重叠时如何分配
+  
+  ### APP开发流程
+  
+  - 需求整理
+  如果市场是哪个有同类型的app，可以参考同类产品
+  - 功能细化
+  对每一个功能需求进行细化研究，团队讨论。
+  - 相关平台开发者账号申请，申请软件著作权。
+  百度、腾讯、小米，华为。
+  - App底层框架搭建
+  底层框架决定了app的稳定性以及可在塑型。
+  - App开发
+  - App测试
+  开发人员内部测试、项目发起人之间内测、邀请种子用户内测。
+  - App上线应用市场
+  360手机助手、百度助手，小米商店。
+  - App迭代功能更新
+  App很难在第一个版本就做到足够完美出色，在app上线之后需要根据用户反馈，后台数据等不断的更新迭代，满足用户需求，增强用户粘性。
+  
+  
+  ### 同步，异步
+  1、同步执行的话，就是程序会呆板地从头执行到尾，耗时间的东西不执行完，程序不会继续往下走，等待时间长的话，有时候就会造成失去响应了。
+  2、异步的好处，就是把一些东西，特别是耗时间的东西扔到后台去运行了(doInBackground)，程序可以继续做自己的事情，防止程序卡在那里失去响应。
+  
+  ### 比较熟悉常用的框架，每种优势
+  1. View框架
+  - ButterKnife
+  强大的View绑定和Click事件处理功能,简单代码,提高开发效率。
+  - DataBinding+ViewModel+LiveData
+  目前比较实用的MVVM架构方式的框架，让事件与数据源完全绑定在一起。
+  
+  3. 事件框架
+  - EventBus
+  简化组件间的通信,解耦事件发送和接受。应用于Activity,Fragment之间,后台线程之间的通信,避免使用多个Intent传递,handler通信等
+  4. 网络框架
+  - OkHttp 
+  okhttp是一款基于HTTP和HTTP2.0协议的网络框架，比较流行的框架，其衍生框架Retrofit也是基于okHttp.
+  5. 图片框架
+  - glide
+  Glide是一个快速高效的Android图片加载库，注重于平滑的滚动。
+  - Picasso
+  支持加载 Gif 和 Webp 格式的图片，适用于多图片、大图片类 Android 应用使用。
+  6. 数据库框架
+  - Room
+  jetpack组件之一,它在SQLite的基础上提供了一个抽象层，允许更强大的数据库访问。
+  - MMKV
+  MMKV腾讯开发的基于mmap内存映射的Key-value组件，底层序列化/反序列化使用protobuf实现，
+  性能高，稳定性强，支持多进程。
+  7. 其它
+  - tinker
+  微信开源的 Android 热修复框架
+  - leakcanary
+  内存检测框架
+  
+  ### 常用的设计模式
+  1. 适配器模式 
+  ListView或GridView的Adapter
+  2. 建造者模式：AlertDialog.Builder
+  3. 命令模式
+  Handler.post后Handler.handleMessage
+  4. 观察者模式
+  事件通知，广播机制
+  5. 代理模式
+  bind通信
+  6. 单例模式
+  
+  ### 多线程的通信方式
+  - 简单使用:
+  继承thread
+  实现runnable
+  handle
+  - 复合使用:
+  Asynctask
+  handlethread
+  intentservice
+  - 高级使用:
+  线程池
+  
+  ### Application中五个公开的方法
+  ### Android中什么是Context
+  Context字面意思是上下文，在Android中一个Activity就是一个Context,一个Service也是一个Context,Context抽象为**场景**，认为用户和操作系统的每一次交互都是一个场景，比如打电话、发短信，这些都是一个有界面的场景，还有一些没有界面的场景，比如后台运行的服务（Service）。
+  
+  在应用程序中Context的具体实现子类就是：Activity，Service，Application
+  **Context数量=Activity数量+Service数量+1**。
+  
+  ### Service
+  ### Service - 扩展Binder类
+  ### 关于启动服务与绑定服务间的转换问题
+  ### 服务Service与线程Thread的区别
+  ### Activity与Fragment生命周期
+  ### Activity生命周期
+  ### 锁定屏与解锁屏幕时Activity生命周期
+  ### 两个Activity之间切换
+  ### 保存与恢复 onSaveInstanceState() onRestoreInstanceState()
+  ### Activity 启动模式
+  #### standard
+  标准模式是系统的默认模式（可以不指定），在这样模式下，每启动一个Activity都会重新创建一个Activity的新实例，并且将其加入任务栈中，而且完全不会去考虑这个实例是否已存在。
+  
+  #### singleTop
+  栈顶复用模式,在这种模式下，如果有新的Activity已经存在任务栈的栈顶，那么此Activity就不会被重新创建新实例，而是复用已存在栈顶的Activity。此时Activity的onCreate、onStart方法不会被调用，会调用onNewIntent方法因为Activity并没有被重建。
+  
+  如果新的Activity的实例已存在但没有位于栈顶，那么新的Activity仍然会被重建。
+  
+  #### singleTask
+  1. 若Activity不存在，则会在当前task创建一个新的实例。若存在不在栈顶，则会把task中在其之上的Activity destory掉并并回调onNewIntent方法。若存在在栈顶，会调用onNewIntent方法。
+  
+  2. 如果是在别的应用程序中启动它，则会新建一个task，并在该task中启动这个Activity，singleTask允许别的Activity与其在一个task中共存，也就是说，如果我在这个singleTask的实例中再打开新的Activity，这个新的Activity还是会在singleTask的实例的task中。
+  
+  #### singleInstance
+  只有一个实例，并且这个实例独立运行在一个task中，这个task只有这个activity实例，不允许有别的Activity存在。
+  例如，ActivityA->ActivityB(SingleInstance)->ActivityC 点击Back退出顺序：结果为C-》A-》B
+  原因：singleInstance模式是存在于另一个任务栈中的。也就是说ActivityA和ActivityC是处于同一个任务栈中的，ActivityB则是存在另个栈中。
+  所以当关闭了ActivityC的时候，先去找当前任务栈存在的activity。当前的activity都finish了之后，才会去找另一个任务栈中的activity。
+  解决方法是：在ActivityB定义一个全局变量，在onCreate方法将returnActivityB=true;
+  然后在ActivityA界面onStart方法里判断returnActivityB是否为true，是的话就跳转到ActivityB，同时将returnActivityB=false。
+  
+  ### Task任务栈
+  - android任务栈又称为Task，它是一个栈结构，具有后进先出的特性，用于存放Activity
+  - android系统通过Task有序地管理每个activity，并决定哪个Activity与用户进行交互,只有task栈顶的activity才可以跟用户进行交互。 
+  - 一个App中可能不止一个Task，某些特殊情况下，单独一个Actvity可以独享一个Task。
+  - 一个Task中的Actvity可以来自不同的App，同一个App的Activity也可能不在一个Task中。
+  
+  ### Android横竖瓶切换Activity生命周期 
+  ### Android - 系统启动过程
+  Step1  Bootloader(系统启动加载器),会读取Boot ROM找到操作系统并将 Kernel(Linux内核) 加载到RAM中。
+  
+  Step2  当Kernel(Linux内核)启动后会初始化各种软硬环境，加载驱动程序，最后Kernel会调用init.cpp中main()方法，初始化Kernel log ,创建一块共享的内存空间，解析init.rc文件。
+  
+  Step3  init.rc 脚本中配置了一些重要服务，通过创建子进程来启动这些服务,如Zygote进程启动JVM和systemserver,ServiceManage进程启动binder IPC。
+  
+  Step4  Zygote进程启动中，会执行App_main.cpp文件中的AndroidRuntime::start()方法创建 Java 虚拟机，然后调用ZygoteInit.main(),fork一个进程用来启动system_server进程，最后Zygote进程会进入loop状态等待下次fork进程。
+  
+  Step5  system_server进程启动后将初始化系统上下文（设置主题），创建系统服务管理 SystemServiceManager，然后会按顺序启动，引导服务，核心服务，其它服务，最后将服务注册到ServiceManager中。
+  
+  Step6  当Android的80多种服务都启动完毕之后, 会回调AMS中的systemReady方法启动第一个app，AMS通知Zygote进程fork一个新进程作为Launch App进程(ActivityThread).
+  
+  Step7  App进程，通过Binder向sytem_server进程发起创建Application请求。当System_server准备好后再通过Binder告诉App进程可以调用onCreate方法启动Lacunch App.
+  
+  ### Android中实现IPC通信的8种方式
+  ### 序列化与反序列化的知识
+  
+  ### AIDL概述
+  在Android系统中，每个进程都运行在一块独立的内存中，在其中完成自己的各项活动，与其他进程都分隔开来。可是有时候我们又有应用间进行互动的需求，比较传递数据或者任务委托等，AIDL就是为了满足这种需求而诞生的。
+  **通过AIDL，可以在一个进程中获取另一个进程的数据和调用其暴露出来的方法，从而满足进程间通信的需求**。
+  
+  ### 使用AIDL的步骤 
+  服务端：
+  
+  1. 服务端创建.aidl的文件，也就是双方远程通信的接口方法
+  2. 定义跟客服端沟通的数据类，比如序列化parcelable类，基础类
+  3. build 生成相应的Java文件
+  4. 创建继承Service的自定义服务，并在Manifest.xml中注册
+  5. 声明.Stub类型变量（Binder类型），并实现接口方法
+  6. 重写onBind方法并返回.Stub类型变量(Binder类型)
+  
+  客服端：
+  1. 将服务端定义好的aidl文件和数据类复制到客服端
+  2. 声明ServiceConnection类型变量，并完成bindService
+  3. 在onServiceConnected中通过.Stub.asInterface,获取到服务端binder实例。
+  4. 调用服务端binder实例，实现与服务端的通信。
+  
+  ### AIDL的工作原理
+  **在客户端与服务端通信的过程中，真正协助发挥作用的是通过AIDL编译出来的.java文件。AIDL文件的目的就是为了生成.java文件，AIDL只是为了简化写.java文件**
+  
+  ### 客户端与服务端使用AIDL进行 IPC 的工作流程
+  Stub类充当服务端角色，持有Binder实体（本地对象）。
+  
+  - 获取客户端传过来的_data数据流。并调用本地方法处理。
+  - 将需要传回客户端的数据写入_reply流，通过Binder发送_reply流到客户端。
+  
+  Proxy代理类充当客户端角色，持有Binder引用（句柄）。
+  
+  - 生成 _data 和 _reply 数据流，并向 _data 中存入客户端的数据。
+  - 通过 transact() 方法将_data数据流通过Binder传递到服务端，并通过Binder请求服务端调用指定方法。
+  - Binder通过回调，唤醒客户端准备接收从服务端传回来 _reply数据流。
+  
+  ### AIDL与HIDL 区别
+  - AIDL 生成java代码，客户端(client)对应Proxy,服务端(server)对应Stub。HIDL生成c++代码，客户端(client)对应BP(Binder Proxy),服务端(Server)对应BN(Binder Native).
+  - AIDL 常用于连接APP和Framework,HIDL则是用来连接Framework和HAL.
+  - AIDL 使用Binder通信，HIDL使用HwBinder通信，他们都是通过Binder驱动完成通信，只不过两个Binder域不一样。
+  
+  ### Binder概述
+  Binder是跨进程通信(IPC)的桥梁
+  - 从性能上:
+  共享内存方式虽然无需数据拷贝，但控制复杂。
+  Socket方式需要2次数据拷贝，传输效率低，开销大
+  Binder,需要1次数据拷贝，性能上仅次于共享内存
+  - 从稳定性上：
+  Binder采用C/S架构，架构比较清晰，控制简单。
+  共享内存方式虽然无需拷贝数据，控制比较复杂，难以使用。
+  - 从安全性上：
+  传统的IPC要发送类似的UID也只能放在数据包里，但也容易被拦截，恶意进攻，
+  socket则需要暴露自己的ip和端口，这些恶意程序则可以进行任意接入。
+  Binder 为每个 APP 分配 UID，进程的 UID 是鉴别进程身份的重要标志，因此安全性较高。
+  
+  ### 进程隔离的概念
+  - 操作系统中，进程与进程间内存是不共享的。两个进程就像两个平行的世界，A 进程没法直接访问 B 进程的数据.
+  - 但是内核空间却是可共享的。Client进程向Server进程通信恰恰是利用内核空间来完成底层通信工作的。
+  
+  ### Binder驱动概念
+  Android通过LKM（动态内核可加载模块）添加一个内核模块运行在内核空间，使得进程间通过这个模块作为桥梁，就可以完成通信了。
+  Android 系统中，这个运行在内核空间的，负责进程间通信的内核模块叫做 Binder 驱动;
+  
+  ### 一次Binder IPC通信过程
+  
+  Step1: 首先服务端先向ServiceManager注册服务，
+  Step2: 然后ServiceManager,向Kernel(内核)中Binder驱动的全局链表中插入服务端的信息
+  Step3: 同时向已注册服务列表中缓存一下注册的服务。
+  Step4: 客户端通过ServiceManager向已注册服务列表中查询服务端的代理。
+  Step5: 客户端利用获取到的服务端代理，即BinderProxy，将请求发送给ServiceManager.
+  Step6: ServiceManager使用内核方法copy_from_user()将参数拷贝到内核空间。
+  Step7: 这时候客户端进入等待状态。
+  Step8: 然后 Binder 驱动向全局链表队列里面插入一条事务.
+  Step9: 执行完之后把执行结果通过 copy_to_user() 将内核的结果拷贝到用户空间
+  Step10: 最后唤醒等待的客户端并把结果响应给客户端。
+  
+  ### 冷启动与热启动
+  ### Handler,MessageQueue与Looper关系
+  1. Message:
+  Handler接收和处理消息的对象。
+  
+  2. Looper:
+  每个线程只能有一个Looper。loop负责读取MessageQueue中的消息，读到消息后把消息发送给Handler进行处理。
+  
+  3. MessageQueue:
+  消息队列，它采用先进先出的方式来管理Message。程序创建Looper对象时，会在它的构造方法中创建MessageQueue对象。
+  
+  4. Handler:
+  Handler作用有两个，1.发送消息到MessageQueue, 2.处理Looper从MessageQueue中获取的消息
+  ### Handler工作流程
+  - Handler初始化：
+  1. 在主线程启动时会自动创建Looper，Looper创建时会同时创建MessageQueue消息队列，创建Looper、MessageQueue完成后，Looper会自动进入消息循环；
+  2. 在主线程里手动创建Handler对象，此时Handler对象会自动绑定主线程里的Looper、MessageQueue对象。
+  3. 非主线程创建Handler对象，首先创建Looper对象，其次调用Looper.prepare()启用Looper，最后再调用Looper.loop()让looper开始循环。
+  - 消息发送:
+  工作线程通过sendMessage或post发送消息到MessageQueue消息队列中。
+  - 消息循环:
+  Looper循环取出MessageQueue中的消息，并根据target属性把消息分发给处理消息的Handler对象。
+  - 消息处理:
+  Handler对象接收Looper循环器发来的消息，回调handlerMessage方法在主线程中执行UI操作。
+  
+  ### OOM内存泄漏 案列分析
+  内存泄漏原因：堆上分配的对象已经不会再使用，但此对象有引用，导致GC无法对其回收。
+  
+  #### 非静态内部类导致内存泄露（Handler泄漏） 发生原因
+  当使用内部类（包括匿名类）来创建Handler的时候，Handler对象会**隐式**地持有一个外部类对象（通常是一个Activity）的引用，而Handler通常会伴随着一个耗时的后台线程（例如从网络拉取图片）一起出现，这个后台线程在任务执行完毕之后，通过消息机制通知Handler，然后Handler把图片更新到UI界面。然而，如果用户在网络请求过程中关闭了Activity，GC在检查时，由于这时线程尚未执行完，而该线程持有Handler的引用，Handler又持有Activity的引用，就导致该Activity无法被回收，导致内存泄漏。
+  #### 非静态内部类导致内存泄露（Handler泄漏） 解决方法
+  解决方案：
+  1. 通过程序逻辑来进行保护。
+  在关闭Activity的时候停掉你的后台线程。线程停掉了，就相当于切断了Handler和外部连接的线，Activity自然会在合适的时候被回收。 
+  如果你的Handler是被delay的Message持有了引用，那么使用相应的Handler的removeCallbacks()方法，把消息对象从消息队列移除就行了。
+  
+  2. 将Handler声明为静态类+WeakReference
+  在Java 中，非静态的内部类和匿名内部类都会隐式地持有其外部类的引用，静态的内部类不会持有外部类的引用。
+  静态类不持有外部类的对象，所以你的Activity可以随意被回收。由于Handler不再持有外部类对象的引用，导致程序不允许你在Handler中操作Activity中的对象了。所以你需要在Handler中增加一个对Activity的弱引用（WeakReference）。
+  
+  WeakReference：弱引用的对象拥有短暂的生命周期。在垃圾回收器线程扫描时，一旦发现了只具有弱引用的对象，不管当前内存空间足够与否，都会回收它的内存
+  
+  #### 单例导致内存泄露 发生原因
+  单例的静态特性使得它的生命周期同应用程序的生命周期一样长，如果一个对象已经没有用处了，但是单例还持有它的引用，那么在整个应用程序的生命周期它都不能正常被回收，从而导致内存泄露。
+  
+  #### 单例导致内存泄露 解决方法
+  为了避免这样单例导致内存泄露，可以将context参数改为全局的上下文。
+  
+  #### Adapter 持有 Activity的对象导致内存泄漏发生原因
+  如果建立一个专门存放Adapter类的Package包,首先在初始adapter的时候会传入context,这时adapter就持有了Activity引用，如果我们在adapter中进行耗时操作（比如加载图片之类的），并且finish Activity，虽然此时Activity销毁了，但是GC是无法回收activity的，这样就发生了内存泄漏。
+  
+  #### Adapter 持有 Activity的对象导致内存泄漏解决方法
+  将Adapter写成静态内部类写在Activity里面。
+  
+  #### 资源未关闭导致的内存泄漏
+  在Activity销毁的时候要及时关闭或者注销。
+  1. BraodcastReceiver：调用unregisterReceiver()注销；
+  2. Cursor，Stream、File：调用close()关闭；
+  3. Bitmap：调用recycle()释放内存（2.3版本后无需手动）。
+  
+  ### 内存泄漏和内存溢出的区别
+  内存泄漏和内存溢出是两码事。
+  内存溢出：是由于应用所消耗的内存或者应用申请的内存超出了虚拟机分配的内存，也就是内存不够用了
+  内存泄漏：是某个不再使用对象由于被其他实例引用，导致不能被GC回收，从而导致的内存不能释放。
+  
+  内存泄漏可能会引起内存溢出，因为如果内存泄漏严重，导致存在大量GC不能 回收的对象占用内存，内存占用会越来越高，导致其他对象不能被分配到内存，从而导致内存溢出。
+  
+  ### 发生ANR的具体表现
+  Android系统中，ActivityManagerService(简称AMS)和WindowManagerService(简称WMS)会检测App的响应时间，如果App在特定时间无法相应屏幕触摸或键盘输入事件，或在主线程(UI线程)里面做了太多的阻塞耗时操作,系统会向用户显示一个对话框，这个对话框称作“应用程序无响应”（ANR：Application Not Responding）对话框。用户可以选择“等待”而让程序继续运行，也可以选择“强制关闭”。
+  
+  ### 导致ANR的场景
+  - InputDispatching Timeout：5秒内无法响应屏幕触摸事件或键盘输入事件
+  - BroadcastQueue Timeout ：在执行前台广播（BroadcastReceiver）的onReceive()函数时10秒没有处理完成，后台为60秒。
+  - Service Timeout ：前台服务20秒内，后台服务在200秒内没有执行完毕。
+  - ContentProvider Timeout ：ContentProvider执行超时20秒。
+  
+  ### ANR日志分析
+  针对Android10以下机器，通过ADB将记录ANR的log,traces.txt文档导出，可以查看ANR的原因，进程id，包名，以及具体行数
+  ```
+  $adb pull data/anr/traces.txt .
+  ```
+  针对Android 10以上机器，通过adb提供bugreport命令获取压缩包，其中包含anr和tombstones两种文件。
+  
+  - CPU负载
+  主要关注iowait关键字，若iowait占比很高，意为有很大可能是io耗时导致ANR。
+  
+  - 内存信息
+  若Free memory until OOME的值很小，说明处于内存紧张状态，ANR可能由于应用占用过多内存。
+  若ANR时间点前后，在LogCat日志中含有onTrimMemory，说明已经处于内存紧张状态。
+  
+  - 堆栈消息
+  main线程处于BLOCK,WAITING,TIMEWAITING状态，可以确定函数阻塞导致ANR.;
+  
+  ### ANR其它分析方式
+  - 通过DDMS Update Thread工具查看
+  通过DDMS Update Threads工具查看该进程下的所有线程状态。通过线程状态分析哪个线程阻塞导致的ANR。
+  - Traceview
+  Traceview是分析工具，用于定位应用代码中的耗时操作。
+  
+  ### ANR的处理
+  1. 开辟单独的子线程来处理耗时阻塞事务，通过继承Thread或实现Runnable接口。
+  2. 使用AsyncTask,异步执行事务。继承AsyncTask,在doInBackground中实现耗时操作，然后在onProgressUpdate或onPostExecute回调方法中实现接收结果，最后通过执行execute执行AsyncTask。
+  3. 使用Handler,HandlerThread来对UI进行更新。
+  4. Activity的onCreate和onResume方法中尽量避免耗时操作。
+  5. BoadcastReceiver中onReceive方法中尽量避免耗时操作。
+  
+  ### 什么是注解
+  ### 注解与注释的区别
+  ### dimen 基于dp的适配（smallestWidth适配）
+  最小宽度限定符适配。指的是Android会识别屏幕可用高度和宽度的最小尺寸的dp值（其实就是手机的宽度值），然后根据识别结果去寻找对应限定符文件夹下的资源文件。
+  
+  某手机的屏幕分辨率是 1080 * 1920，屏幕像素密度是 480 dpi，通过计算，
+  
+  它的最小尺寸的dp值是：1080 / (480 / 160) = 360 dp,根据这个 360 dp 值，系统会去寻找 value-sw360dp 的文件夹以及对应的资源文件并使用它。
+  
+  如果没有 value-sw360dp 文件夹，系统会向下寻找，比如离 360 dp 最近的只有 value-sw350dp，那么Android就会选择 value-sw350dp 文件夹下面的资源文件。
+  
+  如下面我这里将会以 360 dp 作为基准.
+  
+  ### 自定义View的分类
+  1. 继承View或者ViewGroup类
+  重写onDraw方法，调用invalidate方法重新绘制View
+  2. 自定义组合控件
+  几种控件组合起来形成一个新的控件，这个新的组合控件就会整合了原来每一个控件的功能
+  3. 自定义扩展控件
+  也就是继承现有的控件，在该控件的基础之上添加新的功能，如继承Button,tablayout
+  
+  ### 自定义View的主要方法
+  - 构造方法
+  一般要写三个甚至四个，这样写的原因，在不同的情况下创建View的方式不同，可能需要从xml文件中填充布局，也可能不需要，或者也需要一样style之类的，因此不同情况下，使用的构造可能存在差异
+  - onMeasure 用于测量子控件的宽高
+  measureSpec: 在很大程度上决定了一个View的尺寸规格，其模式有三种模式。
+  exactly(精确模式):在这种模式下，给定尺寸的值是多少，那么这个组件的长或宽就是多少。
+  at_most(最大模式):这个也就是父组件，能够给出的最大的空间，当前组件的长或宽最大只能为这么大，当然也可以比这个小。
+  unspecified(未指定模式):当前组件，可以随便用空间，不受限制。
+  - onSizeChanged 确定View大小
+  - onLayout 用于摆放子控件在父控件中的位置
+  getMeasureWidth方法: 在measure过程结束后就可以获取到了。
+  getWidth方法:要在layout过程结束后才能获取到。
+  在ViewGroup中重写onLayout的目的:设置当前View与其所有的子View,在ViewGroup父布局当中的位置。
+  - onDraw 用于绘制需要的图形
+  绘制：主要通过canvas(画布),paint(画笔),matrix(变换矩阵)去绘制
+  - invalidate 触发重新绘制，只能在主线程调用。
+  - postInvalidate 直接调用去在子线程更新UI。
+  - onAttachedToWindow 当View附加到窗体的时候调用该方法。
+  - onDetachedFromWindow 当销毁View的时候调用该方法。
+  - onFinishInflate 是当所有的孩子都解析完后的一个调用。
+  - requestLayout 会触发measure过程和layout过程。
+  
+  注意：onMeasure和onLayout最后都要调用requestLayout才能让改变生效，onDraw要调用invalidate才能让在主线程生效。
+  postinvalidate在子线程调用才能生效。
+  
+  自定义View流程
+  | 步骤   | 关键字           | 作用                           |
+  | ---- | ------------- | ---------------------------- |
+  | 1    | 构造函数          | View初始化                      |
+  | 2    | onMeasure     | 测量View大小                     |
+  | 3    | onSizeChanged | 确定View大小                     |
+  | 4    | onLayout      | 确定子View布局(自定义View包含子View时有用) |
+  | 5    | onDraw        | 实际绘制内容                       |
+  | 6    | 提供接口          | 控制View或监听View某些状态。           |
+  
+  ### Android 一共有多少种动画
+  - 视图动画(View动画)
+  - 帧动画(Drawable动画)
+  - 属性动画
+  - 触摸反馈动画
+  - 揭露动画
+  - 转场动画
+  - 视图状态动画
+  - 矢量图动画
+  - 约束布局实现的关键帧动画
+  
+  ### 什么是MVVM
+  1. MVVM，是Model-View-ViewModel的简写，是M-V-VM三部分组成。它本质上就是MVC 的改进版。MVVM就是将View的状态和行为抽象化，其中ViewModel将视图 UI 和业务逻辑分开，它可以取出Model的数据同时处理View中需要展示内容。
+  
+  2. MVVM采用双向数据绑定，ViewModel负责把Model和View关联起来。负责把Model的数据同步到View显示出来，还负责把View的修改同步回Model。
+  
+  
+  ### MVVM核心构成
+  DataBinding:数据和UI双向绑定
+  LifeCycle:界面生命周期感知
+  ViewModel:业务逻辑
+  LiveData:可观察数据项
+  
+  ### JNI概述
+  JNI（Java Native Interface，Java本地接口），用于打通Java层与Native(C/C++)层。这不是Android系统所独有的，而是Java所有。众所周知，Java语言是跨平台的语言，而这跨平台的背后都是依靠Java虚拟机，虚拟机采用C/C++编写，适配各个系统，通过JNI为上层Java提供各种服务，保证跨平台性。
+  
+  ### 动态库的加载loadLibrary
+  1. System.loadLibrary和System.load都用于加载动态库，loadLibrary可以自动加载依赖库，load可以指定具体路径的动态库。
+  2. 无论哪种方式加载最终都会调用到LoadNativeLibrary方法。
+  - 通过dlopen打开动态库
+  - 通过dlsym获取动态库中JNI_ONLoad函数指针。
+  - 调用JNI_Onload方法，开始注册JNI方法
+  
+  ### 静态注册与动态注册
+  JVM查找Native方法有两种方式：
+  1、当加载动态库到Jvm后,Native方法第一次执行时根据其方法名去匹配对应C语言实现命名规则，这种方式叫静态注册。
+  2、通过JNI_OnLoad调用JNI提供的registerNativeMethods方法函数，将JNINativeMethod结构体中本地函数注册到JVM中，这种方式叫动态注册。
+  
+  ### JavaVM和JNIEnv
+  JavaVM：是指进程虚拟机环境，每个进程有且只有一个JavaVM实例
+  JNIEnv：是指线程上下文环境，每个线程有且只有一个JNIEnv实例，
+  
+  ### JNI加载过程
+  1. 通过loadLibrary 调用相应库中的JNI_OnLoad()方法。
+  2. 在JNI_OnLoad方法中，获取JNINativeMethod结构体中定义的Java函数。
+  3. 通过registerNativeMethods方法，将JNINativeMethod结构体中定义的Java函数，注册到JVM中。
+  
+  
+  ### 稳定——内存优化
+  Android中的内存优化总的来说就是开源和节流，开源就是扩大内存，节流就是避免内存泄漏。
+  
+  #### 扩大内存方式
+  1. 清单文件中的Application下添加largeHeap="true"这个属性,让应用能申请使用更多的内存.
+  2. 同一个应用下开启多个进程，如,启动一个Service在另个进程，通过AIDL与客户端通信.
+  
+  #### 内存泄漏检测方式
+  
+  #### Android Profiler工具
+  Android Profiler分为三大模块： cpu、内存 、网络。其中Memory Profiler 是Android Profiler中的一个组件，它可以帮助您识别内存泄漏和内存溢出。
+  
+  #### LeakCanary + MAT 工具
+  LeakCanary专为Android设计的内存泄露检测库，首先将依赖引入项目中。其次运行APP，在遇到内存泄漏后，LeakCanary会有弹框提示，并会将堆内存dump成hprof文件。
+  然后将hprof文件导入MAT工具中进行分析。
+  
+  #### Android Lint工具
+  Android Lint是一个静态代码分析工具，它能够检测Android项目中的内存泄漏，还会检测代码是否规范、是否有没用到的导包、可能的bug、安全问题等等。
+  
+  它有个Lint Tool工具，它会把Android源代码和lint.xml配置文件打包成一个文件之后，输出成lint output，并展现出具体在哪行代码有问题。
+  
+  ### 流畅——卡顿优化
+  UI问题的最大体现则是屏幕卡顿现象。造成卡顿的主要原因有以下两点：
+  
+  界面绘制：主要原因是界面布局层级深、布局复杂、过度绘制，由于这些原因导致卡顿场景更多出现在UI和启动后的初始界面以及页面绘制上。
+  
+  数据处理：一般分为三种情况，一是在UI线程中处理数据，二是数据处理占用 CPU 高，导致主线程阻塞，三是内存增加导致GC频繁，从而引起卡顿。
+  
+  ### 界面绘制优化
+  - 通过减少冗余或者嵌套布局来降低视图层次结构。比如使用约束布局代替线性布局和相对布局。
+  - 用 ViewStub 替代在启动过程中不需要显示的 UI 控件。
+  - 使用自定义 View 替代复杂的 View 叠加。
+  - 减少嵌套层次和控件个数。
+  - 减少过度绘制
+  
+  **ViewStub 是布局优化的方式之一，适用于一些延迟加载的场景，ViewStub本身是一个不可见不占用位置的 View，资源消耗比较小，只有调用了ViewStub.inflate()的时候加载布局，布局才会实例化。**
+  
+  ### 数据处理优化
+  - 主线程中不要直接操作数据库，数据库的操作应该放在子线程中完成。
+  - sharepreference 尽量使用 apply，少使用 commit，可以使用 MMKV 框架来代替 sharepreference。
+  - 网络请求回来的数据解析尽量放在子线程中。
+  - 不要在 activity 的 onResume 和 onCreate 中进行耗时操作。
+  
+  sharepreference 两种提交方式是commit和apply，区别在于：
+  1.commit 返回boolean类型的值，提示是否提交成功，而apply没有返回值；
+  2.commit 直接写入磁盘，apply先写入内存，然后异步写入磁盘；
+  
+  commit是同步提交，返回值告诉我们是否提交成功；apply是异步提交，效率高，无法确定是否提交成功。
+  
+  ### 卡顿问题定位工具
+  - dumpsys gfxinfo 
+  记录动画帧相关性能信息，其帧信息可以对卡顿问题进行分类
+  
+  - BlockCanary 
+  检测主线程上的各种卡顿问题
+  
+  - Layout Inspector
+  Layout Inspector是Android studio自带的视图层次结构分析工具，通过Layout Inspector分析布局的层级结构，减少不必要的层级，避免过度绘制, 达到渲染优化的效果。
+  
+  - Android Lint工具
+  将布局相关的扫描规则勾选上，然后根据Lint给出的结果，针对性的做出一些布局优化处理，达到渲染优化的效果。
+  
+  - GPU 渲染模式分析工具
+  该工具在手机开发者选项中，通过设置打开开发人员选项，选择 GPU渲染模式分析，打开要分析的应用。
+  最终结果通过，滚动直方图的形式显示渲染界面窗口帧所花费的时间，若一直超过红线，整个页面就会很卡，那么就需要针对性的做一些优化处理。
+  
+  - 过渡绘制检测功能
+  该功能也同样在开发者选项中，通过设置打开开发人员选项，选择调试 GPU 过度绘制，打开要分析的应用。
+  最终结果通过对界面进行彩色编码来告诉我们哪些属于过度绘制，尤其注意红色表示过度绘制4次或者更多。
+  
+  
+  ### 安装包——APK瘦身
+  从用户层面来说，面对动辄几十兆的APP来说在非WIFI情况下还是会犹豫要不要下载，不下载你就可能因此失去了一个用户。
+  从公司层面来讲，流量就是钱，减少APP的大小就显得尤为重要
+  
+  #### 减少安装包大小
+  - 去除无用资源，使用shrinkResources来删除库文件中无用的资源，配合proguard压缩代码资源。
+  - 减少第三库的使用，宁愿参照去实现，也不要多引入一个第三方库。
+  - 避免使用枚举，一个单独的枚举可以将apk增加1.0 到1.4 KB大小，累积下来可能会增加相当大的APK体积。
+  - 使用WebP文件格式，WebP格式提供有损压缩以及透明度，可以提供比JPEG或PNG更好的压缩效果。
+  - 精简drawable，只保留一套drawable图片资源，使用多个dimens.xml文件来适配不同的手机尺寸。
+  - lib中资源优化，so库尽量兼容v7或V8。
+  ### 启动优化 
+  
+  用户希望应用能够快速打开。启动时间过长的应用可能会令用户失望，最后用户直接卸载应用。
+  #### 启动方式
+  - 冷启动
+  应用从头开始(Zygote>fork>app),
+  在冷启动开始时，系统有三个任务，1.加载并启动应用，2.在启动后立即显示应用的空白启动窗口，3.创建应用进程。
+  创建了应用程序进程后，应用程序进程就负责接下来的阶段：1.创建应用的实体。2.启动主线程。3.创建主页面。4.绘制页面上的View。5.布局页面。6.执行首次的绘制。
+  
+  - 温启动
+  介于冷启动和热启动中间，应用进程还在，但activity已经从栈中退出销毁，再次启动应用需要通过onCreate（）重新创建 Activity。
+  比如按Home键后，又继续使用其他APP，时间久了或者打开的应用多了，之前应用的Activity有可能被回收了，但是进程还在。
+  - 热启动
+  热启动时，系统将应用从后台拉回前台，应用程序的 Activity 在内存中没有被销毁，那么应用程序可以避免重复对象初始化，UI的布局和渲染。
+  
+  #### 启动时间测量
+  测量启动时间的目的有两个：
+  1. 找到需要优化的点，即哪里耗时严重
+  2. 启动优化效果验证，是否达到预期时间
+  
+  #### 时间测量方式
+  - 系统日志输出
+  在Android 4.4及以上版本，App启动时会在logcat输出一行日志，会打印出名为Displayed的值，此值代表从进程启动到屏幕上完成对应Activity绘制所经过的时间。
+  - adb am start 命令启动APP
+  
+  操作 launch启动App
+  操作 点home键推到后台，再运行adb命令：
+  操作 点back键推到后台，再运行adb命令：
+  
+  #### 优化方式
+  - Application.onCreate()
+  onCreate主要是做SDK初始化和App状态判断，
+  
+  sdk优化:
+  sdk的懒加载，再使用到的时候才去初始化，不全部放到在Application初始化。
+  sdk放到子线程中初始化.
+  
+  业务代码的优化：
+  尽量不要在OnCreate中初始化ContentProvider,因为其是在Application.attachBaseContext就会初始化其ContentProvider.onCreate()方法，会加长Application启动时间。
+  尽量不要在OnCreate中初始化SharedPreferences,如果涉及IO操作，Applicaion阻塞时间会较长。
+  
+  - Activity.onCreate()
+  需要根据具体情况优化，常见优化有：
+  1. setContentVIew()耗时，这时要优化布局，减少布局背景的重复渲染、减少层级、对于不一定显示的布局用ViewStub加载。
+  2. initView()初始化View时不要做耗时操作，比如一些IO操作、播放器等采用懒加载，也可以通过多线程提前加载。
+  3. 主页面的ViewPager+Fragment可以通过懒加载按需加载Fragment。
+  
+  ### 崩溃与ANR的区别
+  崩溃:崩溃是指在应用内引发了未处理的异常,如Nullpointer异常，非法状态异常等，Android中的崩溃分为两种，Java崩溃和Native崩溃。
+  ANR:ANR表示应用程序无响应,如应用程序是否在UI线程上阻塞，导致系统无法处理用户输入事件。
+  
+  **崩溃不同于ANR，ANR不会在所有情况下都崩溃。**
+  
+  ### Java 崩溃处理
+  1. 自定义异常捕获类，实现UncaughtExceptionHandler接口，实现uncaughtException方法。
+  2. 将捕获的异常交给自己处理，或者交给系统自己处理。
+  3. 自己处理给将日志保存，或将日志上传
+  
+  ### Navite 崩溃处理
+  当程序中的 native 代码发生崩溃时，系统会在 /data/tombstones/ 目录下保存一份详细的崩溃日志信息
+  发生崩溃的具体方法和行数可以用 Android/SDK/NDK 提供的工具 linux-android-addr2line 来进一步定位。
+  
+  ### Window PhoneWindow DecorView 的关系
+  ### 事件分发，拦截，消费
+  ### View 事件相关的各个方法调用顺序
+  ### ViewGroup 中子View重叠时如何分配
   
   ## Android Framework
-  - 什么是ActivityManagerService
-  - AMS关联类
-  - AMS启动过程
-  - zygote，SystemServer，AMS，ActivityThread 的关系
-  - Activity 启动流程
-  - startService启动过程
-  - 注册广播流程
-  - 广播发送和处理
-  - ANR时系统的处理过程
-  - UI面是怎么显示到屏幕上的？
-  - 什么是Surface
-  - SurfaceFlinger 概述
-  - SurfaceFlinger 的启动
-  - SurfaceFlinger 消息队列处理机制
-  - 初始化DBMS
-  - DBMS 三个主要方法
-  - WMS的概述
-  - 窗口可创建数
-  - Window、WindowManager、WMS 关系
-  - WMS启动过程
-  - WMS添加一个窗口
-  - WMS删除一个窗口
+  ### 什么是ActivityManagerService
+  ActivityManagerService承担了Android四大组件的启动、切换、调度以及进程的管理工作，是Android中最核心的服务。
+  
+  ### AMS关联类
+  1. AMS由ActivityManagerNative（以后简称AMN）类派生，而AMN由Binder派生，实现了IActivityManager接口。
+  2. AMP是AMN的内部类，它们都实现了IActivityManager接口，这样它们就可以实现代理模式。具体来讲是远程代理。
+  3. AMP和AMN是运行在两个进程中的，AMP是Client端，AMN则是Server端，而Server端中具体的功能都是由AMN的子类AMS来实现的，因此，AMP就是AMS在Client端的代理类。
+  4. AMP和AMS可以通过Binder来进行进程间通信。
+  5. 客户端使用ActivityManager类。在ActivityManager类内部通过调用AMN的getDefault函数得到一个ActivityManagerProxy对象，通过它可与AMS通信。
+  
+  ### AMS启动过程
+  AMS的启动是在SystemServer进程中启动的。即AMS运行在SystemServer进程。
+  在SystemServer中需要启动的服务有三种：
+  - 引导服务(BootstrapServices),主要开启了ActivityManagerService、PowerManagerService、PackageManagerService等服
+  - 核心服务(CoreServices),主要开启了DropBoxManagerService、BatteryService、UsageStatsService和WebViewUpdateService等服务
+  - 其他服务(OtherServices),主要启动了CameraService、AlarmManagerService、VrManagerService等服务。
+  
+  ### zygote，SystemServer，AMS，ActivityThread 的关系
+  1. App(ActivityThread进程)和AMS(SystemServer进程)还有zygote进程属于三个独立的进程。
+  2. App与AMS通过Binder进行IPC通信，AMS与zygote通过Socket进行IPC通信。
+  3. AMS负责所有Activity的生命周期，若想打开一个App的话，需要AMS和ActivityThread相互配合来完成。
+  
+  ### Activity 启动流程
+  一. Launcher通过ActivityManagerProxy,用Binder进程间通信，通知ActivityManagerService,它要启动一个Activity。(1~11)
+  
+  二. ActivityManagerService调用startActivity,并经过ActivityStack一系列调用处理后，通过Binder通信,通知Launcher让其它Activity进入Paused状态。(12~16)
+  
+  三. Launcher再通过ActivityManagerProxy,用Binder通信,通知ActivityManagerService，它已经准备进入Paused状态，于是ActivityManagerService就向zygote发送命令用来fork一个子进程，用来启动一个ActivityThread实例，即将要启动的Activity在这个ActivityThread实例中运行。(17~24)
+  
+  四. ActivityThread通过Binder进程间通信机制将一个ApplicationThread类型的Binder对象传递给ActivityManagerService,以便ActivityManagerService能够通过这个Binder对象与ActivityThread通信。(25~27)
+  
+  五. ActivityManagerService通过Binder进程间通信，通知ActivityThread，现在一切准备就绪，可以执行onCreate方法启动Activity了。(28~35)
+  
+  ### startService启动过程
+  1. Activity中的startService实际由ContextImpI中startService开始发起,利用Binder通信，通过AMP向AMS发起startService请求。
+  2. AMS收到请求后，经由ActiveService一系列的处理后，向zygote发送请求fork出子进程ActivityThread.
+  3. ActivityThread 利用Binder通信，通过AMP调用AMS中attachApplicationLocked方法进行准备工作。
+  4. AMS再利用Binder通信，向ActivityThread调用scheduleCreateService方法,通过handler发送CREATE_SERVICE消息，创建Service，并启动Service.OnCreadte方法。
+  
+  ### 注册广播流程
+  - Activity/Service中调用registerReceiver()方法，最终调用ContextImpl的registerReceiverInternal方法。
+  - registerReceiverInternal调用LoadedApk的方法，将广播接收者封装成一个实现了IIntentReceiver接口的Binder对象,即ReceiverDispatcher。
+  - 获取AMP代理类对象，通过Binder通信，调用AMS的registerReceiverWithFeature方法将ReceiverDispatcher，传递给ActivityManagerService，用于广播的跨进程通信。
+  - registerReceiverWithFeature方法中，将用来描述注册的广播接收者BroadcastFilter 添加到mReceiverResolver中。
+  - 当AMS接收到广播时就可以从mReceiverResolver中找到对应的广播接收者了。
+  
+  ### 广播发送和处理
+  1. 广播发送者，Activity或Service，将一个特定类型的广播发送给AMS
+  2. AMS接收到一个广播后，首先找到与这个广播对应的广播接收者，其次将它们添加到一个广播调度队列中.最后AMS向所在线程消息队列发送一个BROADCAST_INTENT_MSG消息。
+  3. 至此对广播发送者来说，一个广播就发送完了。
+  4. 在AMS运行的线程消息队列处理发送的BROADCAST_INTENT_MSG消息时，AMS会从广播调度队列中找到广播接受者。并将广播发送给对应的应用进程。
+  5. 当应用程序收到AMS的广播后，首先将广播封装成一个消息，然后发送到主线程消息队列中。当消息被处理时，应用程序才会将被封装的广播发送到广播接受者处理。
+  
+  ### ANR时系统的处理过程
+  - 当 ANR 发生时，系统会调用appNotResponding方法。
+  - 将ANR相关信息通过拼接字符串的形式，记录到EventLog中。
+  - 获取重要进程（Java进程,Native进程）的trace信息，保存到/data/anr/traces.txt
+  - 将ANR reason和CPU使用情况，输出到MainLog
+  - 将traces文件和CPU使用情况信息，保存到/data/system/dropbox
+  - 如果是后台ANR，直接杀进程,否则弹框告知用户。
+  
+  ### UI面是怎么显示到屏幕上的？
+  Android视图显示的流程是先通过CPU把UI组件计算成多维图形和纹理坐标，然后通过OPenGL调用GPU进行栅格化，并最终渲染到屏幕上。
+  进行以上对AndroidUI的绘制都需要在Surface画布上进行。
+  
+  ### 什么是Surface
+  Surface的本质**是一块或几块GraphicBuffer内存的管理类，并提供对buffer的管理方法**,每个Window都有一个Surface。
+  GraphicBuffer由SurfaceFlinger来进行分配。App从SurfaceFlinger中获取一块GraphicBuffer后，通过OpenGL将图形数据绘制到GraphicBuffer上。
+  然后SurfaceFlinger会把多个GraphicBuffer数据进行合成，最终OpenGL将合成后的数据通过调用FramebufferNativeWindow类渲染到实际屏幕上去。
+  
+  android中Surface分为两种：1.Java层surface 2.Native层Surface
+  Java层产生Surface的主要有两个地方：ViewRoot和SurfaceView。
+  Native层主要由NativeWindow产生。
+  
+  ### SurfaceFlinger 概述
+  SurfaceFinger位于Native层，是一个Binder系统服务, Android设备开机启动时就会带起SurfaceFlinger服务进程并完成一些初始化动作。
+  
+  ### SurfaceFlinger 的启动
+  1. 开机启动时，init进程解析这个surfaceflinger.rc文件
+  2. 在main_surfaceflinger.cpp文件中通过main函数首先调用createSurfaceFlinger()以及SurfaceFlinger构造函数，创建SurfaceFlinger对象。
+  3. 创建完SurfaceFlinger对象后，首先会立即执行到SurfaceFlinger::onFirstRef方法进行消息队列的初始化工作。其次调用SurfaceFlinger::init()，开始初始化绘图状态，显示设备，启动开机动画等工作。
+  4. 将SurfaceFlinger服务注册到Service Manager;
+  5. 调用run方法，开启无限循环，等客户端的信息并处理。
+  
+  ### SurfaceFlinger 消息队列处理机制
+  1. 当Surface绘制完成后会发出一个Invalidate的消息给Surfaceflinger的等待线程
+  2. 当waitForEvent接收到消息后就会交给onMessageReceivered去处理，
+  3. 在onMessageReceivered处理过程中会首先调用handleMessageTransaction处理之前对屏幕和应用程序窗口的改动，重新计算窗口的可见区域。
+  4. 其次调用handleMessageInvalidate，会根据图形缓冲区数据内容去更新脏区域。
+  5. 最后handleMessageRefresh，合并和渲染输出。
+  6. 步骤完成后，进入ThreadLoop,继续等待下一个invalidate消息。
+  
+  ### 初始化DBMS
+  DropBoxManagerService(简称DBMS) 主要用于记录 Android 运行过程中, 内核, 系统进程, 用户进程等出现严重问题时的 log。 Android系统启动过程SystemServer进程时，在startOtherServices()过程会启动DBMS服务
+  
+  ### DBMS 概述与三个主要方法
+  1. 监听存储设备可用空间低的广播
+  2. 监听开机完毕的广播
+  3. 监听Settings数据库变化广播
+  
+  开机过程中DBMS的初始化只是做了注册广播而已，当收到广播后才会去处理。
+  
+  #### init 方法
+  该方法主要功能：
+  1. 创建目录/data/system/dropbox
+  2. 检查dropbox目录下所有文件，获取文件名中的时间戳。
+  3. 删除后缀为tmp文件，删除时间戳为0的文件
+  
+  #### trimToFit 方法
+  dropbox对目录中的文件数量以及存储空间大小是有规定的，当超出限制会调用trimToFit方法进行瘦身。
+  1. 文件最长保存时长为3天
+  2. 最大文件个数为1000
+  3. 分配dropbox空间的最大值5M
+  
+  #### add 方法
+  每当系统中有一些事件需要记录时，都会调用AMS.addErrorToDropBox()来触发DBMS工作。
+  - crash: AMS.handleApplicationCrashInner过程
+  - anr: AMS.appNotResponding()过程；
+  - watchdog: Watchdog.run()过程;
+  - native_crash: 当调用NativeCrashReporter.run()的过程;
+  - wtf: 当调用Log.wtf()或者Log.wtfQuiet()的过程；
+  - lowmem: 当内存较低时，触发AMS.reportMemUsage()过程；
+  
+  触发这些事件后，最终都会调用DropBoxManagerService.add方法将数据写入到存储目录中。
+  
+  ### WMS的概述
+  在Android中， WindowManagerService负责对系统中的所有窗口进行管理。所谓的管理大致包括对窗口进行创建、删除，以及更换窗口的焦点。
+  
+  ### 窗口可创建数
+  1. Application Window(应用窗口)：例如Activity，Dialog；【取值范围为1~99】
+  2. Sub Window(子窗口)：不能独立存在，需要依附在其他窗口，例如PopupWindow【取值范围为1000~1999】
+  3. System Window(系统窗口)：例如Toast、输入法窗口、系统音量条窗口、系统错误窗口等【2000~2999】
+  
+  ### WMS的作用
+  - 窗口管理
+  WMS是窗口的管理者，它负责窗口的启动、添加和删除，另外，窗口的大小和层级也是由WMS进行管理的。
+  
+  - 窗口动画
+  窗口动画由WMS的动画子系统来负责，动画子系统的管理者为WindowAnimator。
+  
+  - 输入系统的中转站
+  通过对窗口触摸从产生的触摸事件，通过WMS中转站将触摸事件交给InputManagerService进行处理。
+  
+  - 输入系统相关：
+  窗口并不具备有绘制的功能，因此每个窗口都需要有一块Surface来供自己绘制。为每个窗口分配Surface是由WMS来完成的。
+  
+  ### Window、WindowManager、WMS 关系
+  Window:它是一个抽象类，具体实现类为 PhoneWindow ，它对 View 进行管理。Window是View的容器，View是Window的具体表现内容。创建一个Window，通过windowManager完成。
+  WindowManager:是用来添加、删除、更新Window中的View，与WMS通过Binder来进行跨进程通信，将具体的工作交由WMS来处理。
+  WindowsManagerService:是在SystemServer进程中的，WindowManger中的所有操作都是由WMS来最终完成的。
+  
+  ### WMS启动过程
+  1. SystemServer中，优先启动引导服务，核心服务，其它服务。WMS属于其它服务的一种。
+  2. 在WMS启动时，会先启动IMS,并将IMS对象作为参数赋值到WMS中，后续WMS处理输入事件时会与IMS进行交互。
+  3. WMS的main方法中，获取DisplayThread的handler实例，在display线程中创建WMS实例对象，然后display进入等待状态。
+  4. 调用WMS实例中OnInitReady方法，开始初始化窗口管理策略，通过PWM(PhoneWindowManager)在ui线程中进行初始化，完成后，通过Handler中notifyAll唤醒display线程。
+  5. 完成初始化窗口管理策略后，调用WMS实例中displayReady方法初始化屏幕显示信息，然后调用WMS实例中SystemReady方法完成初始化工作完成。
+  
+  ### WMS添加一个窗口
+  1. 对于不通类型的窗口添加过程不同，但是对于WMS处理部分，基本上是一样的。
+  2. 通过WindowManager的addview方法，但实际会最终调用到WindowManagerGlobal中的addView方法中。
+  3. WindowManagerGlobal对上层参数进行检查并进行相应的调整，同时初始化ViewRootImpl对象，将View交由ViewRootImpl管理。
+  4. 在ViewRootImpl会完成对View的测量，布局和绘制。
+  5. ViewRootImpl通过Binder与WMS进行跨进程通信,调用addToDisplay方法为窗口分配画布Surface,最终交给SurfaceFlinger，并绘制到屏幕上。
+  
+  ### WMS删除一个窗口
+  1. 通过WindowManager的removeView方法，但实际会最终调用到WindowManagerGlobal中的removeView方法中。
+  2. 在removeView方法会通过索引获取到对应的ViewRootImpl。然后调用ViewRootImpl的die方法。
+  3. 若当前View已绘制完成，直接删除。若View正在绘制则通过Handler异步的方式，将View添加到一个待删除列表中进行删除。
+  4. 删除将该View在索引表中删除。
   
   ## 项目中遇到的问题：
   1. 沟通问题

@@ -1,5 +1,5 @@
 createdAt: "2023-01-08T15:07:09.915Z"
-updatedAt: "2023-04-24T16:14:43.595Z"
+updatedAt: "2023-05-06T09:54:27.466Z"
 type: "MARKDOWN_NOTE"
 folder: "c3bf24344ddc9bd2af22"
 title: "ActivityManagerService"
@@ -185,6 +185,15 @@ content: '''
   
   五. ActivityManagerService通过Binder进程间通信，通知ActivityThread，现在一切准备就绪，可以执行onCreate方法启动Activity了。(28~35)
   
+  ### 4.1 Zygote fork一个Launcher进程的阶段
+  ![d53cb82a.png](:storage\\ac9f3a24-f52f-44fa-8b3e-bb589e4dd4f0\\d53cb82a.png)
+  1. AMS属于SystemServer进程，AMS通过StartProgressLock向zygote发送一个socket。
+  2. 这时Zygote无限循环状态，一直在等待Socket请求，收到发来新的Socket请求后，执行processOneCommend方法开始fork一个新进程。
+  4. fork过程中，首先停止4个Daemon子进程，等待所有子线程结束，通过JNI开始堆的初始化工作。最终调用JNI中nativeForkAndSpecialize，调用系统fork方法，孵化新的进程。
+  6. fork成功后，首先设置子进程的signal，执行handleChildProc进入子进程中处理。
+  7. 并执行ActivityThread中的main方法。
+  
+  
   ## 5 BroadCast 广播机制分析
   
   ### 5.1 概述
@@ -240,6 +249,9 @@ content: '''
   [安卓的ActivityManagerService_dev晴天的博客-CSDN博客_activitymanagerservice](https://blog.csdn.net/qq_38350635/article/details/114785334)
   [Android 8.0 AMS分析的第一条线：SystemServer中的AMS的调用轨迹_yaoming168的博客-CSDN博客_systemserver进程和ams的关系](https://blog.csdn.net/yaoming168/article/details/51991570)
   [Android Activity的启动流程分析：以Launcher启动一个Activity为例，分析应用进程的创建、Activity的启动，以及他们和AMS之间的交互_yaoming168的博客-CSDN博客](https://blog.csdn.net/yaoming168/article/details/52402963)
+  [Android10.0系统启动之Launcher(桌面)启动流程-[Android取经之路]_安卓10桌面启动失败_IngresGe的博客-CSDN博客](https://blog.csdn.net/yiranfeng/article/details/103752203)
+  [Android10.0应用进程创建过程以及Zygote的fork流程-[Android取经之路]_IngresGe的博客-CSDN博客](https://blog.csdn.net/yiranfeng/article/details/103812553)
+  
   
   [Android Broadcast广播机制分析 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/06/04/broadcast-receiver/)
   [Android S动态广播注册流程(广播1)_android 动态注册广播_yun_hen的博客-CSDN博客](https://blog.csdn.net/yun_hen/article/details/124415431)

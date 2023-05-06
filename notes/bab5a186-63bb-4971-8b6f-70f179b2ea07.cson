@@ -1,0 +1,17 @@
+createdAt: "2023-05-06T02:55:11.441Z"
+updatedAt: "2023-05-06T02:56:31.963Z"
+type: "MARKDOWN_NOTE"
+folder: "c3bf24344ddc9bd2af22"
+title: "System Service"
+tags: []
+content: '''
+  # System Service
+  
+  ## 文献
+  [Android系统启动-SystemServer上篇 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/02/14/android-system-server/)
+  [Android系统启动-SystemServer下篇 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/02/20/android-system-server-2/)
+  
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false

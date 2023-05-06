@@ -1,5 +1,5 @@
 createdAt: "2023-03-16T07:57:36.947Z"
-updatedAt: "2023-03-30T03:14:57.409Z"
+updatedAt: "2023-04-28T09:18:10.326Z"
 type: "MARKDOWN_NOTE"
 folder: "d93d185dcf894dbad7b3"
 title: "MOSDK 使用教程"
@@ -7,7 +7,44 @@ tags: []
 content: '''
   # MOSDK 使用教程
   [TOC]
-  ## 1.模块介绍
+  ## 更新内容
+  
+  ### 20230428
+  1. 修复端侧息屏后，断网情况下，再恢复网络后。保持登陆状态问题。
+  2. 监听异常登出消息推送，增加网络处理方法说明,参考网络处理方法说明。
+  3. 增加relogin方法，从无网切换到有网状态下，调用relogin重新建链。
+  
+  ### 20230421
+  1. 增加设定摄像头方向接口，setCameraOrientation接口设定角度为0,90,180,270
+  2. 解决Android12 Pad 订阅画面卡住问题。
+  3. 调整Conferee实体类结构，
+  4. 增加是否开启台标接口，setUseBadgeLabel
+  5. 增加找到双流画面接口，findAssConferee
+  6. 增加找到自己画面接口，findMySelf
+  
+  ### 20230414
+  1. 优化登陆流程，解决出现错误码5或22003等情况。
+  2. 优化Android12 Pad 订阅画面卡住问题。
+  
+  ### 20230411
+  1. 解决入会时会显示黑屏的问题
+  2. 调整ConfMembers使用方式，即在成员入会离会时不再需要调用
+  
+  ### 20230404
+  1. 创会结果。不再需要调用入会接口。
+  2. 入会成功后，与会方列表缓存，可以通过SDK.ConfigData获取
+  3. 创会流程目前包含 自动申请主席，不需要APP处理。
+  4. 非主持人调用结会接口，会返回错误码。
+  5. 调整获取与会方信息ConfMembers逻辑，请注意使用方式。
+  6. 增加判断是否是前置摄像头接口。
+  7. 增加摄像头切换接口。
+  8. 增加设定默认摄像头为前置。
+  9. 增加远端摄像头静音哑音打开或关闭的推送。
+  10. 增加SDK.ConfigData.缓存类，方便获取相关信息。(参考文档ConfigData类介绍)
+  11. 修复登录成功，但入会，创会失败问题。
+  12. 修复初始化SDK后，直接调用logout接口崩溃问题。
+  
+  ## 模块介绍
   Base包- 基础音视频功能
   Business包- 业务功能(初始化，登录，所有调用接口)
   Common包- 工具包
@@ -15,9 +52,9 @@ content: '''
   
   **注意：使用时只需要关注business接口使用**
   
-  ## 2. 配置说明
+  ## 配置说明
   
-  ### 2.1 环境配置
+  ### 环境配置
   - Android 5.0+ 及以上版本操作系统的 Android 模拟器或真实设备。
   - Android studio 4.2 以上版本
   - Android SDK (版本取决于目标平台)。
@@ -25,8 +62,8 @@ content: '''
   - implementation 'com.squareup.okhttp3:okhttp:版本号'(>=3.12.10)
   - 有效的摩云平台环境与登录账号。
   
-  ### 2.2 工程配置
-  #### 2.1 gradle配置
+  ### 工程配置
+  #### gradle配置
   在APP->build.gradle中配置，
   ```
   implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
@@ -36,7 +73,7 @@ content: '''
   ndk {abiFilters "armeabi-v7a", "arm64-v8a"}
   ```
   
-  #### 2.2 启动初始化SDK
+  #### 启动初始化SDK
   初始化SDK线程
   ```
   ThreadUtil.init()
@@ -51,9 +88,9 @@ content: '''
   ```
   **注意: 建议放在Application -> onCreate中初始化**
   
-  ### 2.3 接口说明
+  ### 接口说明
   
-  #### 2.3.1 登录/切换登录
+  #### 登录/切换登录
   ```
   login(String account, String pwd, String server, MoyRspListener)
   ```
@@ -74,14 +111,14 @@ content: '''
   | server         | 服务器地址 |
   | MoyRspListener | 监听接口   |
   
-  #### 2.3.2 登出
+  #### 登出
   ```
   logoutRtc(MoyRspListener)
   ```
   | 参数           | 说明       |
   | -------------- | ---------- |
   | MoyRspListener | 监听接口   |
-  #### 2.3.3 创建会议
+  #### 创建会议
   ```
   createConf(CreateConfParam ,MoyRspListener)
   ```
@@ -103,7 +140,7 @@ content: '''
   | virtualConfId   | 虚拟会议室ID   |
   | members         | 添加会议成员(164号) |
   
-  #### 2.3.4 结束会议
+  #### 结束会议
   ```
   endConf(String confid,MoyRspListener)
   ```
@@ -111,7 +148,7 @@ content: '''
   | -------------- | -------- |
   | confid         | 会议ID   |
   | MoyRspListener | 监听接口 |
-  #### 2.3.5 加入会议
+  #### 加入会议
   ```
   joinConf(String confId,MoyRspListener)
   ```
@@ -119,14 +156,14 @@ content: '''
   | -------------- | -------- |
   | confid         | 会议ID   |
   | MoyRspListener | 监听接口 |
-  #### 2.3.6 离开会议
+  #### 离开会议
   ```
   quitConf(MoyRspListener)
   ```
   | 参数           | 说明     |
   | -------------- | -------- |
   | MoyRspListener | 监听接口 |
-  #### 2.3.7 指定Camera API 版本(特殊设备下调用，如只有一个摄像头设备)
+  #### 指定Camera API 版本(特殊设备下调用，如只有一个摄像头设备)
   ```
   setCameraApi(int api)
   ```
@@ -134,7 +171,7 @@ content: '''
   | ---- | ------------------------------ |
   | api  | 1:表示Camera1 API,不填表示默认 |
   
-  #### 2.3.8 设置RTC能力集
+  #### 设置RTC能力集
   ```
   setRtcConfig(int layerCount, int resolution, int maxFps, int[] bitrate, int mediaIndex)
   ```
@@ -146,17 +183,18 @@ content: '''
   | bitRate    | 每层流的码率（bps），0 1 2 分别代表 低 中 高                                                                                              |
   | mediaIndex | 发布多条主流时每个视频源的索引号                                                                                                          |
   
-  #### 2.3.9 获取所有入会成员视频画面(主流，辅流，画面合成流)
+  #### 获取所有入会成员视频画面(主流，辅流，画面合成流)
   ```
   List<Conferee> getAllConferees()
   ```
   Conferee
-  | 参数        | 说明           |
-  | ----------- | -------------- |
-  | e164        | 视频画面实体类 |
-  | display     | 主流画面       |
-  | dualDisplay | 辅流画面       |
-  | streamParam | 视频流信息     |
+  | 参数           | 说明           |
+  | -------------- | -------------- |
+  | getE164        | 获取164号      |
+  | getDisplay     | 获取主流画面   |
+  | getStreamParam | 获取视频流信息 |
+  | isMyself       | 是否是自己     |
+  | isDual         | 是否双流       |
   
   StreamParam
   | 参数       | 说明                             |
@@ -169,14 +207,14 @@ content: '''
   | maxFps     | 最大帧率                         |
   | maxBitrate | 最大码率                         |
   
-  #### 2.3.10 设置终端静音状态
+  #### 设置终端静音状态
   ```
   setSilence(boolean check)
   ```
   | 参数  | 说明                            |
   | ----- | ------------------------------- |
   | check | true为开启静音，false为关闭静音 |
-  #### 2.3.11 设置终端哑音状态
+  #### 设置终端哑音状态
   ```
   setRecordMute(boolean check)
   ```
@@ -184,7 +222,7 @@ content: '''
   | ----- | ------------------------------- |
   | check | true为开启哑音，false为关闭哑音 |
   
-  #### 2.3.12 接受加入会议
+  #### 接受加入会议
   ```
   acceptInvited(String confid, MoyRspListener)
   ```
@@ -192,7 +230,7 @@ content: '''
   | -------------- | -------- |
   | confid         | 会议ID   |
   | MoyRspListener | 监听接口 |
-  #### 2.3.13 拒绝加入会议
+  #### 拒绝加入会议
   ```
   refuseInvited(String confid, MoyRspListener)
   ```
@@ -200,21 +238,21 @@ content: '''
   | -------------- | -------- |
   | confid         | 会议ID   |
   | MoyRspListener | 监听接口 |
-  #### 2.3.14 设置主动推送监听
+  #### 设置主动推送监听
   ```
   setNtfListener(MoyNtfListener)
   ```
   | 参数           | 说明     |
   | -------------- | -------- |
   | MoyNtfListener | 推送消息 |
-  #### 2.3.15 设置被呼叫推送监听
+  #### 设置被呼叫推送监听
   ```
   setConvokingConfNtListener(MoyNtfListener)
   ``` 
   | 参数           | 说明     |
   | -------------- | -------- |
   | MoyNtfListener | 被呼叫推送消息 |
-  #### 2.3.16 获取会议列表
+  #### 获取会议列表
   ```
   getConfList(MoyRspListener)
   ```
@@ -223,7 +261,7 @@ content: '''
   | confid         | 会议ID   |
   | MoyRspListener | 监听接口 |
   
-  #### 2.3.17 获取虚拟会议室列表
+  #### 获取虚拟会议室列表
   ```
   getVtConfList(MoyRspListener)
   ```
@@ -231,7 +269,7 @@ content: '''
   | -------------- | -------- |
   | confid         | 会议ID   |
   | MoyRspListener | 监听接口 |
-  #### 2.3.18 获取会议共享链接
+  #### 获取会议共享链接
   ```
   confShareLink(String meeting_id, MoyRspListener)
   ```
@@ -240,7 +278,7 @@ content: '''
   | meeting_id     | 视频会议唯一id |
   | MoyRspListener | 监听接口       |
   
-  #### 2.3.19 校验会议名称(Deprecated)
+  #### 校验会议名称(Deprecated)
   ```
   validConfName(String name, MoyRspListener)
   ```
@@ -248,7 +286,7 @@ content: '''
   | -------------- | -------- |
   | name           | 会议名称 |
   | MoyRspListener | 监听接口 |
-  #### 2.3.20 获取会议主席
+  #### 获取会议主席
   ```
   getChairMan(String confId, MoyRspListener)
   ```
@@ -257,7 +295,7 @@ content: '''
   | confId           | 会议号 |
   | MoyRspListener | 监听接口 |
   
-  #### 2.3.21 指定/取消会议主席
+  #### 指定/取消会议主席
   ```
   assignChairMan(String confId, String mtId, MoyRspListener)
   ```
@@ -266,7 +304,7 @@ content: '''
   | confId         | 会议号   |
   | MoyRspListener | 监听接口 |
   
-  #### 2.3.22 获取会议发言人
+  #### 获取会议发言人
   ```
   getSpeaker(String confId, MoyRspListener)
   ```
@@ -274,7 +312,7 @@ content: '''
   | -------------- | -------- |
   | confId         | 会议号   |
   | MoyRspListener | 监听接口 |
-  #### 2.3.23 指定/取消会议发言人
+  #### 指定/取消会议发言人
   ```
   assignSpeaker(String confId, String mtId, MoyRspListener)
   ```
@@ -284,7 +322,7 @@ content: '''
   | mtId           | 目标成员id,填空表示取消发言人 |
   | MoyRspListener | 监听接口                      |
   
-  #### 2.3.24 延长会议时间
+  #### 延长会议时间
   ```
   delayConf(String confId, int delay, MoyRspListene)
   ```
@@ -294,7 +332,7 @@ content: '''
   | delay          | 延长时间，单位分钟 |
   | MoyRspListener | 监听接口           |
   
-  #### 2.3.25 会场静音
+  #### 会场静音
   ```
   silenceConf(String confId, boolean silence, MoyRspListener listener)
   ```
@@ -304,7 +342,7 @@ content: '''
   | silence        | true：静音 false：取消静音 |
   | MoyRspListener | 监听接口                   |
   
-  #### 2.3.26 会场哑音
+  #### 会场哑音
   ```
   muteConf(String confId, boolean mute, boolean forceMute, MoyRspListener)
   ```
@@ -314,7 +352,7 @@ content: '''
   | mute           | true：哑音 false：取消哑音                            |
   | forceMute      | true:强制哑音，成员无法自己解除 false：默认不强制哑音 |
   | MoyRspListener | 监听接口                                              |
-  #### 2.3.27 修改会议名称 
+  #### 修改会议名称 
   ```
   confNameChanged(String confId, String name, MoyRspListener)
   ``` 
@@ -324,7 +362,7 @@ content: '''
   | name           | 会议名称 |
   | MoyRspListener | 监听接口 |
   
-  #### 2.3.28 开启/关闭语音激励
+  #### 开启/关闭语音激励
   ```
   voiceActivation(String confId, boolean state, MoyRspListener)
   ```
@@ -334,7 +372,7 @@ content: '''
   | state          | 开启/关闭 |
   | MoyRspListener | 监听接口 |
   
-  #### 2.3.29 开启/关闭水印
+  #### 开启/关闭水印
   ```
   waterMark(String confId, boolean state, MoyRspListener)
   ```
@@ -344,15 +382,16 @@ content: '''
   | state          | 开启/关闭 |
   | MoyRspListener | 监听接口 |
   
-  #### 2.3.30 获取与会方信息
+  #### 获取与会方信息
+  **若使用Configate中的方法，需要与confmembers进行配合。**
   ```
-  confMembers(String confId, MoyRspListener listener)
+  confMembers(MoyRspListener listener)
   ```
   | 参数           | 说明     |
   | -------------- | -------- |
   | confId         | 会议号   |
   | MoyRspListener | 监听接口 |
-  #### 2.3.31 获取视频会议信息
+  #### 获取视频会议信息
   ```
   confVideoMsg(String confId, MoyRspListener listener)
   ```
@@ -360,7 +399,7 @@ content: '''
   | -------------- | -------- |
   | confId         | 会议号   |
   | MoyRspListener | 监听接口 |
-  #### 2.3.32 获取终端版本信息
+  #### 获取终端版本信息
   ```
   getVersionInfo(String oem, String devType, String e164, MoyRspListener)
   ```
@@ -371,7 +410,7 @@ content: '''
   | e164           | 164号    |
   | MoyRspListener | 监听接口 |
   
-  #### 2.3.33 尝试获取已下载升级包
+  #### 尝试获取已下载升级包
   ```
   tryGetDownloadedPkg(UpdateInfo)
   ```
@@ -379,7 +418,7 @@ content: '''
   | ---------- | -------- |
   | UpdateInfo | 版本信息 |
   
-  #### 2.3.34 升级包下载
+  #### 升级包下载
   ```
   startDownload(String e164, UpdateInfo updateInfo, MoyRspListener)
   ```
@@ -389,7 +428,7 @@ content: '''
   | UpdateInfo     | 版本信息 |
   | MoyRspListener | 监听接口 |
   
-  #### 2.3.35 开启/关闭摄像头
+  #### 开启/关闭摄像头
   ```
   MoyCtrl.pausePublishStream(boolean pauseOrResume)
   ```
@@ -397,7 +436,7 @@ content: '''
   | ------------- | ----------------------------------- |
   | pauseOrResume | true：关闭摄像头  false：恢复摄像头 |
   
-  #### 2.3.36 邀请终端入会
+  #### 邀请终端入会
   ```
   MoyCtrl.inviteMember(String confid, int bitrate, String[] members, MoyRspListener listener)
   ```
@@ -407,8 +446,60 @@ content: '''
   | bitrate        | 会议码率(可以在ReqConfInfoResult中获取到) |
   | MoyRspListener | 监听接口                                  |
   
+  #### 判断当前是否为前置摄像头
+  ```
+  boolean result = MoyCtrl.isFrontCamera();
+  ```
+  | 参数   | 说明                   |
+  | ------ | ---------------------- |
+  | result | true：前置 false：后置 |
   
-  ### 2.4 事件说明
+  #### 切换前后摄像头
+  ```
+  int result = MoyCtrl.switchCamera(true);
+  ```
+  | 参数   | 说明                       |
+  | ------ | -------------------------- |
+  | result | 0：成功 -2：摄像头开启失败 |
+  
+  #### 设定默认摄像头为前置
+  ```
+  MoyCtrl.setDefaultCamera();
+  ```
+  #### 设定摄像头方向
+  ```
+  MoyCtrl.setCameraOrientation(CAMERA_ORIENTATION)
+  ```
+  | 参数               | 说明                                                                                                       |
+  | ------------------ | ---------------------------------------------------------------------------------------------------------- |
+  | CAMERA_ORIENTATION | SET_CAMERA_ORIENTATION_0, SET_CAMERA_ORIENTATION_90, SET_CAMERA_ORIENTATION_180, SET_CAMERA_ORIENTATION_270, |
+  
+  #### 找到自己画面
+  ```
+  MoyCtrl.findMySelf()
+  ```
+  
+  #### 找到双流画面
+  ```
+  MoyCtrl.findAssConferee()
+  ```
+  
+  #### 开关画面台标
+  若不需要，在入会之前进行设置
+  ```
+  MoyCtrl.setUseBadgeLabel(boolean)
+  ```
+  | 参数    | 说明                   |
+  | ------- | ---------------------- |
+  | boolean | true：开启 false：关闭 |
+  
+  #### 重新登陆
+  在切换网络情况下，配合异常setExceptionLogoutNtfListener推送消息使用
+  ```
+  MoyCtrl.relogin(MoyRspListener)
+  ```
+  
+  ### 事件说明
   API 响应通知监听
   MoyRspListener
   | 参数                                       | 说明     |
@@ -421,13 +512,65 @@ content: '''
   
   推送通知监听
   MoyNtfListener
-  | 参数                                        | 说明               |
-  | ------------------------------------------- | ------------------ |
-  | onConfereeJoined(Conferee conferee)         | 成员入会           |
-  | onConfereeLefted(Conferee conferee)         | 成员离开会议       |
-  | onConfFinished(int reason)                  | 会议结束通知       |
-  | onInvite(ConfInvitationInfo confinfo)       | 被邀请入会         |
-  | onCancelInvite(ConfInvitationInfo confinfo) | 邀请入会通知被取消 |
+  | 参数                                             | 说明               |
+  | ------------------------------------------------ | ------------------ |
+  | onConfereeJoined(Conferee conferee)              | 成员入会           |
+  | onConfereeLefted(Conferee conferee)              | 成员离开会议       |
+  | onConfFinished(int reason)                       | 会议结束通知       |
+  | onInvite(ConfInvitationInfo confinfo)            | 被邀请入会         |
+  | onCancelInvite(ConfInvitationInfo confinfo)      | 邀请入会通知被取消 |
+  | onRemoteCameraState(String e164, boolean isOpen) | 远端终端摄像头状态 |
+  | onRemoteSlience(String e164, boolean isSilence)  | 远端终端扬声器状态 |
+  | onRemoteMute(String e164, boolean isMute)        | 远端终端麦克风状态 |
+  
+  监听被呼叫推送
+  ```
+  MoyCtrl.setConvokingConfNtListener(new MoyNtfListener() {
+  @Override
+  public void onInvite(ConfInvitationInfo confinfo) {
+  }
+  
+  @Override
+  public void onCancelInvite(ConfInvitationInfo confinfo) {
+  }
+  });
+  ```
+  监听会议中推送
+  ```
+  MoyCtrl.setNtfListener(new MoyNtfListener() {
+  @Override
+  public void onConfereeJoined(Conferee conferee) {
+  }
+  
+  @Override
+  public void onConfereeLefted(Conferee conferee) {
+  }
+  
+  @Override
+  public void onConfFinished(int reason) {
+  }
+              
+  @Override
+  public void onRemoteCameraState(String e164, boolean isOpen) {
+  }
+  
+  @Override
+  public void onRemoteSlience(String e164, boolean isSilence) {
+  }
+  
+  @Override
+  public void onRemoteMute(String e164, boolean isMute) {
+  }
+  });
+  ```
+  监听异常登出消息推送
+  ```
+  MoyCtrl.setExceptionLogoutNtfListener(new MoyNtfListener() {
+  @Override
+  public void onExceptionLogout(int error) {
+  }
+  });
+  ```
   
   ConfInvitationInfo
   | 参数     | 说明      |
@@ -435,139 +578,141 @@ content: '''
   | confE164 | 会议164号 |
   | confName | 会议名称  |
   
-  ### 2.5 实体类说明
-  由于SDK请求成功的结果会已实体类的方式，发送到回调接口中。在OnSuccess(Object obj)中需要将obj强转成对应的实体类使用。
-  #### 2.5.1 createConf-CreateConfResult
+  ### 实体类说明
+  
+  **由于SDK请求成功的结果会已实体类的方式，发送到回调接口中。在OnSuccess(Object obj)中需要将obj强转成对应的实体类使用。**
+  
+  #### createConf-CreateConfResult
   | 参数              | 说明           |
   | ----------------- | -------------- |
   | conf_id           | 会议号码       |
   | meeting_id        | 视频会议唯一id |
   | machine_room_moid | 机房moid       |
   
-  #### 2.5.2 endConf-CommonResult
+  #### endConf-CommonResult
   | 参数        | 说明            |
   | ----------- | --------------- |
   | success     | 1：成功 0：失败 |
   | error_code  | 失败时的错误号  |
   | description | 结果描述        |
   
-  #### 2.5.3 joinConf-JoinRoomResult
+  #### joinConf-JoinRoomResult
   | 参数     | 说明      |
   | -------- | --------- |
   | ConfE164 | 会议164号 |
   | ConfName | 会议名称  |
   
-  #### 2.5.4 quitConf
+  #### quitConf
   成功object为null
   失败onfail对应错误码
   
-  #### 2.5.5 acceptInvited
+  #### acceptInvited
   成功object为String
   失败onfail对应错误码
   
-  #### 2.5.6 refuseInvited
+  #### refuseInvited
   成功object为String
   失败onfail对应错误码
   
-  #### 2.5.7 getConfList-ReqVConfResult
+  #### getConfList-ReqVConfResult
   | 参数     | 说明      |
   | -------- | --------- |
   | total | 总会议数 |
   | confs | 会议列表  |
   
-  #### 2.5.8 getVtConfList-ReqVtMeetingResult
+  #### getVtConfList-ReqVtMeetingResult
   | 参数                  | 说明         |
   | --------------------- | ------------ |
   | total                 | 总数         |
   | virtual_meeting_rooms | 虚拟会议数组 |
   
-  #### 2.5.9 confShareLink-ReqMeetingLinkResult
+  #### confShareLink-ReqMeetingLinkResult
   | 参数     | 说明      |
   | -------- | --------- |
   | conf_link | 会议分享链接  |
   
-  #### 2.5.10 validConfName-ConfValidConfNameResult
+  #### validConfName-ConfValidConfNameResult
   | 参数     | 说明      |
   | -------- | --------- |
   | result | 1表示成功，无重名会议；0表示失败，有重名会议 |
   
-  #### 2.5.11 getChairMan-ConfChairManResult
+  #### getChairMan-ConfChairManResult
   | 参数  | 说明                          |
   | ----- | ----------------------------- |
   | mt_id | 主席id 最大字符长度：48个字节 |
   
-  #### 2.5.12 assignChairMan-CommonResult
+  #### assignChairMan-CommonResult
   | 参数        | 说明            |
   | ----------- | --------------- |
   | success     | 1：成功 0：失败 |
   | error_code  | 失败时的错误号  |
   | description | 结果描述        |
   
-  #### 2.5.13 getSpeaker-ConfSpeakerResult
+  #### getSpeaker-ConfSpeakerResult
   | 参数            | 说明                                                        |
   | --------------- | ----------------------------------------------------------- |
   | mt_id           | 发言人id 最大字符长度：48个字节                             |
   | force_broadcast | 是否设置发言人强制广播，仅SFU会议有效，默认为0 0-否；1-是； |
   
-  #### 2.5.14 assignSpeaker-ConfSpeakerResult
+  #### assignSpeaker-ConfSpeakerResult
   | 参数            | 说明                                                        |
   | --------------- | ----------------------------------------------------------- |
   | mt_id           | 发言人id 最大字符长度：48个字节                             |
   | force_broadcast | 是否设置发言人强制广播，仅SFU会议有效，默认为0 0-否；1-是； |
   
-  #### 2.5.15 inviteJoinConf-ReqInviteResult
+  #### inviteJoinConf-ReqInviteResult
   | 参数 | 说明     |
   | ---- | -------- |
   | mts  | 终端数组 |
   
-  #### 2.5.16 delayConf-CommonResult
+  #### delayConf-CommonResult
   | 参数        | 说明            |
   | ----------- | --------------- |
   | success     | 1：成功 0：失败 |
   | error_code  | 失败时的错误号  |
   | description | 结果描述        |
   
-  #### 2.5.17 silenceConf-CommonResult
+  #### silenceConf-CommonResult
   | 参数        | 说明            |
   | ----------- | --------------- |
   | success     | 1：成功 0：失败 |
   | error_code  | 失败时的错误号  |
   | description | 结果描述        |
   
-  #### 2.5.18 muteConf-CommonResult
+  #### muteConf-CommonResult
   | 参数        | 说明            |
   | ----------- | --------------- |
   | success     | 1：成功 0：失败 |
   | error_code  | 失败时的错误号  |
   | description | 结果描述        |
   
-  #### 2.5.19 muteMt-CommonResult
+  #### muteMt-CommonResult
   | 参数        | 说明            |
   | ----------- | --------------- |
   | success     | 1：成功 0：失败 |
   | error_code  | 失败时的错误号  |
   | description | 结果描述        |
   
-  #### 2.5.20 confNameChanged-CommonResult
+  #### confNameChanged-CommonResult
   | 参数        | 说明            |
   | ----------- | --------------- |
   | success     | 1：成功 0：失败 |
   | error_code  | 失败时的错误号  |
   | description | 结果描述        |
   
-  #### 2.5.21 voiceActivation-CommonResult
+  #### voiceActivation-CommonResult
   | 参数        | 说明            |
   | ----------- | --------------- |
   | success     | 1：成功 0：失败 |
   | error_code  | 失败时的错误号  |
   | description | 结果描述        |
   
-  #### 2.5.22 audienceList-ReqAudiencesListResult
+  #### audienceList-ReqAudiencesListResult
   | 参数      | 说明                 |
   | --------- | -------------------- |
   | audiences | 获取会议观众列表结果 |
   
-  #### 2.5.26 audienceInfo-ReqAudiencesInfoResult
+  #### audienceInfo-ReqAudiencesInfoResult
   | 参数         | 说明                                                                 |
   | ------------ | -------------------------------------------------------------------- |
   | mt_id        | 终端号                                                               |
@@ -583,19 +728,19 @@ content: '''
   | invite_mode  | 1-会管添加,2-终端主席邀请,3-终端主动入会                             |
   | e164         | 终端E164号                                                           |
   
-  #### 2.5.27 waterMark-CommonResult
+  #### waterMark-CommonResult
   | 参数        | 说明            |
   | ----------- | --------------- |
   | success     | 1：成功 0：失败 |
   | error_code  | 失败时的错误号  |
   | description | 结果描述        |
   
-  #### 2.5.28 confMembers-ReqConfMembersResult
+  #### confMembers-ReqConfMembersResult
   | 参数        | 说明            |
   | ----------- | --------------- |
   | mts     | 与会人员 |
   
-  #### 2.5.29 confVideoMsg-ReqConfInfoResult
+  #### confVideoMsg-ReqConfInfoResult
   | 参数            | 说明                                                 |
   | --------------- | ---------------------------------------------------- |
   | name            | 会议名称 最大字符长度：128个字节，最大字符：32字符， |
@@ -610,6 +755,86 @@ content: '''
   | meeting_id      | 视频会议唯一id                                       |
   | enable_audience | 是否超大方 0-否,1-是                                 |
   | duration        | duration                                             |
+  
+  ### ConfigData 方法说明
+  - 获取当前登录的账号id
+  ```
+  String result = ConfigData.getMoId
+  ```
+  - 当前是否在会议中
+  ```
+  String result = ConfigData.isInConf
+  ```
+  - 当前是否正在屏幕功能(双流)
+  ```
+  String result = ConfigData.isInSharing
+  ```
+  - 本人是否为会议主席
+  ```
+  String result = ConfigData.isMeChairMan
+  ```
+  - 本人是否为发言人
+  ```
+  String result = ConfigData.isMeSpeaker
+  ```
+  - 与会方列表缓存 (需要与MoyCtrl#confMembers配合刷新)
+  ```
+  List<ConfMember> result = ConfigData.getConfMembers
+  ```
+  - 获取本段与会方信息
+  ```
+  ConfMember result = ConfigData.getMyConfMember
+  ```
+  ### 网络处理方法说明
+  首先在Manifest配置文件中增加如下权限：
+  ```
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+  <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+  ```
+  创建一个用来网络监听类，并继承BroadcastReceiver,如：
+  ```
+  public class NetWorkStateBroadCastUtil extends BroadcastReceiver {
+      private static final String TAG = NetWorkStateBroadCastUtil.class.getSimpleName();
+  
+      @Override
+      public void onReceive(Context context, Intent intent) {
+          String action = intent.getAction();
+          Log.i("zhouwei", "action:" + action);
+          if (action.equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+              ConnectivityManager connectivityManager = (ConnectivityManager) BaseApplication.getInstance().getSystemService(Context.CONNECTIVITY_SERVICE);
+              NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+              if (info != null) {
+                  //有网络
+                  Log.i("zhouwei", "info:" + info + ",ConfigData.isNetExcept():" + ConfigData.isNetExcept());
+                  if (ConfigData.isNetExcept()) {
+                      MoyCtrl.reLogin(new MoyRspListener() {
+                          @Override
+                          public void onSuccess(Object obj) {
+                              Log.i("zhouwei", "relogin onsuccess:" + obj);
+                          }
+  
+                          @Override
+                          public void onFailed(int error) {
+                              Log.i("zhouwei", "relogin error:" + error);
+                          }
+                      });
+                  }
+              } else {
+                  //没有网络
+                  Log.i("zhouwei", "no network");
+  
+              }
+          }
+      }
+  }
+  ```
+  最后在合适的位置，注册广播和取消注册广播
+  ```
+  NetWorkStateBroadCastUtil netWorkStateBroadCastUtil = new NetWorkStateBroadCastUtil();
+  IntentFilter intentFilter = new IntentFilter();
+  intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+  registerReceiver(netWorkStateBroadCastUtil, intentFilter);
+  ```
 '''
 linesHighlighted: []
 isStarred: false
