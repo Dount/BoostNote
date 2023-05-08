@@ -1,5 +1,5 @@
 createdAt: "2023-05-06T02:55:11.441Z"
-updatedAt: "2023-05-06T02:56:31.963Z"
+updatedAt: "2023-05-08T14:52:41.813Z"
 type: "MARKDOWN_NOTE"
 folder: "c3bf24344ddc9bd2af22"
 title: "System Service"
@@ -7,10 +7,25 @@ tags: []
 content: '''
   # System Service
   
+  ## System Service概述
+  SystemServer 是由 zygote 进程 fork 出来的一个单独的进程。
+  SystemServer 是一个单独的进程，跟其他进程进行通讯使用 AIDL，所以离不开 Binder 的使用。
+  
+  ## System Service创建流程
+  1. ZygoteInit方法中通过fork，创建SystemService进程。完成后调用handleSystemServerProcess进入子进程，完成system_server进程剩余的工作。
+  2. 关闭父进程zygote复制而来的Socket，设置当前进程名为"system_server"，启动新binder线程等一系列初始化操作。
+  3. 通过反射获取systemserver的main方法，并执行main方法启动System Service。
+  
+  ## System Service启动流程
+  1. 首先初始化SystemService对象，调用其run方法。
+  2. run方法中，启动主线程Looper,加载android_servers.so库，初始化系统上下文，创建系统服务管理者SystemServiceManager.启动引导服务，启动核心服务，启动其他服务。
+  3. Looper.loop一直循环。等待所有服务器启动完成后，执行AMS.systemReady()回调方法，开始启动第一个App.
+  
+  
   ## 文献
   [Android系统启动-SystemServer上篇 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/02/14/android-system-server/)
   [Android系统启动-SystemServer下篇 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/02/20/android-system-server-2/)
-  
+  [【Android】system_server 创建和启动流程_android system_server_一场雪ycx的博客-CSDN博客](https://blog.csdn.net/yang553566463/article/details/121458341)
 '''
 linesHighlighted: []
 isStarred: false

@@ -1,5 +1,5 @@
 createdAt: "2023-04-02T15:28:31.959Z"
-updatedAt: "2023-05-05T06:11:36.769Z"
+updatedAt: "2023-05-08T15:06:05.913Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "清单"
@@ -701,6 +701,20 @@ content: '''
   - AIDL 常用于连接APP和Framework,HIDL则是用来连接Framework和HAL.
   - AIDL 使用Binder通信，HIDL使用HwBinder通信，他们都是通过Binder驱动完成通信，只不过两个Binder域不一样。
   
+  #### AIDL中的关键字
+  in、out、inout表示跨进程通信中数据的流向（基本数据类型默认是in，非基本数据类型可以使用其它数据流向out、inout）。
+  
+  in 表示数据只能由客户端流向服务端。（表现为服务端修改此参数，不会影响客户端的对象）
+  
+  out 表示数据只能由服务端流向客户端。（表现为服务端收到的参数是空对象，并且服务端修改对象后客户端会同步变动）
+  
+  inout 则表示数据可在服务端与客户端之间双向流通。（表现为服务端能接收到客户端传来的完整对象，并且服务端修改对象后客户端会同步变动）
+  
+  oneway 关键字用于修改远程调用的行为,远程调用不会阻塞,发送事务数据并立即返回回,本地调用不起作用，调用依旧是同步的，主要有两个特性：异步调用和串行化处理。
+  
+  - 异步调用是指应用向 binder 驱动发送数据后不需要挂起线程等待 binder 驱动的回复，而是直接结束。
+  - 串行处理是指对于一个服务端的 AIDL 接口，所有的 oneway方法不会同时执行,binder驱动会将他们串行化处理，排队一个一个调用。
+  
   ### Binder概述
   Binder是跨进程通信(IPC)的桥梁
   - 从性能上:
@@ -900,14 +914,30 @@ content: '''
   
   ### Android 一共有多少种动画
   - 视图动画(View动画)
+  可以在一个视图容器里执行一系列简单变换(位置，大小，旋转，透明度)
+  1. View 动画只能为 View 添加动画效果，且不能监听 View 相关属性的变化过程。
+  2. View 动画提供的动画能力较为单一，目前只支持帧动画、缩放动画、位移动画、旋转动画、透明度动画以及这些动画的集合动画。
+  3. View动画改变的是 View 的绘制效果，View 的真正位置和相关属性并不会改变，这也就造成了点击事件的触发区域是动画前的位置而不是动画后的位置的原因。
   - 帧动画(Drawable动画)
+  每一帧代表一个画面动作，当速度到达人眼无法分辨每一帧时，就达到了动画的效果。一般用在设备开关机动画
   - 属性动画
+  1. 属性动画作用对象不局限在 View 上，而是通过 Getter 和 Setter 方法作用在对象属性上。
+  2. 属性动画没有直接改变 View 状态的能力，而是通过动态改变 View 相关属性的方式来改变 View 的显示效果。
+  3. 属性动画使用更方便，可以用更简洁的代码实现相关的动画效果。
+  
   - 触摸反馈动画
+  就是一种点击效果，点击View时，点击事件会有涟漪般的反馈效果.
   - 揭露动画
+  揭露动画在系统中很常见，就是类似波纹的效果,从某一个点向四周展开或者从四周向某一点聚合起来。
   - 转场动画
+  转场效果我们一般用在 Activity 切换时的动画效果上
   - 视图状态动画
+  View 在状态改变时执行的动画效果,如通过selector选择器给Button设置不同状态的背景效果一样。
   - 矢量图动画
+  矢量图也称为面向对象的图像或绘图图像，是根据几何特性来绘制的图形，首先导入svg格式的图片生成矢量图的代码，其次根据path属性对数据进行绘制。最后通过连续改变path的值产生动画效果。
+  
   - 约束布局实现的关键帧动画
+  通过 ConstraintLayout 实现的一种关键帧动画
   
   ### 什么是MVVM
   1. MVVM，是Model-View-ViewModel的简写，是M-V-VM三部分组成。它本质上就是MVC 的改进版。MVVM就是将View的状态和行为抽象化，其中ViewModel将视图 UI 和业务逻辑分开，它可以取出Model的数据同时处理View中需要展示内容。
@@ -945,7 +975,6 @@ content: '''
   2. 在JNI_OnLoad方法中，获取JNINativeMethod结构体中定义的Java函数。
   3. 通过registerNativeMethods方法，将JNINativeMethod结构体中定义的Java函数，注册到JVM中。
   
-  
   ### 稳定——内存优化
   Android中的内存优化总的来说就是开源和节流，开源就是扩大内存，节流就是避免内存泄漏。
   
@@ -974,27 +1003,6 @@ content: '''
   
   数据处理：一般分为三种情况，一是在UI线程中处理数据，二是数据处理占用 CPU 高，导致主线程阻塞，三是内存增加导致GC频繁，从而引起卡顿。
   
-  ### 界面绘制优化
-  - 通过减少冗余或者嵌套布局来降低视图层次结构。比如使用约束布局代替线性布局和相对布局。
-  - 用 ViewStub 替代在启动过程中不需要显示的 UI 控件。
-  - 使用自定义 View 替代复杂的 View 叠加。
-  - 减少嵌套层次和控件个数。
-  - 减少过度绘制
-  
-  **ViewStub 是布局优化的方式之一，适用于一些延迟加载的场景，ViewStub本身是一个不可见不占用位置的 View，资源消耗比较小，只有调用了ViewStub.inflate()的时候加载布局，布局才会实例化。**
-  
-  ### 数据处理优化
-  - 主线程中不要直接操作数据库，数据库的操作应该放在子线程中完成。
-  - sharepreference 尽量使用 apply，少使用 commit，可以使用 MMKV 框架来代替 sharepreference。
-  - 网络请求回来的数据解析尽量放在子线程中。
-  - 不要在 activity 的 onResume 和 onCreate 中进行耗时操作。
-  
-  sharepreference 两种提交方式是commit和apply，区别在于：
-  1.commit 返回boolean类型的值，提示是否提交成功，而apply没有返回值；
-  2.commit 直接写入磁盘，apply先写入内存，然后异步写入磁盘；
-  
-  commit是同步提交，返回值告诉我们是否提交成功；apply是异步提交，效率高，无法确定是否提交成功。
-  
   ### 卡顿问题定位工具
   - dumpsys gfxinfo 
   记录动画帧相关性能信息，其帧信息可以对卡顿问题进行分类
@@ -1016,6 +1024,26 @@ content: '''
   该功能也同样在开发者选项中，通过设置打开开发人员选项，选择调试 GPU 过度绘制，打开要分析的应用。
   最终结果通过对界面进行彩色编码来告诉我们哪些属于过度绘制，尤其注意红色表示过度绘制4次或者更多。
   
+  ### 界面绘制优化
+  - 通过减少冗余或者嵌套布局来降低视图层次结构。比如使用约束布局代替线性布局和相对布局。
+  - 用 ViewStub 替代在启动过程中不需要显示的 UI 控件。
+  - 使用自定义 View 替代复杂的 View 叠加。
+  - 减少嵌套层次和控件个数。
+  - 减少过度绘制
+  
+  **ViewStub 是布局优化的方式之一，适用于一些延迟加载的场景，ViewStub本身是一个不可见不占用位置的 View，资源消耗比较小，只有调用了ViewStub.inflate()的时候加载布局，布局才会实例化。**
+  
+  ### 数据处理优化
+  - 主线程中不要直接操作数据库，数据库的操作应该放在子线程中完成。
+  - sharepreference 尽量使用 apply，少使用 commit，可以使用 MMKV 框架来代替 sharepreference。
+  - 网络请求回来的数据解析尽量放在子线程中。
+  - 不要在 activity 的 onResume 和 onCreate 中进行耗时操作。
+  
+  sharepreference 两种提交方式是commit和apply，区别在于：
+  1.commit 返回boolean类型的值，提示是否提交成功，而apply没有返回值；
+  2.commit 直接写入磁盘，apply先写入内存，然后异步写入磁盘；
+  
+  commit是同步提交，返回值告诉我们是否提交成功；apply是异步提交，效率高，无法确定是否提交成功。
   
   ### 安装包——APK瘦身
   从用户层面来说，面对动辄几十兆的APP来说在非WIFI情况下还是会犹豫要不要下载，不下载你就可能因此失去了一个用户。
@@ -1129,11 +1157,27 @@ content: '''
   
   五. ActivityManagerService通过Binder进程间通信，通知ActivityThread，现在一切准备就绪，可以执行onCreate方法启动Activity了。(28~35)
   
+  ### Zygote fork一个Launcher进程的阶段
+  1. AMS属于SystemServer进程，AMS通过StartProgressLock向zygote发送一个socket。
+  2. 这时Zygote无限循环状态，一直在等待Socket请求，收到发来新的Socket请求后，执行processOneCommend方法开始fork一个新进程。
+  3. fork过程中，首先停止Zygote的4个Daemon子进程，等待所有子线程结束，通过JNI开始堆的初始化工作。最终JNI调用系统的fork函数，孵化一个新进程。
+  4. fork成功后，设置selinux上下文，设置子进程的signal信号，设置新进程的主线程id等一系列初始化工作，启动Zygote的4个Daemon子进程。
+  7. 执行handleChildProc进入子进程处理，执行ZygoteInit方法，初始化运行环境，启动Binder线程池.
+  8. 执行applicationInit方法，通过反射获取ActivityThread的main方法，并调用main方法启动ActivityThread.
+  
+  ### ActivityThread 初始化
+  1. ActivityThread的main方法中，初始化Looper主线程，创建ActivityThread对象，调用attach处理，进入Loop循环。
+  2. attach方法中,将ApplicationThread对象绑定到ActivityManagerService，用于ActivityThread与ActivityManagerService通信。
+  3. 执行attachApplicationLocked方法，首先创建Application，并启动Application.onCreate方法。
+  4. 执行performLaunchActivity方法，通过Instrumentation创建Activity实例，回调 attach方法，设置context,title,样式等，最终执行onCreate方法。
+  
   ### startService启动过程
   1. Activity中的startService实际由ContextImpI中startService开始发起,利用Binder通信，通过AMP向AMS发起startService请求。
   2. AMS收到请求后，经由ActiveService一系列的处理后，向zygote发送请求fork出子进程ActivityThread.
-  3. ActivityThread 利用Binder通信，通过AMP调用AMS中attachApplicationLocked方法进行准备工作。
-  4. AMS再利用Binder通信，向ActivityThread调用scheduleCreateService方法,通过handler发送CREATE_SERVICE消息，创建Service，并启动Service.OnCreadte方法。
+  3. ActivityThread 利用Binder通信，向AMS发送attachApplication请求。
+  4. AMS利用Binder通信，向ActivityThread调用scheduleCreateService请求,通过handler发送CREATE_SERVICE消息，创建Service，并启动Service.OnCreadte方法。
+  5. ActivityThread收到请求后，通过handler向主线程发送CREATE_SERVICE消息，创建ContextImpl对象，创建Application对象，并回调Service.onCreate()方法
+  
   
   ### 注册广播流程
   - Activity/Service中调用registerReceiver()方法，最终调用ContextImpl的registerReceiverInternal方法。
@@ -1156,6 +1200,17 @@ content: '''
   - 将ANR reason和CPU使用情况，输出到MainLog
   - 将traces文件和CPU使用情况信息，保存到/data/system/dropbox
   - 如果是后台ANR，直接杀进程,否则弹框告知用户。
+  
+  ### System Service创建流程
+  1. ZygoteInit方法中通过fork，创建SystemService进程。完成后调用handleSystemServerProcess进入子进程，完成system_server进程剩余的工作。
+  2. 关闭父进程zygote复制而来的Socket，设置当前进程名为"system_server"，启动新binder线程等一系列初始化操作。
+  3. 通过反射获取systemserver的main方法，并执行main方法启动System Service。
+  
+  ### System Service启动流程
+  1. 首先初始化SystemService对象，调用其run方法。
+  2. run方法中，启动主线程Looper,加载android_servers.so库，初始化系统上下文，创建系统服务管理者SystemServiceManager.启动引导服务，启动核心服务，启动其他服务。
+  3. Looper.loop一直循环。等待所有服务器启动完成后，执行AMS.systemReady()回调方法，开始启动第一个App.
+  
   
   ### UI面是怎么显示到屏幕上的？
   Android视图显示的流程是先通过CPU把UI组件计算成多维图形和纹理坐标，然后通过OPenGL调用GPU进行栅格化，并最终渲染到屏幕上。

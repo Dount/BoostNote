@@ -1,5 +1,5 @@
 createdAt: "2023-01-08T15:07:09.915Z"
-updatedAt: "2023-05-06T09:54:27.466Z"
+updatedAt: "2023-05-08T15:05:28.422Z"
 type: "MARKDOWN_NOTE"
 folder: "c3bf24344ddc9bd2af22"
 title: "ActivityManagerService"
@@ -153,20 +153,7 @@ content: '''
           });
       }
   ```
-  ### 3.1 Attach中出现的重要成员类
-  1. Instrumentrain
-  Instrumentrain 是一个工具类，当他被启用时，系统先创建他，再通过他来创建其他组件。另外，系统和组件之间的交互也是通过Instrumentrain来传递，这样，Instrumentrain就能检测系统和这些组件的交互情况，在实际使用中，我们可以创建Instrumentrain的派生类来进行相应的处理。
-  
-  2. Application类
-  - Application类保存了一个全局的application状态，Application由AndroidManifest.xml中的标签声明；
-  - 在实际使用中需定义Application派生类；
-  - Application是Android中的一个概念，可以理解为一种容器，其内部包含四大组件，一个进程可以运行多个Application
-  
-  3. Context类
-  Context是一个接口，通过他可以获取并操作Application对应的资源、类，甚至包含于Application中的四大组件
-  ![1111.png](:storage\\ac9f3a24-f52f-44fa-8b3e-bb589e4dd4f0\\aa1ee246.png)
-  
-  ### 3.2 zygote，SystemServer，AMS，ActivityThread 的关系
+  ### 3.1 zygote，SystemServer，AMS，ActivityThread 的关系
   1. App(ActivityThread进程)和AMS(SystemServer进程)还有zygote进程属于三个独立的进程。
   2. App与AMS通过Binder进行IPC通信，AMS与zygote通过Socket进行IPC通信。
   3. AMS负责所有Activity的生命周期，若想打开一个App的话，需要AMS和ActivityThread相互配合来完成。
@@ -189,10 +176,16 @@ content: '''
   ![d53cb82a.png](:storage\\ac9f3a24-f52f-44fa-8b3e-bb589e4dd4f0\\d53cb82a.png)
   1. AMS属于SystemServer进程，AMS通过StartProgressLock向zygote发送一个socket。
   2. 这时Zygote无限循环状态，一直在等待Socket请求，收到发来新的Socket请求后，执行processOneCommend方法开始fork一个新进程。
-  4. fork过程中，首先停止4个Daemon子进程，等待所有子线程结束，通过JNI开始堆的初始化工作。最终调用JNI中nativeForkAndSpecialize，调用系统fork方法，孵化新的进程。
-  6. fork成功后，首先设置子进程的signal，执行handleChildProc进入子进程中处理。
-  7. 并执行ActivityThread中的main方法。
+  3. fork过程中，首先停止Zygote的4个Daemon子进程，等待所有子线程结束，通过JNI开始堆的初始化工作。最终JNI调用系统的fork函数，孵化一个新进程。
+  4. fork成功后，设置selinux上下文，设置子进程的signal信号，设置新进程的主线程id等一系列初始化工作，启动Zygote的4个Daemon子进程。
+  7. 执行handleChildProc进入子进程处理，执行ZygoteInit方法，初始化运行环境，启动Binder线程池.
+  8. 执行applicationInit方法，通过反射获取ActivityThread的main方法，并调用main方法启动ActivityThread.
   
+  ### 4.2 ActivityThread 初始化
+  1. ActivityThread的main方法中，初始化Looper主线程，创建ActivityThread对象，调用attach处理，进入Loop循环。
+  2. attach方法中,将ApplicationThread对象绑定到ActivityManagerService，用于ActivityThread与ActivityManagerService通信。
+  3. 执行attachApplicationLocked方法，首先创建Application，并启动Application.onCreate方法。
+  4. 执行performLaunchActivity方法，通过Instrumentation创建Activity实例，回调 attach方法，设置context,title,样式等，最终执行onCreate方法。
   
   ## 5 BroadCast 广播机制分析
   
@@ -232,8 +225,9 @@ content: '''
   启动流程:
   1. Activity中的startService实际由ContextImpI中startService开始发起,利用Binder通信，通过AMP向AMS发起startService请求。
   2. AMS收到请求后，经由ActiveService一系列的处理后，向zygote发送请求fork出子进程ActivityThread.
-  3. ActivityThread 利用Binder通信，通过AMP调用AMS中attachApplicationLocked方法进行准备工作。
-  4. AMS再利用Binder通信，向ActivityThread调用scheduleCreateService方法,通过handler发送CREATE_SERVICE消息，创建Service，并启动Service.OnCreadte方法。
+  3. ActivityThread 利用Binder通信，向AMS发送attachApplication请求。
+  4. AMS利用Binder通信，向ActivityThread调用scheduleCreateService请求,通过handler发送CREATE_SERVICE消息，创建Service，并启动Service.OnCreadte方法。
+  5. ActivityThread收到请求后，通过handler向主线程发送CREATE_SERVICE消息，创建ContextImpl对象，创建Application对象，并回调Service.onCreate()方法
   
   ## 7. ANR时系统的处理过程
   - 当 ANR 发生时，系统会调用appNotResponding方法。
@@ -249,9 +243,9 @@ content: '''
   [安卓的ActivityManagerService_dev晴天的博客-CSDN博客_activitymanagerservice](https://blog.csdn.net/qq_38350635/article/details/114785334)
   [Android 8.0 AMS分析的第一条线：SystemServer中的AMS的调用轨迹_yaoming168的博客-CSDN博客_systemserver进程和ams的关系](https://blog.csdn.net/yaoming168/article/details/51991570)
   [Android Activity的启动流程分析：以Launcher启动一个Activity为例，分析应用进程的创建、Activity的启动，以及他们和AMS之间的交互_yaoming168的博客-CSDN博客](https://blog.csdn.net/yaoming168/article/details/52402963)
-  [Android10.0系统启动之Launcher(桌面)启动流程-[Android取经之路]_安卓10桌面启动失败_IngresGe的博客-CSDN博客](https://blog.csdn.net/yiranfeng/article/details/103752203)
   [Android10.0应用进程创建过程以及Zygote的fork流程-[Android取经之路]_IngresGe的博客-CSDN博客](https://blog.csdn.net/yiranfeng/article/details/103812553)
-  
+  [ActivityThread_thread.attach是否在主线程运行_-Sloth-的博客-CSDN博客](https://blog.csdn.net/qq_29882585/article/details/107745937/)
+  [Activity 启动流程分析（Android10） - 知乎](https://zhuanlan.zhihu.com/p/150283395)
   
   [Android Broadcast广播机制分析 - Gityuan博客 \\| 袁辉辉的技术博客](http://gityuan.com/2016/06/04/broadcast-receiver/)
   [Android S动态广播注册流程(广播1)_android 动态注册广播_yun_hen的博客-CSDN博客](https://blog.csdn.net/yun_hen/article/details/124415431)
