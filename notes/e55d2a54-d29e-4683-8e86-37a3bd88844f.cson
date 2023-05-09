@@ -1,5 +1,5 @@
 createdAt: "2023-04-02T15:28:31.959Z"
-updatedAt: "2023-05-08T15:06:05.913Z"
+updatedAt: "2023-05-09T02:09:12.317Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "清单"
@@ -81,10 +81,6 @@ content: '''
   4. 接口中抽象方法前不能加abstract关键字，也不能加final,private,protected关键字来防止抽象方法的继承。只能用public
   5. 抽象类中抽象方法前必须加abstract关键字。
   
-  ### 内部类与外部类的关系
-  对于**普通内部类**，内部类的创建依赖外部类的实例对象，在没有外部类实例之前是无法创建内部类的。
-  **静态内部类**的创建并不依赖于外部类的创建。
-  
   ### 静态内部类与非静态内部类区别
   静态内部类可以有静态成员，而非静态内部类则不能有静态成员，但允许有静态常量。
   静态内部类可以访问外部类的静态方法和属性，不可以访问外部类的非静态变量。而非静态内部类的非静态成员可以访问外部类的非静态变量。
@@ -106,10 +102,6 @@ content: '''
   1.Throwable是所有错误和异常的父类,Throwable分为Error和Exception.
   2.Error指Java程序运行错误。出现Error通常是因为系统的内容部错误或资源耗尽，Error不能在运行过程中被动态处理，如果程序运行中出现Error, 系统只能记录错误的原因和安全终止。
   3.Exception指java程序运行异常，Exception又分为RuntimeException和IoExcetion,RuntimeException指在Java虚拟机正常运行期间抛出的异常，可以被捕获并处理，例如空指针异常，数组越界等。IoExcetion指编译阶段强制要求捕获并处理的异常，例如IO异常，SQL异常等。
-  
-  ### 有哪些异常处理方式?
-  第一种方式：在方法声明的位置上，使用throws关键字，抛给上一级。谁调用我，我就抛给谁。
-  第二种方式：使用try…catch语句进行异常的捕捉。
   
   ### 简述一下集合主要有哪些类和接口，各自有什么特点
   
@@ -134,7 +126,6 @@ content: '''
   - LinkedHashSet可以按照key的操作顺序排序,即保证元素添加的自然顺序。
   - TreeSet支持按照默认或指定的排序规则排序,即保证元素的自然顺序。
   
-  
   ### List,Set,Map有什么区别？
   1. List是有序，可重复，有索引的集合，继承了Collection集合全部功能除了Collection的三种遍历方式外，可用索引遍历。
   2. Set是无序，不可重复的集合，Set的实现类LinkedHashSet和TreeSet是有序的，LinkedHashSet可以按照元素插入的顺序排序，也可以按照元素操作的时间排序，TreeSet可以按照默认的比较规则或者自定义的比较规则排序。
@@ -148,58 +139,10 @@ content: '''
   5. HashMap是线程不安全的。
   6. HashMap的初始容量为16,填充因子默认是0.75。
   
-  ### HashMap的实现方式
-  1. JDK1.8之前，HashMap的底层是数组加链表实现，数组中的每个元素都是一个单链表，链表中每个元素都是Entry的一个实例，其中有四个属性key,value,hash,next,HashMap在查找数据时，根据hash值可以快速定位到数组的小标，然后对链表进行遍历查找。
-  2. JDK1.8之后，HashMap底层改为数组+链表+红黑树，当链表长度超过阈值8时，将链表转换为红黑树，使得性能上进一步得到提升。
-  
-  ### HashMap的哈希冲突
-  HashMap的实现使用一个数组，每个数组项里面有一个链表的方式来实现，因为HashMap使用key的hashCode来寻找存储位置，不同的key可能具有相同的hashCode.如果在插入时发现存储地址已经被相同的hashCode占用，则导致了哈希冲突。
-  
-  ### HashMap的哈希冲突解决
-  1.8之前
-  HashMap采用链地址法的方式，即，将相同hashcode值的对象组成一个链表，放在数组的某一项中。
-  1.8之后
-  HashMap同样采用链地址法的方式解决冲突，不同点在于如果链表长度大于8，会将链表转换为红黑树的形式。
-  
-  ### 负载因子为什么是0.75
-  负载因子代表着HashMap的填充度，负载因子越大，填充的元素就越多，空间利用率就越高。但是发生碰撞冲突的机会就越大，链表的长度越来越长，查找的效率就会降低。负载因子越小，填充的元素就越少，发生碰撞冲突的机会就越少。因此0.75属于时间和空间成本上一种折衷的设定。
-  
-  ### HashMap为什么不安全？
-  1. JDK7时多线程下扩容会造成死循环。
-  2. 多线程的put可能导致数据丢失。
-  3. put和get并发时可能导致get为null，数据被覆盖。
-  
-  ### ConcurrentHashMap的特点
-  1. HashMap功能基本一致，主要是为了解决HashMap线程不安全问题；
-  2. 不允许空值和空键
-  3. jdk1.7之前ConcurrentHashMap通过使用分段锁来实现线程安全，内部细分为很多Segment数据段，每个Segment的数据段单独进行加锁操作，这样多个线程对多个不同的段的操作是不会相互影响的。Segment是数组和链表结构，每个Segment里面都包含一个HashEntry数组，每个HashEntry都是一个链表结构的数据，若进行修改必须先获得对应的Segment锁，若发生hash冲突采用链表存储。
-  4. 因为在jdk1.7中还是数组加链表的方式，因此在查询的时候，仍然会遍历链表，导致效率很低。因此jdk1.8在遍历上采用红黑树的方式进行了优化。
-  5. jdk1.8中的ConcurrentHashMap将Segment块换成了Node，每个Node有自己的锁，每个Node里面包含一个HashEntry数组。若发生hash冲突，先使用链表存储，后面当链表长度超过8后会转换为红黑树来优化。
-  
-  ### 迭代器是什么?
-  1.迭代器实现了iterator接口，是用于遍历Collection集合元素的一个指针。
-  2.主要有三个方法
-    1）通过iterator()获得集合的迭代器
-    2）通过hasNext()判断集合当中是否还有元素，如果有返回true,没有则返回false. 初始化迭代器位于第一个元素之前。
-    3）通过next()获取集合的下一个元素，并向后移动一个元素的单位。
-  
-  ### 有哪些线程安全的集合类？
-  1. Vector,是线程安全的ArrayList,底层用数组实现，通过synchronized修饰方法保证线程安全。
-  2. HashTable是线程安全的HashMap,继承自Dictionary,通过synchronized修饰方法保证线程安全。性能较差
-  3. ConcurentHashMap,线程安全的HashMap,通过分段锁实现线程安全，性能较好。
-  
-  
   ### 创建线程有哪几种实现方式？分别有什么优缺点？
   1.继承Thread 类，重写run()方法
-    优点：编码简单，
-    缺点：不能继承其它类
   2.实现Runnable接口，重写run()方法，并将该实现类作为参数传入Thread构造器。
-    优点：可以继承其它类，避免了单继承的局限性；适合多个相同程序代码的线程共享一个资源，实现解耦操作，代码和线程独立。
-    缺点：实现相对复杂
   3.实现Callable接口，重写Call()方法，并包装成FutureTask对象，再作为参数传入Thread构造器。
-    优点:是相比方式二可以获取返回值。
-    缺点：实现复杂。
-  
   4.通过线程池创建。
   
   ### 线程有哪些状态
@@ -223,20 +166,11 @@ content: '''
   volatile主要是为了解决JMM中工作内存与主内存同步延迟现象导致的可见性问题，以及指令重排导致的可见性问题和有序性问题，则可以利用volatile关键字解决，因为volatile的另外一个作用就是禁止重排序优化。
   
   ### volatile的特性
-  1. 保证此变量对所有的线程的可见性。
-  保证被volatile修饰的共享变量对所有线程总数可见的，也就是当一个线程修改了一个被volatile修饰共享变量的值，新值总数可以被其他线程立即得知，**但是对于volatile变量运算操作在多线程环境并不保证安全性。**
-  
-  2. 禁止指令重排序优化。
-  volatile关键字通过内存屏障的方式实现禁止指令重拍优化，内存屏障是一个CPU的指令，他有两个作用，第一种保证特定操作的执行顺序，第二种保证某些变量的内存可见性（利用该特性实现volatile的内存可见性）。
-  
-  3. 保证特定操作的执行顺序：
-  由于编译器和处理器都能执行指令重排优化。如果在指令间插入一条内存屏障则会告诉编译器和CPU，不管什么指令都不能和这条内存屏障指令重排序，也就是说通过插入内存屏障禁止在内存屏障前后的指令执行重排序优化。
-  
-  4. 保证某些变量的内存可见性：
-  强制刷出各种CPU的缓存数据，因此任何CPU上的线程都能读取到这些数据的最新版本。
-  
+  1. 保证此变量对所有的线程的可见性
+  2. 禁止指令重排序优化
+  3. 保证特定操作的执行顺序
+  4. 保证某些变量的内存可见性
   5. 轻量级sychronized
-  在访问volatile变量时不会执行加锁操作，因此也就不会使执行线程阻塞，因此volatile变量是一种比sychronized关键字更轻量级的同步机制。
   
   ### 说一说synchronized关键字的作用
   原子性：被synchronized修饰的类或对象的所有操作都是原子的，因为在执行操作之前必须先获得类或对象的锁，直到执行完才能释放。
@@ -263,94 +197,22 @@ content: '''
   4.synchronized能锁住方法和代码块，而Lock只能锁住代码块。
   5.Lock可以使用读锁提高多线程读效率。
   
-  ### 线程池是什么
-  线程池是一块缓存了一定线程数量的区域，用于复用线程和管理线程
-  
-  ### 为什么需要线程池
-  线程池通过重用现有的线程，可以在处理多个请求时分摊线程在创建和撤销过程中的开销。
-  当请求到达时不会出现等待线程而延迟任务的执行，提高了响应性。
-  通过调整线程池的大小，可以创建足够多的线程保持处理器处于忙碌状态，同时还可以防止线程过多导致内存资源耗尽。
-  
   ### 创建线程池的方法有哪些
   可以通过Executors的静态工厂方法创建线程池，内部通过重载ThreadExecutorPool不同的构造器创建线程池。
   1.newFixedThreadPool:
   作用：**创建一个定长线程池，可控制线程最大并发数，超出的线程会在队列中等待。**
   
-  特征： 
-  （1）线程池中的线程处于一定的量，可以很好的控制线程的并发量 
-  （2）线程可以重复被使用，在显示关闭之前，都将一直存在 
-  （3）超出一定量的线程被提交时候需在队列中等待
-  
-  创建方式： 
-  （1）Executors.newFixedThreadPool(int nThreads)；//nThreads为线程的数量 
-  （2）Executors.newFixedThreadPool(int nThreads，ThreadFactory threadFactory)；//nThreads为线程的数量，threadFactory创建线程的工厂方式'
-  
   2.newCachedThreadPool:
   作用：**创建一个可缓存线程池，如果线程池长度超过处理需要，可灵活回收空闲线程，若无可回收，则新建线程。**
-  
-  特征： 
-  （1）线程池中数量没有固定，可达到最大值（Interger. MAX_VALUE） 
-  （2）线程池中的线程可进行缓存重复利用和回收（回收默认时间为1分钟） 
-  （3）当线程池中，没有可用线程，会重新创建一个线程
-  
-  创建方式： Executors.newCachedThreadPool();
   
   3.newSingleThreadExecutor:
   作用：**创建一个单线程化的线程池，它只会用唯一的工作线程来执行任务，保证所有任务按照指定顺序(FIFO, LIFO, 优先级)执行。**
   
-  特征： 
-  （1）线程池中最多执行1个线程，之后提交的线程活动将会排在队列中以此执行
-  
-  创建方式： 
-  （1）Executors.newSingleThreadExecutor() ； 
-  （2）Executors.newSingleThreadExecutor(ThreadFactory threadFactory)；// threadFactory创建线程的工厂方式
-  
   4.newScheduledThreadPool:
   作用：**创建一个定长线程池，支持定时及周期性任务执行。**
   
-  特征： 
-  （1）线程池中具有指定数量的线程，即便是空线程也将保留 
-  （2）可定时或者延迟执行线程活动
-  
-  创建方式： 
-  （1）Executors.newScheduledThreadPool(int corePoolSize)；// corePoolSize线程的个数 
-  （2）newScheduledThreadPool(int corePoolSize, ThreadFactory threadFactory)；// corePoolSize线程的个数，threadFactory创建线程的工厂
-  
   5.newSingleThreadScheduledExecutor
   作用：**创建一个单线程执行程序，它可安排在给定延迟后运行命令或者定期地执行。**
-  
-  特征： 
-  （1）线程池中最多执行1个线程，之后提交的线程活动将会排在队列中以此执行 
-  （2）可定时或者延迟执行线程活动
-  
-  创建方式： 
-  （1）Executors.newSingleThreadScheduledExecutor() ； 
-  （2）Executors.newSingleThreadScheduledExecutor(ThreadFactory threadFactory) ；//threadFactory创建线程的工厂
-  
-  ### CAS的概念
-  CAS指Compare And Swap，比较并交换,
-  - 解决多线程并行情况下使用锁造成性能损耗的一种机制
-  - CAS 是一条 CPU 的原子指令
-  - 需要底层硬件支持
-  
-  CAS 操作包含三个操作数 —— 内存位置（V）、预期原值（A）和新值(B)。 如果内存位置的值与预期原值相匹配，那么处理器会自动将该位置值更新为新值 。否则，处理器不做任何操作。
-  在 Java 中，Java 并没有直接实现 CAS，CAS 相关的实现是通过 C++ 内联汇编的形式实现的，直到后来JNI的出现，使得Java通过C++方法实现CAS。
-  
-  
-  ### 为什么使用CAS
-  独占锁是一种悲观锁，synchronized 就是一种独占锁，会导致其它所有需要锁的线程挂起，等待持有锁的线程释放锁。
-  而另一个更加有效的锁就是乐观锁， CAS 就是一种乐观锁，所谓乐观锁就是，每次不加锁而是假设没有冲突而去完成某项操作，如果冲突就重试，直到成功为止。
-  
-  ### CAS有什么问题
-  1.CAS算法地实现有一个重要前提：需要取出内存中某时刻的数据，然后在下一刻进行比较、替换，但在这个时间差内数据可能已经发生了变化，导致ABA问题。
-  2.由于CAS操作的原子性来源于硬件的支撑，而硬件只支持单个变量的原子操作，因此CAS只能针对单个变量原子进行操作。
-  
-  ### 什么是ABA
-  线程1准备利用CAS修改变量值A，但是在修改之前，其他线程已经将A变成了B，然后又变成A，即A->B->A,线程1执行CAS的时候发现仍然为A，所以CAS会操作成功，但是其实目前这个A已经是其他线程修改的了，但是线程1并不知道，最终内存值变成了B，这就导致了ABA问题。
-  
-  ### 如何解决ABA问题
-  1. 在变量前面追加版本号：每次变量更新就把版本号加1，则A-B-A就变成1A-2B-3A。
-  2. atomic包下的AtomicStampedReference类：其compareAndSet方法首先检查当前引用是否等于预期引用，并且当前标志是否等于预期标志，如果全部相等，则以原子方式将该引用的该标志的值设置为给定的更新值。
   
   ### 讲一讲wait、sleep、yield、join方法的区别
   1.wait是Object类的方法，调用wait方法的线程会进入等待(WAITING)状态，只有等待其他线程的通知或被中断后才会解除阻塞，调用wait方法释放锁资源。
@@ -362,11 +224,9 @@ content: '''
   - wait, sleep的相同点
   wait和sleep均能使线程处于等待状态
   - 定义上区别
-  wait方法定义在Object里面，基于对象锁，所有的对象都能使用。
-  sleep方法定义在Thread里面，是基于当前线程。
+  wait方法定义在Object里面，sleep方法定义在Thread里面。
   - 条件区别
-  wait必须在同步环境（synchronized方法）下使用，否则会报IllegalMonitorStateException异常。
-  sleep方法可在任意条件下使用。
+  wait必须在同步环境（synchronized方法）下使用，sleep方法可在任意条件下使用。
   - 功能区别
   wait/notify一起使用，用于线程间的通信，wait用于让线程进入等待状态，notify则唤醒正在等待的线程。
   sleep用于暂停当前线程的执行，它会在一定时间内释放CPU资源给其他线程执行，超过睡眠时间则会正常唤醒。
@@ -467,25 +327,6 @@ content: '''
   9、子类的非静态代码块
   10、子类的构造方法
   
-  ### 类加载器的分类
-  - 引导类加载器(bootstrap class loader)
-  （1）它用来加载 Java 的核心库(JAVA_HOME/jre/lib/rt.jar,sun.boot.class.path路径下的内容)，是用原生代码（C语言）来实现的，并不继承自java.lang.ClassLoader。
-  （2）加载扩展类和应用程序类加载器。并指定他们的父类加载器。
-  
-  - 扩展类加载器(extensions class loader)
-  （1）用来加载 Java 的扩展库(JAVA_HOME/jre/ext/* .jar，或java.ext.dirs路径下的内容) 。Java 虚拟机的实现会提供一个扩展库目录。该类加载器在此目录里面查找并加载 Java类。
-  （2）由sun.misc.Launcher$ExtClassLoader实现。
-  
-  - 应用程序类加载器(application class loader)
-  （1）它根据 Java 应用的类路径（classpath，java.class.path 路径下的内容）来加载 Java 类。一般来说，Java 应用的类都是由它来完成加载的。
-  （2）由sun.misc.Launcher$AppClassLoader实现。
-  
-  - 自定义类加载器
-  （1）开发人员可以通过继承 java.lang.ClassLoader类的方式实现自己的类加载器，以满足一些特殊的需求。
-  
-  ### 类加载器的代理模式-双亲委托机制
-  某个特定的类加载器接收到类加载的请求时，会将加载任务委托给自己的父类，直到最高级父类引导类加载器（bootstrap class loader），如果父类能够加载就加载，不能加载则返回到子类进行加载。如果都不能加载则报错。ClassNotFoundException
-  
   ### java对象引用
   强引用,软引用,弱引用,虚引用
   
@@ -498,26 +339,6 @@ content: '''
   深拷贝是整个独立的对象拷贝，会拷贝所有的属性,并拷贝属性指向的动态分配的内存。当对象和它所引用的对象一起拷贝时即发生深拷贝。深拷贝相比于浅拷贝速度较慢并且花销较大。
   1. 对于数据类型是基本数据类型的成员变量，由于基础数据类型是值传递的，所以是直接将属性值赋值给新的对象。
   2. 对于数据类型是引用数据类型的成员变量，如成员变量是某个数组、某个类的对象等，深拷贝会新建一个对象空间，然后拷贝里面的内容，所以它们指向了不同的内存空间。改变其中一个，不会对另外一个也产生影响。
-  
-  ### 反射与注解
-  #### 概述 
-  JAVA反射机制是在运行状态中，
-  
-  对于任意一个类，都能够知道这个类的所有属性和方法；
-  
-  对于任意一个对象，都能够调用它的任意一个属性和方法；
-  
-  这种动态获取的信息以及动态调用对象的方法的功能称为 java语言的反射机制。
-  
-  #### 反射原理
-  
-  Java反射机制的原理主要是通过Class类来实现的。Class类是Java中反射机制的核心类，它可以在运行时动态地获取一个类的信息。Class类的实例对象可以通过三种方式获取：
-  
-  1. 使用Class.forName()方法获取Class对象。
-  2. 使用类名.class获取Class对象。
-  3. 使用对象.getClass()方法获取Class对象。
-  
-  获取到Class对象之后，就可以通过该对象来获取类的属性和方法，创建实例对象等。
   
   ## Android 
   
@@ -538,7 +359,6 @@ content: '''
   360手机助手、百度助手，小米商店。
   - App迭代功能更新
   App很难在第一个版本就做到足够完美出色，在app上线之后需要根据用户反馈，后台数据等不断的更新迭代，满足用户需求，增强用户粘性。
-  
   
   ### 同步，异步
   1、同步执行的话，就是程序会呆板地从头执行到尾，耗时间的东西不执行完，程序不会继续往下走，等待时间长的话，有时候就会造成失去响应了。
@@ -1119,9 +939,24 @@ content: '''
   发生崩溃的具体方法和行数可以用 Android/SDK/NDK 提供的工具 linux-android-addr2line 来进一步定位。
   
   ### Window PhoneWindow DecorView 的关系
+  Window是一个抽象类，是所有视图的最顶层容器
+  PhoneWindow 作为 Window 的唯一实现类
+  DecorView 是 PhoneWindow 的一个内部类，PhoneWindow 将信息通过 DecorView 传递给下面的 View，而下面 View 的信息也通过 DecorView 回传给 PhoneWindow。
+  
   ### 事件分发，拦截，消费
+  dispatchTouchEvent
+  onInterceptTouchEvent
+  onTouchEvent
+  
   ### View 事件相关的各个方法调用顺序
+  onTouchListener > onTouchEvent > onLongClickListener > onClickListener
+  
   ### ViewGroup 中子View重叠时如何分配
+  当 ChildView 重叠时，**一般会分配给显示在最上面的 ChildView**。  
+  如何判断哪个是显示在最上面的呢？后面加载的一般会覆盖掉之前的，所以**显示在最上面的是最后加载的**。
+  1. 只有 View1 可点击时，事件将会分配给 View1，即使被 View2 遮挡，这一部分仍是 View1 的可点击区域。
+  2. 只有 View2 可点击时，事件将会分配给 View2。
+  3. View1 和 View2 均可点击时，事件会分配给后加载的 View2，View2 将事件消费掉，View1接收不到事件。
   
   ## Android Framework
   ### 什么是ActivityManagerService
@@ -1173,11 +1008,10 @@ content: '''
   
   ### startService启动过程
   1. Activity中的startService实际由ContextImpI中startService开始发起,利用Binder通信，通过AMP向AMS发起startService请求。
-  2. AMS收到请求后，经由ActiveService一系列的处理后，向zygote发送请求fork出子进程ActivityThread.
+  2. AMS收到请求后，经由ActiveService一系列的处理后，向zygote发送请求fork出子进程ActivityThread。
   3. ActivityThread 利用Binder通信，向AMS发送attachApplication请求。
-  4. AMS利用Binder通信，向ActivityThread调用scheduleCreateService请求,通过handler发送CREATE_SERVICE消息，创建Service，并启动Service.OnCreadte方法。
+  4. AMS利用Binder通信，向ActivityThread调用scheduleCreateService请求。
   5. ActivityThread收到请求后，通过handler向主线程发送CREATE_SERVICE消息，创建ContextImpl对象，创建Application对象，并回调Service.onCreate()方法
-  
   
   ### 注册广播流程
   - Activity/Service中调用registerReceiver()方法，最终调用ContextImpl的registerReceiverInternal方法。
