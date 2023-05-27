@@ -1,5 +1,5 @@
 createdAt: "2023-03-16T07:57:36.947Z"
-updatedAt: "2023-04-28T09:18:10.326Z"
+updatedAt: "2023-05-11T12:36:15.326Z"
 type: "MARKDOWN_NOTE"
 folder: "d93d185dcf894dbad7b3"
 title: "MOSDK 使用教程"
@@ -8,6 +8,13 @@ content: '''
   # MOSDK 使用教程
   [TOC]
   ## 更新内容
+  
+  ### 20230511
+  1. 增加loginEx登陆方式，支持第三方userid+token登陆
+  2. 删除changelogin接口。
+  
+  ### 20230510
+  1. 增加API Token认证，登陆流程使用方式不变。
   
   ### 20230428
   1. 修复端侧息屏后，断网情况下，再恢复网络后。保持登陆状态问题。
@@ -90,7 +97,7 @@ content: '''
   
   ### 接口说明
   
-  #### 登录/切换登录
+  #### 登录
   ```
   login(String account, String pwd, String server, MoyRspListener)
   ```
@@ -102,14 +109,16 @@ content: '''
   | MoyRspListener | 监听接口   |
   
   ```
-  changeLogin(String account, String pwd, String server, MoyRspListener listener)
+  loginEx(String server, String userId, String token,String deviceType,MoyRspListener listener)
   ```
-  | 参数           | 说明       |
-  | -------------- | ---------- |
-  | account        | 账号       |
-  | pwd            | 密码       |
-  | server         | 服务器地址 |
-  | MoyRspListener | 监听接口   |
+  以上参数通过使能平台传递过来。
+  | 参数       | 说明                                           |
+  | ---------- | ---------------------------------------------- |
+  | server     | 服务地址 当前测试平台地址mosus43.mo-meeting.cn |
+  | userId     | 用户唯一ID                                     |
+  | token      | 认证授权Token                                  |
+  | deviceType | 设备类型 当前使用类型 MT SOFT                  |
+  
   
   #### 登出
   ```

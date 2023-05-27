@@ -1,5 +1,5 @@
 createdAt: "2023-04-02T15:28:31.959Z"
-updatedAt: "2023-05-09T02:09:12.317Z"
+updatedAt: "2023-05-25T04:11:58.943Z"
 type: "MARKDOWN_NOTE"
 folder: "537068cf3ce988a4b28a"
 title: "清单"
@@ -8,15 +8,54 @@ content: '''
   # 清单
   
   ## 自我介绍
-  我先自我介绍一下，19年2月份毕业参加工作，一直从事Android相关开发工作。目前有4年Android开发经验
-  第一份工作是在上海商泰汽车，担任Android开发工程师，主要围绕IVI车载信息娱乐系统开发，
-  第一年参与MirrorLink与SDL框架下用于手机与车载机互联几款应用程序。
-  第二年参与Android Framework的开发工作，自定义中间件Service模块，负责CTS测试与分析等工作。
-  之后由于疫情公司发展不景气导致整个部门被裁员。
+  我先自我介绍一下。
+  我是19年毕业后参加工作，一直从事Android开发相关工作。目前有4年Android开发经验。
+  我有两份工作经历。
+  第一份工作经历是在上海商泰汽车，担任Android开发工程师。
+  主要围绕IVI娱乐终端系统进行开发。
+  首先参与了 SDL,MirroLink,Android Auto框架下 手机与车载机连携的几款应用开发。
+  其次参与了 Android Framework 中间件的开发工作。
+  最后参与了一些CTS测试相关工作。
   
-  第二份工作是在苏州科达上海研发中心，担任移动终端开发工程师，主要围绕直播，云会议等应用程序或SDK开发。
-  第一年参与轨道交通通信系统的应用开发和基础音视频SDK的开发，同时也参与IOS应用程和SDK的开发。
-  第二年至今参与终端一体机定制应用开发和云会议SDK的开发。
+  第二份工作经历是在苏州科达上海研发中心，担任Android开发工程师。
+  主要围绕直播，云视频会议应用以及音视频SDK的开发。
+  首先参与了科达天行和摩云致邻这两款App的开发工作。
+  其次参与了音视频SDK的开发工作。
+  最后参与了一体化终端或轨道交通等定制化开发项目。
+  
+  回去合肥发展的主要两个原因
+  一个原因，去年疫情父亲去世，目前我母亲在合肥生活，回合肥发展方便以后照顾我母亲。
+  另一个原因，我未婚妻也在合肥工作，长期异地也不太好，沟通后决定以后回合肥定居。
+  
+  
+  ### TCP 与串口的区别
+  串口，只能一对一
+  tcp 是以太网可以一对多。
+  
+  通讯距离
+  串口小于20米，
+  以太网距离随意。
+  
+  通讯速度，串口 小于tcp速度。
+  
+  TCP的缺点： 慢，效率低，占用系统资源高，易被攻击 TCP在传递数据之前，要先建连接。
+  
+  
+  #### TCP 三次握手
+  1.客户端先向服务端发起SYN请求
+  2.服务端收到SYN请求后，给客户端回复ACK+SYN
+  3. 客户端收到后就知道服务端在线了。回复ACK，这样服务端合客户端可以进行通信。
+  
+  #### TCP 四次挥手
+  主动关闭方给被动关闭方发送FIN请求。
+  被动关闭方收到后发送ACK回复。
+  被动关闭方给主动关闭方发送FIN请求。
+  主动关闭方法收到后发送ACK回复。
+  
+  #### 串口
+  串口又称“COM口”，
+  是采用串行通信方式的扩展接口。
+  一般RS-232(25针或9针)连接器
   
   ## JAVA 
   ### Byte和位Bit的关系
@@ -60,6 +99,28 @@ content: '''
   2) 继承：一种子类到父类的关系，可以提高代码的复用性，相同代码可写到父类，子类的功能更加强大，不仅得到了父类的功能，还有自己的功能。
   3) 多态：同一个类型的对象执行相同的行为，在不同的状态下表现出不同的特征。多态可以降低类之间的耦合度，便于扩展和维护。
   
+  ### 多态
+  
+  #### 多态概念
+  就是多种形态，具体点就是去完成某个行为，当不同的对象去完成时会产生出不同 的状态。
+  
+  #### 多态实现条件
+  1. 必须在继承体系下
+  2. 子类必须要对父类方法进行重写
+  3. 通过父类的引用调用重写方法
+  
+  #### 多态体现
+  重写是父类和子类的一种多态性表现
+  重载是一个类的多态性的表现
+  
+  重写：
+  1.父类的成员方法只能被子类重写，父类的构造方法不能被重写
+  2.重写的方法的参数列表与被重写方法的参数列表必须完全一致，
+  3.重写方法的返回类型可以与被重写方法不相同
+  
+  重载：
+  重载是在一个类里边，方法名相同，参数不同，返回类型可以相同也可以不同。
+  
   ### 列举Object类的方法
   1) equals(Object obj):判断其他对象是否与当前对象相等。
   2) toString():打印当前对象的字符串表示
@@ -102,6 +163,29 @@ content: '''
   1.Throwable是所有错误和异常的父类,Throwable分为Error和Exception.
   2.Error指Java程序运行错误。出现Error通常是因为系统的内容部错误或资源耗尽，Error不能在运行过程中被动态处理，如果程序运行中出现Error, 系统只能记录错误的原因和安全终止。
   3.Exception指java程序运行异常，Exception又分为RuntimeException和IoExcetion,RuntimeException指在Java虚拟机正常运行期间抛出的异常，可以被捕获并处理，例如空指针异常，数组越界等。IoExcetion指编译阶段强制要求捕获并处理的异常，例如IO异常，SQL异常等。
+  
+  ### 单例模式
+  #### 饿汉模式
+  在类加载的时候，静态实例就已创建并初始化好了。
+  优点： 1. 单例对象的创建是线程安全的；2. 获取单例对象时不需要加锁。
+  #### 懒汉模式
+  懒汉式为了支持延时加载，将对象的创建延迟到了获取对象的时候，但为了线程安全，不得不为获取对象的操作加锁
+  优点：1. 对象的创建是线程安全的。2. 支持延时加载。
+  #### 双重校验锁模式
+  将懒汉式中的 synchronized 方法改成了 synchronized 代码块，给成员变成加上 volatile 关键字，从而禁止指令重排序。
+  优点：1. 对象的创建是线程安全的。2. 支持延时加载。3. 获取对象时不需要加锁。
+  #### 静态内部类
+  利用Java 静态内部类的特性：Java 加载外部类的时候，不会创建内部类的实例，只有在外部类使用到内部类的时候才会创建内部类实例。
+  优点：1. 对象的创建是线程安全的。2. 支持延时加载。3. 获取对象时不需要加锁。
+  #### 枚举
+  这种实现方式通过 Java 枚举类型本身的特性
+  优点: 不用考虑懒加载和线程安全的问题,防止反序列化和反射破坏。
+  
+  #### 为什么要double check？去掉第二次check行不行？
+  不行，当2个线程同时执行获取单例时，都会执行第一个if判断，由于锁机制的存在，会有一个线程先进入同步语句，而另一个线程等待，当第一个线程执行了new Singleton()之后，就会释放锁，没有第二重if判断，那么第二个线程也会创建一个实例，这就破坏了单例。
+  
+  #### singleton为什么要加上volatile关键字?
+  new 一个对象不是一个原子操作，调用构造方法和初始化成员字段，为单例分配内存空间的过程存在指令重排序的问题，volatile的特性就是禁止指令重排。
   
   ### 简述一下集合主要有哪些类和接口，各自有什么特点
   
@@ -214,6 +298,15 @@ content: '''
   5.newSingleThreadScheduledExecutor
   作用：**创建一个单线程执行程序，它可安排在给定延迟后运行命令或者定期地执行。**
   
+  ### 创建线程池的重要参数
+  corePoolSize 线程池核心线程大小
+  maximumPoolSize 线程池最大线程数量	
+  keepAliveTime 空闲线程存活时间
+  unit 空闲线程存活时间单位
+  workQueue 工作队列
+  threadFactory 线程工厂
+  handler 拒绝策略
+  
   ### 讲一讲wait、sleep、yield、join方法的区别
   1.wait是Object类的方法，调用wait方法的线程会进入等待(WAITING)状态，只有等待其他线程的通知或被中断后才会解除阻塞，调用wait方法释放锁资源。
   2.sleep是Thread类的方法，调用sleep方法导致当前线程进入休眠状态，与wait不同的是该方法不会释放锁资源，进入的是计时等待(TIMED-WAITING)状态。
@@ -297,7 +390,10 @@ content: '''
   - volatile可以保证变量不会被编译器重排序。
   
   ### JVM中类加载的过程
-  虚拟机把描述类的数据从Class文件加载到内存，并对数据进行校验，转换解析和初始化，最终形成可以被虚拟机直接使用的java类型
+  类加载的过程
+  加载：类加载器通过通过双亲委托机制把描述类的数据从class文件加载到内存。
+  连接：验证，准备，解析。
+  初始化：类的初始化顺序
   
   #### 加载
   1.JVM将.class文件读入内存，并为创建一个class对象。
@@ -342,28 +438,6 @@ content: '''
   
   ## Android 
   
-  ### APP开发流程
-  
-  - 需求整理
-  如果市场是哪个有同类型的app，可以参考同类产品
-  - 功能细化
-  对每一个功能需求进行细化研究，团队讨论。
-  - 相关平台开发者账号申请，申请软件著作权。
-  百度、腾讯、小米，华为。
-  - App底层框架搭建
-  底层框架决定了app的稳定性以及可在塑型。
-  - App开发
-  - App测试
-  开发人员内部测试、项目发起人之间内测、邀请种子用户内测。
-  - App上线应用市场
-  360手机助手、百度助手，小米商店。
-  - App迭代功能更新
-  App很难在第一个版本就做到足够完美出色，在app上线之后需要根据用户反馈，后台数据等不断的更新迭代，满足用户需求，增强用户粘性。
-  
-  ### 同步，异步
-  1、同步执行的话，就是程序会呆板地从头执行到尾，耗时间的东西不执行完，程序不会继续往下走，等待时间长的话，有时候就会造成失去响应了。
-  2、异步的好处，就是把一些东西，特别是耗时间的东西扔到后台去运行了(doInBackground)，程序可以继续做自己的事情，防止程序卡在那里失去响应。
-  
   ### 比较熟悉常用的框架，每种优势
   1. View框架
   - ButterKnife
@@ -378,10 +452,12 @@ content: '''
   - OkHttp 
   okhttp是一款基于HTTP和HTTP2.0协议的网络框架，比较流行的框架，其衍生框架Retrofit也是基于okHttp.
   5. 图片框架
-  - glide
-  Glide是一个快速高效的Android图片加载库，注重于平滑的滚动。
-  - Picasso
-  支持加载 Gif 和 Webp 格式的图片，适用于多图片、大图片类 Android 应用使用。
+  Glide 和 Picasso 可以说是目前 Android 上最流行的图片加载库，区别在于
+  - Glide比Picasso加载速度快，但Glide比Picasso需要更大的空间来缓存
+  - Glide默认的是Bitmap格式是RGB-555，Picasso默认ARGB_8888格式
+  - Glide可以加载Gif动图，Picasso不可以加Gif
+  - Glide缓存已改变大小的图片，Picasso缓存全尺寸的图片。
+  
   6. 数据库框架
   - Room
   jetpack组件之一,它在SQLite的基础上提供了一个抽象层，允许更强大的数据库访问。
@@ -394,6 +470,16 @@ content: '''
   - leakcanary
   内存检测框架
   
+  ### Android 组件化开发概述
+  就是将整个庞大的项目以业务逻辑进行拆分成多个模块，并且各个模块之间相互独立，相互解耦，每一个模块可以单独进行开发调试。
+  如果出现一些相同业务，如登陆/注册，我们可以单独把公共业务封装成一个独立模块，供其它App使用。
+  
+  ### Android 组件化开发结构
+  1. App壳，包含application,启动页，初始化操作。
+  2. module层，具体业务模块
+  3. 公共资源库 所有module的依赖的lib库，
+  4. 工具层 网络请求框架，图片框架
+  
   ### 常用的设计模式
   1. 适配器模式 
   ListView或GridView的Adapter
@@ -405,6 +491,7 @@ content: '''
   5. 代理模式
   bind通信
   6. 单例模式
+  懒汉，饿汉，双重锁校验，静态内部类，枚举
   
   ### 多线程的通信方式
   - 简单使用:
@@ -433,28 +520,48 @@ content: '''
   ### Activity生命周期
   ### 锁定屏与解锁屏幕时Activity生命周期
   ### 两个Activity之间切换
+  两个Activity之间切换: Activity A 启动另一个Activity B，回调如下:Activity A 的onPause() → Activity B的onCreate() → onStart() → onResume() → Activity A的onStop();如果B是透明主题又或则是个DialogActivity，则不会回调A的onStop
+  
   ### 保存与恢复 onSaveInstanceState() onRestoreInstanceState()
   ### Activity 启动模式
   #### standard
   标准模式是系统的默认模式（可以不指定），在这样模式下，每启动一个Activity都会重新创建一个Activity的新实例，并且将其加入任务栈中，而且完全不会去考虑这个实例是否已存在。
   
-  #### singleTop
-  栈顶复用模式,在这种模式下，如果有新的Activity已经存在任务栈的栈顶，那么此Activity就不会被重新创建新实例，而是复用已存在栈顶的Activity。此时Activity的onCreate、onStart方法不会被调用，会调用onNewIntent方法因为Activity并没有被重建。
+  #### SingleTop
+  分两种情况，需要创建的Activity已经处于栈顶时，此时会直接复用栈顶的Activity.
+  需要创建的Activity不处于栈顶，此时会创建一个新的Activity入栈。
+  场景：APP接收到多条推送消息，点开不同消息，均由同一Acitivity展示，
   
-  如果新的Activity的实例已存在但没有位于栈顶，那么新的Activity仍然会被重建。
+  #### SingleTask
+  若需要创建的Activity已经处于栈中，不会创建新的Activity,而是将之前的其他Activity全部销毁。
+  使其成为栈顶。
+  场景：淘宝的主界面，在淘宝陆续打开商品搜索界面、商品详细界面、订单界面、付款成功界面后，在付款成功界面一键返回主界面
   
-  #### singleTask
-  1. 若Activity不存在，则会在当前task创建一个新的实例。若存在不在栈顶，则会把task中在其之上的Activity destory掉并并回调onNewIntent方法。若存在在栈顶，会调用onNewIntent方法。
-  
-  2. 如果是在别的应用程序中启动它，则会新建一个task，并在该task中启动这个Activity，singleTask允许别的Activity与其在一个task中共存，也就是说，如果我在这个singleTask的实例中再打开新的Activity，这个新的Activity还是会在singleTask的实例的task中。
-  
-  #### singleInstance
+  #### SingleInstance
   只有一个实例，并且这个实例独立运行在一个task中，这个task只有这个activity实例，不允许有别的Activity存在。
+  场景:  拨打电话、系统通讯录、系统Launcher、锁屏键、来电显示等系统应用
+  
   例如，ActivityA->ActivityB(SingleInstance)->ActivityC 点击Back退出顺序：结果为C-》A-》B
   原因：singleInstance模式是存在于另一个任务栈中的。也就是说ActivityA和ActivityC是处于同一个任务栈中的，ActivityB则是存在另个栈中。
   所以当关闭了ActivityC的时候，先去找当前任务栈存在的activity。当前的activity都finish了之后，才会去找另一个任务栈中的activity。
   解决方法是：在ActivityB定义一个全局变量，在onCreate方法将returnActivityB=true;
   然后在ActivityA界面onStart方法里判断returnActivityB是否为true，是的话就跳转到ActivityB，同时将returnActivityB=false。
+  
+  ### 广播注册
+  - 静态注册就是在AndroidManifest文件中注册广播接收器相关信息(BroadcastReceiver和intent-filter)，然后在应用安装的时候通过PKMS(PackageManagerService)进行解析，来完成注册。
+  - 动态注册是把BroadcastReceiver包装成一个Binder对象，然后创建一个包含BroadcastReceiver和IntentFilter的BroadcastFilter对象，最后将BroadcastFilter对象加入到AMS中的mReceiverResolver变量中。
+  
+  ### 广播使用
+  1. 创建广播接收器
+  直接继承 BroadcastReceiver 创建子类并实现父类的 onReceive() 方法
+  2. 静态广播
+  在 AndroidMainfest 文件中定义，intent-filter定义action
+  3. 动态广播
+  registerReceiver 注册广播
+  4. 发送广播
+  sendBroadcast 发送广播
+  5. 注销广播
+  unregisterReceiver 注销广播
   
   ### Task任务栈
   - android任务栈又称为Task，它是一个栈结构，具有后进先出的特性，用于存放Activity
@@ -478,7 +585,29 @@ content: '''
   
   Step7  App进程，通过Binder向sytem_server进程发起创建Application请求。当System_server准备好后再通过Binder告诉App进程可以调用onCreate方法启动Lacunch App.
   
-  ### Android中实现IPC通信的8种方式
+  ### Android中实现IPC通信的7种方式
+  - Bundle
+  android中的四大组件可以通过Bundle所支持的数据类型来进行跨进程通信.
+  Bundle支持的数据类型包括基本数据类型、Parcelable、 Serializable
+  
+  - 文件共享
+  文件共享方式适合在对数据同步要求不高的进程之间进行通信，并且要妥善处理并发读/写的问题。
+  适用于无并发访问情况，交换简单数据，无法做到进程间即时通信。
+  
+  - Messenger
+  Messenger是一种轻量级的IPC，它的底层实现是AIDL，通过它可以在不同进程中传递Message对象，在Message中放入我们需要传递的数据，就能轻松地实现数据在进程间的传递，适用于低并发一对多即时通信
+  
+  - AIDL
+  适用于高并发一对多即时通信。
+  - ContentProvider
+  ContentProvider是android专门为不同应用程序提供数据共享的方式，为进程间通信而生。ContentProvider底层由Binder实现，一旦某个应用程序通过ContentProvider暴露了自己的数据操作接口，那么不管该应用程序是否启动，其他应用程序都可以通过接口来操作接口内的数据，包括增、删、改、查，适用于一对多的进程间的数据共享。
+  
+  - Socket方法
+  通过网络传输字节流，支持一对多并发实时通信，实现麻烦，适用于网络数据交换场景。
+  
+  - BroadCase
+  广播是一种被动跨进程通讯的方式。当某个程序向系统发送广播时，其他的应用程序只能被动地接收广播数据。
+  
   ### 序列化与反序列化的知识
   
   ### AIDL概述
@@ -570,7 +699,11 @@ content: '''
   Step9: 执行完之后把执行结果通过 copy_to_user() 将内核的结果拷贝到用户空间
   Step10: 最后唤醒等待的客户端并把结果响应给客户端。
   
-  ### 冷启动与热启动
+  ### Handler 作用
+  
+  Handler消息机制用于同进程的线程间通信
+  可以说只要有异步线程与主线程通信的地方就一定会有 Handler
+  
   ### Handler,MessageQueue与Looper关系
   1. Message:
   Handler接收和处理消息的对象。
@@ -591,9 +724,11 @@ content: '''
   - 消息发送:
   工作线程通过sendMessage或post发送消息到MessageQueue消息队列中。
   - 消息循环:
-  Looper循环取出MessageQueue中的消息，并根据target属性把消息分发给处理消息的Handler对象。
+  Looper循环取出MessageQueue中的消息
+  - 消息分发:
+  从loop中获取的消息，根据target属性，获取到对应的handler对象。
   - 消息处理:
-  Handler对象接收Looper循环器发来的消息，回调handlerMessage方法在主线程中执行UI操作。
+  通过dispatchMessage方法。将消息抛到主线程的handleMessage方法中。
   
   ### OOM内存泄漏 案列分析
   内存泄漏原因：堆上分配的对象已经不会再使用，但此对象有引用，导致GC无法对其回收。
@@ -699,12 +834,16 @@ content: '''
   
   ### 自定义View的主要方法
   - 构造方法
-  一般要写三个甚至四个，这样写的原因，在不同的情况下创建View的方式不同，可能需要从xml文件中填充布局，也可能不需要，或者也需要一样style之类的，因此不同情况下，使用的构造可能存在差异
+  一般要写三个甚至四个，这样写的原因，在不同的情况下创建View的方式不同
+  1. 如果该控件仅在代码中实例化，那么可以直接复写只有一个参数的构造方法。
+  2. 如果控件要应用在布局文件，那么必须要复写只有两个参数的构造方法。
+  3. View需要随着主题而改变属性值，那么就必须复写下三个参数和四个参数的构造方法
+  
   - onMeasure 用于测量子控件的宽高
   measureSpec: 在很大程度上决定了一个View的尺寸规格，其模式有三种模式。
-  exactly(精确模式):在这种模式下，给定尺寸的值是多少，那么这个组件的长或宽就是多少。
-  at_most(最大模式):这个也就是父组件，能够给出的最大的空间，当前组件的长或宽最大只能为这么大，当然也可以比这个小。
-  unspecified(未指定模式):当前组件，可以随便用空间，不受限制。
+  exactly(精确模式):父View已经替子View确定了大小，不管子View要多大都不行。(match_parent)
+  at_most(最大模式):子View要多大就多大，但是不能超过上限。(wrap_content)
+  unspecified(未指定模式):父View对子View没有任何限制，子View的宽高想多大就多大。
   - onSizeChanged 确定View大小
   - onLayout 用于摆放子控件在父控件中的位置
   getMeasureWidth方法: 在measure过程结束后就可以获取到了。
@@ -763,7 +902,6 @@ content: '''
   1. MVVM，是Model-View-ViewModel的简写，是M-V-VM三部分组成。它本质上就是MVC 的改进版。MVVM就是将View的状态和行为抽象化，其中ViewModel将视图 UI 和业务逻辑分开，它可以取出Model的数据同时处理View中需要展示内容。
   
   2. MVVM采用双向数据绑定，ViewModel负责把Model和View关联起来。负责把Model的数据同步到View显示出来，还负责把View的修改同步回Model。
-  
   
   ### MVVM核心构成
   DataBinding:数据和UI双向绑定
@@ -957,6 +1095,16 @@ content: '''
   1. 只有 View1 可点击时，事件将会分配给 View1，即使被 View2 遮挡，这一部分仍是 View1 的可点击区域。
   2. 只有 View2 可点击时，事件将会分配给 View2。
   3. View1 和 View2 均可点击时，事件会分配给后加载的 View2，View2 将事件消费掉，View1接收不到事件。
+  
+  ### OKHttp
+  
+  okHttp用到的有build模式，责任链模式，其核心是通过拦截器形成责任链，每个拦截器负责相应的功能，发送的请求通过拦截器由上到下依次执行，响应的数据依次从下往上。而底层连接方式是通过socket进行通信。
+   
+  重试与重定向拦截器
+  桥拦截器
+  缓存拦截器
+  连接拦截器
+  服务器请求拦截器
   
   ## Android Framework
   ### 什么是ActivityManagerService
@@ -1157,17 +1305,34 @@ content: '''
   4. 删除将该View在索引表中删除。
   
   ## 项目中遇到的问题：
-  1. 沟通问题
-  遇到不清楚的需求，及时主动了解其内容表述。以免耽误进度。
-  遇到向别人解释其功能含义时，尽量以时序图或流程图说明和表述。
-  遇到BUG或不可抗力问题时，及时反馈。并记录流转过程。
-  2. 优先级问题
-  在遇到工作安排时，一定要问清优先顺序，以免耽误，
-  若同时开展多个工作时，一定要向领导请示，优先程度。
-  若同时解决多个BUG时，优先解决问题严重BUG。
-  3. 技术问题
-  遇到技术瓶颈，及时向同事或领导，寻求帮助。以免耽误进度。
-  在技术问题处理之后，用时序图或流程图记录处理方案。
+  难度最大的事情有两个
+  1. 客户那边突然提出需要一个IOS App，又比较着急，我主动把这个活接过来。
+  
+  我花了一周时间 ,从Object-C语言基础，XCode使用，App界面实现，IOS-Framework SDK实现，最后到App上架做了一个快速了解。
+  然后又花了几周时间完成App的开发,并最终交付上架。然后我把学习IOS以及该项目中遇到的困做了详细总结，上传自己的博客中做记录。
+  
+  2. 上架应用商店的App客户使用后反应卡顿，会议界面长时间待机崩溃。
+  
+  优先解决崩溃问题，我尝试多种方式进行定位，首先Android profile中Memory Profile组件去分析内存泄漏。
+  其次Android Link,通过检测哪些代码会导致内存泄漏，最后用LeakCanary+MAT工具定位到内存泄漏的位置。
+  是因为非静态内部持有的引用没有回收掉导致，通过静态内部类+弱引用的方式解决了这个问题。
+  
+  解决卡顿问题，我通过Layout inspector分析布局的层级结构，哪些布局层级较深，然后用Android Link将布局相关扫描勾选上，然后根据Link结果。
+  定位到哪些布局需要优化，然后还通过开发人员选项中 GPU 渲染模式分析工具和过渡绘制检测功能 分析哪些布局由于重复绘制导致渲染时间长。
+  最后尽量用约束布局代替线性和相对比较，ViewStub代替启动过程中不显示的控件，使用自定义View替代复杂的View叠加。
+  
+  以上两个问题解决后，对App重新上架。后续该相关问题客户没有再反应。
+  
+  ## 有什么问题要问的。
+  1. 平时开发的技术栈 有哪些？
+  如果没接触的话，我会提前做准备
+  
+  2. 就目前这个招聘岗位中的要求，还有其他的能力要求吗？
+  我这边 学过c++学过ios 
+  文档方面，设计文档 软著 专利，我都会写。
+  没有的技能，我会尽量在短时间内学习。
+  
+  3. 如果顺利入职的话，您觉得有哪些方面，我有必要去特意加强一下的吗？
   
 '''
 linesHighlighted: []
